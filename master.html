@@ -24,15 +24,21 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .s0 .sv{color:var(--bl)}.s1 .sv{color:var(--ye)}.s2 .sv{color:var(--rd)}
 .s3 .sv{color:var(--pu)}.s4 .sv{color:var(--or)}.s5 .sv{color:var(--gr)}.s6 .sv{color:var(--tm)}
 .sl{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
-.frow{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+.row-label{font-size:10px;color:var(--t3);font-weight:600;padding:0 4px;white-space:nowrap;min-width:60px}
 .fi{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:8px 13px;font-size:12px;font-family:'Inter',sans-serif;outline:none;flex:1;min-width:160px}
 .fi:focus{border-color:var(--bl)}
-.fb{padding:7px 13px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;text-transform:uppercase;white-space:nowrap}
-.fb.on,.fb:hover{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
-.period-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
 .pb{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;white-space:nowrap;letter-spacing:.4px}
 .pb.on{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.08)}
 .pb:hover:not(.on){border-color:var(--t2);color:var(--tx)}
+.fb{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;text-transform:uppercase;white-space:nowrap}
+.fb.on,.fb:hover{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.tb{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.3px}
+.tb:hover:not(.on){border-color:var(--t2);color:var(--tx)}
+.tb-todos.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.tb-a.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.12)}
+.tb-b.on{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.10)}
+.tb-c.on{border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.10)}
 .export-btn{margin-left:auto;padding:7px 16px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .export-btn:hover{background:rgba(0,232,150,.15)}
 .tcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
@@ -40,7 +46,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .thead small{font-size:11px;color:var(--t2);font-weight:400;font-family:'Inter',sans-serif}
 .tscroll{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}
-th{text-align:left;font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;padding:9px 14px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{text-align:left;font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;padding:9px 14px;border-bottom:1px solid var(--bd);white-space:nowrap;cursor:pointer;user-select:none;transition:color .15s}
+th:hover{color:var(--t2)}
+th.sort-asc,th.sort-desc{color:var(--bl)}
+th.sort-asc::after{content:" ▲";font-size:8px}
+th.sort-desc::after{content:" ▼";font-size:8px}
 td{padding:11px 14px;border-bottom:1px solid var(--bd);vertical-align:top}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg3)}
@@ -78,7 +88,6 @@ tr:hover td{background:var(--bg3)}
 .crd-tmac .el{color:var(--t3);font-size:9px;text-transform:uppercase;letter-spacing:.4px}
 .crd-tmac .ei{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--tm)}
 .crd-tmac .ei.w{color:var(--t3);font-style:italic;font-size:11px;font-family:'Inter',sans-serif;font-weight:400}
-.period-label{font-size:10px;color:var(--t3);font-weight:600;padding:0 4px;white-space:nowrap}
 @media(max-width:768px){.tcard{display:none}.cards{display:flex}.stats{grid-template-columns:repeat(4,1fr)}.export-btn span{display:none}}
 </style>
 </head>
@@ -98,8 +107,8 @@ tr:hover td{background:var(--bg3)}
     <div class="st s6"><div class="sv" id="s6">—</div><div class="sl">TMAC Geral</div></div>
   </div>
 
-  <div class="period-row">
-    <span class="period-label">📅 Período:</span>
+  <div class="filter-row">
+    <span class="row-label">📅 Período:</span>
     <button class="pb on" onclick="setPeriod('hoje',this)">Hoje</button>
     <button class="pb" onclick="setPeriod('ontem',this)">Ontem</button>
     <button class="pb" onclick="setPeriod('semana',this)">Essa Semana</button>
@@ -108,7 +117,15 @@ tr:hover td{background:var(--bg3)}
     <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
   </div>
 
-  <div class="frow">
+  <div class="filter-row">
+    <span class="row-label">🕐 Turno:</span>
+    <button class="tb tb-todos on" onclick="setTurno('t',this)">Todos</button>
+    <button class="tb tb-a" onclick="setTurno('A',this)">A · 23h–07h</button>
+    <button class="tb tb-b" onclick="setTurno('B',this)">B · 07h–15h</button>
+    <button class="tb tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
+  </div>
+
+  <div class="filter-row" style="margin-bottom:16px">
     <input class="fi" id="q" type="text" placeholder="🔍 Placa ou AC..." oninput="render()"/>
     <button class="fb on" onclick="setF('t',this)">Todos</button>
     <button class="fb" onclick="setF('a',this)">Em processo</button>
@@ -120,12 +137,20 @@ tr:hover td{background:var(--bg3)}
     <div id="ld"><div class="spin"></div></div>
     <div class="tscroll" id="tbl" style="display:none">
       <table>
-        <thead><tr>
-          <th>Placa</th><th>AC</th><th>Data</th><th>Entrada</th><th>Setor Atual</th>
-          <th>📦 Triagem Ini</th><th>📦 Triagem Fim</th>
-          <th>🏗️ Carga Ini</th><th>🏗️ Carga Fim</th>
-          <th>🪢 Enlone Ini</th><th>🪢 Enlone Fim</th>
-          <th>🧾 Saída</th><th>⏱️ TMAC</th>
+        <thead><tr id="thead-row">
+          <th data-col="placa">Placa</th>
+          <th data-col="ac">AC</th>
+          <th data-col="data">Data</th>
+          <th data-col="entrada">Entrada</th>
+          <th data-col="setor">Setor Atual</th>
+          <th data-col="trI">📦 Triagem Ini</th>
+          <th data-col="trF">📦 Triagem Fim</th>
+          <th data-col="caI">🏗️ Carga Ini</th>
+          <th data-col="caF">🏗️ Carga Fim</th>
+          <th data-col="enI">🪢 Enlone Ini</th>
+          <th data-col="enF">🪢 Enlone Fim</th>
+          <th data-col="saida">🧾 Saída</th>
+          <th data-col="tmac">⏱️ TMAC</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
       </table>
@@ -141,38 +166,22 @@ import{getFirestore,collection,onSnapshot,query,orderBy}from"https://www.gstatic
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 
-// ── Date helpers (Fortaleza timezone) ──────────────────────────────────────
-function tzDate(d){return new Date(d.toLocaleString("en-US",{timeZone:"America/Fortaleza"}));}
-function ymd(d){const t=tzDate(d);return t.toISOString().slice(0,10);}
-function hoje(){return ymd(new Date());}
-
+// ── Helpers ────────────────────────────────────────────────────────────────
 function periodDates(p){
   const now=new Date();
-  const tz=d=>new Date(d.toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
-  const t=tz(now);
+  const tz=new Date(now.toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   const pad=n=>String(n).padStart(2,"0");
   const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-
-  if(p==="hoje") return{s:fmt(t),e:fmt(t)};
-  if(p==="ontem"){const y=new Date(t);y.setDate(t.getDate()-1);return{s:fmt(y),e:fmt(y)};}
-  if(p==="semana"){
-    const d=new Date(t);d.setDate(t.getDate()-t.getDay());
-    return{s:fmt(d),e:fmt(t)};
-  }
-  if(p==="mes"){
-    const s=new Date(t.getFullYear(),t.getMonth(),1);
-    return{s:fmt(s),e:fmt(t)};
-  }
-  if(p==="ano"){
-    const s=new Date(t.getFullYear(),0,1);
-    return{s:fmt(s),e:fmt(t)};
-  }
-  return{s:fmt(t),e:fmt(t)};
+  if(p==="hoje")return{s:fmt(tz),e:fmt(tz)};
+  if(p==="ontem"){const y=new Date(tz);y.setDate(tz.getDate()-1);return{s:fmt(y),e:fmt(y)};}
+  if(p==="semana"){const d=new Date(tz);d.setDate(tz.getDate()-tz.getDay());return{s:fmt(d),e:fmt(tz)};}
+  if(p==="mes"){const s=new Date(tz.getFullYear(),tz.getMonth(),1);return{s:fmt(s),e:fmt(tz)};}
+  if(p==="ano"){const s=new Date(tz.getFullYear(),0,1);return{s:fmt(s),e:fmt(tz)};}
+  return{s:fmt(tz),e:fmt(tz)};
 }
 
-const fmt=d=>d?d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
-const fmtDate=d=>d?d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"}):"—";
+const fmtEx=d=>d?d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"";
 
 function durStr(ms){
   if(!ms||ms<0)return"";
@@ -187,13 +196,10 @@ function getTurno(d){
   if(h>=7&&h<15)return"B";
   return"C";
 }
-
 function turnoPill(d){
-  const t=getTurno(d);
-  if(!t)return"";
+  const t=getTurno(d);if(!t)return"";
   return`<span class="turno t-${t.toLowerCase()}">${t}</span>`;
 }
-
 function pill(s){
   if(!s||s==="posto1")return`<span class="pill p-bl">🔵 Entrada</span>`;
   if(s==="triagem_inicio")return`<span class="pill p-ye">🟡 Em Triagem</span>`;
@@ -205,18 +211,51 @@ function pill(s){
   if(s==="concluido")return`<span class="pill p-gr">🟢 Concluído</span>`;
   return`<span class="pill p-bl">${s}</span>`;
 }
-
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
-
 function calcTMAC(c){
   if(c.setorAtual!=="concluido")return null;
-  const en=getTS(c,"entrada","ts");
-  const sa=getTS(c,"faturamento","ts");
+  const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
   if(!en||!sa)return null;
   return sa-en;
 }
 
-let ALL=[],MF="t",MP="hoje";
+// ── Sort ───────────────────────────────────────────────────────────────────
+let SORT_COL=null,SORT_DIR=1;
+
+function tsVal(c,sn,f){const d=getTS(c,sn,f);return d?d.getTime():0;}
+function getSortVal(c,col){
+  switch(col){
+    case"placa":return c.placa||"";
+    case"ac":return c.ac||"";
+    case"data":return c.data||"";
+    case"entrada":return tsVal(c,"entrada","ts");
+    case"setor":return c.setorAtual||"";
+    case"trI":return tsVal(c,"triagem","inicio");
+    case"trF":return tsVal(c,"triagem","fim");
+    case"caI":return tsVal(c,"carregamento","inicio");
+    case"caF":return tsVal(c,"carregamento","fim");
+    case"enI":return tsVal(c,"enlonamento","inicio");
+    case"enF":return tsVal(c,"enlonamento","fim");
+    case"saida":return tsVal(c,"faturamento","ts");
+    case"tmac":return calcTMAC(c)??-1;
+    default:return 0;
+  }
+}
+function updateSortHeaders(){
+  document.querySelectorAll("#thead-row th").forEach(th=>{
+    th.classList.remove("sort-asc","sort-desc");
+    if(th.dataset.col===SORT_COL)th.classList.add(SORT_DIR===1?"sort-asc":"sort-desc");
+  });
+}
+document.addEventListener("click",e=>{
+  const th=e.target.closest("th[data-col]");if(!th)return;
+  const col=th.dataset.col;
+  if(SORT_COL===col){SORT_DIR*=-1;}else{SORT_COL=col;SORT_DIR=1;}
+  updateSortHeaders();render();
+});
+
+// ── State ──────────────────────────────────────────────────────────────────
+let ALL=[],MF="t",MP="hoje",MT="t";
 
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
   ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -225,33 +264,31 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
   document.getElementById("tbl").style.display="block";
 });
 
-window.setPeriod=(p,el)=>{
-  MP=p;
-  document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
-  el.classList.add("on");
-  render();
-};
-
-window.setF=(f,el)=>{
-  MF=f;
-  document.querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));
-  el.classList.add("on");
-  render();
-};
+window.setPeriod=(p,el)=>{MP=p;document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setF=(f,el)=>{MF=f;document.querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 function getFiltered(){
   const{s,e}=periodDates(MP);
   let list=ALL.filter(c=>c.data>=s&&c.data<=e);
+  if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   if(MF==="a")list=list.filter(c=>c.setorAtual!=="concluido");
   if(MF==="c")list=list.filter(c=>c.setorAtual==="concluido");
   const q=(document.getElementById("q")?.value||"").toUpperCase();
   if(q)list=list.filter(c=>c.placa?.includes(q)||c.ac?.includes(q));
+  if(SORT_COL){
+    list=[...list].sort((a,b)=>{
+      const av=getSortVal(a,SORT_COL),bv=getSortVal(b,SORT_COL);
+      return av<bv?-SORT_DIR:av>bv?SORT_DIR:0;
+    });
+  }
   return list;
 }
 
 window.render=()=>{
   const{s,e}=periodDates(MP);
-  const period=ALL.filter(c=>c.data>=s&&c.data<=e);
+  let period=ALL.filter(c=>c.data>=s&&c.data<=e);
+  if(MT!=="t")period=period.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
 
   document.getElementById("s0").textContent=period.length;
   document.getElementById("s1").textContent=period.filter(c=>c.setorAtual?.startsWith("triagem")).length;
@@ -260,34 +297,22 @@ window.render=()=>{
   document.getElementById("s4").textContent=period.filter(c=>c.setorAtual==="enlonamento_fim").length;
   document.getElementById("s5").textContent=period.filter(c=>c.setorAtual==="concluido").length;
 
-  // TMAC geral — só concluídos do período
   const concluidos=period.filter(c=>c.setorAtual==="concluido");
   const tmacs=concluidos.map(c=>calcTMAC(c)).filter(v=>v!=null);
-  if(tmacs.length>0){
-    const avg=tmacs.reduce((a,b)=>a+b,0)/tmacs.length;
-    document.getElementById("s6").textContent=durStr(avg);
-  }else{
-    document.getElementById("s6").textContent="—";
-  }
+  document.getElementById("s6").textContent=tmacs.length?durStr(tmacs.reduce((a,b)=>a+b,0)/tmacs.length):"—";
 
   const list=getFiltered();
   document.getElementById("cnt").textContent=list.length+" caminhão"+(list.length!==1?"s":"");
 
   const tb=document.getElementById("tbody"),em=document.getElementById("emp"),cards=document.getElementById("cards");
-
-  if(!list.length){
-    tb.innerHTML="";
-    em.style.display="block";
-    cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";
-    return;
-  }
+  if(!list.length){tb.innerHTML="";em.style.display="block";cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";return;}
   em.style.display="none";
 
   function cell(d,d2){
     if(!d)return`<span class="w">aguardando</span>`;
-    let s=`<span class="d">${fmtT(d)}</span>`;
-    if(d2)s+=`<span class="dr">${durStr(d-d2)}</span>`;
-    return s;
+    let str=`<span class="d">${fmtT(d)}</span>`;
+    if(d2)str+=`<span class="dr">${durStr(d-d2)}</span>`;
+    return str;
   }
 
   tb.innerHTML=list.map(c=>{
@@ -297,9 +322,6 @@ window.render=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const tmac=calcTMAC(c);
-    const tmacHtml=tmac!=null
-      ?`<span class="tmac-cell">${durStr(tmac)}</span>`
-      :`<span class="tmac-cell w">em processo</span>`;
     return`<tr>
       <td><span class="ptag">${c.placa}</span>${turnoPill(en)}</td>
       <td style="color:var(--t2)">${c.ac}</td>
@@ -313,7 +335,7 @@ window.render=()=>{
       <td class="ec">${cell(enI,null)}</td>
       <td class="ec">${cell(enF,enI)}</td>
       <td class="ec">${sa?`<span class="d">${fmtT(sa)}</span>`:`<span class="w">aguardando</span>`}</td>
-      <td>${tmacHtml}</td>
+      <td>${tmac!=null?`<span class="tmac-cell">${durStr(tmac)}</span>`:`<span class="tmac-cell w">em processo</span>`}</td>
     </tr>`;
   }).join("");
 
@@ -344,10 +366,7 @@ window.render=()=>{
 
 window.exportExcel=()=>{
   const list=getFiltered();
-  if(!list.length){alert("Nenhum dado para exportar no período selecionado.");return;}
-
-  const fmtEx=d=>d?d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"";
-
+  if(!list.length){alert("Nenhum dado para exportar no filtro selecionado.");return;}
   const rows=list.map(c=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
@@ -356,35 +375,21 @@ window.exportExcel=()=>{
     const sa=getTS(c,"faturamento","ts");
     const tmac=calcTMAC(c);
     return{
-      "Placa":c.placa,
-      "Turno":getTurno(en)||"",
-      "AC":c.ac,
-      "Data":c.data||"",
-      "Entrada":fmtEx(en),
-      "Setor Atual":c.setorAtual||"",
-      "Triagem Início":fmtEx(trI),
-      "Triagem Fim":fmtEx(trF),
-      "Duração Triagem":trI&&trF?durStr(trF-trI):"",
-      "Carga Início":fmtEx(caI),
-      "Carga Fim":fmtEx(caF),
-      "Duração Carga":caI&&caF?durStr(caF-caI):"",
-      "Enlone Início":fmtEx(enI),
-      "Enlone Fim":fmtEx(enF),
-      "Duração Enlone":enI&&enF?durStr(enF-enI):"",
-      "Saída (Faturamento)":fmtEx(sa),
-      "TMAC (Entrada→Saída)":tmac!=null?durStr(tmac):"",
+      "Placa":c.placa,"Turno":getTurno(en)||"","AC":c.ac,"Data":c.data||"",
+      "Entrada":fmtEx(en),"Setor Atual":c.setorAtual||"",
+      "Triagem Início":fmtEx(trI),"Triagem Fim":fmtEx(trF),"Duração Triagem":trI&&trF?durStr(trF-trI):"",
+      "Carga Início":fmtEx(caI),"Carga Fim":fmtEx(caF),"Duração Carga":caI&&caF?durStr(caF-caI):"",
+      "Enlone Início":fmtEx(enI),"Enlone Fim":fmtEx(enF),"Duração Enlone":enI&&enF?durStr(enF-enI):"",
+      "Saída (Faturamento)":fmtEx(sa),"TMAC (Entrada→Saída)":tmac!=null?durStr(tmac):"",
     };
   });
-
   const ws=XLSX.utils.json_to_sheet(rows);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Rastreio");
-
-  // Coluna widths
-  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:20},{wch:18},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:18}];
-
+  ws["!cols"]=[{wch:10},{wch:7},{wch:10},{wch:12},{wch:20},{wch:18},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:18}];
   const{s,e}=periodDates(MP);
-  const fname=s===e?`rastreio_${s}.xlsx`:`rastreio_${s}_a_${e}.xlsx`;
+  const turnoSuffix=MT!=="t"?`_turno${MT}`:"";
+  const fname=s===e?`rastreio_${s}${turnoSuffix}.xlsx`:`rastreio_${s}_a_${e}${turnoSuffix}.xlsx`;
   XLSX.writeFile(wb,fname);
 };
 </script>
