@@ -20,9 +20,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .st::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
 .s0::before{background:var(--bl)}.s1::before{background:var(--ye)}.s2::before{background:var(--rd)}
 .s3::before{background:var(--pu)}.s4::before{background:var(--or)}.s5::before{background:var(--gr)}.s6::before{background:var(--tm)}
+.s7::before{background:#38bdf8}.s8::before{background:#34d399}.s9::before{background:#f472b6}
 .sv{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:800}
 .s0 .sv{color:var(--bl)}.s1 .sv{color:var(--ye)}.s2 .sv{color:var(--rd)}
 .s3 .sv{color:var(--pu)}.s4 .sv{color:var(--or)}.s5 .sv{color:var(--gr)}.s6 .sv{color:var(--tm)}
+.s7 .sv{color:#38bdf8}.s8 .sv{color:#34d399}.s9 .sv{color:#f472b6}
 .sl{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 .filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
 .row-label{font-size:10px;color:var(--t3);font-weight:600;padding:0 4px;white-space:nowrap;min-width:60px}
@@ -115,6 +117,9 @@ tr.alerta .turno{opacity:.7}
     <div class="st s4"><div class="sv" id="s4">—</div><div class="sl">Ag.Saída</div></div>
     <div class="st s5"><div class="sv" id="s5">—</div><div class="sl">Concluído</div></div>
     <div class="st s6"><div class="sv" id="s6">—</div><div class="sl">TMAC Geral</div></div>
+    <div class="st s7"><div class="sv" id="s7">—</div><div class="sl">TME · Espera</div></div>
+    <div class="st s8"><div class="sv" id="s8">—</div><div class="sl">TMC · Carga</div></div>
+    <div class="st s9"><div class="sv" id="s9">—</div><div class="sl">TMF · Fila</div></div>
   </div>
 
   <div class="filter-row">
@@ -230,26 +235,13 @@ function calcTMAC(c){
   return sa-en;
 }
 
-// Retorna true se o caminhão está há mais de 30min na etapa atual sem concluí-la
+// Pulsa se o caminhão está em processo há mais de 30min (desde entrada)
+// Não pulsa se concluído ou aguardando faturamento
 function isAlerta(c){
-  if(c.setorAtual==="concluido"||!c.setorAtual||c.setorAtual==="posto1")return false;
-  const LIMITE=30*60*1000;
-  const now=Date.now();
-  const map={
-    "triagem_inicio":["triagem","inicio"],
-    "carregamento_inicio":["carregamento","inicio"],
-    "enlonamento_inicio":["enlonamento","inicio"],
-    // fim de etapa sem próxima — também conta
-    "triagem_fim":["triagem","fim"],
-    "carregamento_fim":["carregamento","fim"],
-    "enlonamento_fim":["enlonamento","fim"],
-    "faturamento_aguardando":["enlonamento","fim"],
-  };
-  const key=map[c.setorAtual];
-  if(!key)return false;
-  const ts=getTS(c,key[0],key[1]);
-  if(!ts)return false;
-  return(now-ts.getTime())>LIMITE;
+  if(!c.setorAtual||c.setorAtual==="concluido"||c.setorAtual==="faturamento_aguardando"||c.setorAtual==="posto1")return false;
+  const en=getTS(c,"entrada","ts");
+  if(!en)return false;
+  return(Date.now()-en.getTime())>30*60*1000;
 }
 
 // ── Sort ───────────────────────────────────────────────────────────────────
@@ -336,6 +328,27 @@ window.render=()=>{
   const concluidos=period.filter(c=>c.setorAtual==="concluido");
   const tmacs=concluidos.map(c=>calcTMAC(c)).filter(v=>v!=null);
   document.getElementById("s6").textContent=tmacs.length?durStr(tmacs.reduce((a,b)=>a+b,0)/tmacs.length):"—";
+
+  // TME — entrada → triagem.inicio (todos que têm triagem iniciada)
+  const tmeVals=period.map(c=>{
+    const en=getTS(c,"entrada","ts"),trI=getTS(c,"triagem","inicio");
+    return(en&&trI)?trI-en:null;
+  }).filter(v=>v!=null);
+  document.getElementById("s7").textContent=tmeVals.length?durStr(tmeVals.reduce((a,b)=>a+b,0)/tmeVals.length):"—";
+
+  // TMC — triagem.inicio → enlonamento.fim (todos que têm enlonamento fim)
+  const tmcVals=period.map(c=>{
+    const trI=getTS(c,"triagem","inicio"),enF=getTS(c,"enlonamento","fim");
+    return(trI&&enF)?enF-trI:null;
+  }).filter(v=>v!=null);
+  document.getElementById("s8").textContent=tmcVals.length?durStr(tmcVals.reduce((a,b)=>a+b,0)/tmcVals.length):"—";
+
+  // TMF — enlonamento.fim → faturamento.ts (só concluídos)
+  const tmfVals=concluidos.map(c=>{
+    const enF=getTS(c,"enlonamento","fim"),sa=getTS(c,"faturamento","ts");
+    return(enF&&sa)?sa-enF:null;
+  }).filter(v=>v!=null);
+  document.getElementById("s9").textContent=tmfVals.length?durStr(tmfVals.reduce((a,b)=>a+b,0)/tmfVals.length):"—";
 
   const list=getFiltered();
   document.getElementById("cnt").textContent=list.length+" caminhão"+(list.length!==1?"s":"");
