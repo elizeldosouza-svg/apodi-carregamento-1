@@ -236,9 +236,10 @@ function calcTMAC(c){
 }
 
 // Pulsa se o caminhão está em processo há mais de 30min (desde entrada)
-// Não pulsa se concluído ou aguardando faturamento
+// Não pulsa se concluído, enlonado aguardando faturamento ou já fora de processo ativo
 function isAlerta(c){
-  if(!c.setorAtual||c.setorAtual==="concluido"||c.setorAtual==="faturamento_aguardando"||c.setorAtual==="posto1")return false;
+  const statusSemAlerta=["concluido","faturamento_aguardando","enlonamento_fim","posto1"];
+  if(!c.setorAtual||statusSemAlerta.includes(c.setorAtual))return false;
   const en=getTS(c,"entrada","ts");
   if(!en)return false;
   return(Date.now()-en.getTime())>30*60*1000;
