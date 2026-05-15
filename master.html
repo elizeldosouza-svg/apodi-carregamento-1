@@ -65,6 +65,7 @@ tr:hover td{background:var(--bg3)}
 .p-rd{background:rgba(255,68,102,.1);color:var(--rd);border-color:rgba(255,68,102,.2)}
 .p-pu{background:rgba(167,139,250,.1);color:var(--pu);border-color:rgba(167,139,250,.2)}
 .p-gr{background:rgba(0,232,150,.1);color:var(--gr);border-color:rgba(0,232,150,.2)}
+.p-or{background:rgba(251,146,60,.1);color:var(--or);border-color:rgba(251,146,60,.2)}
 .ec{font-size:11px;color:var(--t2);line-height:1.9}
 .ec .d{color:var(--tx)}.ec .w{color:var(--t3);font-style:italic}
 .dr{background:rgba(0,212,255,.1);color:var(--bl);border-radius:4px;padding:0 4px;font-size:10px;margin-left:3px}
@@ -217,6 +218,7 @@ function pill(s){
   if(s==="carregamento_fim")return`<span class="pill p-rd">🔴 Carregado</span>`;
   if(s==="enlonamento_inicio")return`<span class="pill p-pu">🟣 Enlonando</span>`;
   if(s==="enlonamento_fim")return`<span class="pill p-pu">🟣 Enlonado</span>`;
+  if(s==="faturamento_aguardando")return`<span class="pill p-or">🧾 Ag. Faturamento</span>`;
   if(s==="concluido")return`<span class="pill p-gr">🟢 Concluído</span>`;
   return`<span class="pill p-bl">${s}</span>`;
 }
@@ -241,6 +243,7 @@ function isAlerta(c){
     "triagem_fim":["triagem","fim"],
     "carregamento_fim":["carregamento","fim"],
     "enlonamento_fim":["enlonamento","fim"],
+    "faturamento_aguardando":["enlonamento","fim"],
   };
   const key=map[c.setorAtual];
   if(!key)return false;
@@ -327,7 +330,7 @@ window.render=()=>{
   document.getElementById("s1").textContent=period.filter(c=>c.setorAtual?.startsWith("triagem")).length;
   document.getElementById("s2").textContent=period.filter(c=>c.setorAtual?.startsWith("carregamento")).length;
   document.getElementById("s3").textContent=period.filter(c=>c.setorAtual?.startsWith("enlonamento")).length;
-  document.getElementById("s4").textContent=period.filter(c=>c.setorAtual==="enlonamento_fim").length;
+  document.getElementById("s4").textContent=period.filter(c=>c.setorAtual==="faturamento_aguardando").length;
   document.getElementById("s5").textContent=period.filter(c=>c.setorAtual==="concluido").length;
 
   const concluidos=period.filter(c=>c.setorAtual==="concluido");
