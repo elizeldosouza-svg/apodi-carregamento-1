@@ -27,6 +27,33 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .tb-a.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.12)}
 .tb-b.on{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.10)}
 .tb-c.on{border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.10)}
+.ttb{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.3px}
+.ttb:hover:not(.on){border-color:var(--t2);color:var(--tx)}
+.ttb-todos.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.ttb-ensacado.on{border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,.10)}
+.ttb-granel.on{border-color:#fb923c;color:#fb923c;background:rgba(251,146,60,.10)}
+.ttb-bigbag.on{border-color:#00e896;color:#00e896;background:rgba(0,232,150,.10)}
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:0}
+.tipo-crd{border-radius:var(--rs);padding:12px;text-align:center;border:1px solid}
+.tipo-ens{background:rgba(0,212,255,.06);border-color:rgba(0,212,255,.2)}
+.tipo-gr{background:rgba(251,146,60,.06);border-color:rgba(251,146,60,.2)}
+.tipo-bb{background:rgba(0,232,150,.06);border-color:rgba(0,232,150,.2)}
+.tipo-crd .tlb{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.tipo-ens .tlb{color:#00d4ff}.tipo-gr .tlb{color:#fb923c}.tipo-bb .tlb{color:#00e896}
+.tipo-crd .tv{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:800}
+.tipo-ens .tv{color:#00d4ff}.tipo-gr .tv{color:#fb923c}.tipo-bb .tv{color:#00e896}
+.tipo-crd .ts{font-size:10px;color:var(--t2);margin-top:2px}
+.tipo-crd .ttmac{font-size:12px;font-weight:700;margin-top:6px;padding-top:6px;border-top:1px solid}
+.tipo-ens .ttmac{color:#00d4ff;border-color:rgba(0,212,255,.15)}
+.tipo-gr .ttmac{color:#fb923c;border-color:rgba(251,146,60,.15)}
+.tipo-bb .ttmac{color:#00e896;border-color:rgba(0,232,150,.15)}
+.cross-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
+.cross-table th{text-align:center;font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;padding:7px 10px;border-bottom:1px solid var(--bd)}
+.cross-table td{padding:8px 10px;border-bottom:1px solid var(--bg3);text-align:center;font-size:11px;color:var(--t2)}
+.cross-table tr:last-child td{border-bottom:none}
+.cross-table .row-hdr{text-align:left;font-weight:700;color:var(--tx);font-size:10px}
+.cross-val{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700}
+.cv-ens{color:#00d4ff}.cv-gr{color:#fb923c}.cv-bb{color:#00e896}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
 .kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px;text-align:center;position:relative}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
@@ -112,6 +139,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
     <button class="tb tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
   </div>
 
+  <div class="filter-row" style="margin-bottom:18px">
+    <span class="row-label">📦 Carga:</span>
+    <button class="ttb ttb-todos on" onclick="setTipoCarga('t',this)">Todos</button>
+    <button class="ttb ttb-ensacado" onclick="setTipoCarga('ensacado',this)">🛍️ Ensacado</button>
+    <button class="ttb ttb-granel" onclick="setTipoCarga('granel',this)">⛏️ Granel</button>
+    <button class="ttb ttb-bigbag" onclick="setTipoCarga('bigbag',this)">📦 Big Bag</button>
+  </div>
+
   <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando dados...</div></div>
   <div id="content" style="display:none">
     <!-- KPIs -->
@@ -151,6 +186,21 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
         <div class="card-title">🔥 Gargalo por Etapa</div>
         <div id="gargalo-chart"></div>
       </div>
+    </div>
+    <!-- Tipo de Carga -->
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="card-title">📦 Volume por Tipo de Carga</div>
+        <div class="tipo-grid" id="tipo-volume"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⏱ TMAC Médio por Tipo</div>
+        <div id="tipo-tmac-chart"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🔀 Tipo de Carga × Turno — TMAC médio</div>
+      <div style="overflow-x:auto"><table class="cross-table" id="cross-table"></table></div>
     </div>
   </div>
 </div>
@@ -198,7 +248,7 @@ function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;}
 function fmtEx(d){return d?d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):""}
 
 // ── State ─────────────────────────────────────────────────────────────────
-let ALL=[],MP="hoje",MT="t";
+let ALL=[],MP="hoje",MT="t",MTC="t";
 
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
   ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -209,11 +259,13 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
 
 window.setPeriod=(p,el)=>{MP=p;document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 function getList(){
   const{s,e}=periodDates(MP);
   let list=ALL.filter(c=>c.data>=s&&c.data<=e);
   if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
+  if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
   return list;
 }
 
@@ -377,6 +429,70 @@ function render(){
       <div class="worst-val">${worst.icon} ${worst.lb} · ${durStr(worst.avg)}</div>
       ${(()=>{const tb=tmacB();const diff=tb&&tmacMedio?tb-tmacMedio:null;return diff&&diff>0?`<div class="worst-sub">Turno B tem o maior desvio (+${durStr(diff)})</div>`:"";})()}
     </div>`:"");
+
+  // ── Tipo de Carga ─────────────────────────────────────────────────────
+  const tipos=[
+    {id:"ensacado",lb:"🛍️ Ensacado",cls:"tipo-ens tipo-crd",cor:"#00d4ff"},
+    {id:"granel",  lb:"⛏️ Granel",  cls:"tipo-gr tipo-crd", cor:"#fb923c"},
+    {id:"bigbag",  lb:"📦 Big Bag", cls:"tipo-bb tipo-crd", cor:"#00e896"},
+  ];
+
+  // Volume por tipo
+  const allPeriod=ALL.filter(c=>{const{s,e}=periodDates(MP);return c.data>=s&&c.data<=e;});
+  document.getElementById("tipo-volume").innerHTML=tipos.map(t=>{
+    const tl=allPeriod.filter(c=>c.tipoCarga===t.id);
+    const tc=tl.filter(c=>c.setorAtual==="concluido");
+    return`<div class="${t.cls}">
+      <div class="tlb">${t.lb}</div>
+      <div class="tv">${tl.length}</div>
+      <div class="ts">${tc.length} concluídos</div>
+    </div>`;
+  }).join("");
+
+  // TMAC por tipo — barras
+  const tipoTmacs=tipos.map(t=>{
+    const tl=list.filter(c=>c.tipoCarga===t.id&&c.setorAtual==="concluido");
+    const vals=tl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    return{...t,avg:avg(vals),count:vals.length};
+  }).filter(t=>t.avg);
+  const maxTipo=tipoTmacs.length?Math.max(...tipoTmacs.map(t=>t.avg)):1;
+  document.getElementById("tipo-tmac-chart").innerHTML=tipoTmacs.length
+    ?tipoTmacs.map(t=>`<div class="bar-row">
+        <span class="bar-label">${t.lb}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${Math.max(Math.round(t.avg/maxTipo*100),15)}%;background:${t.cor}">
+            <span class="bar-val">${durStr(t.avg)}</span>
+          </div>
+        </div>
+      </div>`).join("")
+    :`<div class="empty-state">Sem dados suficientes</div>`;
+
+  // Cruzamento Tipo × Turno
+  const turnos=[{id:"A",lb:"Turno A"},{id:"B",lb:"Turno B"},{id:"C",lb:"Turno C"}];
+  const crossList=ALL.filter(c=>{const{s,e}=periodDates(MP);return c.data>=s&&c.data<=e&&c.setorAtual==="concluido";});
+  const crossCls={ensacado:"cv-ens",granel:"cv-gr",bigbag:"cv-bb"};
+  let tbl=`<thead><tr><th class="row-hdr">Turno</th>${tipos.map(t=>`<th>${t.lb}</th>`).join("")}<th>Todos</th></tr></thead><tbody>`;
+  turnos.forEach(tr=>{
+    const trl=crossList.filter(c=>getTurno(getTS(c,"entrada","ts"))===tr.id);
+    tbl+=`<tr><td class="row-hdr">${tr.lb}</td>`;
+    tipos.forEach(ti=>{
+      const vals=trl.filter(c=>c.tipoCarga===ti.id).map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+      const a=avg(vals);
+      tbl+=`<td><span class="cross-val ${crossCls[ti.id]}">${a?durStr(a):"—"}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${vals.length} veíc.</div></td>`;
+    });
+    const allVals=trl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    tbl+=`<td><span class="cross-val" style="color:var(--tm)">${avg(allVals)?durStr(avg(allVals)):"—"}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${allVals.length} veíc.</div></td></tr>`;
+  });
+  // Linha total
+  tbl+=`<tr style="border-top:1px solid var(--bd)"><td class="row-hdr" style="color:var(--t3)">Todos</td>`;
+  tipos.forEach(ti=>{
+    const vals=crossList.filter(c=>c.tipoCarga===ti.id).map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const a=avg(vals);
+    tbl+=`<td><span class="cross-val ${crossCls[ti.id]}">${a?durStr(a):"—"}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${vals.length} veíc.</div></td>`;
+  });
+  const allV=crossList.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  tbl+=`<td><span class="cross-val" style="color:var(--tm)">${avg(allV)?durStr(avg(allV)):"—"}</span></td></tr></tbody>`;
+  document.getElementById("cross-table").innerHTML=tbl;
 }
 
 // ── Export Excel ──────────────────────────────────────────────────────────
