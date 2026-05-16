@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Gestão de Processos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--pu:#a78bfa;--or:#fb923c;--r:12px;--rs:8px}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
+
+/* ── Login ── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{width:100%;max-width:360px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:32px}
+.login-ic{font-size:48px;text-align:center;display:block;margin-bottom:10px}
+.login-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--rd);text-align:center;letter-spacing:1px;margin-bottom:4px}
+.login-sub{font-size:11px;color:var(--t3);text-align:center;margin-bottom:24px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fg label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.fg input{background:var(--bg3);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:12px 14px;font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;width:100%}
+.fg input:focus{border-color:var(--rd)}
+.login-btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-size:14px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(135deg,var(--rd),#cc0033);color:#fff;transition:all .2s;margin-top:4px}
+.login-btn:active{transform:scale(.97)}
+.login-btn:disabled{opacity:.3;cursor:not-allowed}
+.login-err{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:var(--rd);padding:10px 14px;border-radius:var(--rs);font-size:12px;text-align:center;margin-bottom:14px;display:none}
+.login-err.on{display:block}
+
+/* ── App ── */
+.top{background:var(--bg2);border-bottom:2px solid var(--rd);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:12px}
+.logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--rd);flex:1;letter-spacing:1px}
+.nav-btn{padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s}
+.nav-btn:hover{border-color:var(--bl);color:var(--bl)}
+.sair-btn{padding:6px 14px;border:1px solid rgba(255,68,102,.3);border-radius:20px;background:transparent;color:var(--rd);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.sair-btn:hover{background:rgba(255,68,102,.1)}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px}
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.row-label{font-size:10px;color:var(--t3);font-weight:600;min-width:60px}
+.pb{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;white-space:nowrap}
+.pb.on{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.08)}
+.fi{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:8px 13px;font-size:12px;font-family:'Inter',sans-serif;outline:none;flex:1;min-width:180px}
+.fi:focus{border-color:var(--rd)}
+.spin{width:24px;height:24px;border:3px solid var(--bd);border-top-color:var(--rd);border-radius:50%;animation:ro .7s linear infinite;margin:60px auto 10px}
+@keyframes ro{to{transform:rotate(360deg)}}
+.loading-wrap{text-align:center;padding:40px;color:var(--t3)}
+.empty{text-align:center;padding:48px;color:var(--t3);font-size:13px}
+
+/* ── Cards ── */
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.card-head{display:flex;align-items:center;gap:10px;padding:12px 16px;flex-wrap:wrap;cursor:pointer;user-select:none}
+.card-head:hover{background:var(--bg3)}
+.ptag{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;background:var(--bg4);border:1px solid var(--b2);border-radius:5px;padding:2px 9px;color:var(--bl)}
+.ac-txt{font-size:12px;color:var(--t2)}
+.date-txt{font-size:11px;color:var(--t3)}
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;border:1px solid}
+.p-gr{background:rgba(0,232,150,.1);color:var(--gr);border-color:rgba(0,232,150,.2)}
+.p-ye{background:rgba(255,208,0,.1);color:var(--ye);border-color:rgba(255,208,0,.2)}
+.p-rd{background:rgba(255,68,102,.1);color:var(--rd);border-color:rgba(255,68,102,.2)}
+.p-bl{background:rgba(0,212,255,.1);color:var(--bl);border-color:rgba(0,212,255,.2)}
+.p-pu{background:rgba(167,139,250,.1);color:var(--pu);border-color:rgba(167,139,250,.2)}
+.p-or{background:rgba(251,146,60,.1);color:var(--or);border-color:rgba(251,146,60,.2)}
+.chev{margin-left:auto;font-size:12px;color:var(--t3);transition:transform .2s}
+.card-body{display:none;padding:0 16px 16px}
+.card-body.open{display:block}
+
+/* ── Form ── */
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.edit-field{display:flex;flex-direction:column;gap:4px}
+.edit-field label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.edit-input{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:9px 11px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;width:100%}
+.edit-input:focus{border-color:var(--rd)}
+.edit-select{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:9px 11px;font-size:13px;font-family:'Inter',sans-serif;outline:none;width:100%;cursor:pointer}
+.edit-select option{background:var(--bg2)}
+.divider{border:none;border-top:1px solid var(--bd);margin:12px 0}
+.actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn-save{padding:10px 20px;border:none;border-radius:var(--rs);background:var(--rd);color:#fff;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+.btn-save:hover{opacity:.9}
+.btn-save:disabled{opacity:.3;cursor:not-allowed}
+.btn-encerrar{padding:10px 20px;border:1px solid var(--gr);border-radius:var(--rs);background:rgba(0,232,150,.08);color:var(--gr);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-encerrar:hover{background:rgba(0,232,150,.18)}
+.btn-reabrir{padding:10px 20px;border:1px solid var(--ye);border-radius:var(--rs);background:rgba(255,208,0,.07);color:var(--ye);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-reabrir:hover{background:rgba(255,208,0,.15)}
+.btn-excluir{padding:10px 20px;border:1px solid rgba(255,68,102,.4);border-radius:var(--rs);background:rgba(255,68,102,.07);color:var(--rd);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;margin-left:auto}
+.btn-excluir:hover{background:rgba(255,68,102,.18)}
+.msg-inline{font-size:12px;padding:6px 12px;border-radius:var(--rs);font-weight:600;display:none}
+.msg-inline.ok{background:rgba(0,232,150,.1);border:1px solid rgba(0,232,150,.3);color:var(--gr);display:block}
+.msg-inline.er{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:var(--rd);display:block}
+.ts-hint{font-size:10px;color:var(--t3);margin-top:2px}
+@media(max-width:600px){.edit-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <span class="login-ic">🔐</span>
+    <div class="login-title">ADMIN</div>
+    <div class="login-sub">Gestão de Processos — Acesso Restrito</div>
+    <div class="login-err" id="login-err">Usuário ou senha incorretos.</div>
+    <div class="fg"><label>Usuário</label><input id="l-user" type="text" placeholder="administrador" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="fg"><label>Senha</label><input id="l-pwd" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app-screen" style="display:none">
+  <div class="top">
+    <div class="logo">🔧 ADMIN — GESTÃO DE PROCESSOS</div>
+    <a class="nav-btn" href="/master">← Master</a>
+    <button class="sair-btn" onclick="doLogout()">Sair</button>
+  </div>
+  <div class="wrap">
+    <div class="filter-row">
+      <span class="row-label">📅 Período:</span>
+      <button class="pb on" onclick="setPeriod('hoje',this)">Hoje</button>
+      <button class="pb" onclick="setPeriod('ontem',this)">Ontem</button>
+      <button class="pb" onclick="setPeriod('semana',this)">Essa Semana</button>
+      <button class="pb" onclick="setPeriod('mes',this)">Esse Mês</button>
+    </div>
+    <div class="filter-row" style="margin-bottom:16px">
+      <input class="fi" id="q" type="text" placeholder="🔍 Buscar por placa ou AC..." oninput="render()"/>
+    </div>
+    <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando...</div></div>
+    <div id="lista"></div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import{getFirestore,collection,onSnapshot,query,orderBy,updateDoc,deleteDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
+const db=getFirestore(app);
+
+// ── Credenciais fixas ──────────────────────────────────────────────────────
+const CREDS={user:"administrador",pwd:"admin2026"};
+let logado=sessionStorage.getItem("admin_auth")==="1";
+
+function checkLogin(){
+  if(logado){
+    document.getElementById("login-screen").style.display="none";
+    document.getElementById("app-screen").style.display="block";
+    iniciar();
+  }
+}
+checkLogin();
+
+window.doLogin=()=>{
+  const u=document.getElementById("l-user").value.trim();
+  const p=document.getElementById("l-pwd").value;
+  const err=document.getElementById("login-err");
+  if(u===CREDS.user&&p===CREDS.pwd){
+    sessionStorage.setItem("admin_auth","1");
+    logado=true;
+    err.className="login-err";
+    document.getElementById("login-screen").style.display="none";
+    document.getElementById("app-screen").style.display="block";
+    iniciar();
+  } else {
+    err.className="login-err on";
+  }
+};
+window.doLogout=()=>{
+  sessionStorage.removeItem("admin_auth");
+  logado=false;
+  document.getElementById("app-screen").style.display="none";
+  document.getElementById("login-screen").style.display="flex";
+  document.getElementById("l-user").value="";
+  document.getElementById("l-pwd").value="";
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function periodDates(p){
+  const now=new Date();
+  const tz=new Date(now.toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  const pad=n=>String(n).padStart(2,"0");
+  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  if(p==="hoje")return{s:fmt(tz),e:fmt(tz)};
+  if(p==="ontem"){const y=new Date(tz);y.setDate(tz.getDate()-1);return{s:fmt(y),e:fmt(y)};}
+  if(p==="semana"){const d=new Date(tz);d.setDate(tz.getDate()-tz.getDay());return{s:fmt(d),e:fmt(tz)};}
+  if(p==="mes"){const s=new Date(tz.getFullYear(),tz.getMonth(),1);return{s:fmt(s),e:fmt(tz)};}
+  return{s:fmt(tz),e:fmt(tz)};
+}
+function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
+function fmtInput(d){
+  if(!d)return"";
+  const pad=n=>String(n).padStart(2,"0");
+  return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function pillSetor(s){
+  if(!s||s==="posto1")return`<span class="pill p-bl">Entrada</span>`;
+  if(s==="triagem_inicio")return`<span class="pill p-ye">Em Triagem</span>`;
+  if(s==="triagem_fim")return`<span class="pill p-ye">Triagem OK</span>`;
+  if(s==="carregamento_inicio")return`<span class="pill p-rd">Carregando</span>`;
+  if(s==="carregamento_fim")return`<span class="pill p-rd">Carregado</span>`;
+  if(s==="enlonamento_inicio")return`<span class="pill p-pu">Enlonando</span>`;
+  if(s==="enlonamento_fim")return`<span class="pill p-pu">Enlonado</span>`;
+  if(s==="faturamento_aguardando")return`<span class="pill p-or">Ag. Faturamento</span>`;
+  if(s==="concluido")return`<span class="pill p-gr">Concluído</span>`;
+  return`<span class="pill p-bl">${s}</span>`;
+}
+
+let ALL=[],MP="hoje";
+window.setPeriod=(p,el)=>{MP=p;document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+
+function iniciar(){
+  onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
+    ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
+    document.getElementById("loading-wrap").style.display="none";
+    render();
+  });
+}
+
+function getFiltered(){
+  const{s,e}=periodDates(MP);
+  let list=ALL.filter(c=>c.data>=s&&c.data<=e);
+  const q=(document.getElementById("q")?.value||"").toUpperCase();
+  if(q)list=list.filter(c=>c.placa?.includes(q)||c.ac?.includes(q));
+  return list;
+}
+
+window.render=()=>{
+  const list=getFiltered();
+  const el=document.getElementById("lista");
+  if(!list.length){el.innerHTML=`<div class="empty">Nenhum registro no período.</div>`;return;}
+
+  el.innerHTML=list.map(c=>{
+    const en=getTS(c,"entrada","ts");
+    const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
+    const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
+    const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
+    const sa=getTS(c,"faturamento","ts");
+    const tipo=c.tipoCarga||"";
+    const tipoLabel=c.tipoCargaLabel||"";
+
+    return`<div class="card" id="card-${c.id}">
+      <div class="card-head" onclick="toggleCard('${c.id}')">
+        <span class="ptag">${c.placa}</span>
+        <span class="ac-txt">AC: ${c.ac}</span>
+        <span class="date-txt">${c.data||""}</span>
+        ${pillSetor(c.setorAtual)}
+        ${tipoLabel?`<span style="font-size:10px;color:var(--t2)">${tipoLabel}</span>`:""}
+        <span class="chev" id="chev-${c.id}">▼</span>
+      </div>
+      <div class="card-body" id="body-${c.id}">
+        <div class="edit-grid">
+          <div class="edit-field">
+            <label>Placa</label>
+            <input class="edit-input" id="f-placa-${c.id}" type="text" value="${c.placa||""}" maxlength="8" style="text-transform:uppercase;font-family:monospace;font-size:16px;letter-spacing:2px"/>
+          </div>
+          <div class="edit-field">
+            <label>AC</label>
+            <input class="edit-input" id="f-ac-${c.id}" type="text" value="${c.ac||""}"/>
+          </div>
+          <div class="edit-field">
+            <label>Tipo de Carga</label>
+            <select class="edit-select" id="f-tipo-${c.id}">
+              <option value="">— Selecione —</option>
+              <option value="ensacado" ${tipo==="ensacado"?"selected":""}>🛍️ Ensacado</option>
+              <option value="granel" ${tipo==="granel"?"selected":""}>⛏️ Granel</option>
+              <option value="bigbag" ${tipo==="bigbag"?"selected":""}>📦 Big Bag</option>
+            </select>
+          </div>
+          <div class="edit-field">
+            <label>Setor Atual</label>
+            <select class="edit-select" id="f-setor-${c.id}">
+              <option value="posto1" ${c.setorAtual==="posto1"?"selected":""}>Entrada</option>
+              <option value="triagem_inicio" ${c.setorAtual==="triagem_inicio"?"selected":""}>Em Triagem</option>
+              <option value="triagem_fim" ${c.setorAtual==="triagem_fim"?"selected":""}>Triagem OK</option>
+              <option value="carregamento_inicio" ${c.setorAtual==="carregamento_inicio"?"selected":""}>Carregando</option>
+              <option value="carregamento_fim" ${c.setorAtual==="carregamento_fim"?"selected":""}>Carregado</option>
+              <option value="enlonamento_inicio" ${c.setorAtual==="enlonamento_inicio"?"selected":""}>Enlonando</option>
+              <option value="enlonamento_fim" ${c.setorAtual==="enlonamento_fim"?"selected":""}>Enlonado</option>
+              <option value="faturamento_aguardando" ${c.setorAtual==="faturamento_aguardando"?"selected":""}>Ag. Faturamento</option>
+              <option value="concluido" ${c.setorAtual==="concluido"?"selected":""}>Concluído</option>
+            </select>
+          </div>
+        </div>
+
+        <hr class="divider"/>
+        <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Timestamps das etapas</div>
+        <div class="edit-grid">
+          <div class="edit-field">
+            <label>Entrada</label>
+            <input class="edit-input" id="f-entrada-${c.id}" type="datetime-local" value="${fmtInput(en)}"/>
+          </div>
+          <div class="edit-field">
+            <label>Triagem — Início</label>
+            <input class="edit-input" id="f-trI-${c.id}" type="datetime-local" value="${fmtInput(trI)}"/>
+          </div>
+          <div class="edit-field">
+            <label>Triagem — Fim</label>
+            <input class="edit-input" id="f-trF-${c.id}" type="datetime-local" value="${fmtInput(trF)}"/>
+          </div>
+          <div class="edit-field">
+            <label>Carga — Início</label>
+            <input class="edit-input" id="f-caI-${c.id}" type="datetime-local" value="${fmtInput(caI)}"/>
+          </div>
+          <div class="edit-field">
+            <label>Carga — Fim</label>
+            <input class="edit-input" id="f-caF-${c.id}" type="datetime-local" value="${fmtInput(caF)}"/>
+          </div>
+          <div class="edit-field">
+            <label>Enlone — Início</label>
+            <input class="edit-input" id="f-enI-${c.id}" type="datetime-local" value="${fmtInput(enI)}"/>
+          </div>
+          <div class="edit-field">
+            <label>Enlone — Fim</label>
+            <input class="edit-input" id="f-enF-${c.id}" type="datetime-local" value="${fmtInput(enF)}"/>
+          </div>
+          <div class="edit-field">
+            <label>Saída (Faturamento)</label>
+            <input class="edit-input" id="f-sa-${c.id}" type="datetime-local" value="${fmtInput(sa)}"/>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn-save" onclick="salvar('${c.id}')">💾 Salvar Alterações</button>
+          <button class="btn-encerrar" onclick="encerrar('${c.id}')" ${c.setorAtual==="concluido"?"disabled style='opacity:.3;cursor:not-allowed'":""}>✅ Encerrar Processo</button>
+          <button class="btn-reabrir" onclick="reabrir('${c.id}')" ${c.setorAtual==="posto1"?"disabled style='opacity:.3;cursor:not-allowed'":""}>↩️ Reabrir Processo</button>
+          <button class="btn-excluir" onclick="excluir('${c.id}','${c.placa}')">🗑️ Excluir</button>
+        </div>
+        <div class="msg-inline" id="msg-${c.id}" style="margin-top:10px"></div>
+      </div>
+    </div>`;
+  }).join("");
+};
+
+window.toggleCard=id=>{
+  const body=document.getElementById("body-"+id);
+  const chev=document.getElementById("chev-"+id);
+  const open=body.classList.toggle("open");
+  chev.style.transform=open?"rotate(180deg)":"";
+};
+
+function tsFromInput(id){
+  const v=document.getElementById(id)?.value;
+  if(!v)return null;
+  return Timestamp.fromDate(new Date(v));
+}
+function showMsg(id,type,txt){
+  const el=document.getElementById("msg-"+id);
+  if(!el)return;
+  el.className="msg-inline "+type;
+  el.textContent=txt;
+  if(type==="ok")setTimeout(()=>{el.className="msg-inline";el.textContent="";},4000);
+}
+
+window.salvar=async(id)=>{
+  const btn=document.querySelector(`#card-${id} .btn-save`);
+  btn.disabled=true;btn.textContent="Salvando...";
+  try{
+    const tipoMap={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
+    const tipo=document.getElementById("f-tipo-"+id).value;
+    const u={
+      placa:(document.getElementById("f-placa-"+id).value||"").toUpperCase().replace(/[^A-Z0-9]/g,""),
+      ac:document.getElementById("f-ac-"+id).value.trim().toUpperCase(),
+      tipoCarga:tipo,
+      tipoCargaLabel:tipoMap[tipo]||"",
+      setorAtual:document.getElementById("f-setor-"+id).value,
+    };
+    const trI=tsFromInput("f-trI-"+id);
+    const trF=tsFromInput("f-trF-"+id);
+    const caI=tsFromInput("f-caI-"+id);
+    const caF=tsFromInput("f-caF-"+id);
+    const enI=tsFromInput("f-enI-"+id);
+    const enF=tsFromInput("f-enF-"+id);
+    const sa=tsFromInput("f-sa-"+id);
+    const en=tsFromInput("f-entrada-"+id);
+    if(en)u["entrada.ts"]=en;
+    if(trI)u["triagem.inicio"]=trI; if(trF)u["triagem.fim"]=trF;
+    if(caI)u["carregamento.inicio"]=caI; if(caF)u["carregamento.fim"]=caF;
+    if(enI)u["enlonamento.inicio"]=enI; if(enF)u["enlonamento.fim"]=enF;
+    if(sa)u["faturamento.ts"]=sa;
+    await updateDoc(doc(db,"caminhoes_rastreio",id),u);
+    showMsg(id,"ok","✅ Alterações salvas com sucesso!");
+  }catch(e){showMsg(id,"er","Erro: "+e.message);}
+  btn.disabled=false;btn.textContent="💾 Salvar Alterações";
+};
+
+window.encerrar=async(id)=>{
+  if(!confirm("Encerrar este processo manualmente?"))return;
+  try{
+    await updateDoc(doc(db,"caminhoes_rastreio",id),{
+      setorAtual:"concluido",
+      "faturamento.ts":Timestamp.fromDate(new Date()),
+      "faturamento.encerradoManualmente":true
+    });
+    showMsg(id,"ok","✅ Processo encerrado!");
+  }catch(e){showMsg(id,"er","Erro: "+e.message);}
+};
+
+window.reabrir=async(id)=>{
+  if(!confirm("Reabrir este processo? O status voltará para 'Entrada'."))return;
+  try{
+    await updateDoc(doc(db,"caminhoes_rastreio",id),{setorAtual:"posto1"});
+    showMsg(id,"ok","↩️ Processo reaberto!");
+  }catch(e){showMsg(id,"er","Erro: "+e.message);}
+};
+
+window.excluir=async(id,placa)=>{
+  if(!confirm(`Excluir permanentemente o registro da placa ${placa}? Esta ação não pode ser desfeita.`))return;
+  try{
+    await deleteDoc(doc(db,"caminhoes_rastreio",id));
+  }catch(e){alert("Erro ao excluir: "+e.message);}
+};
+</script>
+</body></html>
