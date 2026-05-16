@@ -291,8 +291,8 @@ function calcTMAC(c){
   return sa-en;
 }
 function isAlerta(c){
-  // So nao pulsa se concluido ou apenas entrou no posto1
-  if(!c.setorAtual||c.setorAtual==="concluido"||c.setorAtual==="posto1")return false;
+  // So nao pulsa se concluido
+  if(!c.setorAtual||c.setorAtual==="concluido")return false;
   const en=getTS(c,"entrada","ts");
   if(!en)return false;
   // Pulsa se passou mais de 1h30 desde a entrada
