@@ -291,13 +291,12 @@ function calcTMAC(c){
   return sa-en;
 }
 function isAlerta(c){
-  // Nao pulsa se concluido, aguardando faturamento, enlonado ou apenas entrou
-  const statusSemAlerta=["concluido","faturamento_aguardando","posto1"];
-  if(!c.setorAtual||statusSemAlerta.includes(c.setorAtual))return false;
+  // So nao pulsa se concluido ou apenas entrou no posto1
+  if(!c.setorAtual||c.setorAtual==="concluido"||c.setorAtual==="posto1")return false;
   const en=getTS(c,"entrada","ts");
   if(!en)return false;
-  // Pulsa se passou mais de 1h30 desde a entrada
-  return(Date.now()-en.getTime())>90*60*1000;
+  // Pulsa se passou mais de 1h50 desde a entrada
+  return(Date.now()-en.getTime())>110*60*1000;
 }
 function statusFinal(c){
   if(c.setorAtual==="concluido")return`<span class="status-icon status-concluido" title="Concluído">✔</span>`;
@@ -440,7 +439,7 @@ window.render=()=>{
     const hoje2=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     const incompleto=c.data&&c.data<hoje2&&c.setorAtual!=="concluido";
     return`<tr${alerta?' class="alerta"':incompleto?' class="incompleto"':''}>
-      <td><span class="ptag">${c.placa}</span>${turnoPill(en)}${tipoPill(c)}${alerta?'<span class="alerta-badge">+1h30</span>':''}</td>
+      <td><span class="ptag">${c.placa}</span>${turnoPill(en)}${tipoPill(c)}${alerta?'<span class="alerta-badge">+1h50</span>':''}</td>
       <td style="color:var(--t2)">${c.ac}</td>
       <td style="color:var(--t2);font-size:10px">${c.data||"—"}</td>
       <td class="ec">${en?`<span class="d">${fmtT(en)}</span>`:"—"}</td>
@@ -472,7 +471,7 @@ window.render=()=>{
       </div>`;
     }).join("");
     return`<div class="crd${alerta?" alerta":""}">
-      <div class="crd-top"><span class="crd-pl">${c.placa}${alerta?'<span class="alerta-badge" style="font-size:8px">+1h30</span>':''}</span>${pill(c.setorAtual)}</div>
+      <div class="crd-top"><span class="crd-pl">${c.placa}${alerta?'<span class="alerta-badge" style="font-size:8px">+1h50</span>':''}</span>${pill(c.setorAtual)}</div>
       <div class="crd-sub">AC: ${c.ac} · ${c.data||""} · Entrada: ${en?fmtT(en):"—"} ${turnoPill(en)} ${tipoPill(c)}</div>
       <div class="crd-grid">${etapas}</div>
       ${sa?`<div style="font-size:11px;color:var(--gr);margin-top:8px;font-weight:700">🧾 Saída: ${fmtT(sa)}</div>`:""}
