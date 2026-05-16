@@ -179,7 +179,7 @@ tr.alerta .turno{opacity:.7}
   </div>
 
   <!-- Card: Aguardando Triagem -->
-  <div id="card-aguardando" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-left:3px solid var(--bl);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+  <div id="card-aguardando" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-left:3px solid var(--bl);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;align-items:center;justify-content:space-between">
     <div style="display:flex;align-items:center;gap:12px">
       <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);letter-spacing:.5px">🏁 AGUARDANDO TRIAGEM</div>
       <div style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:800;color:var(--bl)" id="cnt-aguardando">0</div>
@@ -345,7 +345,6 @@ window.setF=(f,el)=>{MF=f;document.querySelectorAll(".fb").forEach(b=>b.classLis
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
-setInterval(()=>render(),60000);
 
 function getFiltered(){
   const{s,e}=periodDates(MP);
@@ -511,5 +510,8 @@ window.exportExcel=()=>{
   const fname=s===e?`rastreio_${s}${turnoSuffix}${tipoSuffix}.xlsx`:`rastreio_${s}_a_${e}${turnoSuffix}${tipoSuffix}.xlsx`;
   XLSX.writeFile(wb,fname);
 };
+
+// Re-render a cada 60s para atualizar alertas de tempo
+setInterval(()=>{if(typeof render==="function")render();},60000);
 </script>
 </body></html>
