@@ -255,6 +255,9 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
   document.getElementById("loading-wrap").style.display="none";
   document.getElementById("content").style.display="block";
   render();
+},(err)=>{
+  console.error("Firestore error:",err);
+  document.getElementById("loading-wrap").innerHTML="<div style='color:#ff4466;text-align:center;padding:20px'>Erro ao carregar dados. Verifique o console.</div>";
 });
 
 window.setPeriod=(p,el)=>{MP=p;document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
@@ -437,9 +440,10 @@ function render(){
     {id:"bigbag",  lb:"📦 Big Bag", cls:"tipo-bb tipo-crd", cor:"#00e896"},
   ];
 
-  // Volume por tipo
   const allPeriod=ALL.filter(c=>{const{s,e}=periodDates(MP);return c.data>=s&&c.data<=e;});
-  document.getElementById("tipo-volume").innerHTML=tipos.map(t=>{
+
+  const elVol=document.getElementById("tipo-volume");
+  if(elVol) elVol.innerHTML=tipos.map(t=>{
     const tl=allPeriod.filter(c=>c.tipoCarga===t.id);
     const tc=tl.filter(c=>c.setorAtual==="concluido");
     return`<div class="${t.cls}">
@@ -449,14 +453,15 @@ function render(){
     </div>`;
   }).join("");
 
-  // TMAC por tipo — barras
   const tipoTmacs=tipos.map(t=>{
     const tl=list.filter(c=>c.tipoCarga===t.id&&c.setorAtual==="concluido");
     const vals=tl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
     return{...t,avg:avg(vals),count:vals.length};
   }).filter(t=>t.avg);
   const maxTipo=tipoTmacs.length?Math.max(...tipoTmacs.map(t=>t.avg)):1;
-  document.getElementById("tipo-tmac-chart").innerHTML=tipoTmacs.length
+
+  const elTmac=document.getElementById("tipo-tmac-chart");
+  if(elTmac) elTmac.innerHTML=tipoTmacs.length
     ?tipoTmacs.map(t=>`<div class="bar-row">
         <span class="bar-label">${t.lb}</span>
         <div class="bar-track">
@@ -467,7 +472,6 @@ function render(){
       </div>`).join("")
     :`<div class="empty-state">Sem dados suficientes</div>`;
 
-  // Cruzamento Tipo × Turno
   const turnos=[{id:"A",lb:"Turno A"},{id:"B",lb:"Turno B"},{id:"C",lb:"Turno C"}];
   const crossList=ALL.filter(c=>{const{s,e}=periodDates(MP);return c.data>=s&&c.data<=e&&c.setorAtual==="concluido";});
   const crossCls={ensacado:"cv-ens",granel:"cv-gr",bigbag:"cv-bb"};
@@ -483,7 +487,6 @@ function render(){
     const allVals=trl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
     tbl+=`<td><span class="cross-val" style="color:var(--tm)">${avg(allVals)?durStr(avg(allVals)):"—"}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${allVals.length} veíc.</div></td></tr>`;
   });
-  // Linha total
   tbl+=`<tr style="border-top:1px solid var(--bd)"><td class="row-hdr" style="color:var(--t3)">Todos</td>`;
   tipos.forEach(ti=>{
     const vals=crossList.filter(c=>c.tipoCarga===ti.id).map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
@@ -492,7 +495,8 @@ function render(){
   });
   const allV=crossList.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
   tbl+=`<td><span class="cross-val" style="color:var(--tm)">${avg(allV)?durStr(avg(allV)):"—"}</span></td></tr></tbody>`;
-  document.getElementById("cross-table").innerHTML=tbl;
+  const elCross=document.getElementById("cross-table");
+  if(elCross) elCross.innerHTML=tbl;
 }
 
 // ── Export Excel ──────────────────────────────────────────────────────────
