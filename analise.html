@@ -472,11 +472,11 @@ function render(){
       </div>`).join("")
     :`<div class="empty-state">Sem dados suficientes</div>`;
 
-  const turnos=[{id:"A",lb:"Turno A"},{id:"B",lb:"Turno B"},{id:"C",lb:"Turno C"}];
+  const crossTurnos=[{id:"A",lb:"Turno A"},{id:"B",lb:"Turno B"},{id:"C",lb:"Turno C"}];
   const crossList=ALL.filter(c=>{const{s,e}=periodDates(MP);return c.data>=s&&c.data<=e&&c.setorAtual==="concluido";});
   const crossCls={ensacado:"cv-ens",granel:"cv-gr",bigbag:"cv-bb"};
   let tbl=`<thead><tr><th class="row-hdr">Turno</th>${tipos.map(t=>`<th>${t.lb}</th>`).join("")}<th>Todos</th></tr></thead><tbody>`;
-  turnos.forEach(tr=>{
+  crossTurnos.forEach(tr=>{
     const trl=crossList.filter(c=>getTurno(getTS(c,"entrada","ts"))===tr.id);
     tbl+=`<tr><td class="row-hdr">${tr.lb}</td>`;
     tipos.forEach(ti=>{
@@ -540,8 +540,8 @@ window.exportExcel=()=>{
     {"Métrica":"TMAC médio","Valor":tmacMedio?durStr(tmacMedio):"—"},
     {},
   ];
-  const turnos=["A","B","C"];
-  turnos.forEach(t=>{
+  const exportTurnos=["A","B","C"];
+  exportTurnos.forEach(t=>{
     const tl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
     const tc=tl.filter(c=>c.setorAtual==="concluido");
     const tt=tc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
