@@ -514,7 +514,10 @@ function render(){
   const MOTIVOS=["Motivo 1","Motivo 2","Motivo 3","Motivo 4","Motivo 5","Motivo 6","Motivo 7","Outros"];
   const atrasados=ALL.filter(c=>{
     const{s,e}=periodDates(MP);
-    return c.data>=s&&c.data<=e&&c.setorAtual==="concluido"&&(calcTMAC(c)||0)>LIMITE_MS;
+    if(c.data<s||c.data>e||c.setorAtual!=="concluido")return false;
+    const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
+    if(!en||!sa)return false;
+    return(sa.getTime()-en.getTime())>LIMITE_MS;
   });
   const comJust=atrasados.filter(c=>c.justificativa?.motivo);
   const semJust=atrasados.filter(c=>!c.justificativa?.motivo);
