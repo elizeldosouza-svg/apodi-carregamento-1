@@ -292,16 +292,17 @@ function render(){
         const just=c.justificativa;
         const hasJust=!!(just&&just.motivo);
         if(cls==='pill-danger'||cls==='pill-warn'){
-          const ttHtml=`
-            <div style="font-size:10px;color:var(--t3);margin-bottom:3px">Entrada: ${fmtT(en)}</div>
-            <div style="font-size:10px;color:var(--t3);margin-bottom:6px">TMAC: ${durStr(calcTMAC(c))}</div>
-            <div style="border-top:1px solid var(--bd);padding-top:6px">
-              ${hasJust
-                ?`<div style="color:var(--gr);font-weight:700;font-size:11px">✅ ${just.motivo}</div>${just.descricao?`<div style="color:var(--t2);font-size:10px;margin-top:2px">"${just.descricao}"</div>`:''}`
-                :`<div style="color:var(--t3);font-size:10px;font-style:italic">Sem justificativa registrada</div>`
-              }
-            </div>`;
-          html+=`<td><div class="tw"><span class="${cls}">${durStr(ms)}</span><div class="tt">${ttHtml}</div></div></td>`;
+          let justHtml='';
+          if(hasJust){
+            justHtml='<div style="color:var(--gr);font-weight:700;font-size:11px">✅ '+just.motivo+'</div>';
+            if(just.descricao)justHtml+='<div style="color:var(--t2);font-size:10px;margin-top:2px">"'+just.descricao+'"</div>';
+          }else{
+            justHtml='<div style="color:var(--t3);font-size:10px;font-style:italic">Sem justificativa registrada</div>';
+          }
+          const ttHtml='<div style="font-size:10px;color:var(--t3);margin-bottom:3px">Entrada: '+fmtT(en)+'</div>'
+            +'<div style="font-size:10px;color:var(--t3);margin-bottom:6px">TMAC: '+durStr(calcTMAC(c))+'</div>'
+            +'<div style="border-top:1px solid var(--bd);padding-top:6px">'+justHtml+'</div>';
+          html+=`<td><div class="tw"><span class="${cls}">${durStr(ms)}</span><div class="tt">`+ttHtml+`</div></div></td>`;
         }else{
           html+=`<td><span class="${cls}">${durStr(ms)}</span></td>`;
         }
