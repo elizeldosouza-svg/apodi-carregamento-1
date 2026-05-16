@@ -202,6 +202,17 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
       <div class="card-title">🔀 Tipo de Carga × Turno — TMAC médio</div>
       <div style="overflow-x:auto"><table class="cross-table" id="cross-table"></table></div>
     </div>
+    <!-- Justificativas -->
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="card-title">⚠️ Motivos de Atraso — Frequência</div>
+        <div id="just-motivos-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Resumo de Justificativas</div>
+        <div id="just-resumo"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -497,6 +508,69 @@ function render(){
   tbl+=`<td><span class="cross-val" style="color:var(--tm)">${avg(allV)?durStr(avg(allV)):"—"}</span></td></tr></tbody>`;
   const elCross=document.getElementById("cross-table");
   if(elCross) elCross.innerHTML=tbl;
+
+  // ── Justificativas ────────────────────────────────────────────────────
+  const LIMITE_MS=130*60*1000;
+  const MOTIVOS=["Motivo 1","Motivo 2","Motivo 3","Motivo 4","Motivo 5","Motivo 6","Motivo 7","Outros"];
+  const atrasados=ALL.filter(c=>{
+    const{s,e}=periodDates(MP);
+    return c.data>=s&&c.data<=e&&c.setorAtual==="concluido"&&(calcTMAC(c)||0)>LIMITE_MS;
+  });
+  const comJust=atrasados.filter(c=>c.justificativa?.motivo);
+  const semJust=atrasados.filter(c=>!c.justificativa?.motivo);
+
+  // Frequência por motivo
+  const motivoCount={};
+  comJust.forEach(c=>{const m=c.justificativa.motivo;motivoCount[m]=(motivoCount[m]||0)+1;});
+  const motivoEntries=Object.entries(motivoCount).sort((a,b)=>b[1]-a[1]);
+  const maxM=motivoEntries.length?motivoEntries[0][1]:1;
+
+  const elMot=document.getElementById("just-motivos-chart");
+  if(elMot){
+    if(!motivoEntries.length){
+      elMot.innerHTML=`<div class="empty-state">Sem justificativas no período</div>`;
+    } else {
+      elMot.innerHTML=motivoEntries.map(([m,n])=>`
+        <div class="bar-row">
+          <span class="bar-label" style="width:100px;font-size:10px">${m}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${Math.max(Math.round(n/maxM*100),12)}%;background:var(--rd)">
+              <span class="bar-val">${n}</span>
+            </div>
+          </div>
+        </div>`).join("");
+    }
+  }
+
+  // Resumo de justificativas
+  const elRes=document.getElementById("just-resumo");
+  if(elRes){
+    const taxa=atrasados.length?Math.round(comJust.length/atrasados.length*100):0;
+    elRes.innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="bar-row" style="flex-direction:column;align-items:flex-start;background:var(--bg3);border-radius:var(--rs);padding:10px;gap:2px">
+          <span style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--rd)">${atrasados.length}</span>
+          <span style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px">Acima de 2h10</span>
+        </div>
+        <div class="bar-row" style="flex-direction:column;align-items:flex-start;background:var(--bg3);border-radius:var(--rs);padding:10px;gap:2px">
+          <span style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--gr)">${comJust.length}</span>
+          <span style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px">Justificados</span>
+        </div>
+        <div class="bar-row" style="flex-direction:column;align-items:flex-start;background:var(--bg3);border-radius:var(--rs);padding:10px;gap:2px">
+          <span style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--ye)">${semJust.length}</span>
+          <span style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px">Pendentes</span>
+        </div>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--rs);padding:8px 12px;margin-bottom:8px">
+        <div style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Taxa de justificativa</div>
+        <div style="background:var(--bg4);border-radius:4px;height:12px;overflow:hidden">
+          <div style="height:100%;width:${taxa}%;background:${taxa>=80?'var(--gr)':taxa>=50?'var(--ye)':'var(--rd)'};border-radius:4px;transition:width .6s"></div>
+        </div>
+        <div style="font-size:11px;color:var(--t2);margin-top:4px;text-align:right">${taxa}%</div>
+      </div>
+      ${semJust.length?`<a href="/justificativas" style="display:block;text-align:center;padding:8px;border:1px solid rgba(255,68,102,.3);border-radius:var(--rs);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;background:rgba(255,68,102,.06)">⚠️ ${semJust.length} pendente${semJust.length>1?"s":""} — Registrar justificativa</a>`:"<div style='text-align:center;font-size:11px;color:var(--gr);padding:8px'>✅ Todas justificativas registradas</div>"}
+    `;
+  }
 }
 
 // ── Export Excel ──────────────────────────────────────────────────────────
