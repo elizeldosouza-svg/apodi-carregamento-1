@@ -241,6 +241,7 @@ function periodDates(p){
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
 const fmtEx=d=>d?d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"";
 
+const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
 function durStr(ms){
   if(!ms||ms<0)return"";
   const m=Math.round(ms/60000);
@@ -302,8 +303,8 @@ function isAlerta(c){
 }
 function statusFinal(c){
   if(c.setorAtual==="concluido")return`<span class="status-icon status-concluido" title="Concluído">✔</span>`;
-  const hoje=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-  if(c.data&&c.data<hoje)return`<span class="status-icon status-incompleto" title="Processo não concluído">❌</span>`;
+  const _hj=hoje();
+  if(c.data&&c.data<_hj)return`<span class="status-icon status-incompleto" title="Processo não concluído">❌</span>`;
   return`<span class="status-icon status-processo" title="Em processo">⏳</span>`;
 }
 
