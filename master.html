@@ -335,7 +335,7 @@ document.addEventListener("click",e=>{
 
 let ALL=[],MF="t",MP="hoje",MT="t",MTC="t";
 
-onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
+onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
   render();
   document.getElementById("ld").style.display="none";
@@ -350,7 +350,13 @@ window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>
 
 function getFiltered(){
   const{s,e}=periodDates(MP);
-  let list=ALL.filter(c=>c.data>=s&&c.data<=e);
+  let list=ALL.filter(c=>{
+    // Include records within period
+    if(c.data>=s&&c.data<=e)return true;
+    // Include past pending (not concluded) — pendências
+    if(c.data<s&&c.setorAtual!=="concluido")return true;
+    return false;
+  });
   if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
   if(MF==="a")list=list.filter(c=>c.setorAtual!=="concluido");
@@ -368,7 +374,11 @@ function getFiltered(){
 
 window.render=()=>{
   const{s,e}=periodDates(MP);
-  let period=ALL.filter(c=>c.data>=s&&c.data<=e);
+  let period=ALL.filter(c=>{
+    if(c.data>=s&&c.data<=e)return true;
+    if(c.data<s&&c.setorAtual!=="concluido")return true;
+    return false;
+  });
   if(MT!=="t")period=period.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   if(MTC!=="t")period=period.filter(c=>c.tipoCarga===MTC);
 
