@@ -188,6 +188,17 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .aus-card-placa{font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;color:var(--rd);margin:10px 0;text-shadow:0 0 30px rgba(255,68,102,.5)}
 .aus-card-sub{font-size:12px;color:var(--t2);margin-bottom:16px}
 .aus-card-motivo{background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.2);border-radius:8px;padding:10px 16px;font-size:13px;color:rgba(255,68,102,.9);line-height:1.5}
+/* ══════ ATIVAR ÁUDIO ══════ */
+.audio-gate{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:rgba(2,8,16,.92);backdrop-filter:blur(6px)}
+.audio-gate.hide{display:none}
+.audio-card{text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.audio-ic{font-size:72px;animation:audio-pulse 1.8s ease-in-out infinite}
+@keyframes audio-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.audio-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:900;color:var(--tx);letter-spacing:2px}
+.audio-sub{font-size:13px;color:var(--t2);max-width:340px;line-height:1.6}
+.audio-btn{padding:16px 48px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--bl),#0099bb);color:#000;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 0 30px rgba(0,212,255,.3)}
+.audio-btn:hover{transform:scale(1.04);box-shadow:0 0 50px rgba(0,212,255,.5)}
+.audio-btn:active{transform:scale(.97)}
 /* ══════ FLASH ══════ */
 @keyframes flash-screen{0%,100%{opacity:1}25%,75%{opacity:.4}50%{opacity:1}}
 .left.flash{animation:flash-screen .3s ease 4}
@@ -560,10 +571,9 @@ function doSound(){
   }catch(e){}
 }
 function falarPlaca(placa){
-  // Formata placa para fala: "ABC1234" -> "A B C 1 2 3 4"
+  if(!audioAtivo)return;
   const placaFalada=placa.split("").join(" ");
   const texto=`Atenção motorista de placa ${placaFalada}, comparecer no Posto 1 para coletar Autorização de Carregamento.`;
-  // Aguarda 1.2s após o som para falar
   setTimeout(()=>{
     const fala=new SpeechSynthesisUtterance(texto);
     fala.lang="pt-BR";
@@ -575,6 +585,25 @@ function falarPlaca(placa){
   },1200);
 }
 
+let audioAtivo=false;
+window.ativarAudio=()=>{
+  // Dispara e cancela um utterance vazio para desbloquear o contexto de áudio
+  const teste=new SpeechSynthesisUtterance("");
+  teste.volume=0;
+  speechSynthesis.speak(teste);
+  speechSynthesis.cancel();
+  audioAtivo=true;
+  document.getElementById("audio-gate").classList.add("hide");
+};
 setInterval(renderFilas,30000);
 </script>
+<!-- ATIVAR ÁUDIO GATE -->
+<div class="audio-gate" id="audio-gate">
+  <div class="audio-card">
+    <div class="audio-ic">🔊</div>
+    <div class="audio-title">Painel de Chamada</div>
+    <div class="audio-sub">Clique para ativar o sistema de áudio e começar a receber as chamadas com voz automática.</div>
+    <button class="audio-btn" onclick="ativarAudio()">▶ Ativar Áudio</button>
+  </div>
+</div>
 </body></html>
