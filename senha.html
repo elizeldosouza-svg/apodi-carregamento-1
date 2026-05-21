@@ -8,149 +8,224 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#03080f;--bg2:#060f1c;--bg3:#091828;--bd:#102840;
-  --bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--or:#fb923c;
-  --tx:#e2eeff;--t2:#5a8ab0;--t3:#2a4870;
+  --bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--or:#fb923c;--pu:#a78bfa;
+  --tx:#e2eeff;--t2:#5a8ab0;--t3:#1e3a58;
 }
-body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;display:flex;flex-direction:column}
 
-/* HEADER */
-.top{background:var(--bg2);border-bottom:3px solid var(--bl);height:72px;display:flex;align-items:center;padding:0 40px;gap:24px;flex-shrink:0}
-.logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:900;color:var(--bl);letter-spacing:2px;flex:1}
-.clock{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:900;color:var(--ye);letter-spacing:3px;min-width:140px;text-align:right}
-.live{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--gr)}
-.dot{width:10px;height:10px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
-@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+/* ══════════════ HEADER ══════════════ */
+.top{background:var(--bg2);border-bottom:3px solid var(--bl);height:68px;display:flex;align-items:center;padding:0 36px;gap:20px;flex-shrink:0;position:relative;overflow:hidden}
+.top::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--bl),transparent)}
+.logo{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:900;color:var(--bl);letter-spacing:2px;flex:1;display:flex;align-items:center;gap:12px}
+.logo-icon{font-size:26px}
+.live-badge{display:flex;align-items:center;gap:7px;background:rgba(0,232,150,.08);border:1px solid rgba(0,232,150,.25);padding:5px 14px;border-radius:20px}
+.live-badge span{font-size:11px;font-weight:800;color:var(--gr);letter-spacing:1px;text-transform:uppercase}
+.dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite;flex-shrink:0}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(1.6)}}
+.clock{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:900;color:var(--ye);letter-spacing:4px;text-shadow:0 0 20px rgba(255,208,0,.3)}
+.date-txt{font-size:11px;color:var(--t2);text-align:right;line-height:1.4}
 
-/* MAIN LAYOUT: left = chamada grande | right = 3 filas */
-.main{flex:1;display:grid;grid-template-columns:1.4fr 1fr;overflow:hidden}
+/* ══════════════ MAIN ══════════════ */
+.main{flex:1;display:grid;grid-template-columns:1.5fr 1fr;overflow:hidden;min-height:0}
 
-/* ── PAINEL ESQUERDO: CHAMADA ── */
-.painel-chamada{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 40px;border-right:2px solid var(--bd);position:relative;overflow:hidden;gap:0}
-.painel-chamada::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,212,255,.05) 0%,transparent 70%);pointer-events:none}
+/* ══════════════ PAINEL CHAMADA ══════════════ */
+.painel-chamada{display:flex;flex-direction:column;border-right:2px solid var(--bd);position:relative;overflow:hidden}
+.painel-chamada::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(0,212,255,.04) 0%,transparent 65%);pointer-events:none;z-index:0}
+
+/* topo: título "CHAMANDO" */
+.ch-topbar{padding:16px 32px 0;z-index:1;display:flex;align-items:center;gap:12px}
+.ch-topbar-label{font-size:11px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:3px}
+.ch-topbar-num{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:900;color:var(--t2)}
+
+/* área central: a grande chamada */
+.ch-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px 0;z-index:1;gap:0}
 
 /* Estado vazio */
-.empty-state{text-align:center}
-.empty-ic{font-size:72px;display:block;animation:bounce 1.5s ease-in-out infinite;margin-bottom:20px}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.empty-txt{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:var(--t2)}
+.empty-state{text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.empty-ring{width:120px;height:120px;border-radius:50%;border:3px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:52px;animation:spin-ring 8s linear infinite}
+@keyframes spin-ring{to{box-shadow:0 0 0 4px rgba(0,212,255,.05),0 0 30px rgba(0,212,255,.05)}}
+.empty-txt{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--t2);line-height:1.4}
 
-/* Estado chamado */
-.chamada-wrap{text-align:center;width:100%}
-.ch-label{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
-.ch-tipo-badge{display:inline-block;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;padding:4px 20px;border-radius:6px;letter-spacing:2px;margin-bottom:16px;text-transform:uppercase}
-.badge-granel{background:rgba(251,146,60,.15);color:var(--or);border:2px solid rgba(251,146,60,.4)}
-.badge-ensacado{background:rgba(0,212,255,.12);color:var(--bl);border:2px solid rgba(0,212,255,.3)}
-.badge-bigbag{background:rgba(0,232,150,.12);color:var(--gr);border:2px solid rgba(0,232,150,.3)}
-.ch-placa{font-family:'Rajdhani',sans-serif;font-size:110px;font-weight:900;letter-spacing:8px;line-height:1;padding:16px 40px;border-radius:16px;margin:0 auto;display:inline-block;animation:pulse-placa 2s ease-in-out infinite}
-.ch-placa-granel{color:var(--or);background:rgba(251,146,60,.07);border:3px solid rgba(251,146,60,.3);text-shadow:0 0 40px rgba(251,146,60,.5)}
-.ch-placa-ensacado{color:var(--bl);background:rgba(0,212,255,.07);border:3px solid rgba(0,212,255,.3);text-shadow:0 0 40px rgba(0,212,255,.5)}
-.ch-placa-bigbag{color:var(--gr);background:rgba(0,232,150,.07);border:3px solid rgba(0,232,150,.3);text-shadow:0 0 40px rgba(0,232,150,.5)}
-@keyframes pulse-placa{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.9;transform:scale(1.01)}}
-.ch-ac{font-size:22px;color:var(--t2);margin-top:18px;font-weight:600;letter-spacing:1px}
-.ch-num{font-family:'Rajdhani',sans-serif;font-size:18px;color:var(--t3);margin-top:8px;letter-spacing:2px}
+/* Chamada ativa */
+.ch-badge-tipo{display:inline-flex;align-items:center;gap:8px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;padding:5px 22px;border-radius:30px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.b-granel{background:rgba(251,146,60,.12);color:var(--or);border:2px solid rgba(251,146,60,.35)}
+.b-ensacado{background:rgba(0,212,255,.1);color:var(--bl);border:2px solid rgba(0,212,255,.3)}
+.b-bigbag{background:rgba(0,232,150,.1);color:var(--gr);border:2px solid rgba(0,232,150,.3)}
 
-/* ── PAINEL DIREITO: 3 FILAS ── */
-.painel-filas{display:flex;flex-direction:column;overflow:hidden}
-.fila-bloco{flex:1;border-bottom:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.ch-call-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:5px;margin-bottom:8px;opacity:.6}
+.c-granel{color:var(--or)}.c-ensacado{color:var(--bl)}.c-bigbag{color:var(--gr)}
+
+.ch-placa{font-family:'Rajdhani',sans-serif;font-weight:900;letter-spacing:6px;line-height:1;padding:20px 44px;border-radius:18px;display:inline-block;position:relative}
+.ch-placa-granel{font-size:108px;color:var(--or);background:rgba(251,146,60,.06);border:3px solid rgba(251,146,60,.3);text-shadow:0 0 60px rgba(251,146,60,.6);box-shadow:0 0 40px rgba(251,146,60,.1)}
+.ch-placa-ensacado{font-size:108px;color:var(--bl);background:rgba(0,212,255,.06);border:3px solid rgba(0,212,255,.3);text-shadow:0 0 60px rgba(0,212,255,.6);box-shadow:0 0 40px rgba(0,212,255,.1)}
+.ch-placa-bigbag{font-size:108px;color:var(--gr);background:rgba(0,232,150,.06);border:3px solid rgba(0,232,150,.3);text-shadow:0 0 60px rgba(0,232,150,.6);box-shadow:0 0 40px rgba(0,232,150,.1)}
+@keyframes placa-in{0%{opacity:0;transform:scale(.85)}100%{opacity:1;transform:scale(1)}}
+.ch-placa.anim{animation:placa-in .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes placa-pulse{0%,100%{opacity:1}50%{opacity:.85}}
+.ch-placa.pulse{animation:placa-pulse 2.2s ease-in-out infinite}
+
+.ch-ac{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;letter-spacing:2px;margin-top:18px}
+.c-granel-d{color:rgba(251,146,60,.7)}.c-ensacado-d{color:rgba(0,212,255,.7)}.c-bigbag-d{color:rgba(0,232,150,.7)}
+.ch-ac-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:.5;margin-top:4px}
+
+/* ══════════════ TICKER SEQUÊNCIA ══════════════ */
+.ticker-bar{background:rgba(255,255,255,.02);border-top:1px solid var(--bd);padding:10px 24px;z-index:1;flex-shrink:0}
+.ticker-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:3px;color:var(--t2);margin-bottom:6px}
+.ticker-scroll{display:flex;gap:10px;overflow:hidden;position:relative}
+.ticker-inner{display:flex;gap:10px;animation:ticker-move 18s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+.tick-item{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:5px 12px;white-space:nowrap;flex-shrink:0}
+.tick-pos{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:900;color:var(--t3);min-width:18px;text-align:center}
+.tick-pl{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px}
+.tick-ac{font-size:9px;color:var(--t2);margin-left:2px}
+.tick-tipo{font-size:8px;font-weight:800;padding:1px 5px;border-radius:3px;text-transform:uppercase}
+.tt-granel{color:var(--or);background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.2)}
+.tt-ensacado{color:var(--bl);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2)}
+.tt-bigbag{color:var(--gr);background:rgba(0,232,150,.1);border:1px solid rgba(0,232,150,.2)}
+@keyframes ticker-move{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ══════════════ PAINEL FILAS ══════════════ */
+.painel-filas{display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.fila-bloco{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;border-bottom:1px solid var(--bd)}
 .fila-bloco:last-child{border-bottom:none}
-.fila-header{padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.fila-header.h-granel{background:rgba(251,146,60,.06);border-bottom:2px solid rgba(251,146,60,.25)}
-.fila-header.h-ensacado{background:rgba(0,212,255,.05);border-bottom:2px solid rgba(0,212,255,.2)}
-.fila-header.h-bigbag{background:rgba(0,232,150,.05);border-bottom:2px solid rgba(0,232,150,.2)}
-.fila-titulo{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;letter-spacing:1px;flex:1}
+.fila-header{padding:10px 16px 8px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.h-granel{background:rgba(251,146,60,.05);border-bottom:2px solid rgba(251,146,60,.2)}
+.h-ensacado{background:rgba(0,212,255,.04);border-bottom:2px solid rgba(0,212,255,.18)}
+.h-bigbag{background:rgba(0,232,150,.04);border-bottom:2px solid rgba(0,232,150,.18)}
+.fila-ic{font-size:18px}
+.fila-titulo{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:900;letter-spacing:1px;flex:1}
 .h-granel .fila-titulo{color:var(--or)}
 .h-ensacado .fila-titulo{color:var(--bl)}
 .h-bigbag .fila-titulo{color:var(--gr)}
-.fila-cnt{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px}
-.h-granel .fila-cnt{background:rgba(251,146,60,.15);color:var(--or)}
-.h-ensacado .fila-cnt{background:rgba(0,212,255,.12);color:var(--bl)}
-.h-bigbag .fila-cnt{background:rgba(0,232,150,.12);color:var(--gr)}
-.fila-list{flex:1;overflow-y:auto;padding:6px 10px}
-.fila-list::-webkit-scrollbar{width:3px}
+.fila-cnt{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:900;padding:1px 9px;border-radius:5px}
+.h-granel .fila-cnt{background:rgba(251,146,60,.12);color:var(--or)}
+.h-ensacado .fila-cnt{background:rgba(0,212,255,.1);color:var(--bl)}
+.h-bigbag .fila-cnt{background:rgba(0,232,150,.1);color:var(--gr)}
+
+.fila-list{flex:1;overflow-y:auto;padding:5px 8px}
+.fila-list::-webkit-scrollbar{width:2px}
 .fila-list::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
-.fi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg3);margin-bottom:5px}
+
+.fi{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg2);margin-bottom:4px;transition:all .3s}
 .fi.proximo{border-width:2px}
-.fi-granel.proximo{border-color:rgba(251,146,60,.5);background:rgba(251,146,60,.05)}
+.fi-granel.proximo{border-color:rgba(251,146,60,.5);background:rgba(251,146,60,.04)}
 .fi-ensacado.proximo{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.04)}
 .fi-bigbag.proximo{border-color:rgba(0,232,150,.4);background:rgba(0,232,150,.04)}
-.fi-num{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:900;color:var(--t2);min-width:32px;text-align:center}
-.fi-granel.proximo .fi-num{color:var(--or)}
-.fi-ensacado.proximo .fi-num{color:var(--bl)}
-.fi-bigbag.proximo .fi-num{color:var(--gr)}
-.fi-pl{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;letter-spacing:1px;flex:1}
-.fi-ac{font-size:10px;color:var(--t2)}
-.fi-wait{font-size:11px;color:var(--ye);font-weight:700;text-align:right}
-.fi-prx{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;text-align:right}
-.fi-granel.proximo .fi-prx{color:var(--or)}
-.fi-ensacado.proximo .fi-prx{color:var(--bl)}
-.fi-bigbag.proximo .fi-prx{color:var(--gr)}
-.fila-empty{text-align:center;padding:16px;color:var(--t3);font-size:12px}
+.fi-pos{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:900;color:var(--t3);min-width:26px;text-align:center}
+.fi-granel.proximo .fi-pos{color:var(--or)}
+.fi-ensacado.proximo .fi-pos{color:var(--bl)}
+.fi-bigbag.proximo .fi-pos{color:var(--gr)}
+.fi-info{flex:1;min-width:0}
+.fi-pl{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:800;letter-spacing:1px;line-height:1.1}
+.fi-ac{font-size:9px;color:var(--t2);margin-top:1px}
+.fi-right{text-align:right;flex-shrink:0}
+.fi-wait{font-size:10px;color:var(--ye);font-weight:700}
+.fi-prx-tag{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.fi-granel.proximo .fi-prx-tag{color:var(--or)}
+.fi-ensacado.proximo .fi-prx-tag{color:var(--bl)}
+.fi-bigbag.proximo .fi-prx-tag{color:var(--gr)}
+.fila-empty{text-align:center;padding:14px 8px;color:var(--t3);font-size:11px;font-style:italic}
 
-/* FLASH */
-@keyframes flashAnim{0%,100%{opacity:1}20%,60%{opacity:.3}40%,80%{opacity:1}}
-.painel-chamada.flashing{animation:flashAnim .5s ease 3}
+/* ══════════════ BOTTOM ══════════════ */
+.bottom{background:var(--bg2);border-top:1px solid var(--bd);height:36px;display:flex;align-items:center;padding:0 28px;gap:12px;flex-shrink:0}
+.bt-msg{font-size:10px;color:var(--t3);flex:1;letter-spacing:.5px}
+.bt-sep{width:1px;height:16px;background:var(--bd)}
+.bt-stat{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--t2)}
+.bt-stat span{color:var(--ye)}
 
-/* BOTTOM */
-.bottom{background:var(--bg2);border-top:1px solid var(--bd);height:44px;display:flex;align-items:center;padding:0 32px;gap:16px;flex-shrink:0}
-.bt-msg{font-size:12px;color:var(--t2);flex:1}
-.bt-total{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:var(--t2)}
+/* ══════════════ FLASH ══════════════ */
+@keyframes flash-bg{0%,100%{background:var(--bg)}15%,45%,75%{background:rgba(0,212,255,.04)}30%,60%{background:var(--bg)}}
+.painel-chamada.flashing{animation:flash-bg .5s ease 3}
+@keyframes scanline{0%{top:-100%}100%{top:200%}}
+.painel-chamada.flashing::after{content:'';position:absolute;left:0;right:0;height:3px;background:linear-gradient(transparent,rgba(0,212,255,.4),transparent);z-index:2;animation:scanline .3s linear 3}
 </style>
 </head>
 <body>
+
+<!-- HEADER -->
 <div class="top">
-  <div class="logo">🏭 APODI CIMENTOS — PAINEL DE CHAMADA</div>
-  <div class="live"><div class="dot"></div>AO VIVO</div>
-  <div class="clock" id="clock">00:00:00</div>
+  <div class="logo"><span class="logo-icon">🏭</span>APODI CIMENTOS — PAINEL DE CHAMADA</div>
+  <div class="live-badge"><div class="dot"></div><span>Ao Vivo</span></div>
+  <div style="text-align:right">
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="date-txt" id="date-txt"></div>
+  </div>
 </div>
 
+<!-- MAIN -->
 <div class="main">
-  <!-- CHAMADA ATUAL -->
+
+  <!-- PAINEL CHAMADA -->
   <div class="painel-chamada" id="painel-chamada">
-    <div class="empty-state" id="empty-state">
-      <span class="empty-ic">📢</span>
-      <div class="empty-txt">Aguardando<br>próxima chamada...</div>
+    <div class="ch-topbar">
+      <div class="ch-topbar-label">🔔 Última chamada</div>
+      <div class="ch-topbar-num" id="ch-num-top"></div>
     </div>
-    <div class="chamada-wrap" id="chamada-wrap" style="display:none"></div>
+
+    <div class="ch-center">
+      <!-- Vazio -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-ring">📢</div>
+        <div class="empty-txt">Aguardando<br>próxima chamada...</div>
+      </div>
+      <!-- Chamada ativa -->
+      <div id="chamada-wrap" style="display:none;text-align:center;width:100%">
+        <div class="ch-call-label" id="ch-call-label"></div>
+        <div class="ch-badge-tipo" id="ch-badge"></div>
+        <div class="ch-placa pulse" id="ch-placa"></div>
+        <div class="ch-ac" id="ch-ac"></div>
+        <div class="ch-ac-label">Autorização de Carga</div>
+      </div>
+    </div>
+
+    <!-- TICKER SEQUÊNCIA -->
+    <div class="ticker-bar" id="ticker-bar" style="display:none">
+      <div class="ticker-label">⏭ Próximos na fila</div>
+      <div class="ticker-scroll">
+        <div class="ticker-inner" id="ticker-inner"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- 3 FILAS -->
+  <!-- PAINEL FILAS -->
   <div class="painel-filas">
-    <!-- GRANEL -->
     <div class="fila-bloco">
       <div class="fila-header h-granel">
-        <div class="fila-titulo">🚛 GRANEL</div>
+        <span class="fila-ic">🚛</span>
+        <div class="fila-titulo">GRANEL</div>
         <span class="fila-cnt" id="cnt-granel">0</span>
       </div>
-      <div class="fila-list" id="list-granel">
-        <div class="fila-empty">Fila vazia</div>
-      </div>
+      <div class="fila-list" id="list-granel"><div class="fila-empty">Fila vazia</div></div>
     </div>
-    <!-- ENSACADO -->
     <div class="fila-bloco">
       <div class="fila-header h-ensacado">
-        <div class="fila-titulo">📦 ENSACADO</div>
+        <span class="fila-ic">📦</span>
+        <div class="fila-titulo">ENSACADO</div>
         <span class="fila-cnt" id="cnt-ensacado">0</span>
       </div>
-      <div class="fila-list" id="list-ensacado">
-        <div class="fila-empty">Fila vazia</div>
-      </div>
+      <div class="fila-list" id="list-ensacado"><div class="fila-empty">Fila vazia</div></div>
     </div>
-    <!-- BIG BAG -->
     <div class="fila-bloco">
       <div class="fila-header h-bigbag">
-        <div class="fila-titulo">🛍️ BIG BAG</div>
+        <span class="fila-ic">🛍️</span>
+        <div class="fila-titulo">BIG BAG</div>
         <span class="fila-cnt" id="cnt-bigbag">0</span>
       </div>
-      <div class="fila-list" id="list-bigbag">
-        <div class="fila-empty">Fila vazia</div>
-      </div>
+      <div class="fila-list" id="list-bigbag"><div class="fila-empty">Fila vazia</div></div>
     </div>
   </div>
 </div>
 
+<!-- BOTTOM -->
 <div class="bottom">
   <div class="bt-msg">Sistema de chamada de veículos — Fábrica Apodi Cimentos</div>
-  <div class="bt-total" id="bt-total"></div>
+  <div class="bt-sep"></div>
+  <div class="bt-stat" id="bt-total"></div>
+  <div class="bt-sep"></div>
+  <div class="bt-stat">Granel: <span id="bt-g">0</span></div>
+  <div class="bt-stat">Ensacado: <span id="bt-e">0</span></div>
+  <div class="bt-stat">Big Bag: <span id="bt-b">0</span></div>
 </div>
 
 <script type="module">
@@ -159,9 +234,13 @@ import{getFirestore,collection,onSnapshot}from"https://www.gstatic.com/firebasej
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 
-// Clock
+// ── Relógio ──
+const DIAS=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+const MESES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 function tick(){
-  document.getElementById("clock").textContent=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit",timeZone:"America/Fortaleza"});
+  const d=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  document.getElementById("clock").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  document.getElementById("date-txt").textContent=`${DIAS[d.getDay()]}, ${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
 }
 tick();setInterval(tick,1000);
 
@@ -171,7 +250,7 @@ function durStr(ms){if(!ms||ms<0)return"";const m=Math.round(ms/60000);return m<
 let filas={granel:[],ensacado:[],bigbag:[]};
 let ultimoChamadoId=null;
 
-// ── Fila de veículos ──
+// ── Fila de veículos aguardando (setorAtual === "posto1") ──
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const hj=hoje();
   const todos=snap.docs.map(d=>({id:d.id,...d.data()}))
@@ -181,6 +260,7 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   filas.ensacado=todos.filter(c=>c.tipoCarga==="ensacado");
   filas.bigbag=todos.filter(c=>c.tipoCarga==="bigbag");
   renderFilas();
+  renderTicker();
 });
 
 // ── Chamadas ──
@@ -198,26 +278,35 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
   }
 });
 
+// ── Render chamada ──
+const TIPO_LABEL={granel:"🚛 GRANEL",ensacado:"📦 ENSACADO",bigbag:"🛍️ BIG BAG"};
 function mostrarChamada(c){
-  const tipo=c.tipoCarga||"";
-  const cls={granel:"granel",ensacado:"ensacado",bigbag:"bigbag"}[tipo]||"ensacado";
-  const label={granel:"🚛 GRANEL",ensacado:"📦 ENSACADO",bigbag:"🛍️ BIG BAG"}[tipo]||tipo;
+  const tipo=c.tipoCarga||"ensacado";
+  const cls=tipo;
   document.getElementById("empty-state").style.display="none";
   const wrap=document.getElementById("chamada-wrap");
   wrap.style.display="block";
-  wrap.innerHTML=`
-    <div class="ch-label">🔔 VEÍCULO LIBERADO PARA ENTRAR</div>
-    <div class="ch-tipo-badge badge-${cls}">${label}</div>
-    <div class="ch-placa ch-placa-${cls}">${c.placa||"—"}</div>
-    <div class="ch-ac">AC: ${c.ac||"—"}</div>
-    <div class="ch-num">Chamada Nº ${String(c.numero||"?").padStart(3,"0")}</div>
-  `;
+  document.getElementById("ch-call-label").className=`ch-call-label c-${cls}`;
+  document.getElementById("ch-call-label").textContent="VEÍCULO CHAMADO PARA ENTRADA";
+  document.getElementById("ch-badge").className=`ch-badge-tipo b-${cls}`;
+  document.getElementById("ch-badge").textContent=TIPO_LABEL[tipo]||tipo;
+  const pl=document.getElementById("ch-placa");
+  pl.className=`ch-placa ch-placa-${cls} anim`;
+  pl.textContent=c.placa||"—";
+  setTimeout(()=>pl.classList.replace("anim","pulse"),450);
+  const ac=document.getElementById("ch-ac");
+  ac.className=`ch-ac c-${cls}-d`;
+  ac.textContent=c.ac||"—";
+  document.getElementById("ch-num-top").textContent=c.numero?`Nº ${String(c.numero).padStart(3,"0")}`:"";
 }
 function mostrarVazio(){
-  document.getElementById("empty-state").style.display="block";
+  document.getElementById("empty-state").style.display="flex";
   document.getElementById("chamada-wrap").style.display="none";
+  document.getElementById("ch-num-top").textContent="";
+  document.getElementById("ticker-bar").style.display="none";
 }
 
+// ── Render filas ──
 function renderFila(tipo,listId,cntId){
   const lista=filas[tipo]||[];
   document.getElementById(cntId).textContent=lista.length;
@@ -228,49 +317,74 @@ function renderFila(tipo,listId,cntId){
     const espera=en?Date.now()-en.getTime():null;
     const prx=i===0;
     return`<div class="fi fi-${tipo}${prx?" proximo":""}">
-      <div class="fi-num">${i+1}</div>
-      <div style="flex:1">
+      <div class="fi-pos">${i+1}</div>
+      <div class="fi-info">
         <div class="fi-pl">${c.placa}</div>
         <div class="fi-ac">AC: ${c.ac}</div>
       </div>
-      <div style="text-align:right">
+      <div class="fi-right">
         ${espera?`<div class="fi-wait">${durStr(espera)}</div>`:""}
-        ${prx?`<div class="fi-prx">✓ próximo</div>`:""}
+        ${prx?`<div class="fi-prx-tag">▶ próximo</div>`:""}
       </div>
     </div>`;
   }).join("");
 }
-
 function renderFilas(){
   renderFila("granel","list-granel","cnt-granel");
   renderFila("ensacado","list-ensacado","cnt-ensacado");
   renderFila("bigbag","list-bigbag","cnt-bigbag");
-  const total=filas.granel.length+filas.ensacado.length+filas.bigbag.length;
-  document.getElementById("bt-total").textContent=total?`${total} veículo${total!==1?"s":""} na fila`:"";
+  const g=filas.granel.length,e=filas.ensacado.length,b=filas.bigbag.length;
+  const total=g+e+b;
+  document.getElementById("bt-total").innerHTML=total?`<span>${total}</span> na fila`:"";
+  document.getElementById("bt-g").textContent=g;
+  document.getElementById("bt-e").textContent=e;
+  document.getElementById("bt-b").textContent=b;
+}
+
+// ── Ticker com TODOS os próximos agrupados por tipo ──
+function renderTicker(){
+  const todos=[
+    ...filas.granel.map((c,i)=>({...c,pos:i+1,tipo:"granel"})),
+    ...filas.ensacado.map((c,i)=>({...c,pos:i+1,tipo:"ensacado"})),
+    ...filas.bigbag.map((c,i)=>({...c,pos:i+1,tipo:"bigbag"})),
+  ];
+  if(!todos.length){document.getElementById("ticker-bar").style.display="none";return;}
+  document.getElementById("ticker-bar").style.display="block";
+  // Duplica para loop contínuo
+  const html=todos.map(c=>`
+    <div class="tick-item">
+      <div class="tick-pos">${c.pos}º</div>
+      <div class="tick-pl" style="color:${c.tipo==="granel"?"var(--or)":c.tipo==="bigbag"?"var(--gr)":"var(--bl)"}">${c.placa}</div>
+      <div class="tick-ac">${c.ac}</div>
+      <div class="tick-tipo tt-${c.tipo}">${c.tipo==="bigbag"?"BIG BAG":c.tipo.toUpperCase()}</div>
+    </div>`).join("");
+  const inner=document.getElementById("ticker-inner");
+  inner.innerHTML=html+html; // duplica para loop suave
+  // Ajusta velocidade conforme quantidade
+  const dur=Math.max(12,todos.length*4);
+  inner.style.animationDuration=dur+"s";
 }
 
 function flash(){
   const el=document.getElementById("painel-chamada");
-  el.classList.remove("flashing");
-  void el.offsetWidth;
+  el.classList.remove("flashing");void el.offsetWidth;
   el.classList.add("flashing");
+  setTimeout(()=>el.classList.remove("flashing"),1600);
 }
 function som(){
   try{
     const ctx=new AudioContext();
-    const o=ctx.createOscillator();const g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type="sine";
-    o.frequency.setValueAtTime(660,ctx.currentTime);
-    o.frequency.setValueAtTime(880,ctx.currentTime+.15);
-    o.frequency.setValueAtTime(1100,ctx.currentTime+.30);
-    g.gain.setValueAtTime(.4,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.7);
-    o.start(ctx.currentTime);o.stop(ctx.currentTime+.7);
+    [[660,.0],[880,.15],[1100,.30],[660,.50]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type="sine";o.frequency.value=f;
+      g.gain.setValueAtTime(.35,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.18);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.2);
+    });
   }catch(e){}
 }
 
-// Atualiza tempos de espera a cada 30s
 setInterval(renderFilas,30000);
 </script>
 </body></html>
