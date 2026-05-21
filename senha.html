@@ -4,228 +4,272 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Painel de Chamada — TV</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800;900&family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800;900&family=Orbitron:wght@700;800;900&family=Inter:wght@400;600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#03080f;--bg2:#060f1c;--bg3:#091828;--bd:#102840;
+  --bg:#020810;--bg2:#05101e;--bg3:#071524;--bd:#0d2240;
   --bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--or:#fb923c;--pu:#a78bfa;
-  --tx:#e2eeff;--t2:#5a8ab0;--t3:#1e3a58;
+  --tx:#e8f4ff;--t2:#4a7a9a;--t3:#1a3050;
 }
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;display:flex;flex-direction:column}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{display:flex;flex-direction:column;font-family:'Inter',sans-serif;color:var(--tx)}
 
-/* ══════════════ HEADER ══════════════ */
-.top{background:var(--bg2);border-bottom:3px solid var(--bl);height:68px;display:flex;align-items:center;padding:0 36px;gap:20px;flex-shrink:0;position:relative;overflow:hidden}
-.top::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--bl),transparent)}
-.logo{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:900;color:var(--bl);letter-spacing:2px;flex:1;display:flex;align-items:center;gap:12px}
-.logo-icon{font-size:26px}
-.live-badge{display:flex;align-items:center;gap:7px;background:rgba(0,232,150,.08);border:1px solid rgba(0,232,150,.25);padding:5px 14px;border-radius:20px}
-.live-badge span{font-size:11px;font-weight:800;color:var(--gr);letter-spacing:1px;text-transform:uppercase}
-.dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite;flex-shrink:0}
-@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(1.6)}}
-.clock{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:900;color:var(--ye);letter-spacing:4px;text-shadow:0 0 20px rgba(255,208,0,.3)}
-.date-txt{font-size:11px;color:var(--t2);text-align:right;line-height:1.4}
+/* ── SCANLINES overlay ── */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:9999}
 
-/* ══════════════ MAIN ══════════════ */
-.main{flex:1;display:grid;grid-template-columns:1.5fr 1fr;overflow:hidden;min-height:0}
+/* ══════ HEADER ══════ */
+.top{height:64px;background:linear-gradient(90deg,#020c1a,#041828,#020c1a);border-bottom:2px solid var(--bl);display:flex;align-items:center;padding:0 32px;gap:20px;flex-shrink:0;position:relative}
+.top::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.6),rgba(0,232,150,.4),rgba(0,212,255,.6),transparent)}
+.logo-wrap{display:flex;align-items:center;gap:14px;flex:1}
+.logo-icon{font-size:28px}
+.logo-text{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+.logo-text span{color:var(--bl)}
+.live-pill{display:flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;border:1px solid rgba(0,232,150,.25);background:rgba(0,232,150,.05)}
+.live-pill .lp-txt{font-size:10px;font-weight:800;color:var(--gr);letter-spacing:2px;text-transform:uppercase}
+.dot{width:7px;height:7px;background:var(--gr);border-radius:50%;animation:pu 1.3s ease-in-out infinite}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.1;transform:scale(1.8)}}
+.clock-wrap{text-align:right}
+.clock{font-family:'Orbitron',sans-serif;font-size:30px;font-weight:800;color:var(--ye);letter-spacing:3px;line-height:1;text-shadow:0 0 20px rgba(255,208,0,.35)}
+.date-str{font-size:10px;color:var(--t2);letter-spacing:.5px;margin-top:3px}
 
-/* ══════════════ PAINEL CHAMADA ══════════════ */
-.painel-chamada{display:flex;flex-direction:column;border-right:2px solid var(--bd);position:relative;overflow:hidden}
-.painel-chamada::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(0,212,255,.04) 0%,transparent 65%);pointer-events:none;z-index:0}
+/* ══════ MAIN ══════ */
+.main{flex:1;display:grid;grid-template-columns:1.6fr 1fr;overflow:hidden;min-height:0}
 
-/* topo: título "CHAMANDO" */
-.ch-topbar{padding:16px 32px 0;z-index:1;display:flex;align-items:center;gap:12px}
-.ch-topbar-label{font-size:11px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:3px}
-.ch-topbar-num{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:900;color:var(--t2)}
+/* ══════ PAINEL ESQUERDO ══════ */
+.left{display:flex;flex-direction:column;border-right:1px solid var(--bd);position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,rgba(0,212,255,.03) 0%,transparent 60%)}
 
-/* área central: a grande chamada */
-.ch-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px 0;z-index:1;gap:0}
+/* ── Área de chamada ── */
+.call-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 40px;position:relative;z-index:1}
 
 /* Estado vazio */
-.empty-state{text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
-.empty-ring{width:120px;height:120px;border-radius:50%;border:3px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:52px;animation:spin-ring 8s linear infinite}
-@keyframes spin-ring{to{box-shadow:0 0 0 4px rgba(0,212,255,.05),0 0 30px rgba(0,212,255,.05)}}
-.empty-txt{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--t2);line-height:1.4}
+.idle{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+.idle-ring{position:relative;width:100px;height:100px}
+.idle-ring svg{width:100%;height:100%;animation:rotate-ring 6s linear infinite}
+@keyframes rotate-ring{to{transform:rotate(360deg)}}
+.idle-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px}
+.idle-txt{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--t2);line-height:1.5}
 
 /* Chamada ativa */
-.ch-badge-tipo{display:inline-flex;align-items:center;gap:8px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;padding:5px 22px;border-radius:30px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
-.b-granel{background:rgba(251,146,60,.12);color:var(--or);border:2px solid rgba(251,146,60,.35)}
-.b-ensacado{background:rgba(0,212,255,.1);color:var(--bl);border:2px solid rgba(0,212,255,.3)}
-.b-bigbag{background:rgba(0,232,150,.1);color:var(--gr);border:2px solid rgba(0,232,150,.3)}
+.call-active{display:none;flex-direction:column;align-items:center;gap:0;width:100%;text-align:center}
 
-.ch-call-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:5px;margin-bottom:8px;opacity:.6}
-.c-granel{color:var(--or)}.c-ensacado{color:var(--bl)}.c-bigbag{color:var(--gr)}
+.call-tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:5px;margin-bottom:10px;display:flex;align-items:center;gap:8px;justify-content:center}
+.call-tag::before,.call-tag::after{content:'';flex:1;max-width:60px;height:1px}
 
-.ch-placa{font-family:'Rajdhani',sans-serif;font-weight:900;letter-spacing:6px;line-height:1;padding:20px 44px;border-radius:18px;display:inline-block;position:relative}
-.ch-placa-granel{font-size:108px;color:var(--or);background:rgba(251,146,60,.06);border:3px solid rgba(251,146,60,.3);text-shadow:0 0 60px rgba(251,146,60,.6);box-shadow:0 0 40px rgba(251,146,60,.1)}
-.ch-placa-ensacado{font-size:108px;color:var(--bl);background:rgba(0,212,255,.06);border:3px solid rgba(0,212,255,.3);text-shadow:0 0 60px rgba(0,212,255,.6);box-shadow:0 0 40px rgba(0,212,255,.1)}
-.ch-placa-bigbag{font-size:108px;color:var(--gr);background:rgba(0,232,150,.06);border:3px solid rgba(0,232,150,.3);text-shadow:0 0 60px rgba(0,232,150,.6);box-shadow:0 0 40px rgba(0,232,150,.1)}
-@keyframes placa-in{0%{opacity:0;transform:scale(.85)}100%{opacity:1;transform:scale(1)}}
-.ch-placa.anim{animation:placa-in .4s cubic-bezier(.34,1.56,.64,1)}
-@keyframes placa-pulse{0%,100%{opacity:1}50%{opacity:.85}}
-.ch-placa.pulse{animation:placa-pulse 2.2s ease-in-out infinite}
+.tipo-pill{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:900;padding:5px 24px;border-radius:30px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:inline-block}
 
-.ch-ac{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;letter-spacing:2px;margin-top:18px}
-.c-granel-d{color:rgba(251,146,60,.7)}.c-ensacado-d{color:rgba(0,212,255,.7)}.c-bigbag-d{color:rgba(0,232,150,.7)}
-.ch-ac-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:.5;margin-top:4px}
+/* Placa grande */
+.placa-wrapper{position:relative;margin-bottom:0}
+.placa-glow{position:absolute;inset:-20px;border-radius:24px;opacity:.25;filter:blur(30px);z-index:0}
+.placa-box{position:relative;z-index:1;font-family:'Orbitron',sans-serif;font-weight:900;letter-spacing:8px;line-height:1;padding:18px 48px;border-radius:16px;display:inline-block}
+@keyframes placa-enter{0%{opacity:0;transform:scale(.7) translateY(20px)}60%{transform:scale(1.06) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes placa-beat{0%,100%{transform:scale(1)}50%{transform:scale(1.015)}}
+.placa-box.enter{animation:placa-enter .5s cubic-bezier(.34,1.56,.64,1) forwards}
+.placa-box.beat{animation:placa-beat 2.4s ease-in-out infinite}
 
-/* ══════════════ TICKER SEQUÊNCIA ══════════════ */
-.ticker-bar{background:rgba(255,255,255,.02);border-top:1px solid var(--bd);padding:10px 24px;z-index:1;flex-shrink:0}
-.ticker-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:3px;color:var(--t2);margin-bottom:6px}
-.ticker-scroll{display:flex;gap:10px;overflow:hidden;position:relative}
-.ticker-inner{display:flex;gap:10px;animation:ticker-move 18s linear infinite}
-.ticker-inner:hover{animation-play-state:paused}
-.tick-item{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:5px 12px;white-space:nowrap;flex-shrink:0}
-.tick-pos{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:900;color:var(--t3);min-width:18px;text-align:center}
-.tick-pl{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px}
-.tick-ac{font-size:9px;color:var(--t2);margin-left:2px}
-.tick-tipo{font-size:8px;font-weight:800;padding:1px 5px;border-radius:3px;text-transform:uppercase}
-.tt-granel{color:var(--or);background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.2)}
-.tt-ensacado{color:var(--bl);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2)}
-.tt-bigbag{color:var(--gr);background:rgba(0,232,150,.1);border:1px solid rgba(0,232,150,.2)}
-@keyframes ticker-move{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+/* Cores por tipo */
+.c-granel .call-tag{color:var(--or)}.c-granel .call-tag::before,.c-granel .call-tag::after{background:rgba(251,146,60,.3)}
+.c-granel .tipo-pill{color:var(--or);background:rgba(251,146,60,.1);border:2px solid rgba(251,146,60,.35)}
+.c-granel .placa-glow{background:var(--or)}
+.c-granel .placa-box{color:var(--or);background:rgba(251,146,60,.06);border:3px solid rgba(251,146,60,.35);text-shadow:0 0 40px rgba(251,146,60,.7);box-shadow:0 0 60px rgba(251,146,60,.08),inset 0 0 40px rgba(251,146,60,.03)}
 
-/* ══════════════ PAINEL FILAS ══════════════ */
-.painel-filas{display:flex;flex-direction:column;overflow:hidden;min-height:0}
-.fila-bloco{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;border-bottom:1px solid var(--bd)}
-.fila-bloco:last-child{border-bottom:none}
-.fila-header{padding:10px 16px 8px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.h-granel{background:rgba(251,146,60,.05);border-bottom:2px solid rgba(251,146,60,.2)}
-.h-ensacado{background:rgba(0,212,255,.04);border-bottom:2px solid rgba(0,212,255,.18)}
-.h-bigbag{background:rgba(0,232,150,.04);border-bottom:2px solid rgba(0,232,150,.18)}
-.fila-ic{font-size:18px}
-.fila-titulo{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:900;letter-spacing:1px;flex:1}
-.h-granel .fila-titulo{color:var(--or)}
-.h-ensacado .fila-titulo{color:var(--bl)}
-.h-bigbag .fila-titulo{color:var(--gr)}
-.fila-cnt{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:900;padding:1px 9px;border-radius:5px}
-.h-granel .fila-cnt{background:rgba(251,146,60,.12);color:var(--or)}
-.h-ensacado .fila-cnt{background:rgba(0,212,255,.1);color:var(--bl)}
-.h-bigbag .fila-cnt{background:rgba(0,232,150,.1);color:var(--gr)}
+.c-ensacado .call-tag{color:var(--bl)}.c-ensacado .call-tag::before,.c-ensacado .call-tag::after{background:rgba(0,212,255,.3)}
+.c-ensacado .tipo-pill{color:var(--bl);background:rgba(0,212,255,.08);border:2px solid rgba(0,212,255,.3)}
+.c-ensacado .placa-glow{background:var(--bl)}
+.c-ensacado .placa-box{color:var(--bl);background:rgba(0,212,255,.05);border:3px solid rgba(0,212,255,.3);text-shadow:0 0 40px rgba(0,212,255,.7);box-shadow:0 0 60px rgba(0,212,255,.08),inset 0 0 40px rgba(0,212,255,.03)}
 
-.fila-list{flex:1;overflow-y:auto;padding:5px 8px}
-.fila-list::-webkit-scrollbar{width:2px}
-.fila-list::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.c-bigbag .call-tag{color:var(--gr)}.c-bigbag .call-tag::before,.c-bigbag .call-tag::after{background:rgba(0,232,150,.3)}
+.c-bigbag .tipo-pill{color:var(--gr);background:rgba(0,232,150,.08);border:2px solid rgba(0,232,150,.3)}
+.c-bigbag .placa-glow{background:var(--gr)}
+.c-bigbag .placa-box{color:var(--gr);background:rgba(0,232,150,.05);border:3px solid rgba(0,232,150,.3);text-shadow:0 0 40px rgba(0,232,150,.7);box-shadow:0 0 60px rgba(0,232,150,.08),inset 0 0 40px rgba(0,232,150,.03)}
 
-.fi{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg2);margin-bottom:4px;transition:all .3s}
-.fi.proximo{border-width:2px}
-.fi-granel.proximo{border-color:rgba(251,146,60,.5);background:rgba(251,146,60,.04)}
-.fi-ensacado.proximo{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.04)}
-.fi-bigbag.proximo{border-color:rgba(0,232,150,.4);background:rgba(0,232,150,.04)}
-.fi-pos{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:900;color:var(--t3);min-width:26px;text-align:center}
-.fi-granel.proximo .fi-pos{color:var(--or)}
-.fi-ensacado.proximo .fi-pos{color:var(--bl)}
-.fi-bigbag.proximo .fi-pos{color:var(--gr)}
-.fi-info{flex:1;min-width:0}
-.fi-pl{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:800;letter-spacing:1px;line-height:1.1}
+.placa-size{font-size:clamp(60px,8vw,100px)}
+
+.call-ac{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;margin-top:16px;opacity:.8}
+.call-num{font-size:11px;color:var(--t2);letter-spacing:3px;margin-top:6px;text-transform:uppercase}
+
+/* ── TICKER PRÓXIMOS ── */
+.ticker{background:rgba(255,255,255,.015);border-top:1px solid var(--bd);padding:8px 20px;flex-shrink:0;min-height:54px}
+.ticker-label{font-size:8px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:3px;margin-bottom:5px}
+.ticker-track{overflow:hidden;position:relative}
+.ticker-track::before{content:'';position:absolute;left:0;top:0;bottom:0;width:32px;background:linear-gradient(90deg,var(--bg2),transparent);z-index:2}
+.ticker-track::after{content:'';position:absolute;right:0;top:0;bottom:0;width:32px;background:linear-gradient(270deg,var(--bg2),transparent);z-index:2}
+.ticker-inner{display:flex;gap:8px;width:max-content}
+.ticker-inner.running{animation:scroll-left 20s linear infinite}
+.ticker-inner.running:hover{animation-play-state:paused}
+@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--bg3);white-space:nowrap;flex-shrink:0}
+.t-pos{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:900;color:var(--t3);min-width:16px;text-align:center}
+.t-pl{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;letter-spacing:1px}
+.t-ac{font-size:9px;color:var(--t2)}
+.t-tip{font-size:8px;font-weight:800;padding:1px 5px;border-radius:3px;letter-spacing:.5px;text-transform:uppercase}
+.tt-granel{color:var(--or);background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.2)}
+.tt-ensacado{color:var(--bl);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15)}
+.tt-bigbag{color:var(--gr);background:rgba(0,232,150,.08);border:1px solid rgba(0,232,150,.15)}
+
+/* ══════ PAINEL DIREITO — FILAS ══════ */
+.right{display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+.fila-bloco{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.fila-bloco+.fila-bloco{border-top:1px solid var(--bd)}
+
+.fila-head{padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.fh-granel{background:linear-gradient(90deg,rgba(251,146,60,.06),transparent);border-bottom:1px solid rgba(251,146,60,.15)}
+.fh-ensacado{background:linear-gradient(90deg,rgba(0,212,255,.05),transparent);border-bottom:1px solid rgba(0,212,255,.12)}
+.fh-bigbag{background:linear-gradient(90deg,rgba(0,232,150,.05),transparent);border-bottom:1px solid rgba(0,232,150,.12)}
+.fila-ic{font-size:17px}
+.fila-titulo{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;flex:1}
+.fh-granel .fila-titulo{color:var(--or)}
+.fh-ensacado .fila-titulo{color:var(--bl)}
+.fh-bigbag .fila-titulo{color:var(--gr)}
+.fila-cnt{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:800;padding:2px 8px;border-radius:5px;line-height:1}
+.fh-granel .fila-cnt{color:var(--or);background:rgba(251,146,60,.1)}
+.fh-ensacado .fila-cnt{color:var(--bl);background:rgba(0,212,255,.08)}
+.fh-bigbag .fila-cnt{color:var(--gr);background:rgba(0,232,150,.08)}
+
+.fila-body{flex:1;overflow-y:auto;padding:4px 8px}
+.fila-body::-webkit-scrollbar{width:2px}
+.fila-body::-webkit-scrollbar-thumb{background:var(--bd)}
+
+.fi{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:7px;border:1px solid var(--bd);background:rgba(255,255,255,.015);margin-bottom:3px}
+.fi.prx{border-width:2px}
+.fi-granel.prx{border-color:rgba(251,146,60,.45);background:rgba(251,146,60,.04)}
+.fi-ensacado.prx{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.04)}
+.fi-bigbag.prx{border-color:rgba(0,232,150,.38);background:rgba(0,232,150,.04)}
+.fi-n{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:800;color:var(--t3);min-width:22px;text-align:center}
+.fi-granel.prx .fi-n{color:var(--or)}
+.fi-ensacado.prx .fi-n{color:var(--bl)}
+.fi-bigbag.prx .fi-n{color:var(--gr)}
+.fi-data{flex:1;min-width:0}
+.fi-pl{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;letter-spacing:1.5px;line-height:1}
 .fi-ac{font-size:9px;color:var(--t2);margin-top:1px}
 .fi-right{text-align:right;flex-shrink:0}
-.fi-wait{font-size:10px;color:var(--ye);font-weight:700}
-.fi-prx-tag{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
-.fi-granel.proximo .fi-prx-tag{color:var(--or)}
-.fi-ensacado.proximo .fi-prx-tag{color:var(--bl)}
-.fi-bigbag.proximo .fi-prx-tag{color:var(--gr)}
-.fila-empty{text-align:center;padding:14px 8px;color:var(--t3);font-size:11px;font-style:italic}
+.fi-wait{font-size:9px;color:var(--ye);font-weight:700}
+.fi-prxtag{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+.fi-granel.prx .fi-prxtag{color:var(--or)}
+.fi-ensacado.prx .fi-prxtag{color:var(--bl)}
+.fi-bigbag.prx .fi-prxtag{color:var(--gr)}
+.fila-empty{text-align:center;padding:12px;color:var(--t3);font-size:11px;font-style:italic}
 
-/* ══════════════ BOTTOM ══════════════ */
-.bottom{background:var(--bg2);border-top:1px solid var(--bd);height:36px;display:flex;align-items:center;padding:0 28px;gap:12px;flex-shrink:0}
-.bt-msg{font-size:10px;color:var(--t3);flex:1;letter-spacing:.5px}
-.bt-sep{width:1px;height:16px;background:var(--bd)}
-.bt-stat{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--t2)}
-.bt-stat span{color:var(--ye)}
+/* ══════ BOTTOM ══════ */
+.bottom{height:34px;background:var(--bg2);border-top:1px solid var(--bd);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0}
+.bt-info{font-size:9px;color:var(--t3);flex:1;letter-spacing:.5px;text-transform:uppercase}
+.bt-div{width:1px;height:14px;background:var(--bd)}
+.bt-val{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--t2)}
+.bt-val b{font-family:'Orbitron',sans-serif;font-size:11px}
+.bt-val b.c-or{color:var(--or)}.bt-val b.c-bl{color:var(--bl)}.bt-val b.c-gr{color:var(--gr)}.bt-val b.c-ye{color:var(--ye)}
 
-/* ══════════════ FLASH ══════════════ */
-@keyframes flash-bg{0%,100%{background:var(--bg)}15%,45%,75%{background:rgba(0,212,255,.04)}30%,60%{background:var(--bg)}}
-.painel-chamada.flashing{animation:flash-bg .5s ease 3}
-@keyframes scanline{0%{top:-100%}100%{top:200%}}
-.painel-chamada.flashing::after{content:'';position:absolute;left:0;right:0;height:3px;background:linear-gradient(transparent,rgba(0,212,255,.4),transparent);z-index:2;animation:scanline .3s linear 3}
+/* ══════ FLASH ══════ */
+@keyframes flash-screen{0%,100%{opacity:1}25%,75%{opacity:.4}50%{opacity:1}}
+.left.flash{animation:flash-screen .3s ease 4}
+@keyframes sweep{0%{top:-100%}100%{top:120%}}
+.sweep-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.6),rgba(255,255,255,.3),rgba(0,212,255,.6),transparent);z-index:5;display:none}
+.left.flash .sweep-line{display:block;animation:sweep .25s linear 4}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="top">
-  <div class="logo"><span class="logo-icon">🏭</span>APODI CIMENTOS — PAINEL DE CHAMADA</div>
-  <div class="live-badge"><div class="dot"></div><span>Ao Vivo</span></div>
-  <div style="text-align:right">
+  <div class="logo-wrap">
+    <span class="logo-icon">🏭</span>
+    <div>
+      <div class="logo-text"><span>APODI</span> CIMENTOS</div>
+      <div style="font-size:9px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;margin-top:1px">Painel de Chamada de Veículos</div>
+    </div>
+  </div>
+  <div class="live-pill"><div class="dot"></div><span class="lp-txt">Ao Vivo</span></div>
+  <div class="clock-wrap">
     <div class="clock" id="clock">00:00:00</div>
-    <div class="date-txt" id="date-txt"></div>
+    <div class="date-str" id="date-str"></div>
   </div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-  <!-- PAINEL CHAMADA -->
-  <div class="painel-chamada" id="painel-chamada">
-    <div class="ch-topbar">
-      <div class="ch-topbar-label">🔔 Última chamada</div>
-      <div class="ch-topbar-num" id="ch-num-top"></div>
+  <!-- ESQUERDA -->
+  <div class="left" id="left-panel">
+    <div class="sweep-line"></div>
+
+    <div class="call-area">
+      <!-- IDLE -->
+      <div class="idle" id="idle">
+        <div class="idle-ring">
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0,212,255,.08)" stroke-width="2"/>
+            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0,212,255,.25)" stroke-width="2"
+              stroke-dasharray="60 217" stroke-linecap="round"/>
+          </svg>
+          <div class="idle-icon">📢</div>
+        </div>
+        <div class="idle-txt">Aguardando<br>próxima chamada...</div>
+      </div>
+
+      <!-- CHAMADA ATIVA -->
+      <div class="call-active" id="call-active">
+        <div class="call-tag" id="call-tag">🔔 veículo chamado para entrada</div>
+        <div class="tipo-pill" id="tipo-pill"></div>
+        <div class="placa-wrapper">
+          <div class="placa-glow" id="placa-glow"></div>
+          <div class="placa-box placa-size" id="placa-box"></div>
+        </div>
+        <div class="call-ac" id="call-ac"></div>
+        <div class="call-num" id="call-num"></div>
+      </div>
     </div>
 
-    <div class="ch-center">
-      <!-- Vazio -->
-      <div class="empty-state" id="empty-state">
-        <div class="empty-ring">📢</div>
-        <div class="empty-txt">Aguardando<br>próxima chamada...</div>
-      </div>
-      <!-- Chamada ativa -->
-      <div id="chamada-wrap" style="display:none;text-align:center;width:100%">
-        <div class="ch-call-label" id="ch-call-label"></div>
-        <div class="ch-badge-tipo" id="ch-badge"></div>
-        <div class="ch-placa pulse" id="ch-placa"></div>
-        <div class="ch-ac" id="ch-ac"></div>
-        <div class="ch-ac-label">Autorização de Carga</div>
-      </div>
-    </div>
-
-    <!-- TICKER SEQUÊNCIA -->
-    <div class="ticker-bar" id="ticker-bar" style="display:none">
+    <!-- TICKER -->
+    <div class="ticker" id="ticker" style="display:none">
       <div class="ticker-label">⏭ Próximos na fila</div>
-      <div class="ticker-scroll">
+      <div class="ticker-track">
         <div class="ticker-inner" id="ticker-inner"></div>
       </div>
     </div>
   </div>
 
-  <!-- PAINEL FILAS -->
-  <div class="painel-filas">
+  <!-- DIREITA: FILAS -->
+  <div class="right">
+    <!-- GRANEL -->
     <div class="fila-bloco">
-      <div class="fila-header h-granel">
+      <div class="fila-head fh-granel">
         <span class="fila-ic">🚛</span>
-        <div class="fila-titulo">GRANEL</div>
+        <div class="fila-titulo">Granel</div>
         <span class="fila-cnt" id="cnt-granel">0</span>
       </div>
-      <div class="fila-list" id="list-granel"><div class="fila-empty">Fila vazia</div></div>
+      <div class="fila-body" id="list-granel"><div class="fila-empty">Fila vazia</div></div>
     </div>
+    <!-- ENSACADO -->
     <div class="fila-bloco">
-      <div class="fila-header h-ensacado">
+      <div class="fila-head fh-ensacado">
         <span class="fila-ic">📦</span>
-        <div class="fila-titulo">ENSACADO</div>
+        <div class="fila-titulo">Ensacado</div>
         <span class="fila-cnt" id="cnt-ensacado">0</span>
       </div>
-      <div class="fila-list" id="list-ensacado"><div class="fila-empty">Fila vazia</div></div>
+      <div class="fila-body" id="list-ensacado"><div class="fila-empty">Fila vazia</div></div>
     </div>
+    <!-- BIG BAG -->
     <div class="fila-bloco">
-      <div class="fila-header h-bigbag">
+      <div class="fila-head fh-bigbag">
         <span class="fila-ic">🛍️</span>
-        <div class="fila-titulo">BIG BAG</div>
+        <div class="fila-titulo">Big Bag</div>
         <span class="fila-cnt" id="cnt-bigbag">0</span>
       </div>
-      <div class="fila-list" id="list-bigbag"><div class="fila-empty">Fila vazia</div></div>
+      <div class="fila-body" id="list-bigbag"><div class="fila-empty">Fila vazia</div></div>
     </div>
   </div>
 </div>
 
 <!-- BOTTOM -->
 <div class="bottom">
-  <div class="bt-msg">Sistema de chamada de veículos — Fábrica Apodi Cimentos</div>
-  <div class="bt-sep"></div>
-  <div class="bt-stat" id="bt-total"></div>
-  <div class="bt-sep"></div>
-  <div class="bt-stat">Granel: <span id="bt-g">0</span></div>
-  <div class="bt-stat">Ensacado: <span id="bt-e">0</span></div>
-  <div class="bt-stat">Big Bag: <span id="bt-b">0</span></div>
+  <div class="bt-info">Sistema de chamada — Fábrica Apodi Cimentos</div>
+  <div class="bt-div"></div>
+  <div class="bt-val">Total: <b class="c-ye" id="bt-tot">0</b></div>
+  <div class="bt-div"></div>
+  <div class="bt-val">Granel: <b class="c-or" id="bt-g">0</b></div>
+  <div class="bt-div"></div>
+  <div class="bt-val">Ensacado: <b class="c-bl" id="bt-e">0</b></div>
+  <div class="bt-div"></div>
+  <div class="bt-val">Big Bag: <b class="c-gr" id="bt-b">0</b></div>
 </div>
 
 <script type="module">
@@ -235,96 +279,88 @@ const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDo
 const db=getFirestore(app);
 
 // ── Relógio ──
-const DIAS=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+const DIASEM=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 const MESES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-function tick(){
+setInterval(()=>{
   const d=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   document.getElementById("clock").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
-  document.getElementById("date-txt").textContent=`${DIAS[d.getDay()]}, ${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
-}
-tick();setInterval(tick,1000);
+  document.getElementById("date-str").textContent=`${DIASEM[d.getDay()]} · ${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
+},1000);
+// imediato
+(()=>{const d=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));document.getElementById("clock").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});document.getElementById("date-str").textContent=`${DIASEM[d.getDay()]} · ${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;})();
 
 const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-function durStr(ms){if(!ms||ms<0)return"";const m=Math.round(ms/60000);return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?" "+m%60+"m":"");}
+const durStr=ms=>{if(!ms||ms<0)return"";const m=Math.round(ms/60000);return m<60?m+"m":Math.floor(m/60)+"h"+(m%60?m%60+"m":"");};
 
 let filas={granel:[],ensacado:[],bigbag:[]};
-let ultimoChamadoId=null;
+let lastId=null;
 
-// ── Fila de veículos aguardando (setorAtual === "posto1") ──
+// ── Fila: veículos aguardando no posto1 ──
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const hj=hoje();
-  const todos=snap.docs.map(d=>({id:d.id,...d.data()}))
+  const all=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>c.data===hj&&c.setorAtual==="posto1")
     .sort((a,b)=>(a.criadoEm?.toDate?.()?.getTime()||0)-(b.criadoEm?.toDate?.()?.getTime()||0));
-  filas.granel=todos.filter(c=>c.tipoCarga==="granel");
-  filas.ensacado=todos.filter(c=>c.tipoCarga==="ensacado");
-  filas.bigbag=todos.filter(c=>c.tipoCarga==="bigbag");
+  filas.granel=all.filter(c=>c.tipoCarga==="granel");
+  filas.ensacado=all.filter(c=>c.tipoCarga==="ensacado");
+  filas.bigbag=all.filter(c=>c.tipoCarga==="bigbag");
   renderFilas();
   renderTicker();
 });
 
-// ── Chamadas ──
+// ── Chamadas: colecao chamadas_fila ──
 onSnapshot(collection(db,"chamadas_fila"),snap=>{
   const docs=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>c.data===hoje())
     .sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0));
-  if(!docs.length){mostrarVazio();return;}
-  const ultima=docs[0];
-  if(ultima.id!==ultimoChamadoId){
-    ultimoChamadoId=ultima.id;
-    mostrarChamada(ultima);
-    flash();
-    som();
-  }
+  if(!docs.length){showIdle();return;}
+  const last=docs[0];
+  if(last.id!==lastId){lastId=last.id;showCall(last);doFlash();doSound();}
 });
 
 // ── Render chamada ──
-const TIPO_LABEL={granel:"🚛 GRANEL",ensacado:"📦 ENSACADO",bigbag:"🛍️ BIG BAG"};
-function mostrarChamada(c){
-  const tipo=c.tipoCarga||"ensacado";
-  const cls=tipo;
-  document.getElementById("empty-state").style.display="none";
-  const wrap=document.getElementById("chamada-wrap");
-  wrap.style.display="block";
-  document.getElementById("ch-call-label").className=`ch-call-label c-${cls}`;
-  document.getElementById("ch-call-label").textContent="VEÍCULO CHAMADO PARA ENTRADA";
-  document.getElementById("ch-badge").className=`ch-badge-tipo b-${cls}`;
-  document.getElementById("ch-badge").textContent=TIPO_LABEL[tipo]||tipo;
-  const pl=document.getElementById("ch-placa");
-  pl.className=`ch-placa ch-placa-${cls} anim`;
-  pl.textContent=c.placa||"—";
-  setTimeout(()=>pl.classList.replace("anim","pulse"),450);
-  const ac=document.getElementById("ch-ac");
-  ac.className=`ch-ac c-${cls}-d`;
-  ac.textContent=c.ac||"—";
-  document.getElementById("ch-num-top").textContent=c.numero?`Nº ${String(c.numero).padStart(3,"0")}`:"";
+const TLABEL={granel:"🚛 GRANEL",ensacado:"📦 ENSACADO",bigbag:"🛍️ BIG BAG"};
+function showCall(c){
+  const tp=c.tipoCarga||"ensacado";
+  document.getElementById("idle").style.display="none";
+  const ca=document.getElementById("call-active");
+  ca.style.display="flex";
+  ca.className=`call-active c-${tp}`;
+  document.getElementById("tipo-pill").textContent=TLABEL[tp]||tp;
+  const pb=document.getElementById("placa-box");
+  pb.className="placa-box placa-size enter";
+  pb.textContent=c.placa||"—";
+  setTimeout(()=>{pb.classList.replace("enter","beat");},520);
+  const ac=document.getElementById("call-ac");
+  ac.textContent="AC: "+(c.ac||"—");
+  ac.style.color=tp==="granel"?"rgba(251,146,60,.7)":tp==="bigbag"?"rgba(0,232,150,.7)":"rgba(0,212,255,.7)";
+  document.getElementById("call-num").textContent=c.numero?`Chamada Nº ${String(c.numero).padStart(3,"0")}`:"";
 }
-function mostrarVazio(){
-  document.getElementById("empty-state").style.display="flex";
-  document.getElementById("chamada-wrap").style.display="none";
-  document.getElementById("ch-num-top").textContent="";
-  document.getElementById("ticker-bar").style.display="none";
+function showIdle(){
+  document.getElementById("idle").style.display="flex";
+  document.getElementById("call-active").style.display="none";
+  document.getElementById("ticker").style.display="none";
 }
 
 // ── Render filas ──
 function renderFila(tipo,listId,cntId){
-  const lista=filas[tipo]||[];
-  document.getElementById(cntId).textContent=lista.length;
+  const l=filas[tipo]||[];
+  document.getElementById(cntId).textContent=l.length;
   const el=document.getElementById(listId);
-  if(!lista.length){el.innerHTML=`<div class="fila-empty">Fila vazia</div>`;return;}
-  el.innerHTML=lista.map((c,i)=>{
+  if(!l.length){el.innerHTML=`<div class="fila-empty">Fila vazia</div>`;return;}
+  el.innerHTML=l.map((c,i)=>{
     const en=c.entrada?.ts?.toDate?.();
-    const espera=en?Date.now()-en.getTime():null;
+    const wait=en?Date.now()-en.getTime():null;
     const prx=i===0;
-    return`<div class="fi fi-${tipo}${prx?" proximo":""}">
-      <div class="fi-pos">${i+1}</div>
-      <div class="fi-info">
+    return`<div class="fi fi-${tipo}${prx?" prx":""}">
+      <div class="fi-n">${i+1}</div>
+      <div class="fi-data">
         <div class="fi-pl">${c.placa}</div>
         <div class="fi-ac">AC: ${c.ac}</div>
       </div>
       <div class="fi-right">
-        ${espera?`<div class="fi-wait">${durStr(espera)}</div>`:""}
-        ${prx?`<div class="fi-prx-tag">▶ próximo</div>`:""}
+        ${wait?`<div class="fi-wait">${durStr(wait)}</div>`:""}
+        ${prx?`<div class="fi-prxtag">▶ próximo</div>`:""}
       </div>
     </div>`;
   }).join("");
@@ -334,53 +370,58 @@ function renderFilas(){
   renderFila("ensacado","list-ensacado","cnt-ensacado");
   renderFila("bigbag","list-bigbag","cnt-bigbag");
   const g=filas.granel.length,e=filas.ensacado.length,b=filas.bigbag.length;
-  const total=g+e+b;
-  document.getElementById("bt-total").innerHTML=total?`<span>${total}</span> na fila`:"";
+  document.getElementById("bt-tot").textContent=g+e+b;
   document.getElementById("bt-g").textContent=g;
   document.getElementById("bt-e").textContent=e;
   document.getElementById("bt-b").textContent=b;
 }
 
-// ── Ticker com TODOS os próximos agrupados por tipo ──
+// ── Ticker ──
 function renderTicker(){
-  const todos=[
+  const all=[
     ...filas.granel.map((c,i)=>({...c,pos:i+1,tipo:"granel"})),
     ...filas.ensacado.map((c,i)=>({...c,pos:i+1,tipo:"ensacado"})),
     ...filas.bigbag.map((c,i)=>({...c,pos:i+1,tipo:"bigbag"})),
   ];
-  if(!todos.length){document.getElementById("ticker-bar").style.display="none";return;}
-  document.getElementById("ticker-bar").style.display="block";
-  // Duplica para loop contínuo
-  const html=todos.map(c=>`
-    <div class="tick-item">
-      <div class="tick-pos">${c.pos}º</div>
-      <div class="tick-pl" style="color:${c.tipo==="granel"?"var(--or)":c.tipo==="bigbag"?"var(--gr)":"var(--bl)"}">${c.placa}</div>
-      <div class="tick-ac">${c.ac}</div>
-      <div class="tick-tipo tt-${c.tipo}">${c.tipo==="bigbag"?"BIG BAG":c.tipo.toUpperCase()}</div>
+  const tk=document.getElementById("ticker");
+  if(!all.length){tk.style.display="none";return;}
+  tk.style.display="block";
+  const cor={granel:"var(--or)",ensacado:"var(--bl)",bigbag:"var(--gr)"};
+  const makeItems=()=>all.map(c=>`
+    <div class="t-item">
+      <span class="t-pos">${c.pos}°</span>
+      <span class="t-pl" style="color:${cor[c.tipo]}">${c.placa}</span>
+      <span class="t-ac">${c.ac}</span>
+      <span class="t-tip tt-${c.tipo}">${c.tipo==="bigbag"?"BIG BAG":c.tipo.toUpperCase()}</span>
     </div>`).join("");
   const inner=document.getElementById("ticker-inner");
-  inner.innerHTML=html+html; // duplica para loop suave
-  // Ajusta velocidade conforme quantidade
-  const dur=Math.max(12,todos.length*4);
-  inner.style.animationDuration=dur+"s";
+  // duplica para loop contínuo
+  inner.innerHTML=makeItems()+makeItems();
+  inner.className="ticker-inner"+(all.length>2?" running":"");
+  inner.style.animationDuration=Math.max(14,all.length*5)+"s";
 }
 
-function flash(){
-  const el=document.getElementById("painel-chamada");
-  el.classList.remove("flashing");void el.offsetWidth;
-  el.classList.add("flashing");
-  setTimeout(()=>el.classList.remove("flashing"),1600);
+// ── Flash ──
+function doFlash(){
+  const el=document.getElementById("left-panel");
+  el.classList.remove("flash");void el.offsetWidth;
+  el.classList.add("flash");
+  setTimeout(()=>el.classList.remove("flash"),1300);
 }
-function som(){
+
+// ── Som ──
+function doSound(){
   try{
-    const ctx=new AudioContext();
-    [[660,.0],[880,.15],[1100,.30],[660,.50]].forEach(([f,t])=>{
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
+    const A=new AudioContext();
+    const seq=[[523,.0,.12],[659,.14,.12],[784,.28,.12],[1047,.44,.2]];
+    seq.forEach(([f,t,dur])=>{
+      const o=A.createOscillator(),g=A.createGain();
+      o.connect(g);g.connect(A.destination);
       o.type="sine";o.frequency.value=f;
-      g.gain.setValueAtTime(.35,ctx.currentTime+t);
-      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.18);
-      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.2);
+      g.gain.setValueAtTime(0,A.currentTime+t);
+      g.gain.linearRampToValueAtTime(.3,A.currentTime+t+.02);
+      g.gain.exponentialRampToValueAtTime(.001,A.currentTime+t+dur);
+      o.start(A.currentTime+t);o.stop(A.currentTime+t+dur+.05);
     });
   }catch(e){}
 }
