@@ -358,7 +358,7 @@ const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortalez
 const durStr=ms=>{if(!ms||ms<0)return"";const m=Math.round(ms/60000);return m<60?m+"m":Math.floor(m/60)+"h"+(m%60?m%60+"m":"");};
 
 let filas={granel:[],ensacado:[],bigbag:[]};
-let lastId=null,lastPlaca=null;
+let lastId=null,lastPlaca=null,lastChamada=null;
 
 // ── ausência ticker: lista de ausentes do dia (últimas 2h) ──
 let ausentes=[]; // [{placa, ac, motivo, ts}]
@@ -386,18 +386,22 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
   if(last.id!==lastId){
     lastId=last.id;
     lastPlaca=last.placa||null;
-    // Mostra placa no idle em destaque
-    const ip=document.getElementById("idle-placa");
-    const iu=document.getElementById("idle-ultima");
-    const itxt=document.getElementById("idle");
-    if(last.placa){
-      ip.textContent=last.placa;
-      ip.classList.add("visivel");
-      iu.textContent="🔔 veículo chamado para entrada";
-      iu.classList.add("visivel");
-    }
-    document.getElementById("idle").style.display="flex";
-    document.getElementById("call-active").style.display="none";
+    const tp=last.tipoCarga||"ensacado";
+    lastChamada={placa:last.placa||"—",ac:last.ac||"—",tp,num:last.numero||null};
+    // Mostra direto no call-active (mesmo visual da chamada ativa)
+    document.getElementById("idle").style.display="none";
+    const ca=document.getElementById("call-active");
+    ca.style.display="flex";
+    ca.className=`call-active c-${tp}`;
+    document.getElementById("tipo-pill").textContent=TLABEL[tp]||tp;
+    const pb=document.getElementById("placa-box");
+    pb.className="placa-box placa-size enter";
+    pb.textContent=last.placa||"—";
+    setTimeout(()=>{pb.classList.replace("enter","beat");},520);
+    const acEl=document.getElementById("call-ac");
+    acEl.textContent="AC: "+(last.ac||"—");
+    acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
+    document.getElementById("call-num").textContent=last.numero?`Chamada Nº ${String(last.numero).padStart(3,"0")}`:"";
     doFlash();doSound();falarPlaca(last.placa||"");
   }
 });
@@ -454,6 +458,7 @@ const TLABEL={granel:"🚛 GRANEL",ensacado:"📦 ENSACADO",bigbag:"🛍️ BIG 
 function showCall(c){
   const tp=c.tipoCarga||"ensacado";
   lastPlaca=c.placa||null;
+  lastChamada={placa:c.placa||"—",ac:c.ac||"—",tp:tp,num:c.numero||null};
   // Inicia timer de ausência de 5min
   iniciarTimerAusencia(c.placa,c.ac,tp,c.numero);
   document.getElementById("idle").style.display="none";
@@ -472,17 +477,25 @@ function showCall(c){
 }
 function showIdle(){
   if(ausenciaTimer){clearTimeout(ausenciaTimer);ausenciaTimer=null;}
-  document.getElementById("idle").style.display="flex";
-  document.getElementById("call-active").style.display="none";
-  document.getElementById("ticker").style.display="none";
-  // Mostra última placa chamada se houver
-  const ip=document.getElementById("idle-placa");
-  const iu=document.getElementById("idle-ultima");
-  if(lastPlaca){
-    ip.textContent=lastPlaca;
-    ip.classList.add("visivel");
-    iu.textContent="última placa chamada";
-    iu.classList.add("visivel");
+  // Se há última chamada, mantém call-active visível com os dados dela
+  if(lastChamada){
+    document.getElementById("idle").style.display="none";
+    const ca=document.getElementById("call-active");
+    ca.style.display="flex";
+    ca.className=`call-active c-${lastChamada.tp}`;
+    document.getElementById("tipo-pill").textContent=TLABEL[lastChamada.tp]||lastChamada.tp;
+    const pb=document.getElementById("placa-box");
+    pb.className="placa-box placa-size beat";
+    pb.textContent=lastChamada.placa;
+    const acEl=document.getElementById("call-ac");
+    acEl.textContent="AC: "+lastChamada.ac;
+    acEl.style.color=lastChamada.tp==="granel"?"rgba(251,146,60,.75)":lastChamada.tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
+    document.getElementById("call-num").textContent=lastChamada.num?`Chamada Nº ${String(lastChamada.num).padStart(3,"0")}`:"";
+  } else {
+    // Sem nenhuma chamada ainda: mostra o idle original
+    document.getElementById("idle").style.display="flex";
+    document.getElementById("call-active").style.display="none";
+    document.getElementById("ticker").style.display="none";
   }
 }
 
