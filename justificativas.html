@@ -104,6 +104,31 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .cal-clear-j{margin-top:8px;width:100%;padding:4px;border:1px solid var(--bd);border-radius:5px;background:transparent;color:var(--t3);font-size:10px;cursor:pointer;transition:all .15s;text-align:center}
 .cal-clear-j:hover{border-color:var(--rd);color:var(--rd)}
 /* Print para PDF */
+.rel-btn{padding:7px 16px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .2s}
+.rel-btn:hover{background:rgba(0,232,150,.18)}
+/* Modal relatório */
+.modal-rel{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);padding:20px;overflow-y:auto}
+.modal-rel.show{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);width:100%;max-width:1200px;margin:auto;overflow:hidden}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--tx);flex:1;letter-spacing:1px}
+.modal-close{width:30px;height:30px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{border-color:var(--rd);color:var(--rd)}
+.modal-body{padding:16px 20px;overflow-x:auto}
+.modal-info{font-size:11px;color:var(--t2);margin-bottom:12px}
+.rel-table{width:100%;border-collapse:collapse;font-size:11px}
+.rel-table th{text-align:left;padding:8px 10px;font-size:9px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd);white-space:nowrap;background:#003366}
+.rel-table td{padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:middle;color:var(--tx)}
+.rel-table tr:hover td{background:var(--bg3)}
+.rel-placa{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--bl);letter-spacing:1px}
+.rel-tmac{font-weight:700;color:var(--rd)}
+.rel-garg{color:var(--or);font-weight:600}
+.rel-just-ok{color:var(--gr);font-weight:600}
+.rel-just-pend{color:var(--rd);font-style:italic}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.exp-btn{padding:10px 22px;border:none;border-radius:var(--rs);background:var(--bl);color:#000;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px;transition:opacity .2s}
+.exp-btn:hover{opacity:.88}
+/* Print PDF */
 @media print{
   .top,.filter-row,.filter-block-j,.modal-rel,.rel-btn{display:none!important}
   .wrap{max-width:100%!important;padding:0!important}
@@ -173,6 +198,25 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
   </div>
   <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando...</div></div>
   <div id="lista"></div>
+</div>
+
+<!-- MODAL RELATÓRIO TMAC -->
+<div class="modal-rel" id="modal-rel">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS</div>
+      <button class="modal-close" onclick="document.getElementById('modal-rel').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info" id="rel-info"></div>
+      <div id="rel-body"></div>
+    </div>
+    <div class="modal-foot">
+      <span id="rel-total" style="font-size:11px;color:var(--t2);margin-right:auto"></span>
+      <button class="modal-close" style="padding:8px 18px;width:auto" onclick="document.getElementById('modal-rel').classList.remove('show')">Fechar</button>
+      <button class="exp-btn" onclick="exportarPdf()">📄 Exportar PDF</button>
+    </div>
+  </div>
 </div>
 
 <script type="module">
@@ -481,5 +525,106 @@ window.editJust=id=>{
     <textarea class="just-input" id="desc-${id}" placeholder="Descreva mais detalhes...">${c.justificativa?.descricao||""}</textarea>
     <button class="save-btn" id="savebtn-${id}" onclick="salvar('${id}')"${motivoAtual?"":"disabled"}>💾 Salvar Justificativa</button>`;
 };
+window.abrirRelatorio=()=>{
+  const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
+  const atrasados=ALL.filter(c=>{
+    if(!c.data||c.data<s||c.data>e)return false;
+    if(c.setorAtual==="posto1")return false;
+    const en=getTS(c,"entrada","ts");if(!en)return false;
+    const sa=getTS(c,"faturamento","ts");
+    const agora=sa||new Date();
+    return(agora-en)>LIMITE_MS;
+  })
+  .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
+  .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
+  .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J)
+  .sort((a,b)=>(a.data>b.data?-1:1));
+
+  const per=s===e?s:`${s} a ${e}`;
+  document.getElementById("rel-info").textContent=`Período: ${per} · Veículos com TMAC > 2h10: ${atrasados.length}`;
+  document.getElementById("rel-total").textContent=`${atrasados.length} veículo${atrasados.length!==1?"s":""}`;
+
+  if(!atrasados.length){
+    document.getElementById("rel-body").innerHTML=`<div style="text-align:center;padding:32px;color:var(--t3)">✅ Nenhum veículo excedeu o TMAC de 2h10 no período selecionado.</div>`;
+    document.getElementById("modal-rel").classList.add("show");
+    return;
+  }
+
+  const rows=atrasados.map(c=>{
+    const en=getTS(c,"entrada","ts");
+    const sa=getTS(c,"faturamento","ts");
+    const agora=sa||new Date();
+    const tmacMs=agora-en;
+    const g=gargalo(c);
+    const temJust=!!(c.justificativa?.motivo);
+    const tipoLabel=(c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"—");
+    return`<tr>
+      <td><span class="rel-placa">${c.placa}</span></td>
+      <td style="color:var(--t2)">${c.ac||"—"}</td>
+      <td style="color:var(--t2)">${getTurno(en)||"—"}</td>
+      <td style="color:var(--t2);font-size:10px">${tipoLabel}</td>
+      <td style="color:var(--t2)">${fmtT(en)}</td>
+      <td style="color:var(--t2)">${sa?fmtT(sa):"Em processo"}</td>
+      <td class="rel-tmac">${durStr(tmacMs)}</td>
+      <td class="rel-garg">${g?g.lb:"—"}</td>
+      <td style="color:var(--t2)">${g?durStr(g.ms):"—"}</td>
+      <td>${temJust?`<span class="rel-just-ok">✅ Justificado</span>`:`<span class="rel-just-pend">⏳ Pendente</span>`}</td>
+      <td style="color:var(--t2);font-size:10px;max-width:220px">${c.justificativa?.motivo||"—"}${c.justificativa?.descricao?" — "+c.justificativa.descricao:""}</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("rel-body").innerHTML=`
+    <table class="rel-table">
+      <thead><tr>
+        <th>Placa</th><th>AC</th><th>Turno</th><th>Tipo</th>
+        <th>Entrada</th><th>Saída</th><th>TMAC</th>
+        <th>Gargalo Principal</th><th>Tempo Gargalo</th>
+        <th>Status</th><th>Justificativa</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  document.getElementById("modal-rel").classList.add("show");
+};
+
+window.exportarPdf=()=>{
+  const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
+  const hoje=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const hora=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"});
+
+  // Pega tabela já renderizada no modal
+  const tabela=document.getElementById("rel-body")?.innerHTML||"";
+  const per=s===e?s:`${s} a ${e}`;
+
+  const janela=window.open("","_blank","width=1100,height=800");
+  janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"/>
+<title>Relatório TMAC — ${per}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;font-size:10pt;padding:20px;color:#111}
+  h1{font-size:14pt;color:#003366;text-align:center;margin-bottom:4pt}
+  .sub{font-size:9pt;color:#555;text-align:center;margin-bottom:14pt}
+  .sub.alert{color:#cc0000;font-weight:bold}
+  table{border-collapse:collapse;width:100%;font-size:8.5pt;margin-top:8pt}
+  th{background:#003366;color:#fff;padding:6px 8px;text-align:left;font-size:8pt;white-space:nowrap}
+  td{padding:5px 8px;border:1px solid #ccc}
+  tr:nth-child(even) td{background:#f0f4fb}
+  .footer{margin-top:18pt;font-size:7.5pt;color:#888;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}
+  @media print{@page{margin:1.5cm;size:A4 landscape}}
+</style>
+</head><body>
+<h1>CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS</h1>
+<div class="sub">Apodi Cimentos · Período: ${per} · Gerado em: ${hoje} às ${hora}</div>
+<div class="sub alert">Veículos com TMAC superior a 2h10</div>
+${tabela}
+<div class="footer">Documento gerado pelo Sistema de Rastreio de Carregamento — Apodi Cimentos</div>
+</body></html>`);
+  janela.document.close();
+  janela.focus();
+  setTimeout(()=>janela.print(),600);
+};
+
 </script>
 </body></html>
