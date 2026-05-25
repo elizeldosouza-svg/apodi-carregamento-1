@@ -481,17 +481,22 @@ window.setTipoCimento=(t,el)=>{MTCIM=t;document.querySelectorAll(".ttb-cim-todos
 
 function getFiltered(){
   const{s,e}=periodDates(MP);
-  let list;
-  if(MDATA){
-    // Data específica selecionada no calendário + presos do dia
-    const presosData=ALL.filter(c=>c.data<MDATA&&c.setorAtual!=="concluido");
-    list=[...presosData,...ALL.filter(c=>c.data===MDATA)];
-  } else {
-    // Inclui veículos do período + presos de dias anteriores não concluídos
-    const presos=ALL.filter(c=>c.data<s&&c.setorAtual!=="concluido");
-    list=[...presos,...ALL.filter(c=>c.data>=s&&c.data<=e)];
+  const dataRef=MDATA||null;
+
+  // Mesma lógica do render: concluídos pela data de saída, em processo pela data de entrada
+  function noperiodo(c){
+    if(c.setorAtual==="concluido"){
+      const sa=getTS(c,"faturamento","ts");
+      if(!sa)return false;
+      const saData=sa.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+      return dataRef?saData===dataRef:saData>=s&&saData<=e;
+    }
+    if(c.setorAtual!=="concluido"&&c.data&&c.data<(dataRef||s))return true;
+    return dataRef?c.data===dataRef:c.data>=s&&c.data<=e;
   }
-  // Remove duplicatas (segurança)
+
+  let list=ALL.filter(noperiodo);
+  // Remove duplicatas
   const seen=new Set();
   list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
   if(MT!=="t")list=list.filter(c=>isPreso(c)||getTurno(getTS(c,"entrada","ts"))===MT);
@@ -512,15 +517,23 @@ function getFiltered(){
 
 window.render=()=>{
   const{s,e}=periodDates(MP);
-  // Inclui presos nos stats também
-  let period;
-  if(MDATA){
-    const presosStats2=ALL.filter(c=>c.data<MDATA&&c.setorAtual!=="concluido");
-    period=[...presosStats2,...ALL.filter(c=>c.data===MDATA)];
-  } else {
-    const presosStats=ALL.filter(c=>c.data<s&&c.setorAtual!=="concluido");
-    period=[...presosStats,...ALL.filter(c=>c.data>=s&&c.data<=e)];
+  const dataRef=MDATA||null;
+
+  // Para veículos concluídos: usa data de saída (faturamento.ts)
+  // Para veículos em processo: usa data de entrada (c.data)
+  function noperiodo(c){
+    if(c.setorAtual==="concluido"){
+      const sa=getTS(c,"faturamento","ts");
+      if(!sa)return false;
+      const saData=sa.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+      return dataRef?saData===dataRef:saData>=s&&saData<=e;
+    }
+    // Em processo: usa data de entrada, mas inclui presos (data anterior, não concluído)
+    if(c.setorAtual!=="concluido"&&c.data&&c.data<(dataRef||s))return true;
+    return dataRef?c.data===dataRef:c.data>=s&&c.data<=e;
   }
+
+  let period=ALL.filter(noperiodo);
   const seenSt=new Set();
   period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
   if(MT!=="t")period=period.filter(c=>isPreso(c)||getTurno(getTS(c,"entrada","ts"))===MT);
