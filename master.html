@@ -125,6 +125,31 @@ tr.alerta .turno{opacity:.7}
 .crd-tmac .ei{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--tm)}
 .crd-tmac .ei.w{color:var(--t3);font-style:italic;font-size:11px;font-family:'Inter',sans-serif;font-weight:400}
 @media(max-width:768px){.tcard{display:none}.cards{display:flex}.stats{grid-template-columns:repeat(4,1fr)}.export-btn span{display:none}}
+
+/* ══ CALENDÁRIO MASTER ══ */
+.cal-popup{position:absolute;right:0;top:100%;margin-top:6px;z-index:500;display:none}
+.cal-popup.show{display:block}
+.cal-wrap-m{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;min-width:228px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.cal-nav-m{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-nav-m button{width:26px;height:26px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cal-nav-m button:hover{border-color:var(--bl);color:var(--bl)}
+.cal-month-m{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--tx);letter-spacing:.5px}
+.cal-grid-m{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow-m{text-align:center;font-size:8px;font-weight:700;color:var(--t3);padding:2px 0;text-transform:uppercase}
+.cal-day-m{text-align:center;font-size:11px;padding:5px 2px;border-radius:5px;cursor:pointer;color:var(--t2);transition:all .12s;user-select:none;position:relative}
+.cal-day-m:hover:not(.cal-empty-m):not(.cal-today-m):not(.cal-sel-m){background:var(--bg4);color:var(--tx)}
+.cal-day-m.cal-empty-m{cursor:default}
+.cal-day-m.cal-today-m{color:var(--bl);font-weight:700}
+.cal-day-m.cal-today-m::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--bl);border-radius:50%}
+.cal-day-m.cal-sel-m{background:var(--bl);color:var(--bg);font-weight:700}
+.cal-day-m.cal-has-m{font-weight:600;color:var(--tx)}
+.cal-day-m.cal-has-m.cal-today-m{color:var(--bl)}
+.cal-clear-m{margin-top:8px;width:100%;padding:5px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t3);font-size:10px;cursor:pointer;transition:all .15s;text-align:center}
+.cal-clear-m:hover{border-color:var(--bl);color:var(--bl)}
+.cal-toggle{position:relative}
+.cal-btn{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.cal-btn:hover{border-color:var(--bl);color:var(--bl)}
+.cal-btn.has-date{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.08)}
 </style>
 </head>
 <body>
@@ -135,6 +160,20 @@ tr.alerta .turno{opacity:.7}
   <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
   <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,232,150,.15)'" onmouseout="this.style.background='rgba(0,232,150,.07)'">🏭 Pátio</a>
   <a href="/admin" style="padding:6px 14px;border:1px solid rgba(255,68,102,.5);border-radius:20px;background:rgba(255,68,102,.1);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.2)'" onmouseout="this.style.background='rgba(255,68,102,.1)'">🔧 Admin</a>
+  <div class="cal-toggle" id="cal-toggle">
+    <button class="cal-btn" id="cal-btn" onclick="toggleCal()">📅 <span id="cal-btn-txt">Data</span></button>
+    <div class="cal-popup" id="cal-popup">
+      <div class="cal-wrap-m">
+        <div class="cal-nav-m">
+          <button onclick="calMoveM(-1)">‹</button>
+          <span class="cal-month-m" id="cal-title-m"></span>
+          <button onclick="calMoveM(1)">›</button>
+        </div>
+        <div class="cal-grid-m" id="cal-grid-m"></div>
+        <button class="cal-clear-m" id="cal-clear-m" onclick="calClearM()" style="display:none">✕ Limpar data</button>
+      </div>
+    </div>
+  </div>
   <div class="live"><div class="dot"></div>AO VIVO</div>
 </div>
 <div class="wrap">
@@ -345,14 +384,93 @@ document.addEventListener("click",e=>{
   updateSortHeaders();render();
 });
 
-let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t";
+let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t",MDATA=null;
+let CAL_Y_M=0,CAL_M_M=0;
+
+function calInitM(){
+  const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  CAL_Y_M=tz.getFullYear();CAL_M_M=tz.getMonth();
+  calRenderM();
+}
+window.toggleCal=()=>{
+  const p=document.getElementById("cal-popup");
+  p.classList.toggle("show");
+  if(p.classList.contains("show"))calRenderM();
+};
+// Fecha ao clicar fora
+document.addEventListener("click",e=>{
+  const t=document.getElementById("cal-toggle");
+  if(t&&!t.contains(e.target))document.getElementById("cal-popup").classList.remove("show");
+});
+window.calMoveM=dir=>{
+  CAL_M_M+=dir;
+  if(CAL_M_M>11){CAL_M_M=0;CAL_Y_M++;}
+  else if(CAL_M_M<0){CAL_M_M=11;CAL_Y_M--;}
+  calRenderM();
+};
+window.calClearM=()=>{
+  MDATA=null;
+  document.getElementById("cal-clear-m").style.display="none";
+  document.getElementById("cal-btn").classList.remove("has-date");
+  document.getElementById("cal-btn-txt").textContent="Data";
+  document.getElementById("cal-popup").classList.remove("show");
+  // Restaura filtro período
+  MP="hoje";
+  document.querySelectorAll(".pb").forEach(b=>b.classList.toggle("on",b.textContent.trim()==="HOJE"));
+  calRenderM();render();
+};
+function calRenderM(){
+  const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  const DOWS=["D","S","T","Q","Q","S","S"];
+  document.getElementById("cal-title-m").textContent=MESES[CAL_M_M]+" "+CAL_Y_M;
+  const pad=n=>String(n).padStart(2,"0");
+  const prefix=`${CAL_Y_M}-${pad(CAL_M_M+1)}-`;
+  const comDados=new Set(ALL.filter(c=>c.data&&c.data.startsWith(prefix)).map(c=>parseInt(c.data.split("-")[2])));
+  const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  const todayY=tz.getFullYear(),todayM=tz.getMonth(),todayD=tz.getDate();
+  const firstDow=new Date(CAL_Y_M,CAL_M_M,1).getDay();
+  const daysInMonth=new Date(CAL_Y_M,CAL_M_M+1,0).getDate();
+  const selD=MDATA?parseInt(MDATA.split("-")[2]):null;
+  const selY=MDATA?parseInt(MDATA.split("-")[0]):null;
+  const selM=MDATA?parseInt(MDATA.split("-")[1])-1:null;
+  let html2=DOWS.map(d=>`<div class="cal-dow-m">${d}</div>`).join("");
+  for(let i=0;i<firstDow;i++)html2+=`<div class="cal-day-m cal-empty-m"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday=d===todayD&&CAL_M_M===todayM&&CAL_Y_M===todayY;
+    const isSel=d===selD&&CAL_M_M===selM&&CAL_Y_M===selY;
+    const hasData=comDados.has(d);
+    let cls="cal-day-m";
+    if(isToday)cls+=" cal-today-m";
+    if(isSel)cls+=" cal-sel-m";
+    if(hasData&&!isSel)cls+=" cal-has-m";
+    html2+=`<div class="${cls}" onclick="calSelectM(${d})">${d}</div>`;
+  }
+  document.getElementById("cal-grid-m").innerHTML=html2;
+}
+window.calSelectM=d=>{
+  const pad=n=>String(n).padStart(2,"0");
+  MDATA=`${CAL_Y_M}-${pad(CAL_M_M+1)}-${pad(d)}`;
+  const dt=new Date(CAL_Y_M,CAL_M_M,d);
+  const label=dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});
+  document.getElementById("cal-btn").classList.add("has-date");
+  document.getElementById("cal-btn-txt").textContent=label;
+  document.getElementById("cal-clear-m").style.display="block";
+  // Reseta filtro de período para não conflitar
+  MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
+  calRenderM();
+  document.getElementById("cal-popup").classList.remove("show");
+  render();
+};
 
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
   ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
   render();
+  calRenderM();
   document.getElementById("ld").style.display="none";
   document.getElementById("tbl").style.display="block";
 });
+// Inicializa calendário assim que página carrega
+calInitM();
 
 window.setPeriod=(p,el)=>{MP=p;document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setF=(f,el)=>{MF=f;document.querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
@@ -363,10 +481,22 @@ window.setTipoCimento=(t,el)=>{MTCIM=t;document.querySelectorAll(".ttb-cim-todos
 
 function getFiltered(){
   const{s,e}=periodDates(MP);
-  let list=ALL.filter(c=>c.data>=s&&c.data<=e);
-  if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
-  if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
-  if(MTCIM!=="t")list=list.filter(c=>c.tipoCimento===MTCIM);
+  let list;
+  if(MDATA){
+    // Data específica selecionada no calendário + presos do dia
+    const presosData=ALL.filter(c=>c.data<MDATA&&c.setorAtual!=="concluido");
+    list=[...presosData,...ALL.filter(c=>c.data===MDATA)];
+  } else {
+    // Inclui veículos do período + presos de dias anteriores não concluídos
+    const presos=ALL.filter(c=>c.data<s&&c.setorAtual!=="concluido");
+    list=[...presos,...ALL.filter(c=>c.data>=s&&c.data<=e)];
+  }
+  // Remove duplicatas (segurança)
+  const seen=new Set();
+  list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
+  if(MT!=="t")list=list.filter(c=>isPreso(c)||getTurno(getTS(c,"entrada","ts"))===MT);
+  if(MTC!=="t")list=list.filter(c=>isPreso(c)||c.tipoCarga===MTC);
+  if(MTCIM!=="t")list=list.filter(c=>isPreso(c)||c.tipoCimento===MTCIM);
   if(MF==="a")list=list.filter(c=>c.setorAtual!=="concluido");
   if(MF==="c")list=list.filter(c=>c.setorAtual==="concluido");
   const q=(document.getElementById("q")?.value||"").toUpperCase();
@@ -382,10 +512,20 @@ function getFiltered(){
 
 window.render=()=>{
   const{s,e}=periodDates(MP);
-  let period=ALL.filter(c=>c.data>=s&&c.data<=e);
-  if(MT!=="t")period=period.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
-  if(MTC!=="t")period=period.filter(c=>c.tipoCarga===MTC);
-  if(MTCIM!=="t")period=period.filter(c=>c.tipoCimento===MTCIM);
+  // Inclui presos nos stats também
+  let period;
+  if(MDATA){
+    const presosStats2=ALL.filter(c=>c.data<MDATA&&c.setorAtual!=="concluido");
+    period=[...presosStats2,...ALL.filter(c=>c.data===MDATA)];
+  } else {
+    const presosStats=ALL.filter(c=>c.data<s&&c.setorAtual!=="concluido");
+    period=[...presosStats,...ALL.filter(c=>c.data>=s&&c.data<=e)];
+  }
+  const seenSt=new Set();
+  period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
+  if(MT!=="t")period=period.filter(c=>isPreso(c)||getTurno(getTS(c,"entrada","ts"))===MT);
+  if(MTC!=="t")period=period.filter(c=>isPreso(c)||c.tipoCarga===MTC);
+  if(MTCIM!=="t")period=period.filter(c=>isPreso(c)||c.tipoCimento===MTCIM);
 
   document.getElementById("s0").textContent=period.length;
   document.getElementById("s1").textContent=period.filter(c=>c.setorAtual?.startsWith("triagem")).length;
@@ -430,8 +570,8 @@ window.render=()=>{
   }).filter(v=>v!=null);
   document.getElementById("s9").textContent=tmfVals.length?durStr(tmfVals.reduce((a,b)=>a+b,0)/tmfVals.length):"—";
 
-  const list=getFiltered(); 
-  document.getElementById("cnt").textContent=list.length+" veículo"+(list.length!==1?"s":"");
+  const list=getFiltered();
+  document.getElementById("cnt").textContent=list.length+" caminhão"+(list.length!==1?"s":"");
 
   const tb=document.getElementById("tbody"),em=document.getElementById("emp"),cards=document.getElementById("cards");
   if(!list.length){tb.innerHTML="";em.style.display="block";cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";return;}
