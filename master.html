@@ -479,24 +479,35 @@ window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>
 window.setTipoCimento=(t,el)=>{MTCIM=t;document.querySelectorAll(".ttb-cim-todos,.ttb-cp2f,.ttb-cp3,.ttb-cp5").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 
+// ── Helper: retorna o timestamp de referência do veículo para filtros ──
+// Concluído → usa saída (faturamento.ts)
+// Em processo → usa entrada
+function tsRef(c){
+  if(c.setorAtual==="concluido"){
+    const sa=getTS(c,"faturamento","ts");
+    return sa||getTS(c,"entrada","ts");
+  }
+  return getTS(c,"entrada","ts");
+}
+function dataRef(c){
+  const ts=tsRef(c);
+  if(!ts)return c.data||null;
+  return ts.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+}
+
+function noperiodo(c,s,e,mdata){
+  const dr=dataRef(c);
+  if(!dr)return false;
+  // Veículo em processo de dia anterior (preso): sempre incluir no período atual
+  if(c.setorAtual!=="concluido"&&c.data&&c.data<(mdata||s))return true;
+  return mdata?dr===mdata:dr>=s&&dr<=e;
+}
+
 function getFiltered(){
   const{s,e}=periodDates(MP);
-  const dataRef=MDATA||null;
+  const mdata=MDATA||null;
 
-  // Mesma lógica do render: concluídos pela data de saída, em processo pela data de entrada
-  function noperiodo(c){
-    if(c.setorAtual==="concluido"){
-      const sa=getTS(c,"faturamento","ts");
-      if(!sa)return false;
-      const saData=sa.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-      return dataRef?saData===dataRef:saData>=s&&saData<=e;
-    }
-    if(c.setorAtual!=="concluido"&&c.data&&c.data<(dataRef||s))return true;
-    return dataRef?c.data===dataRef:c.data>=s&&c.data<=e;
-  }
-
-  let list=ALL.filter(noperiodo);
-  // Remove duplicatas
+  let list=ALL.filter(c=>noperiodo(c,s,e,mdata));
   const seen=new Set();
   list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
   if(MT!=="t")list=list.filter(c=>isPreso(c)||getTurno(getTS(c,"entrada","ts"))===MT);
@@ -517,23 +528,9 @@ function getFiltered(){
 
 window.render=()=>{
   const{s,e}=periodDates(MP);
-  const dataRef=MDATA||null;
+  const mdata=MDATA||null;
 
-  // Para veículos concluídos: usa data de saída (faturamento.ts)
-  // Para veículos em processo: usa data de entrada (c.data)
-  function noperiodo(c){
-    if(c.setorAtual==="concluido"){
-      const sa=getTS(c,"faturamento","ts");
-      if(!sa)return false;
-      const saData=sa.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-      return dataRef?saData===dataRef:saData>=s&&saData<=e;
-    }
-    // Em processo: usa data de entrada, mas inclui presos (data anterior, não concluído)
-    if(c.setorAtual!=="concluido"&&c.data&&c.data<(dataRef||s))return true;
-    return dataRef?c.data===dataRef:c.data>=s&&c.data<=e;
-  }
-
-  let period=ALL.filter(noperiodo);
+  let period=ALL.filter(c=>noperiodo(c,s,e,mdata));
   const seenSt=new Set();
   period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
   if(MT!=="t")period=period.filter(c=>isPreso(c)||getTurno(getTS(c,"entrada","ts"))===MT);
