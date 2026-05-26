@@ -54,7 +54,7 @@ const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortalez
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
 let HD=[];
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
-  HD=snap.docs.map(d=>{return{id:d.id,...d.data()}}).filter(c=>c.data===hoje());
+  const hj=hoje();HD=snap.docs.map(d=>{return{id:d.id,...d.data()}}).filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
 });
 window.chk=()=>{
   const a=document.getElementById("ac").value.trim();
