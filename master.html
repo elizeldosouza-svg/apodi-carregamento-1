@@ -338,21 +338,21 @@ function pill(s){
 }
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
 function calcTMAC(c){
-  if(c.setorAtual!=="concluido")return null;
+  if(c.setorAtual!=="concluido"&&!c.faturamento?.ts)return null;
   const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
   if(!en||!sa)return null;
   return sa-en;
 }
 function isAlerta(c){
-  // So nao pulsa se concluido
-  if(!c.setorAtual||c.setorAtual==="concluido")return false;
+  // So nao pulsa se concluido ou com saída registrada
+  if(!c.setorAtual||c.setorAtual==="concluido"||c.faturamento?.ts)return false;
   const en=getTS(c,"entrada","ts");
   if(!en)return false;
   // Pulsa se passou mais de 1h30 desde a entrada
   return(Date.now()-en.getTime())>90*60*1000;
 }
 function statusFinal(c){
-  if(c.setorAtual==="concluido")return`<span class="status-icon status-concluido" title="Concluído">✔</span>`;
+  if(c.setorAtual==="concluido"||c.faturamento?.ts)return`<span class="status-icon status-concluido" title="Concluído">✔</span>`;
   const hoje=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
   if(c.data&&c.data<hoje)return`<span class="status-icon status-incompleto" title="Processo não concluído">❌</span>`;
   return`<span class="status-icon status-processo" title="Em processo">⏳</span>`;
@@ -463,7 +463,14 @@ window.calSelectM=d=>{
 };
 
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
-  ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
+  ALL=snap.docs.map(d=>{
+    const data={id:d.id,...d.data()};
+    // Normaliza: se tem saída registrada mas setorAtual não foi atualizado, força concluido
+    if(data.faturamento?.ts&&data.setorAtual!=="concluido"){
+      data.setorAtual="concluido";
+    }
+    return data;
+  });
   render();
   calRenderM();
   document.getElementById("ld").style.display="none";
