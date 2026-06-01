@@ -324,7 +324,7 @@ function buildLinhasHTML(registros,forPrint=false){
       <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#00d4ff"}">${c.placa||"—"}</td>
       <td style="${tdStyle}">${fmtDT(c.portaria?.inicio||c.entrada?.ts)}</td>
       <td style="${tdStyle}">${fmtDT(c.portaria?.fim||c.faturamento?.ts)}</td>
-      <td style="${tdStyle}">${c.ac||"—"}</td>
+      <td style="${tdStyle}"></td>
     </tr>`).join("");
 }
 
@@ -336,7 +336,7 @@ window.verRelatorio=()=>{
     <table class="prev-table">
       <thead><tr>
         <th style="width:40px">Nº</th><th>Placa</th>
-        <th>Entrada</th><th>Saída</th><th>Nota Fiscal / AC</th>
+        <th>Portaria Início</th><th>Portaria Final</th><th>Nota Fiscal</th>
       </tr></thead>
       <tbody>${buildLinhasHTML(registros)||'<tr><td colspan="5" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
     </table>`;
@@ -371,15 +371,18 @@ window.gerarPDF=()=>{
 <h2>Controle de Carregamento</h2>
 <div class="hinfo">
   <table>
-    <tr><td>Portaria:</td><td>Apodi Cimentos</td></tr>
-    <tr><td>Turno:</td><td>Turno ${turnoAtual()}</td></tr>
-    <tr><td>Data:</td><td>${dtHj}</td></tr>
+    <tr><td colspan="2" style="padding-bottom:2pt"><b>Portaria:</b></td></tr>
+    <tr><td colspan="2" style="border-bottom:1px solid #000;padding-bottom:8pt;padding-top:0">&nbsp;</td></tr>
+    <tr><td colspan="2" style="padding-top:8pt;padding-bottom:2pt"><b>Turno:</b></td></tr>
+    <tr><td colspan="2" style="border-bottom:1px solid #000;padding-bottom:8pt;padding-top:0">&nbsp;</td></tr>
+    <tr><td colspan="2" style="padding-top:8pt;padding-bottom:2pt"><b>Data:</b></td></tr>
+    <tr><td colspan="2" style="border-bottom:1px solid #000;padding-bottom:8pt;padding-top:0">&nbsp;</td></tr>
   </table>
 </div>
 <table class="reg">
   <thead><tr>
     <th style="width:40px">Nº</th><th>Placa</th>
-    <th>Entrada</th><th>Saída</th><th>Nota Fiscal / AC</th>
+    <th>Portaria Início</th><th>Portaria Final</th><th>Nota Fiscal</th>
   </tr></thead>
   <tbody>${linhas||'<tr><td colspan="5" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
