@@ -58,6 +58,13 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .section-label{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
 .exp-btn{width:100%;padding:12px;border:1px solid rgba(0,212,255,.4);border-radius:var(--rs);background:rgba(0,212,255,.07);color:#00d4ff;font-size:13px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
 .exp-btn:hover{background:rgba(0,212,255,.15)}
+.filtro-rel{background:var(--c1);border:1px solid var(--bd);border-radius:var(--rs);padding:14px;margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.filtro-titulo{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.filtro-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filtro-label{font-size:11px;color:var(--t3);white-space:nowrap;min-width:80px}
+.filtro-input{flex:1;padding:7px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);font-size:12px;font-family:monospace;outline:none;min-width:0}
+.filtro-input:focus{border-color:var(--ac)}
+.filtro-sep{font-size:12px;color:var(--t3)}
 .modal-prev{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);padding:16px;overflow-y:auto}
 .modal-prev.show{display:flex}
 .modal-box{background:#0f1a2e;border:1px solid #1e3558;border-radius:14px;width:100%;max-width:900px;margin:auto;overflow:hidden}
@@ -155,6 +162,19 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <div class="manual-hint">Digite a placa e confirme abaixo</div>
     </div>
   </div>
+  <div class="filtro-rel">
+    <div class="filtro-titulo">📅 Filtro para o relatório</div>
+    <div class="filtro-row">
+      <span class="filtro-label">Data:</span>
+      <input class="filtro-input" type="date" id="f-data" style="max-width:150px"/>
+    </div>
+    <div class="filtro-row">
+      <span class="filtro-label">Horário:</span>
+      <input class="filtro-input" type="time" id="f-hora-ini" style="max-width:100px" placeholder="00:00"/>
+      <span class="filtro-sep">até</span>
+      <input class="filtro-input" type="time" id="f-hora-fim" style="max-width:100px" placeholder="23:59"/>
+    </div>
+  </div>
   <div class="btn-row">
     <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
     <button class="exp-btn" onclick="gerarPDF()">📄 Exportar PDF</button>
@@ -192,6 +212,16 @@ function showErrBox(id,html){const el=document.getElementById(id);if(el){el.styl
 function hideErrBox(id){const el=document.getElementById(id);if(el)el.style.display="none";}
 function setCamState(id,state,b64,tsText){const area=document.getElementById(id);area.classList.remove("analyzing","success","fail");if(state)area.classList.add(state);if(b64){const p=area.querySelector(".prev");if(p)p.src=b64;}const te=area.querySelector(".tsbar");if(te&&tsText!==undefined)te.textContent=tsText;}
 const B64={},TS={},DC={};let HD=[];
+// Inicializa filtros com hoje e horário completo
+(()=>{
+  const hj=hoje();
+  const fd=document.getElementById("f-data");
+  if(fd)fd.value=hj;
+  const fhi=document.getElementById("f-hora-ini");
+  if(fhi)fhi.value="00:00";
+  const fhf=document.getElementById("f-hora-fim");
+  if(fhf)fhf.value="23:59";
+})();
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{const hj=hoje();HD=snap.docs.map(d=>{return{id:d.id,...d.data()}}).filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));});
 function find(pl){return HD.find(d=>d.placa===pl&&d.setorAtual!=="concluido")||null;}
 window.onEditPlaca=cid=>{const t=cid==="ini"?"i":"f";const pl=document.getElementById("pl-"+cid).value;DC[t]=find(pl);document.getElementById("ci-"+cid).innerHTML=DC[t]?"✅ AC: "+DC[t].ac+"<br>Setor: "+DC[t].setorAtual.replace(/_/g," "):"⚠️ Não encontrado hoje";};
@@ -305,10 +335,30 @@ const turnoAtual=()=>{
   const h=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"})).getHours();
   return h>=23||h<7?"A":h>=7&&h<15?"B":"C";
 };
+function getFiltros(){
+  const dataVal=document.getElementById("f-data")?.value||hoje();
+  const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
+  const [hiH,hiM]=hIni.split(":").map(Number);
+  const [hfH,hfM]=hFim.split(":").map(Number);
+  // converte para timestamps do dia selecionado (fuso Fortaleza)
+  const [ano,mes,dia]=dataVal.split("-").map(Number);
+  const tsIni=new Date(ano,mes-1,dia,hiH,hiM,0).getTime();
+  const tsFim=new Date(ano,mes-1,dia,hfH,hfM,59).getTime();
+  return{dataVal,tsIni,tsFim};
+}
 function buildRegistros(){
-  const hj=hoje();
-  let r=HD.filter(c=>c.data===hj);
-  if(!r.length)r=HD;
+  const{dataVal,tsIni,tsFim}=getFiltros();
+  let r=HD.filter(c=>{
+    if(c.data!==dataVal)return false;
+    // Usa portaria.inicio para filtrar por horário
+    const ptI=c.portaria?.inicio?.toDate?.()?.getTime();
+    if(ptI){return ptI>=tsIni&&ptI<=tsFim;}
+    // Se não tem portaria.inicio, usa entrada.ts
+    const en=c.entrada?.ts?.toDate?.()?.getTime();
+    if(en){return en>=tsIni&&en<=tsFim;}
+    return true;
+  });
   r.sort((a,b)=>{
     const ta=a.portaria?.inicio?.toDate?.()?.getTime()||a.entrada?.ts?.toDate?.()?.getTime()||0;
     const tb=b.portaria?.inicio?.toDate?.()?.getTime()||b.entrada?.ts?.toDate?.()?.getTime()||0;
@@ -318,20 +368,27 @@ function buildRegistros(){
 }
 function buildLinhasHTML(registros,forPrint=false){
   const tdStyle=forPrint?"border:1px solid #ccc;padding:6px 10px":"border:1px solid #1e3558;padding:7px 10px;text-align:center";
+  // Portaria Início e Final: SOMENTE portaria.inicio e portaria.fim
+  // Se não existir, deixa linha pontilhada para preenchimento à caneta
+  const vazio=forPrint?'<span style="display:inline-block;width:120px;border-bottom:1px solid #999">&nbsp;</span>':'<span style="color:#3a6880;font-size:10px">— preencher —</span>';
   return registros.map((c,i)=>`
     <tr>
       <td style="${tdStyle};text-align:center">${i+1}</td>
       <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#00d4ff"}">${c.placa||"—"}</td>
-      <td style="${tdStyle}">${fmtDT(c.portaria?.inicio||c.entrada?.ts)}</td>
-      <td style="${tdStyle}">${fmtDT(c.portaria?.fim||c.faturamento?.ts)}</td>
-      <td style="${tdStyle}"></td>
+      <td style="${tdStyle}">${c.portaria?.inicio?fmtDT(c.portaria.inicio):vazio}</td>
+      <td style="${tdStyle}">${c.portaria?.fim?fmtDT(c.portaria.fim):vazio}</td>
+      <td style="${tdStyle}${forPrint?";min-width:120px;border-bottom:1px solid #ccc":""}">&nbsp;</td>
     </tr>`).join("");
 }
 
 window.verRelatorio=()=>{
   const registros=buildRegistros();
-  const dtHj=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
-  document.getElementById("prev-info").textContent=`Data: ${dtHj} · Turno ${turnoAtual()} · ${registros.length} veículo${registros.length!==1?"s":""}`;
+  const{dataVal,tsIni,tsFim}=getFiltros();
+  const [ano,mes,dia]=dataVal.split("-");
+  const dtFmt=`${dia}/${mes}/${ano}`;
+  const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
+  document.getElementById("prev-info").textContent=`Data: ${dtFmt} · ${hIni}h às ${hFim}h · Turno ${turnoAtual()} · ${registros.length} veículo${registros.length!==1?"s":""}`;
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
@@ -345,13 +402,17 @@ window.verRelatorio=()=>{
 
 window.gerarPDF=()=>{
   const registros=buildRegistros();
-  const dtHj=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const{dataVal}=getFiltros();
+  const [ano,mes,dia]=dataVal.split("-");
+  const dtHj=`${dia}/${mes}/${ano}`;
+  const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
   const linhas=buildLinhasHTML(registros,true);
   const janela=window.open("","_blank","width=900,height=700");
   janela.document.write(`<!DOCTYPE html>
 <html lang="pt-BR"><head>
 <meta charset="UTF-8"/>
-<title>Controle de Portaria — ${dtHj}</title>
+<title>Controle de Portaria — ${dtHj} ${hIni}-${hFim}</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:Arial,sans-serif;font-size:11pt;padding:24px;color:#000}
@@ -386,7 +447,7 @@ window.gerarPDF=()=>{
   </tr></thead>
   <tbody>${linhas||'<tr><td colspan="5" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
-<div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${dtHj}</div>
+<div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${dtHj} · ${hIni}h às ${hFim}h</div>
 </body></html>`);
   janela.document.close();janela.focus();
   setTimeout(()=>janela.print(),600);
