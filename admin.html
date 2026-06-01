@@ -412,11 +412,19 @@ const CREDS={user:"administrador",pwd:"admin2026"};
 // Verifica sessão: sessionStorage (aba atual) OU localStorage (navegação entre abas)
 // Token de admin expira em 8 horas
 function isAdminLogado(){
+  // Verifica sessão atual primeiro
   if(sessionStorage.getItem("admin_auth")==="1")return true;
-  const ts=parseInt(localStorage.getItem("admin_auth_ts")||"0");
-  if(localStorage.getItem("admin_auth")==="1"&&Date.now()-ts<8*60*60*1000){
-    sessionStorage.setItem("admin_auth","1");return true;
-  }
+  // Verifica localStorage com validade de 8h
+  try{
+    const ts=parseInt(localStorage.getItem("admin_auth_ts")||"0");
+    if(localStorage.getItem("admin_auth")==="1"&&ts>0&&Date.now()-ts<8*60*60*1000){
+      sessionStorage.setItem("admin_auth","1");
+      return true;
+    }
+    // Token expirado — limpa
+    localStorage.removeItem("admin_auth");
+    localStorage.removeItem("admin_auth_ts");
+  }catch(e){}
   return false;
 }
 let logado=isAdminLogado();
@@ -765,10 +773,14 @@ function iniciar(){
     if(SELECTED_ID){const still=ALL.find(x=>x.id===SELECTED_ID);if(still)openDrawer(SELECTED_ID);}
   });
 }
+// Inicializa tela de acordo com estado de autenticação
 if(logado){
   document.getElementById("login-screen").style.display="none";
   document.getElementById("app-screen").style.display="block";
   iniciar();
+} else {
+  document.getElementById("login-screen").style.display="flex";
+  document.getElementById("app-screen").style.display="none";
 }
 </script>
 </body></html>
