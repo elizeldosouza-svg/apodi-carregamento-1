@@ -212,31 +212,21 @@ async function lerPlacaComRetry(b64){
     try{
       const resized=await resizeImage(b64);
       const base64=resized.split(",")[1];
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{
+      const resp=await fetch("/api/placa",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",
-          max_tokens:100,
-          messages:[{role:"user",content:[
-            {type:"image",source:{type:"base64",media_type:"image/jpeg",data:base64}},
-            {type:"text",text:"Leia a placa do veiculo nesta imagem. Responda APENAS com os caracteres da placa, sem espacos ou hifens, sem explicacoes. Exemplo: ABC1234"}
-          ]}]
-        })
+        body:JSON.stringify({image:base64})
       });
+      const data=await resp.json();
       if(!resp.ok){
-        const errData=await resp.json().catch(()=>({}));
-        const msg=errData?.error?.message||"Erro "+resp.status;
-        const noRetry=[401,403].includes(resp.status);
-        lastErr={s:"Erro da API: "+msg,d:""};
-        if(noRetry)break;
+        const err={s:data.error||"Erro "+resp.status,d:data.detail||"",noRetry:[401,403].includes(resp.status)};
+        lastErr=err;
+        if(err.noRetry)break;
         if(i<2)await new Promise(r=>setTimeout(r,800));
         continue;
       }
-      const data=await resp.json();
-      const txt=(data.content?.[0]?.text||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
-      if(txt.length>=5)return{ok:true,data:{placa:txt}};
-      lastErr={s:"Placa nao identificada",d:"Tente foto mais proxima com boa iluminacao"};
+      if(data.placa)return{ok:true,data};
+      if(data.placa===null)return{ok:false,notFound:true,obs:data.observacao};
     }catch(e){
       lastErr={s:"Erro de conexao",d:e.message};
     }
@@ -389,10 +379,13 @@ function buildRegistros(){
   const{dataVal,tsIni,tsFim}=getFiltros();
   let r=HD.filter(c=>{
     if(c.data!==dataVal)return false;
-    // Somente veículos registrados pela Portaria (portaria.inicio obrigatório)
+    // Usa portaria.inicio para filtrar por horário
     const ptI=c.portaria?.inicio?.toDate?.()?.getTime();
-    if(!ptI)return false;
-    return ptI>=tsIni&&ptI<=tsFim;
+    if(ptI){return ptI>=tsIni&&ptI<=tsFim;}
+    // Se não tem portaria.inicio, usa entrada.ts
+    const en=c.entrada?.ts?.toDate?.()?.getTime();
+    if(en){return en>=tsIni&&en<=tsFim;}
+    return true;
   });
   r.sort((a,b)=>{
     const ta=a.portaria?.inicio?.toDate?.()?.getTime()||a.entrada?.ts?.toDate?.()?.getTime()||0;
