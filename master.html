@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Master — Rastreio em Tempo Real</title>
+<title>Master - TMAC ONLINE</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
@@ -146,34 +146,39 @@ tr.alerta .turno{opacity:.7}
 @media(max-width:768px){.tcard{display:none}.cards{display:flex}.stats{grid-template-columns:repeat(4,1fr)}.export-btn span{display:none}}
 
 /* ══ CALENDÁRIO MASTER ══ */
+.cal-popup{position:absolute;right:0;top:100%;margin-top:6px;z-index:500;display:none}
+.cal-popup.show{display:block}
+.cal-wrap-m{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;min-width:228px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.cal-nav-m{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-nav-m button{width:26px;height:26px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cal-nav-m button:hover{border-color:var(--bl);color:var(--bl)}
+.cal-month-m{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--tx);letter-spacing:.5px}
+.cal-grid-m{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow-m{text-align:center;font-size:8px;font-weight:700;color:var(--t3);padding:2px 0;text-transform:uppercase}
+.cal-day-m{text-align:center;font-size:11px;padding:5px 2px;border-radius:5px;cursor:pointer;color:var(--t2);transition:all .12s;user-select:none;position:relative}
+.cal-day-m:hover:not(.cal-empty-m):not(.cal-today-m):not(.cal-sel-m){background:var(--bg4);color:var(--tx)}
+.cal-day-m.cal-empty-m{cursor:default}
+.cal-day-m.cal-today-m{color:var(--bl);font-weight:700}
+.cal-day-m.cal-today-m::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--bl);border-radius:50%}
+.cal-day-m.cal-sel-m{background:var(--bl);color:var(--bg);font-weight:700}
+.cal-day-m.cal-has-m{font-weight:600;color:var(--tx)}
+.cal-day-m.cal-has-m.cal-today-m{color:var(--bl)}
+.cal-clear-m{margin-top:8px;width:100%;padding:5px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t3);font-size:10px;cursor:pointer;transition:all .15s;text-align:center}
+.cal-clear-m:hover{border-color:var(--bl);color:var(--bl)}
 .cal-toggle{position:relative}
 .cal-btn{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .cal-btn:hover{border-color:var(--bl);color:var(--bl)}
 .cal-btn.has-date{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.08)}
-.cal-popup{position:absolute;right:0;top:100%;margin-top:8px;z-index:500;display:none}
-.cal-popup.show{display:block}
-.cal-wrap-m{background:#0c1e34;border:1px solid #173250;border-radius:15px;padding:20px;min-width:280px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
-.cal-nav-m{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.cal-nav-m button{width:38px;height:38px;border:none;border-radius:10px;background:#102844;color:var(--tx);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.cal-nav-m button:hover{background:var(--bl);color:#000}
-.cal-month-m{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--tx);letter-spacing:.5px}
-.cal-grid-m{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-dow-m{text-align:center;font-size:9px;font-weight:700;color:#6f8fb8;padding:4px 0;text-transform:uppercase}
-.cal-day-m{height:36px;display:flex;justify-content:center;align-items:center;border-radius:10px;cursor:pointer;color:var(--t2);font-size:12px;transition:all .2s;user-select:none;position:relative}
-.cal-day-m:hover:not(.cal-empty-m):not(.cal-sel-m){background:#14304d;color:var(--tx)}
-.cal-day-m.cal-empty-m{cursor:default}
-.cal-day-m.cal-today-m{color:var(--bl);font-weight:700}
-.cal-day-m.cal-today-m::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--bl);border-radius:50%}
-.cal-day-m.cal-sel-m{background:var(--bl);color:#000;font-weight:700;border-radius:10px}
-.cal-day-m.cal-has-m{font-weight:600;color:var(--tx)}
-.cal-day-m.cal-has-m.cal-today-m{color:var(--bl)}
-.cal-clear-m{margin-top:12px;width:100%;padding:8px;border:1px solid var(--bd);border-radius:10px;background:transparent;color:var(--t3);font-size:11px;cursor:pointer;transition:all .2s;text-align:center;font-weight:600}
-.cal-clear-m:hover{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.cal-time-row{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.cal-time-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.cal-time-input{flex:1;background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--tx);font-size:11px;padding:5px 7px;outline:none;min-width:0;font-family:'Inter',sans-serif}
+.cal-time-input:focus{border-color:var(--bl)}
+.cal-time-sep{font-size:11px;color:var(--t3)}
 </style>
 </head>
 <body>
 <div class="top">
-  <div class="logo">👁️ MASTER — PROCESSOS EM TEMPO REAL</div>
+  <div class="logo">👁️ MASTER — TMAC ONLINE</div>
   <a href="/analise" style="padding:6px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.08);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.08)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
   <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
@@ -191,6 +196,12 @@ tr.alerta .turno{opacity:.7}
         </div>
         <div class="cal-grid-m" id="cal-grid-m"></div>
         <button class="cal-clear-m" id="cal-clear-m" onclick="calClearM()" style="display:none">✕ Limpar data</button>
+        <div class="cal-time-row">
+          <span class="cal-time-label">⏰ De</span>
+          <input class="cal-time-input" type="time" id="cal-hora-ini" value="00:00" onchange="calAtualizarHora()"/>
+          <span class="cal-time-sep">até</span>
+          <input class="cal-time-input" type="time" id="cal-hora-fim" value="23:59" onchange="calAtualizarHora()"/>
+        </div>
       </div>
     </div>
   </div>
@@ -218,7 +229,7 @@ tr.alerta .turno{opacity:.7}
     <button class="pb" onclick="setPeriod('mes',this)">Esse Mês</button>
     <button class="pb" onclick="setPeriod('ano',this)">Esse Ano</button>
     <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
-      <button class="rel-btn-m" onclick="abrirRelatorioMaster()">📋 <span>Relatório PDF</span></button>
+      <button class="rel-btn-m" onclick="window.abrirRelatorioMaster?.()">📋 <span>Relatório PDF</span></button>
   </div>
 
   <div class="filter-row">
@@ -271,7 +282,7 @@ tr.alerta .turno{opacity:.7}
           <th data-col="cimento" style="min-width:52px">Cim.</th>
           <th data-col="ac" style="min-width:54px">AC</th>
           <th data-col="data" style="min-width:50px">Data</th>
-          <th data-col="entrada" style="min-width:50px">Entrada</th>
+          <th data-col="entrada" style="min-width:50px">Posto1</th>
           <th data-col="setor" style="min-width:70px">Setor<br>Atual</th>
           <th data-col="ptI" style="min-width:52px">🏛️<br>Port.Ini</th>
           <th data-col="ptF" style="min-width:52px">🏛️<br>Port.Fim</th>
@@ -281,7 +292,7 @@ tr.alerta .turno{opacity:.7}
           <th data-col="caF" style="min-width:52px">🏗️<br>Carga Fim</th>
           <th data-col="enI" style="min-width:52px">🪢<br>Enl.Ini</th>
           <th data-col="enF" style="min-width:52px">🪢<br>Enl.Fim</th>
-          <th data-col="saida" style="min-width:52px">🧾<br>Saída</th>
+          <th data-col="saida" style="min-width:52px">🧾<br>Faturamento</th>
           <th data-col="tmac" style="min-width:48px">⏱️<br>TMAC</th>
           <th data-col="nf" style="min-width:70px">Nota<br>Fiscal</th>
           <th data-col="status" style="min-width:60px">Status</th>
@@ -305,7 +316,7 @@ tr.alerta .turno{opacity:.7}
     <div class="mrel-body"><div id="mrel-body"></div></div>
     <div class="mrel-foot">
       <button class="mrel-close" style="padding:8px 16px;width:auto" onclick="document.getElementById('mrel-overlay').classList.remove('show')">Fechar</button>
-      <button class="pdf-btn-m" onclick="exportarPDFMaster()">📄 Exportar PDF</button>
+      <button class="pdf-btn-m" onclick="window.exportarPDFMaster?.()">📄 Exportar PDF</button>
     </div>
   </div>
 </div>
@@ -495,14 +506,28 @@ window.calSelectM=d=>{
   const pad=n=>String(n).padStart(2,"0");
   MDATA=`${CAL_Y_M}-${pad(CAL_M_M+1)}-${pad(d)}`;
   const dt=new Date(CAL_Y_M,CAL_M_M,d);
-  const label=dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});
+  const datePart=dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});
+  const hIni=document.getElementById("cal-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("cal-hora-fim")?.value||"23:59";
+  const horaLabel=(hIni==="00:00"&&hFim==="23:59")?"":` ${hIni}-${hFim}`;
   document.getElementById("cal-btn").classList.add("has-date");
-  document.getElementById("cal-btn-txt").textContent=label;
+  document.getElementById("cal-btn-txt").textContent=datePart+horaLabel;
   document.getElementById("cal-clear-m").style.display="block";
   // Reseta filtro de período para não conflitar
   MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
   calRenderM();
   document.getElementById("cal-popup").classList.remove("show");
+  render();
+};
+window.calAtualizarHora=()=>{
+  if(!MDATA)return;
+  const pad=n=>String(n).padStart(2,"0");
+  const dt=new Date(parseInt(MDATA.split("-")[0]),parseInt(MDATA.split("-")[1])-1,parseInt(MDATA.split("-")[2]));
+  const datePart=dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});
+  const hIni=document.getElementById("cal-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("cal-hora-fim")?.value||"23:59";
+  const horaLabel=(hIni==="00:00"&&hFim==="23:59")?"":` ${hIni}-${hFim}`;
+  document.getElementById("cal-btn-txt").textContent=datePart+horaLabel;
   render();
 };
 
@@ -550,8 +575,21 @@ function noperiodo(c,s,e,mdata){
   const dr=dataRef(c);
   if(!dr)return false;
   if(mdata){
-    // Calendário: concluídos cuja saída = data, OU em processo cuja entrada = data
-    return dr===mdata;
+    if(dr!==mdata)return false;
+    // Filtro por horário (campos do calendário)
+    const hIni=document.getElementById("cal-hora-ini")?.value||"00:00";
+    const hFim=document.getElementById("cal-hora-fim")?.value||"23:59";
+    if(hIni!=="00:00"||hFim!=="23:59"){
+      const [ano,mes,dia]=mdata.split("-").map(Number);
+      const [hiH,hiM]=hIni.split(":").map(Number);
+      const [hfH,hfM]=hFim.split(":").map(Number);
+      const tsIni=new Date(ano,mes-1,dia,hiH,hiM,0).getTime();
+      const tsFim=new Date(ano,mes-1,dia,hfH,hfM,59).getTime();
+      const en=getTS(c,"entrada","ts");
+      const enMs=en?en.getTime():null;
+      if(enMs&&(enMs<tsIni||enMs>tsFim))return false;
+    }
+    return true;
   }
   // Período normal: veículo preso (em processo de dia anterior) sempre incluído
   if(c.setorAtual!=="concluido"&&c.data&&c.data<s)return true;
@@ -797,7 +835,10 @@ function buildRelInfo(){
   const cargas={t:"Todos",granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"};
   const cimentos={t:"Todos","CP II F":"CP II F","CP III":"CP III","CP V":"CP V"};
   const status={t:"Todos",a:"Em Processo",c:"Concluidos"};
-  const per=MDATA||periodos[MP]||MP;
+  const hIni=document.getElementById("cal-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("cal-hora-fim")?.value||"23:59";
+  const horaLabel=MDATA&&(hIni!=="00:00"||hFim!=="23:59")?` (${hIni}–${hFim})`:"";
+  const per=(MDATA||periodos[MP]||MP)+horaLabel;
   const list=getFiltered();
   return{per,list,turno:turnos[MT]||MT,carga:cargas[MTC]||MTC,cim:cimentos[MTCIM]||MTCIM,st:status[MF]||MF};
 }
@@ -811,12 +852,12 @@ window.abrirRelatorioMaster=()=>{
     ?`<div style="text-align:center;padding:32px;color:var(--t3)">Nenhum registro com os filtros selecionados.</div>`
     :`<table class="mrel-table">
         <thead><tr>
-          <th style="text-align:left">Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor<br>Atual</th>
+          <th style="text-align:left">Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Posto1</th><th>Setor<br>Atual</th>
           <th>🏛️<br>Port.Ini</th><th>🏛️<br>Port.Fim</th>
           <th>📦<br>Trg.Ini</th><th>📦<br>Trg.Fim</th>
           <th>🏗️<br>Carga Ini</th><th>🏗️<br>Carga Fim</th>
           <th>🪢<br>Enl.Ini</th><th>🪢<br>Enl.Fim</th>
-          <th>🧾<br>Saida</th><th>⏱️<br>TMAC</th>
+          <th>🧾<br>Faturamento</th><th>⏱️<br>TMAC</th>
           <th>Nota<br>Fiscal</th><th>Status</th>
         </tr></thead>
         <tbody>${buildRelRows(list)}</tbody>
@@ -828,9 +869,6 @@ window.exportarPDFMaster=()=>{
   const{per,list,turno,carga,cim,st}=buildRelInfo();
   const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
   const hora=new Date().toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
-  const pad2=n=>String(n).padStart(2,"0");
-  const now=new Date();
-  const fname=`relatorio_rastreio_${now.getFullYear()}${pad2(now.getMonth()+1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}.html`;
   const linhas=list.map((c,i)=>{
     const en=getTS(c,"entrada","ts");
     const sa=getTS(c,"faturamento","ts");
@@ -858,45 +896,38 @@ window.exportarPDFMaster=()=>{
       ${td(c.setorAtual==="concluido"||c.faturamento?.ts?"Concluido":"Em processo","font-size:7pt")}
     </tr>`;
   }).join("");
-  const html=[
-    "<!DOCTYPE html><html lang='pt-BR'><head>",
-    "<meta charset='UTF-8'><title>Relatorio Rastreio - "+dtNow+"</title>",
-    "<style>",
-    "*{box-sizing:border-box;margin:0;padding:0}",
-    "body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}",
-    "h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}",
-    ".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}",
-    "table{border-collapse:collapse;width:100%}",
-    "th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}",
-    "td{padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;vertical-align:middle}",
-    ".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}",
-    "@media print{body{padding:0}@page{margin:.8cm;size:A4 landscape}}",
-    "</style></head><body>",
-    "<h2>Relatorio de Rastreio de Carregamento</h2>",
-    "<div class='info'>Apodi Cimentos &nbsp;&middot; Periodo: <b>"+per+"</b> &nbsp;&middot; Turno: <b>"+turno+"</b> &nbsp;&middot; Carga: <b>"+carga+"</b> &nbsp;&middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &nbsp;&middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &nbsp;&middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>",
-    "<table><thead><tr>",
-    "<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor</th>",
-    "<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>",
-    "<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>",
-    "<th>Saida</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>",
-    "</tr></thead><tbody>",
-    linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>",
-    "</tbody></table>",
-    "<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>",
-    "<div style='margin-top:16pt;text-align:center'>",
-    "<button onclick='window.print()' style='padding:8px 24px;background:#003366;color:#fff;border:none;border-radius:6px;font-size:10pt;font-weight:bold;cursor:pointer'>🖨️ Imprimir / Salvar como PDF</button>",
-    "</div>",
-    "</body></html>"
-  ].join("");
-  // Download direto — compatível com todos os navegadores sem bloqueio de popup
-  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
+  const partes=[];
+  partes.push("<!DOCTYPE html><html lang='pt-BR'><head>");
+  partes.push("<meta charset='UTF-8'><title>Relatorio Rastreio - "+dtNow+"</title>");
+  partes.push("<style>");
+  partes.push("*{box-sizing:border-box;margin:0;padding:0}");
+  partes.push("body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}");
+  partes.push("h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}");
+  partes.push(".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}");
+  partes.push("table{border-collapse:collapse;width:100%}");
+  partes.push("th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}");
+  partes.push(".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}");
+  partes.push("@page{margin:.8cm;size:A4 landscape}");
+  partes.push("</style></head><body>");
+  partes.push("<h2>Relatorio de Rastreio de Carregamento</h2>");
+  partes.push("<div class='info'>Apodi Cimentos &nbsp;&middot; Periodo: <b>"+per+"</b> &nbsp;&middot; Turno: <b>"+turno+"</b> &nbsp;&middot; Carga: <b>"+carga+"</b> &nbsp;&middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &nbsp;&middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &nbsp;&middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>");
+  partes.push("<table><thead><tr>");
+  partes.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Posto1</th><th>Setor</th>");
+  partes.push("<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
+  partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>");
+  partes.push("<th>Faturamento</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>");
+  partes.push("</tr></thead><tbody>");
+  partes.push(linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes.push("</tbody></table>");
+  partes.push("<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>");
+  partes.push("<script>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
+  partes.push("</body></html>");
+  const blob=new Blob([partes.join("")],{type:"text/html;charset=utf-8"});
+  const blobUrl=URL.createObjectURL(blob);
   const a=document.createElement("a");
-  a.href=url;
-  a.download=fname;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},3000);
+  a.href=blobUrl;a.target="_blank";a.rel="noopener noreferrer";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
 };
 </script>
 <!-- Badge Admin -->
