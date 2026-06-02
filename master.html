@@ -855,33 +855,38 @@ window.exportarPDFMaster=()=>{
       ${td(c.setorAtual==="concluido"||c.faturamento?.ts?"Concluido":"Em processo","font-size:7pt")}
     </tr>`;
   }).join("");
-  const janela=window.open("","_blank","width=1400,height=800");
-  janela.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8"/><title>Relatorio Rastreio - ${dtNow}</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}
-h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}
-.info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}
-table{border-collapse:collapse;width:100%}
-th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}
-.footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}
-@media print{@page{margin:.8cm;size:A4 landscape}}
-<\/style><\/head><body>
-<h2>Relatorio de Rastreio de Carregamento</h2>
-<div class="info">Apodi Cimentos &nbsp;· Periodo: <b>${per}</b> &nbsp;· Turno: <b>${turno}</b> &nbsp;· Carga: <b>${carga}</b> &nbsp;· Cimento: <b>${cim}</b><br>Status: <b>${st}</b> &nbsp;· Total: <b>${list.length} veiculo${list.length!==1?"s":""}</b> &nbsp;· Gerado em: <b>${dtNow} as ${hora}</b></div>
-<table><thead><tr>
-  <th style="text-align:left">Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor</th>
-  <th>🏛️ Port.Ini</th><th>🏛️ Port.Fim</th><th>📦 Trg.Ini</th><th>📦 Trg.Fim</th>
-  <th>🏗️ Carga Ini</th><th>🏗️ Carga Fim</th><th>🪢 Enl.Ini</th><th>🪢 Enl.Fim</th>
-  <th>🧾 Saida</th><th>⏱️ TMAC</th><th>Nota Fiscal</th><th>Status</th>
-</tr></thead>
-<tbody>${linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>"}</tbody>
-</table>
-<div class="footer">Sistema de Rastreio de Carregamento - Apodi Cimentos - ${dtNow}</div>
-<\/body><\/html>`);
-  janela.document.close();janela.focus();
-  setTimeout(()=>janela.print(),700);
+  const partes=[];
+  partes.push("<!DOCTYPE html><html lang='pt-BR'><head>");
+  partes.push("<meta charset='UTF-8'><title>Relatorio Rastreio - "+dtNow+"</title>");
+  partes.push("<style>");
+  partes.push("*{box-sizing:border-box;margin:0;padding:0}");
+  partes.push("body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}");
+  partes.push("h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}");
+  partes.push(".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}");
+  partes.push("table{border-collapse:collapse;width:100%}");
+  partes.push("th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}");
+  partes.push(".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}");
+  partes.push("@page{margin:.8cm;size:A4 landscape}");
+  partes.push("</style></head><body>");
+  partes.push("<h2>Relatorio de Rastreio de Carregamento</h2>");
+  partes.push("<div class='info'>Apodi Cimentos &nbsp;&middot; Periodo: <b>"+per+"</b> &nbsp;&middot; Turno: <b>"+turno+"</b> &nbsp;&middot; Carga: <b>"+carga+"</b> &nbsp;&middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &nbsp;&middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &nbsp;&middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>");
+  partes.push("<table><thead><tr>");
+  partes.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor</th>");
+  partes.push("<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
+  partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>");
+  partes.push("<th>Saida</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>");
+  partes.push("</tr></thead><tbody>");
+  partes.push(linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes.push("</tbody></table>");
+  partes.push("<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>");
+  partes.push("<script>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
+  partes.push("</body></html>");
+  const blob=new Blob([partes.join("")],{type:"text/html;charset=utf-8"});
+  const blobUrl=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=blobUrl;a.target="_blank";a.rel="noopener noreferrer";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
 };
 </script>
 <!-- Badge Admin -->
