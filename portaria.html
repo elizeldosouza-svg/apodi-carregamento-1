@@ -389,13 +389,10 @@ function buildRegistros(){
   const{dataVal,tsIni,tsFim}=getFiltros();
   let r=HD.filter(c=>{
     if(c.data!==dataVal)return false;
-    // Usa portaria.inicio para filtrar por horário
+    // Somente veículos registrados pela Portaria (portaria.inicio obrigatório)
     const ptI=c.portaria?.inicio?.toDate?.()?.getTime();
-    if(ptI){return ptI>=tsIni&&ptI<=tsFim;}
-    // Se não tem portaria.inicio, usa entrada.ts
-    const en=c.entrada?.ts?.toDate?.()?.getTime();
-    if(en){return en>=tsIni&&en<=tsFim;}
-    return true;
+    if(!ptI)return false;
+    return ptI>=tsIni&&ptI<=tsFim;
   });
   r.sort((a,b)=>{
     const ta=a.portaria?.inicio?.toDate?.()?.getTime()||a.entrada?.ts?.toDate?.()?.getTime()||0;
