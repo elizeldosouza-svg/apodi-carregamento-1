@@ -18,6 +18,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .fg input{background:var(--c1);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:14px 16px;font-size:16px;font-family:system-ui,sans-serif;outline:none;transition:border-color .2s;width:100%}
 .fg input:focus{border-color:var(--ac)}
 .placa-inp{text-transform:uppercase;letter-spacing:3px;font-weight:700;font-family:monospace;font-size:20px;text-align:center}
+.nf-inp{text-transform:uppercase;letter-spacing:1px;font-size:15px}
 .go{width:100%;padding:16px;border:none;border-radius:var(--rs);font-size:16px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(135deg,#00e896,#009960);color:#000;transition:all .2s;margin-top:4px}
 .go:active{transform:scale(.97)}
 .go:disabled{opacity:.3;cursor:not-allowed}
@@ -42,6 +43,10 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   <div class="fg">
     <label>Placa do Caminhão</label>
     <input id="pl" type="text" placeholder="ABC1234" maxlength="8" autocomplete="off" oninput="chk()" class="placa-inp"/>
+  </div>
+  <div class="fg">
+    <label>Nota Fiscal <span style="font-size:9px;color:var(--t3);font-weight:400;text-transform:none">(opcional)</span></label>
+    <input id="nf" type="text" placeholder="Ex: 549366" autocomplete="off" class="nf-inp"/>
   </div>
   <button class="go" id="go" onclick="confirmar()" disabled>🚀 Confirmar Saída</button>
 </div>
@@ -70,12 +75,25 @@ window.confirmar=async()=>{
   document.getElementById("go").disabled=true;
   try{
     const ts=new Date();
-    await updateDoc(doc(db,"caminhoes_rastreio",c.id),{"faturamento.ts":Timestamp.fromDate(ts),setorAtual:"concluido"});
+    const nfVal=document.getElementById("nf").value.trim();
+await updateDoc(doc(db,"caminhoes_rastreio",c.id),{"faturamento.ts":Timestamp.fromDate(ts),setorAtual:"concluido",...(nfVal?{notaFiscal:nfVal}:{})});
     showMsg("ok","🚀 "+pl+" liberado! AC: "+ac+" · Saída: "+fmtT(ts));
-    document.getElementById("ac").value="";document.getElementById("pl").value="";
+    document.getElementById("ac").value="";document.getElementById("pl").value="";document.getElementById("nf").value="";
   }catch(e){showMsg("er","Erro: "+e.message);}
   document.getElementById("go").disabled=false;
 };
 function showMsg(t,x){const e=document.getElementById("msg");e.className="msg on "+t;e.textContent=x;if(t==="ok")setTimeout(()=>e.className="msg",5000);}
+</script>
+<!-- Badge Admin -->
+<script>
+(function(){
+  const ts=parseInt(localStorage.getItem("admin_auth_ts")||"0");
+  if(localStorage.getItem("admin_auth")==="1"&&Date.now()-ts<8*60*60*1000){
+    const b=document.createElement("div");
+    b.style.cssText="position:fixed;bottom:16px;right:16px;z-index:9999;display:flex;align-items:center;gap:8px;background:#0b1524;border:1px solid rgba(255,68,102,.4);border-radius:20px;padding:6px 14px;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#ff4466;box-shadow:0 4px 20px rgba(0,0,0,.4);user-select:none";
+    b.innerHTML='🔧 MODO ADMIN <span style="opacity:.5;margin:0 6px">·</span><a href="/admin" style="color:#00d4ff;text-decoration:none">← Voltar ao Admin</a>';
+    document.body.appendChild(b);
+  }
+})();
 </script>
 </body></html>
