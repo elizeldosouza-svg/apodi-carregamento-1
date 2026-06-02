@@ -238,7 +238,7 @@ async function lerPlacaComRetry(b64){
       if(txt.length>=5)return{ok:true,data:{placa:txt}};
       lastErr={s:"Placa nao identificada",d:"Tente foto mais proxima com boa iluminacao"};
     }catch(e){
-      lastErr={s:"Erro de conexao",d:e.message};
+      const isFetch=e.message&&(e.message.includes("fetch")||e.message.includes("network")||e.message.includes("Failed"));lastErr={s:"Sem conexao com a API",d:isFetch?"Digite a placa manualmente abaixo":e.message,fetch:isFetch};
     }
     if(i<2)await new Promise(r=>setTimeout(r,800));
   }
@@ -281,10 +281,19 @@ function setupCam(t){
       hideErrBox("err-"+t);
       const res=await lerPlacaComRetry(b64);
       if(!res.ok){
+        const isConn=res.err?.fetch===true;
+        const errMsg=isConn?"⚡ Sem conexão com a API — digite a placa manualmente":(res.err?.s||"Placa nao identificada");
+        const errDet=isConn?"":("<br><small>"+(res.err?.d||"Tente foto mais proxima com boa iluminacao")+"</small>");
         setCamState(cid,"fail",b64,"❌ "+(res.err?.s||"Nao identificado"));
-        showErrBox("err-"+t,(res.err?.s||"Placa nao identificada")+"<br><small>"+(res.err?.d||"Tente foto mais proxima com boa iluminacao")+"</small>");
+        showErrBox("err-"+t,errMsg+errDet);
         document.getElementById("retry-"+t).style.display="block";
-        document.getElementById("mbtn-"+t).style.display="block";
+        if(isConn){
+          document.getElementById("mbox-"+t).style.display="block";
+          document.getElementById("mbtn-"+t).style.display="none";
+          document.getElementById("mpl-"+t).focus();
+        }else{
+          document.getElementById("mbtn-"+t).style.display="block";
+        }
         return;
       }
       const pl=res.data.placa;
