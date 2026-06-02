@@ -67,15 +67,51 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
   <div id="content" style="display:none">
     <div class="kpis">
       <div class="kpi k0"><div class="kv" id="k-total">—</div><div class="kl">Total no Pátio</div></div>
-      <div class="kpi k1"><div class="kv" id="k-aguard">—</div><div class="kl">Aguard. Triagem</div></div>
+      <div class="kpi k1"><div class="kv" id="k-aguard">—</div><div class="kl">Aguard. Portaria</div></div>
       <div class="kpi k2"><div class="kv" id="k-triagem">—</div><div class="kl">Em Triagem</div></div>
       <div class="kpi k3"><div class="kv" id="k-carga">—</div><div class="kl">Carregando</div></div>
       <div class="kpi k4"><div class="kv" id="k-enlone">—</div><div class="kl">Enlonando</div></div>
     </div>
 
+    <!-- Cards: Modalidade + Tipo Cimento -->
+    <div class="kpis" style="margin-bottom:20px">
+      <!-- Modalidade -->
+      <div class="kpi" style="border-top:3px solid #00d4ff;border-radius:var(--r)">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">📦 Ensacado</div>
+        <div class="kv" id="k-ensacado" style="color:#00d4ff">—</div>
+        <div class="kl">caminhões</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid #fb923c;border-radius:var(--r)">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">🚛 Granel</div>
+        <div class="kv" id="k-granel" style="color:#fb923c">—</div>
+        <div class="kl">caminhões</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid #00e896;border-radius:var(--r)">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">🛍️ Big Bag</div>
+        <div class="kv" id="k-bigbag" style="color:#00e896">—</div>
+        <div class="kl">caminhões</div>
+      </div>
+      <!-- Tipo Cimento -->
+      <div class="kpi" style="border-top:3px solid #ffd000;border-radius:var(--r)">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">⚗️ CP II F</div>
+        <div class="kv" id="k-cp2f" style="color:#ffd000">—</div>
+        <div class="kl">caminhões</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid #a78bfa;border-radius:var(--r)">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">⚗️ CP III</div>
+        <div class="kv" id="k-cp3" style="color:#a78bfa">—</div>
+        <div class="kl">caminhões</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid #f472b6;border-radius:var(--r)">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">⚗️ CP V</div>
+        <div class="kv" id="k-cp5" style="color:#f472b6">—</div>
+        <div class="kl">caminhões</div>
+      </div>
+    </div>
+
     <!-- Aguardando Triagem -->
     <div id="sec-aguardando" style="display:none;margin-bottom:24px">
-      <div class="section-title">🏁 Aguardando Triagem <span id="cnt-aguardando"></span></div>
+      <div class="section-title">🏛️ Aguardando / Em Portaria <span id="cnt-aguardando"></span></div>
       <div class="grid" id="grid-aguardando"></div>
     </div>
 
@@ -171,21 +207,34 @@ function showSection(id,gridId,cntId,list,label){
 
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const hj=hoje();
+  // Somente caminhões que JÁ passaram pela portaria (setorAtual != posto1)
   const todos=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>c.data===hj&&c.setorAtual!=="concluido");
+    .filter(c=>(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))
+      &&c.setorAtual!=="concluido"
+      &&c.setorAtual!=="posto1");
 
   document.getElementById("loading-wrap").style.display="none";
   document.getElementById("content").style.display="block";
 
-  // KPIs
+  // KPIs setor
   document.getElementById("k-total").textContent=todos.length;
-  document.getElementById("k-aguard").textContent=todos.filter(c=>c.setorAtual==="posto1").length;
+  document.getElementById("k-aguard").textContent=todos.filter(c=>c.setorAtual==="portaria_inicio"||c.setorAtual==="portaria_fim").length;
   document.getElementById("k-triagem").textContent=todos.filter(c=>c.setorAtual?.startsWith("triagem")).length;
   document.getElementById("k-carga").textContent=todos.filter(c=>c.setorAtual?.startsWith("carregamento")).length;
   document.getElementById("k-enlone").textContent=todos.filter(c=>c.setorAtual?.startsWith("enlonamento")).length;
 
+  // KPIs modalidade
+  document.getElementById("k-ensacado").textContent=todos.filter(c=>c.tipoCarga==="ensacado").length;
+  document.getElementById("k-granel").textContent=todos.filter(c=>c.tipoCarga==="granel").length;
+  document.getElementById("k-bigbag").textContent=todos.filter(c=>c.tipoCarga==="bigbag").length;
+
+  // KPIs tipo cimento
+  document.getElementById("k-cp2f").textContent=todos.filter(c=>c.tipoCimento==="CP II F").length;
+  document.getElementById("k-cp3").textContent=todos.filter(c=>c.tipoCimento==="CP III").length;
+  document.getElementById("k-cp5").textContent=todos.filter(c=>c.tipoCimento==="CP V").length;
+
   // Seções
-  const aguardando=todos.filter(c=>c.setorAtual==="posto1");
+  const aguardando=todos.filter(c=>c.setorAtual==="portaria_inicio"||c.setorAtual==="portaria_fim");
   const triagem=todos.filter(c=>c.setorAtual?.startsWith("triagem"));
   const carga=todos.filter(c=>c.setorAtual?.startsWith("carregamento"));
   const enlone=todos.filter(c=>c.setorAtual?.startsWith("enlonamento"));
