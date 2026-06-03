@@ -294,7 +294,7 @@ window.chamarPlaca=async(id)=>{
       numero:CONTADOR_CHAMADA,placa:v.placa,ac:v.ac,
       tipoCarga:v.tipoCarga||null,tipoCimento:v.tipoCimento||null,
       veiculoId:v.id,data:hoje(),
-      criadoEm:{toDate:()=>ts,seconds:ts.getTime()/1000},status:"chamado"
+      criadoEm:TS.fromDate(ts),status:"chamado"
     });
     await setDoc(doc(db,"config","chamadas_contador_"+hoje()),{n:CONTADOR_CHAMADA});
   }catch(e){showMsg("er","Erro: "+e.message);}
