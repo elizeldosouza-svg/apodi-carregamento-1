@@ -40,10 +40,12 @@ th.sort-asc::after{content:" ▲";font-size:8px;color:var(--pu)}
 th.sort-desc::after{content:" ▼";font-size:8px;color:var(--pu)}
 th.sort-asc,th.sort-desc{color:var(--pu)}
 th.placa-th{text-align:left;min-width:120px;position:sticky;left:0;z-index:10;background:var(--bg3)}
-th.visit-th{min-width:60px;color:var(--t3)}
+th.carga-th{min-width:90px}
+th.visit-th{min-width:80px;color:var(--t3)}
 td{padding:8px 10px;border-bottom:1px solid var(--bd);text-align:center;vertical-align:middle;white-space:nowrap}
 td.placa-td{text-align:left;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--bl);letter-spacing:1px;background:var(--bg2);position:sticky;left:0;z-index:9;border-right:1px solid var(--bd)}
 td.visit-td{font-size:10px;color:var(--t3);font-style:italic}
+td.carga-td{font-size:10px;color:var(--t2)}
 td.placa-td.cont{color:var(--t3);font-size:11px;font-weight:400;font-family:'Inter',sans-serif;letter-spacing:0}
 tr:hover td{background:var(--bg3)}
 tr:hover td.placa-td{background:var(--bg3)}
@@ -62,33 +64,98 @@ tr.first-row td.placa-td{color:var(--bl);font-size:14px;font-family:'Rajdhani',s
 .tw .tt{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--b2);border-radius:var(--rs);padding:10px 13px;font-size:11px;color:var(--tx);z-index:999;transition:opacity .15s;pointer-events:none;min-width:180px;max-width:280px;white-space:normal;text-align:left;line-height:1.6;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .tw .tt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--b2)}
 .tw:hover .tt{visibility:visible;opacity:1}
+
+/* Busca placa */
+.search-input{background:var(--bg3);border:1px solid var(--bd);border-radius:20px;color:var(--tx);font-size:10px;font-weight:600;padding:6px 14px;outline:none;transition:all .2s;width:220px;letter-spacing:.4px}
+.search-input:focus{border-color:var(--pu);box-shadow:0 0 0 2px rgba(167,139,250,.15)}
+.search-input::placeholder{color:var(--t3)}
+
+/* Botoes acao topo */
+.export-btn{padding:7px 14px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.export-btn:hover{background:rgba(0,232,150,.18)}
+.pdf-btn-top{padding:7px 14px;border:1px solid var(--bl);border-radius:20px;background:rgba(0,212,255,.08);color:var(--bl);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.pdf-btn-top:hover{background:rgba(0,212,255,.18)}
+.filtro-btn-top{padding:7px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.08);color:var(--pu);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:relative}
+.filtro-btn-top:hover{background:rgba(167,139,250,.18)}
+.filtro-badge{position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--ye);border-radius:50%;display:none}
+
+/* Cal popup (padrao patio) */
+.cal-popup{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:400;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);padding:16px;min-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.cal-popup.show{display:block}
+.cal-popup-title{font-size:11px;font-weight:700;color:var(--pu);margin-bottom:12px;text-transform:uppercase;letter-spacing:.6px}
+.cal-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.cal-field label{display:block;font-size:9px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.cal-field input{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-size:11px;padding:6px 8px;outline:none}
+.cal-field input:focus{border-color:var(--pu)}
+.cal-actions{display:flex;gap:8px;justify-content:flex-end}
+.cal-clear{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer}
+.cal-apply{padding:6px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.1);color:var(--pu);font-size:10px;font-weight:700;cursor:pointer}
+.cal-apply:hover{background:rgba(167,139,250,.2)}
+.cal-clear:hover{border-color:var(--rd);color:var(--rd)}
+
+/* Cimento badge */
+.cim-badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;background:rgba(255,208,0,.10);color:var(--ye);border:1px solid rgba(255,208,0,.25);font-family:'Rajdhani',sans-serif;white-space:nowrap}
 </style>
 </head>
 <body>
 <div class="top">
   <div class="logo">🔍 ANÁLISE DE PLACAS</div>
   <a href="/analise" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">📊 Análise</a>
-  <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
   <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
   <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,232,150,.15)'" onmouseout="this.style.background='rgba(0,232,150,.07)'">🏭 Pátio</a>
   <a href="/master" style="padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.07)';this.style.color='var(--bl)'" onmouseout="this.style.background='transparent';this.style.color='var(--t2)'">← Master</a>
-  <a class="back-btn" href="/analise" style="border-color:rgba(167,139,250,.4);color:var(--pu)">📊 Análise</a>
 </div>
 <div class="wrap">
   <div class="kpis">
     <div class="kpi"><div class="kv" id="k0">—</div><div class="kl">Placas distintas</div></div>
     <div class="kpi"><div class="kv" id="k1">—</div><div class="kl">Dias analisados</div></div>
     <div class="kpi"><div class="kv" id="k2">—</div><div class="kl">Tempo médio geral</div></div>
-    <div class="kpi"><div class="kv" id="k3">—</div><div class="kl">Total de visitas</div></div>
-    <div class="kpi"><div class="kv" id="k4">—</div><div class="kl">Acima de 2h10</div></div>
+    <div class="kpi"><div class="kv" id="k3" style="color:var(--gr)">—</div><div class="kl">Na meta ≤ 2h10</div></div>
+    <div class="kpi"><div class="kv" id="k4" style="color:var(--rd)">—</div><div class="kl">Acima de 2h10</div></div>
   </div>
 
+  <!-- Linha ações: busca + botões -->
+  <div class="filter-row" style="margin-bottom:12px">
+    <span class="row-label">🔎 Buscar:</span>
+    <input class="search-input" id="q-placa" type="text" placeholder="Ex: ABC1234, XYZ5678..." oninput="window.render()" autocomplete="off"/>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+      <!-- Botao filtrar data/hora -->
+      <div style="position:relative">
+        <button class="filtro-btn-top" id="filtro-btn" onclick="window.toggleFiltro()">📅 Filtrar Data/Hora<span class="filtro-badge" id="filtro-badge"></span></button>
+        <div class="cal-popup" id="cal-popup">
+          <div class="cal-popup-title">📅 Filtrar por Data e Hora</div>
+          <div class="cal-fields">
+            <div class="cal-field"><label>Data início</label><input type="date" id="f-data-ini"/></div>
+            <div class="cal-field"><label>Data fim</label><input type="date" id="f-data-fim"/></div>
+            <div class="cal-field"><label>Hora início</label><input type="time" id="f-hora-ini" value="00:00"/></div>
+            <div class="cal-field"><label>Hora fim</label><input type="time" id="f-hora-fim" value="23:59"/></div>
+          </div>
+          <div class="cal-actions">
+            <button class="cal-clear" onclick="window.limparFiltroData()">Limpar</button>
+            <button class="cal-apply" onclick="window.aplicarFiltroData()">Aplicar</button>
+          </div>
+        </div>
+      </div>
+      <!-- Botao PDF com filtro -->
+      <button class="pdf-btn-top" onclick="window.gerarPDF()">📄 PDF c/Filtro</button>
+      <!-- Botao Excel -->
+      <button class="export-btn" onclick="window.exportExcel()">📊 Exportar Excel</button>
+    </div>
+  </div>
+
+  <!-- Periodo -->
   <div class="filter-row">
     <span class="row-label">📅 Período:</span>
+    <button class="pb" onclick="setPeriod('hoje',this)">Hoje</button>
+    <button class="pb" onclick="setPeriod('ontem',this)">Ontem</button>
     <button class="pb on" onclick="setPeriod('semana',this)">Essa Semana</button>
     <button class="pb" onclick="setPeriod('mes',this)">Esse Mês</button>
+    <button class="pb" onclick="setPeriod('semana_passada',this)">Sem. Passada</button>
+    <button class="pb" onclick="setPeriod('mes_passado',this)">Mês Passado</button>
     <button class="pb" onclick="setPeriod('ano',this)">Esse Ano</button>
   </div>
+
+  <!-- Tipo de carga -->
   <div class="filter-row">
     <span class="row-label">📦 Carga:</span>
     <button class="ttb on-all" onclick="setTipo('t',this)">Todos</button>
@@ -96,7 +163,9 @@ tr.first-row td.placa-td{color:var(--bl);font-size:14px;font-family:'Rajdhani',s
     <button class="ttb" onclick="setTipo('granel',this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2ODAiIGhlaWdodD0iMzIwIiB2aWV3Qm94PSIwIDAgNjgwIDMyMCIgcm9sZT0iaW1nIj4KPHRpdGxlPkNhbWluaMOjbyBiZXRvbmVpcmE8L3RpdGxlPgo8ZGVzYz5JbHVzdHJhw6fDo28gZGUgdW0gY2FtaW5ow6NvIGJldG9uZWlyYSBhbWFyZWxvIGNvbSB0YW1ib3IgZ2lyYXTDs3JpbyBjaW56YTwvZGVzYz4KCjwhLS0gQ2FiaW5lIC0tPgo8cmVjdCB4PSI2MCIgeT0iMTQwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjExMCIgcng9IjEyIiBmaWxsPSIjNWE2Mzc4Ii8+CjxyZWN0IHg9Ijc1IiB5PSIxMTUiIHdpZHRoPSIxMzAiIGhlaWdodD0iOTAiIHJ4PSIxMCIgZmlsbD0iIzVhNjM3OCIvPgo8IS0tIEphbmVsYSBjYWJpbmUgLS0+CjxyZWN0IHg9Ijg1IiB5PSIxMjUiIHdpZHRoPSIxMTAiIGhlaWdodD0iNjIiIHJ4PSI3IiBmaWxsPSIjYThjOGU4Ii8+CjxyZWN0IHg9Ijg1IiB5PSIxMjUiIHdpZHRoPSI1MiIgaGVpZ2h0PSI2MiIgcng9IjciIGZpbGw9IiM5MGI4ZDgiLz4KPCEtLSBEZXRhbGhlIGNhYmluZSAtLT4KPHJlY3QgeD0iNjAiIHk9IjE5NSIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxMCIgcng9IjAiIGZpbGw9IiM0YTUzNjgiLz4KPCEtLSBHcmFkZSBmcm9udGFsIC0tPgo8cmVjdCB4PSI2MCIgeT0iMTY1IiB3aWR0aD0iMjUiIGhlaWdodD0iNjAiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+CjxyZWN0IHg9IjYzIiB5PSIxNzAiIHdpZHRoPSIxOSIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iI2Y1Yzg0MiIvPgo8cmVjdCB4PSI2MyIgeT0iMTgzIiB3aWR0aD0iMTkiIGhlaWdodD0iOCIgcng9IjIiIGZpbGw9IiNmNWM4NDIiLz4KPHJlY3QgeD0iNjMiIHk9IjE5NiIgd2lkdGg9IjE5IiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjZDBkNGRjIi8+CjwhLS0gRmFyb2wgLS0+CjxyZWN0IHg9IjYyIiB5PSIxNTMiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgcng9IjMiIGZpbGw9IiNmZmZkZTAiLz4KPGVsbGlwc2UgY3g9IjcyIiBjeT0iMTU4IiByeD0iNyIgcnk9IjQiIGZpbGw9IiNmZmUwNjYiLz4KCjwhLS0gQ2hhc3NpIC8gcGxhdGFmb3JtYSAtLT4KPHJlY3QgeD0iNTUiIHk9IjI0OCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSIyMiIgcng9IjQiIGZpbGw9IiM0YTUzNjgiLz4KPHJlY3QgeD0iNTUiIHk9IjI0OCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSI2IiByeD0iNCIgZmlsbD0iIzVhNjM3OCIvPgoKPCEtLSBUYW1ib3IgYmV0b25laXJhIC0tPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMTU1IiByeT0iMTE4IiBmaWxsPSIjZThiODAwIi8+CjxlbGxpcHNlIGN4PSI0MzAiIGN5PSIxODAiIHJ4PSIxNDAiIHJ5PSIxMDUiIGZpbGw9IiNmNWM4NDIiLz4KPCEtLSBMaXN0cmFzIGRvIHRhbWJvciAtLT4KPHBhdGggZD0iTTMwMCAxMzAgUTQzMCAxMDAgNTYwIDEzMCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTI5MCAxNzAgUTQzMCAxNDAgNTcwIDE3MCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTI5NSAyMTAgUTQzMCAxODUgNTY1IDIxMCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTMxMCAyNDAgUTQzMCAyMjUgNTUwIDI0MCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPCEtLSBDZW50cm8gdGFtYm9yIC0tPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMjIiIHJ5PSIyMiIgZmlsbD0iI2Q0YTUwMCIvPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMTIiIHJ5PSIxMiIgZmlsbD0iI2M4OWEwMCIvPgo8IS0tIEJvY2EgZG8gdGFtYm9yIGVzcXVlcmRhIC0tPgo8ZWxsaXBzZSBjeD0iMjg1IiBjeT0iMTc4IiByeD0iMjgiIHJ5PSIzOCIgZmlsbD0iI2Q0YTUwMCIvPgo8ZWxsaXBzZSBjeD0iMjg1IiBjeT0iMTc4IiByeD0iMTgiIHJ5PSIyNiIgZmlsbD0iI2I4ODgwMCIvPgo8IS0tIFNhw61kYSBkbyB0YW1ib3IgZGlyZWl0YSAtLT4KPGVsbGlwc2UgY3g9IjU3NSIgY3k9IjE3OCIgcng9IjIwIiByeT0iMjgiIGZpbGw9IiNkNGE1MDAiLz4KCjwhLS0gU3Vwb3J0ZSB0YW1ib3IgLS0+CjxyZWN0IHg9IjIwMCIgeT0iMjE4IiB3aWR0aD0iMzAiIGhlaWdodD0iMzUiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+CjxyZWN0IHg9IjU3MCIgeT0iMjI4IiB3aWR0aD0iMjUiIGhlaWdodD0iMjUiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+Cgo8IS0tIFJvZGEgZGlhbnRlaXJhIC0tPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyNzIiIHI9IjM4IiBmaWxsPSIjMmQzMTQyIi8+CjxjaXJjbGUgY3g9IjEzMCIgY3k9IjI3MiIgcj0iMjgiIGZpbGw9IiM0YTUzNjgiLz4KPGNpcmNsZSBjeD0iMTMwIiBjeT0iMjcyIiByPSIxNCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyNzIiIHI9IjciIGZpbGw9IiM2YTczODgiLz4KPGNpcmNsZSBjeD0iMTMwIiBjeT0iMjU4IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyODYiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iMTE2IiBjeT0iMjcyIiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+Cgo8IS0tIFJvZGFzIHRyYXNlaXJhcyAtLT4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjcyIiByPSIzOCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSI0OTAiIGN5PSIyNzIiIHI9IjI4IiBmaWxsPSIjNGE1MzY4Ii8+CjxjaXJjbGUgY3g9IjQ5MCIgY3k9IjI3MiIgcj0iMTQiIGZpbGw9IiMyZDMxNDIiLz4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjcyIiByPSI3IiBmaWxsPSIjNmE3Mzg4Ii8+CjxjaXJjbGUgY3g9IjQ5MCIgY3k9IjI1OCIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSI1MDQiIGN5PSIyNzIiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjg2IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjQ3NiIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgoKPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjcyIiByPSIzOCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSI1NTAiIGN5PSIyNzIiIHI9IjI4IiBmaWxsPSIjNGE1MzY4Ii8+CjxjaXJjbGUgY3g9IjU1MCIgY3k9IjI3MiIgcj0iMTQiIGZpbGw9IiMyZDMxNDIiLz4KPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjcyIiByPSI3IiBmaWxsPSIjNmE3Mzg4Ii8+CjxjaXJjbGUgY3g9IjU1MCIgY3k9IjI1OCIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSI1NjQiIGN5PSIyNzIiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjg2IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjUzNiIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgoKPCEtLSBQYXJhbGFtYXMgLS0+CjxlbGxpcHNlIGN4PSIxMzAiIGN5PSIyNDUiIHJ4PSI0OCIgcnk9IjEyIiBmaWxsPSIjNGE1MzY4Ii8+CjxlbGxpcHNlIGN4PSI1MjAiIGN5PSIyNDUiIHJ4PSI2OCIgcnk9IjEyIiBmaWxsPSIjNGE1MzY4Ii8+Cgo8IS0tIENhbGhhIGRlIHNhw61kYSAtLT4KPHBhdGggZD0iTTU4MCAyMzAgTDYzMCAyODAgTDYyMCAyODQgTDU3MCAyMzggWiIgZmlsbD0iIzhhOTM5OCIvPgo8cmVjdCB4PSI2MTgiIHk9IjI3MiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjgiIHJ4PSIzIiBmaWxsPSIjNmE3Mzg4Ii8+Cgo8IS0tIEVzcGVsaG8gcmV0cm92aXNvciAtLT4KPHJlY3QgeD0iNTAiIHk9IjEzOCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEwIiByeD0iMiIgZmlsbD0iIzRhNTM2OCIvPgoKPCEtLSBMYXRlcmFsIGNhYmluZSAtLT4KPHJlY3QgeD0iMTkwIiB5PSIyMDUiIHdpZHRoPSIyOCIgaGVpZ2h0PSI0NSIgcng9IjMiIGZpbGw9IiM2YTczODgiLz4KCjwvc3ZnPgo=" style="width:18px;height:10px;object-fit:contain;vertical-align:middle;margin-right:4px"> Granel</button>
     <button class="ttb" onclick="setTipo('bigbag',this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjQwIiB2aWV3Qm94PSIwIDAgMjAwIDI0MCIgcm9sZT0iaW1nIj4KPHRpdGxlPkJpZyBiYWc8L3RpdGxlPgo8ZGVzYz5JbHVzdHJhw6fDo28gZGUgdW0gYmlnIGJhZyBicmFuY28gY29tIGFsw6dhczwvZGVzYz4KPCEtLSBBbMOnYXMgLS0+CjxyZWN0IHg9IjU1IiB5PSIxNSIgd2lkdGg9IjE4IiBoZWlnaHQ9IjQwIiByeD0iNiIgZmlsbD0iI2RkZDhkMCIgc3Ryb2tlPSIjYmJiOGIwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8cmVjdCB4PSIxMjciIHk9IjE1IiB3aWR0aD0iMTgiIGhlaWdodD0iNDAiIHJ4PSI2IiBmaWxsPSIjZGRkOGQwIiBzdHJva2U9IiNiYmI4YjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CjwhLS0gQWJlcnR1cmEgYWzDp2FzIChsb29wcykgLS0+CjxyZWN0IHg9IjUzIiB5PSI4IiB3aWR0aD0iMjIiIGhlaWdodD0iMTQiIHJ4PSI3IiBmaWxsPSJub25lIiBzdHJva2U9IiNiYmI4YjAiIHN0cm9rZS13aWR0aD0iMyIvPgo8cmVjdCB4PSIxMjUiIHk9IjgiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNCIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2JiYjhiMCIgc3Ryb2tlLXdpZHRoPSIzIi8+CjwhLS0gQ29ycG8gcHJpbmNpcGFsIC0tPgo8cmVjdCB4PSIyMCIgeT0iNDgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTY1IiByeD0iNiIgZmlsbD0iI2U4ZTRkZSIvPgo8IS0tIEZhY2UgZnJvbnRhbCBtYWlzIGNsYXJhIC0tPgo8cmVjdCB4PSIyNSIgeT0iNTMiIHdpZHRoPSIxNTAiIGhlaWdodD0iMTU1IiByeD0iNCIgZmlsbD0iI2YwZWNlNiIvPgo8IS0tIENvc3R1cmFzIHZlcnRpY2FpcyAtLT4KPGxpbmUgeDE9IjM1IiB5MT0iNTMiIHgyPSIzNSIgeTI9IjIwOCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjxsaW5lIHgxPSIxNjUiIHkxPSI1MyIgeDI9IjE2NSIgeTI9IjIwOCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjwhLS0gQ29zdHVyYXMgaG9yaXpvbnRhaXMgLS0+CjxsaW5lIHgxPSIyNSIgeTE9IjEwMCIgeDI9IjE3NSIgeTI9IjEwMCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjxsaW5lIHgxPSIyNSIgeTE9IjE2MCIgeDI9IjE3NSIgeTI9IjE2MCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjwhLS0gUmVmb3LDp28gdG9wbyAtLT4KPHJlY3QgeD0iMjAiIHk9IjQ4IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE0IiByeD0iNCIgZmlsbD0iI2Q4ZDRjZSIvPgo8IS0tIFJlZm9yw6dvIGJhc2UgLS0+CjxyZWN0IHg9IjIwIiB5PSIyMDAiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTMiIHJ4PSI0IiBmaWxsPSIjZDBjY2M2Ii8+CjwhLS0gUmVmb3LDp28gY2FudG9zIC0tPgo8cmVjdCB4PSIyMCIgeT0iNDgiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNjUiIHJ4PSI0IiBmaWxsPSIjZDhkNGNlIi8+CjxyZWN0IHg9IjE2NCIgeT0iNDgiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNjUiIHJ4PSI0IiBmaWxsPSIjZDhkNGNlIi8+CjwhLS0gVGV4dG8gQklHIEJBRyAtLT4KPHRleHQgeD0iMTAwIiB5PSIxMzgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNhOGE0OWUiIGxldHRlci1zcGFjaW5nPSIxIj5CSUcgQkFHPC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9IjE1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjkiIGZpbGw9IiNiOGI0YWUiPjEwMDAga2c8L3RleHQ+CjwhLS0gU29tYnJhIGJhc2UgLS0+CjxlbGxpcHNlIGN4PSIxMDAiIGN5PSIyMTgiIHJ4PSI3OCIgcnk9IjciIGZpbGw9IiNjMGJjYjYiIG9wYWNpdHk9IjAuNSIvPgo8L3N2Zz4K" style="width:13px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px"> Big Bag</button>
   </div>
-  <div class="filter-row" style="margin-bottom:16px">
+
+  <!-- Etapa (alias para Tempo) -->
+  <div class="filter-row">
     <span class="row-label">⏱ Etapa:</span>
     <button class="etb on" onclick="setEtapa('tmac',this)">TMAC Total</button>
     <button class="etb" onclick="setEtapa('espera',this)">Espera</button>
@@ -106,14 +175,30 @@ tr.first-row td.placa-td{color:var(--bl);font-size:14px;font-family:'Rajdhani',s
     <button class="etb" onclick="setEtapa('faturamento',this)">Faturamento</button>
   </div>
 
+  <!-- Filtro Tempo (item 8) -->
+  <div class="filter-row">
+    <span class="row-label">&#9203; Tempo:</span>
+    <button class="etb etb-tempo on" onclick="setTempo('tmac',this)">TMAC Total</button>
+    <button class="etb etb-tempo" onclick="setTempo('espera',this)">TME - Espera</button>
+    <button class="etb etb-tempo" onclick="setTempo('carregamento',this)">TMC - Carga</button>
+    <button class="etb etb-tempo" onclick="setTempo('faturamento',this)">TMF - Fila</button>
+  </div>
+
+  <!-- Filtro Cimento -->
+  <div class="filter-row" style="margin-bottom:16px">
+    <span class="row-label">🏭 Cimento:</span>
+    <button class="pb on" id="cim-btn-t" onclick="setCimento('t',this)">Todos</button>
+    <div id="cim-btns-dinamicos" style="display:contents"></div>
+  </div>
+
   <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando...</div></div>
   <div class="tcard" id="tcard" style="display:none">
     <div class="tscroll" id="tscroll"></div>
     <div class="legend">
-      <div class="leg"><div class="leg-dot" style="background:#00e896"></div>≤ 2h10</div>
-      <div class="leg"><div class="leg-dot" style="background:#ffd000"></div>1h30 – 2h10</div>
+      <div class="leg"><div class="leg-dot" style="background:#00e896"></div>&lt;= 2h10</div>
+      <div class="leg"><div class="leg-dot" style="background:#ffd000"></div>1h30 - 2h10</div>
       <div class="leg"><div class="leg-dot" style="background:#ff4466"></div>&gt; 2h10</div>
-      <div class="leg"><div class="leg-dot" style="background:#a78bfa"></div>Média da placa</div>
+      <div class="leg"><div class="leg-dot" style="background:#a78bfa"></div>Media da placa</div>
     </div>
   </div>
 </div>
@@ -128,16 +213,36 @@ const db=getFirestore(app);
 const LIMITE=130*60*1000;
 const ATENCAO=90*60*1000;
 
+// Estado global
+let ALL=[],MP="semana",MT="t",ME="tmac",SORT_COL=null,SORT_DIR=-1,MCIM="t";
+let FILTRO_DATA=null;
+
+function tzNow(){return new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));}
+
 function periodDates(p){
-  const now=new Date();
-  const tz=new Date(now.toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  const tz=tzNow();
   const pad=n=>String(n).padStart(2,"0");
   const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  if(p==="hoje") return{s:fmt(tz),e:fmt(tz)};
+  if(p==="ontem"){const d=new Date(tz);d.setDate(tz.getDate()-1);return{s:fmt(d),e:fmt(d)};}
   if(p==="semana"){const d=new Date(tz);d.setDate(tz.getDate()-6);return{s:fmt(d),e:fmt(tz)};}
   if(p==="mes"){const s=new Date(tz.getFullYear(),tz.getMonth(),1);return{s:fmt(s),e:fmt(tz)};}
+  if(p==="semana_passada"){
+    const d=new Date(tz);
+    const dow=d.getDay();
+    const ini=new Date(d);ini.setDate(d.getDate()-dow-7);
+    const fim=new Date(d);fim.setDate(d.getDate()-dow-1);
+    return{s:fmt(ini),e:fmt(fim)};
+  }
+  if(p==="mes_passado"){
+    const s=new Date(tz.getFullYear(),tz.getMonth()-1,1);
+    const e=new Date(tz.getFullYear(),tz.getMonth(),0);
+    return{s:fmt(s),e:fmt(e)};
+  }
   if(p==="ano"){const s=new Date(tz.getFullYear(),0,1);return{s:fmt(s),e:fmt(tz)};}
   return{s:fmt(tz),e:fmt(tz)};
 }
+
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
 function calcTMAC(c){const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}
 function getEtapaMs(c,etapa){
@@ -156,6 +261,10 @@ function durStr(ms){
 }
 function fmtDay(d){const[y,mo,dd]=d.split("-");return dd+"/"+mo;}
 function fmtT(d){return d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—";}
+function fmtDT(d){
+  if(!d)return"—";
+  return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",timeZone:"America/Fortaleza"})+" "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"});
+}
 function getDays(s,e){
   const days=[];let cur=new Date(s+"T00:00:00");const end=new Date(e+"T00:00:00");
   while(cur<=end){const pad=n=>String(n).padStart(2,"0");days.push(`${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`);cur.setDate(cur.getDate()+1);}
@@ -167,37 +276,149 @@ function pillClass(ms){
   if(ms>ATENCAO)return"pill-warn";
   return"pill-ok";
 }
+function tipoCargaLabel(t){
+  if(t==="ensacado")return"📦 Ensacado";
+  if(t==="granel")return"🚛 Granel";
+  if(t==="bigbag")return"🛍 Big Bag";
+  return t||"—";
+}
 
-let ALL=[],MP="semana",MT="t",ME="tmac",SORT_COL=null,SORT_DIR=1;
+// Filtro data/hora
+window.toggleFiltro=()=>{
+  document.getElementById("cal-popup").classList.toggle("show");
+};
+window.aplicarFiltroData=()=>{
+  const di=document.getElementById("f-data-ini").value;
+  const df=document.getElementById("f-data-fim").value||di;
+  const hi=document.getElementById("f-hora-ini").value||"00:00";
+  const hf=document.getElementById("f-hora-fim").value||"23:59";
+  if(!di){alert("Informe a data inicio.");return;}
+  FILTRO_DATA={di,df,hi,hf};
+  document.getElementById("filtro-badge").style.display="block";
+  document.getElementById("cal-popup").classList.remove("show");
+  window.render();
+};
+window.limparFiltroData=()=>{
+  FILTRO_DATA=null;
+  document.getElementById("f-data-ini").value="";
+  document.getElementById("f-data-fim").value="";
+  document.getElementById("f-hora-ini").value="00:00";
+  document.getElementById("f-hora-fim").value="23:59";
+  document.getElementById("filtro-badge").style.display="none";
+  document.getElementById("cal-popup").classList.remove("show");
+  window.render();
+};
 
-onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
-  ALL=snap.docs.map(d=>{return{id:d.id,...d.data()}});
-  document.getElementById("loading-wrap").style.display="none";
-  document.getElementById("tcard").style.display="block";
-  render();
+// Fechar popup ao clicar fora
+document.addEventListener("click",e=>{
+  const popup=document.getElementById("cal-popup");
+  const btn=document.getElementById("filtro-btn");
+  if(popup&&btn&&!popup.contains(e.target)&&!btn.contains(e.target)){
+    popup.classList.remove("show");
+  }
 });
 
-window.setPeriod=(p,el)=>{MP=p;document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+// Cimentos dinamicos
+let CIMENTOS_VISTOS=new Set();
+function atualizarCimentosBtns(){
+  const container=document.getElementById("cim-btns-dinamicos");
+  if(!container)return;
+  const novos=[...CIMENTOS_VISTOS].sort();
+  container.innerHTML=novos.map(c=>{
+    const ativo=MCIM===c?"on":"";
+    return`<button class="pb ${ativo}" onclick="setCimento('${c}',this)">${c}</button>`;
+  }).join("");
+}
+
+onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
+  ALL=snap.docs.map(d=>{return{id:d.id,...d.data()};});
+  // Coleta cimentos distintos
+  ALL.forEach(c=>{if(c.tipoCimento)CIMENTOS_VISTOS.add(c.tipoCimento);});
+  atualizarCimentosBtns();
+  document.getElementById("loading-wrap").style.display="none";
+  document.getElementById("tcard").style.display="block";
+  window.render();
+});
+
+window.setPeriod=(p,el)=>{
+  MP=p;
+  document.querySelectorAll(".pb.on").forEach(b=>{if(b.closest(".filter-row")===el.closest(".filter-row"))b.classList.remove("on");});
+  el.classList.add("on");
+  window.render();
+};
 window.setTipo=(t,el)=>{
   MT=t;document.querySelectorAll(".ttb").forEach(b=>b.className="ttb");
   const cls={t:"on-all",ensacado:"on-ens",granel:"on-gr",bigbag:"on-bb"}[t];
-  el.classList.add(cls);render();
+  el.classList.add(cls);window.render();
 };
-window.setEtapa=(e,el)=>{ME=e;document.querySelectorAll(".etb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setEtapa=(e,el)=>{
+  ME=e;
+  document.querySelectorAll(".etb:not(.etb-tempo)").forEach(b=>b.classList.remove("on"));
+  document.querySelectorAll(".etb-tempo").forEach(b=>{if(b.textContent.includes("TMAC Total"))b.classList.add("on");else b.classList.remove("on");});
+  el.classList.add("on");
+  window.render();
+};
+window.setTempo=(e,el)=>{
+  ME=e;
+  document.querySelectorAll(".etb-tempo").forEach(b=>b.classList.remove("on"));
+  document.querySelectorAll(".etb:not(.etb-tempo)").forEach(b=>{if(b.textContent.includes("TMAC Total"))b.classList.add("on");else b.classList.remove("on");});
+  el.classList.add("on");
+  window.render();
+};
+window.setCimento=(v,el)=>{
+  MCIM=v;
+  document.getElementById("cim-btn-t").classList.remove("on");
+  document.querySelectorAll("#cim-btns-dinamicos .pb").forEach(b=>b.classList.remove("on"));
+  el.classList.add("on");
+  window.render();
+};
 
 function setSort(col){
-  if(SORT_COL===col)SORT_DIR*=-1;
-  else{SORT_COL=col;SORT_DIR=1;}
-  render();
+  if(SORT_COL===col){SORT_DIR*=-1;}
+  else{SORT_COL=col;SORT_DIR=-1;}
+  window.render();
 }
 
-function render(){
-  const{s,e}=periodDates(MP);
-  const days=getDays(s,e);
-  let list=ALL.filter(c=>c.data>=s&&c.data<=e&&c.setorAtual==="concluido");
-  if(MT!=="t")list=list.filter(c=>c.tipoCarga===MT);
+function getList(){
+  let list=ALL.filter(c=>c.setorAtual==="concluido");
 
-  // Group by placa → day → [registros]
+  if(FILTRO_DATA){
+    // Filtra por portaria.inicio (data e hora de entrada na portaria)
+    const[diH,diM]=FILTRO_DATA.hi.split(":").map(Number);
+    const[dfH,dfM]=FILTRO_DATA.hf.split(":").map(Number);
+    const[diy,dim,did]=FILTRO_DATA.di.split("-").map(Number);
+    const[dfy,dfm,dfd]=FILTRO_DATA.df.split("-").map(Number);
+    const tsIni=new Date(diy,dim-1,did,diH,diM,0).getTime();
+    const tsFim=new Date(dfy,dfm-1,dfd,dfH,dfM,59).getTime();
+    list=list.filter(c=>{
+      const pt=getTS(c,"portaria","inicio")||getTS(c,"entrada","ts");
+      if(!pt)return false;
+      return pt.getTime()>=tsIni&&pt.getTime()<=tsFim;
+    });
+  } else {
+    const{s,e}=periodDates(MP);
+    list=list.filter(c=>c.data>=s&&c.data<=e);
+  }
+
+  if(MT!=="t")list=list.filter(c=>c.tipoCarga===MT);
+  if(MCIM!=="t")list=list.filter(c=>c.tipoCimento===MCIM);
+
+  // Filtro busca por placa
+  const q=(document.getElementById("q-placa")?.value||"").toUpperCase().trim();
+  if(q){
+    const placas=q.split(/[,\s;]+/).map(s=>s.trim()).filter(Boolean);
+    list=list.filter(c=>placas.some(p=>c.placa?.includes(p)));
+  }
+
+  return list;
+}
+
+window.render=()=>{
+  const list=getList();
+  let{s,e}=FILTRO_DATA?{s:FILTRO_DATA.di,e:FILTRO_DATA.df}:periodDates(MP);
+  const days=getDays(s,e);
+
+  // Group by placa day
   const placaMap={};
   list.forEach(c=>{
     if(!placaMap[c.placa])placaMap[c.placa]={};
@@ -205,7 +426,6 @@ function render(){
     placaMap[c.placa][c.data].push(c);
   });
 
-  // Calcular média geral por placa para ordenação
   const placaAvg={};
   Object.keys(placaMap).forEach(placa=>{
     const vals=[];
@@ -217,88 +437,94 @@ function render(){
 
   let placas=Object.keys(placaMap);
 
-  // Sort
+  // Ordenacao: padrao maior para menor na primeira vez
   if(SORT_COL==="placa"){
     placas.sort((a,b)=>SORT_DIR*(a>b?1:a<b?-1:0));
   } else if(SORT_COL==="media"){
-    placas.sort((a,b)=>SORT_DIR*(placaAvg[a]-placaAvg[b]));
+    placas.sort((a,b)=>SORT_DIR*(placaAvg[b]-placaAvg[a]));
   } else if(SORT_COL&&SORT_COL.startsWith("day_")){
     const day=SORT_COL.replace("day_","");
     placas.sort((a,b)=>{
       const va=placaMap[a][day]?placaMap[a][day].map(c=>getEtapaMs(c,ME)||0).reduce((x,y)=>x+y,0)/placaMap[a][day].length:0;
       const vb=placaMap[b][day]?placaMap[b][day].map(c=>getEtapaMs(c,ME)||0).reduce((x,y)=>x+y,0)/placaMap[b][day].length:0;
-      return SORT_DIR*(va-vb);
+      return SORT_DIR*(vb-va);
     });
   } else {
-    placas.sort();
+    placas.sort((a,b)=>{
+      const va=placaAvg[a]||0,vb=placaAvg[b]||0;
+      return vb-va;
+    });
   }
 
   // KPIs
   const allMs=list.map(c=>getEtapaMs(c,ME)).filter(v=>v);
+  const daysSet=new Set(list.map(c=>c.data));
   const avgGeral=allMs.length?allMs.reduce((a,b)=>a+b,0)/allMs.length:null;
   const acima=list.filter(c=>calcTMAC(c)>LIMITE).length;
+  const naMeta=list.filter(c=>{const ms=calcTMAC(c);return ms&&ms<=LIMITE;}).length;
   document.getElementById("k0").textContent=placas.length||"—";
-  document.getElementById("k1").textContent=days.length;
+  document.getElementById("k1").textContent=daysSet.size;
   document.getElementById("k2").textContent=avgGeral?durStr(avgGeral):"—";
-  document.getElementById("k3").textContent=list.length||"—";
-  document.getElementById("k4").textContent=acima;
+  document.getElementById("k3").textContent=naMeta||"—";
+  document.getElementById("k4").textContent=acima||"—";
 
-  if(!placas.length){document.getElementById("tscroll").innerHTML=`<div class="empty-state">Nenhum registro concluído no período.</div>`;return;}
+  if(!placas.length){document.getElementById("tscroll").innerHTML=`<div class="empty-state">Nenhum registro concluido no periodo.</div>`;return;}
 
-  // Update sort headers helper
-  const sortIcon=(col)=>SORT_COL===col?(SORT_DIR===1?" ▲":" ▼"):"";
+  const thCls=col=>SORT_COL===col?(SORT_DIR===-1?"sort-desc":"sort-asc"):"";
 
   let html=`<table><thead><tr>`;
-  html+=`<th class="placa-th" onclick="setSort('placa')" style="cursor:pointer">Placa${sortIcon('placa')}</th>`;
-  html+=`<th class="visit-th">Visita</th>`;
-  html+=`<th onclick="setSort('entrada')" style="cursor:pointer">Entrada${sortIcon('entrada')}</th>`;
-  days.forEach(d=>html+=`<th onclick="setSort('day_${d}')" style="cursor:pointer">${fmtDay(d)}${sortIcon('day_'+d)}</th>`);
-  html+=`<th onclick="setSort('media')" style="cursor:pointer;color:var(--pu)">Média${sortIcon('media')}</th>`;
+  html+=`<th class="placa-th ${thCls('placa')}" onclick="setSort('placa')" style="cursor:pointer">Placa</th>`;
+  html+=`<th class="carga-th">Tipo Carga</th>`;
+  html+=`<th class="visit-th">Portaria Inicio</th>`;
+  html+=`<th class="${thCls('entrada')}" onclick="setSort('entrada')" style="cursor:pointer">Entrada</th>`;
+  days.forEach(d=>html+=`<th class="${thCls('day_'+d)}" onclick="setSort('day_${d}')" style="cursor:pointer">${fmtDay(d)}</th>`);
+  html+=`<th class="${thCls('media')}" onclick="setSort('media')" style="cursor:pointer;color:var(--pu)">Media</th>`;
   html+=`</tr></thead><tbody>`;
 
   placas.forEach(placa=>{
     const dayData=placaMap[placa];
-    // Calcular max visitas para essa placa
     const maxVisits=Math.max(...Object.values(dayData).map(v=>v.length));
-    const allVals=[];
 
     for(let vi=0;vi<maxVisits;vi++){
       const isFirst=vi===0;
-      html+=`<tr class="${isFirst?'first-row':''}">`;
+      html+=`<tr class="${isFirst?"first-row":""}">`;
 
-      // Célula de placa — só na primeira linha
       if(isFirst){
         html+=`<td class="placa-td" rowspan="${maxVisits}">${placa}</td>`;
+        // Coluna tipo de carga — usa o primeiro registro da placa
+        const firstDay=days.find(d=>dayData[d]&&dayData[d][0]);
+        const tc=firstDay?dayData[firstDay][0].tipoCarga:"";
+        html+=`<td class="carga-td" rowspan="${maxVisits}">${tipoCargaLabel(tc)}</td>`;
       }
 
-      // Número da visita
+      // Portaria Inicio (ex-Visita) — numero da visita
       html+=`<td class="visit-td">#${vi+1}</td>`;
 
-      // Entrada da visita (pegar do primeiro dia que tem essa visita)
+      // Entrada
       let entradaStr="—";
       const firstDayWithVisit=days.find(d=>dayData[d]&&dayData[d][vi]);
       if(firstDayWithVisit&&dayData[firstDayWithVisit][vi]){
+        const ptI=getTS(dayData[firstDayWithVisit][vi],"portaria","inicio");
         const en=getTS(dayData[firstDayWithVisit][vi],"entrada","ts");
-        entradaStr=en?fmtT(en):"—";
+        entradaStr=ptI?fmtT(ptI):en?fmtT(en):"—";
       }
       html+=`<td style="font-size:10px;color:var(--t2)">${entradaStr}</td>`;
 
-      // Células por dia
+      // Celulas por dia
       days.forEach(day=>{
         const visits=dayData[day];
         if(!visits||!visits[vi]){html+=`<td><span class="empty">·</span></td>`;return;}
         const c=visits[vi];
         const ms=getEtapaMs(c,ME);
         if(!ms){html+=`<td><span class="empty">·</span></td>`;return;}
-        allVals.push(ms);
         const cls=pillClass(ms);
         const en=getTS(c,"entrada","ts");
         const just=c.justificativa;
         const hasJust=!!(just&&just.motivo);
-        if(cls==='pill-danger'||cls==='pill-warn'){
-          let justHtml='';
+        if(cls==="pill-danger"||cls==="pill-warn"){
+          let justHtml="";
           if(hasJust){
-            justHtml='<div style="color:var(--gr);font-weight:700;font-size:11px">✅ '+just.motivo+'</div>';
+            justHtml='<div style="color:var(--gr);font-weight:700;font-size:11px">OK '+just.motivo+'</div>';
             if(just.descricao)justHtml+='<div style="color:var(--t2);font-size:10px;margin-top:2px">"'+just.descricao+'"</div>';
           }else{
             justHtml='<div style="color:var(--t3);font-size:10px;font-style:italic">Sem justificativa registrada</div>';
@@ -312,7 +538,7 @@ function render(){
         }
       });
 
-      // Média só na primeira linha
+      // Media so na primeira linha
       if(isFirst){
         const allPlacaVals=[];
         Object.values(dayData).forEach(visits=>visits.forEach(c=>{const ms=getEtapaMs(c,ME);if(ms)allPlacaVals.push(ms);}));
@@ -326,6 +552,88 @@ function render(){
 
   html+=`</tbody></table>`;
   document.getElementById("tscroll").innerHTML=html;
-}
+};
+
+// Exportar Excel (padrao master)
+window.exportExcel=()=>{
+  const list=getList();
+  if(!list.length){alert("Nenhum dado para exportar.");return;}
+  let csv="Placa;Tipo Carga;Tipo Cimento;Portaria Inicio;Data;TMAC;Na Meta\n";
+  list.forEach(c=>{
+    const ptI=getTS(c,"portaria","inicio");
+    const en=getTS(c,"entrada","ts");
+    const entHora=ptI?fmtDT(ptI):en?fmtDT(en):"—";
+    const tmac=calcTMAC(c);
+    const meta=tmac&&tmac<=LIMITE?"Sim":"Nao";
+    csv+=`${c.placa||"—"};${c.tipoCargaLabel||c.tipoCarga||"—"};${c.tipoCimento||"—"};${entHora};${c.data||"—"};${durStr(tmac)};${meta}\n`;
+  });
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="placas_"+new Date().toLocaleDateString("pt-BR").replace(/\//g,"-")+".csv";
+  a.click();URL.revokeObjectURL(url);
+};
+
+// PDF com filtro (Blob URL)
+window.gerarPDF=()=>{
+  const list=getList();
+  if(!list.length){alert("Nenhum dado para gerar PDF.");return;}
+  const dtFmt=new Date().toLocaleString("pt-BR",{timeZone:"America/Fortaleza"});
+  let filtroInfo="Periodo: "+MP;
+  if(FILTRO_DATA)filtroInfo="Data: "+FILTRO_DATA.di+" ate "+FILTRO_DATA.df+" | Horario: "+FILTRO_DATA.hi+" as "+FILTRO_DATA.hf;
+
+  let rows=list.map((c,i)=>{
+    const ptI=getTS(c,"portaria","inicio");
+    const en=getTS(c,"entrada","ts");
+    const entHora=ptI?fmtT(ptI):en?fmtT(en):"—";
+    const tmac=calcTMAC(c);
+    const cor=tmac?(tmac>LIMITE?"#ff4466":tmac>ATENCAO?"#ffd000":"#00e896"):"#7a9fd4";
+    return`<tr style="border-bottom:1px solid #1e3a58">
+      <td style="padding:6px 10px;text-align:center">${i+1}</td>
+      <td style="padding:6px 10px;font-weight:700;font-family:monospace;letter-spacing:1px;color:#00d4ff">${c.placa||"—"}</td>
+      <td style="padding:6px 10px">${c.tipoCargaLabel||c.tipoCarga||"—"}</td>
+      <td style="padding:6px 10px">${c.tipoCimento||"—"}</td>
+      <td style="padding:6px 10px">${entHora}</td>
+      <td style="padding:6px 10px;color:${cor};font-weight:700">${durStr(tmac)}</td>
+    </tr>`;
+  }).join("");
+
+  const html=[
+    '<!DOCTYPE html><html><head><meta charset="UTF-8">',
+    '<title>Relatorio de Placas</title>',
+    '<style>body{font-family:Arial,sans-serif;background:#fff;color:#111;margin:20px}',
+    'h2{color:#003366;margin-bottom:4px}',
+    'p{font-size:11px;color:#555;margin-bottom:12px}',
+    'table{width:100%;border-collapse:collapse;font-size:11px}',
+    'th{background:#003366;color:#fff;padding:7px 10px;text-align:center;font-size:10px}',
+    'tr:nth-child(even){background:#f5f8ff}',
+    '@media print{body{margin:10px}}</style></head><body>',
+    '<h2>Relatorio de Placas - Apodi Cimentos</h2>',
+    '<p>Gerado em: '+dtFmt+' | '+filtroInfo+' | Total: '+list.length+' registros</p>',
+    '<table><thead><tr>',
+    '<th>#</th><th>Placa</th><th>Tipo Carga</th><th>Cimento</th><th>Portaria Inicio</th><th>TMAC</th>',
+    '</tr></thead><tbody>',
+    rows,
+    '</tbody></table>',
+    '<scr'+'ipt>window.onload=()=>window.print();</scr'+'ipt>',
+    '</body></html>'
+  ].join("");
+
+  const blob=new Blob([html],{type:"text/html;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.target="_blank";a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+};
+
+// Expor setSort para onclick nos headers
+window.setSort=setSort;
+
+</script>
+
+<!-- Badge Admin -->
+<div id="badge-admin" style="display:none;position:fixed;bottom:12px;right:12px;z-index:9999;padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.1);color:var(--pu);font-size:11px;font-weight:700;cursor:pointer" onclick="window.location.href='/admin'">🔧 Admin</div>
+<script>
+try{const t=localStorage.getItem("apodi_admin_token");const exp=localStorage.getItem("apodi_admin_exp");if(t&&exp&&Date.now()<Number(exp))document.getElementById("badge-admin").style.display="block";}catch(e){}
 </script>
 </body></html>
