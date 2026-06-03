@@ -363,11 +363,10 @@ let lastId=null,lastPlaca=null,lastChamada=null;
 // ── ausência ticker: lista de ausentes do dia (últimas 2h) ──
 let ausentes=[]; // [{placa, ac, motivo, ts}]
 
-// ── Fila: veículos aguardando no posto1 ──
+// ── Fila: veículos aguardando no posto1 (sem filtro de data — igual ao Pátio) ──
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
-  const hj=hoje();
   const all=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>c.data===hj&&c.setorAtual==="posto1")
+    .filter(c=>c.setorAtual==="posto1")
     .sort((a,b)=>(a.criadoEm?.toDate?.()?.getTime()||0)-(b.criadoEm?.toDate?.()?.getTime()||0));
   filas.granel=all.filter(c=>c.tipoCarga==="granel");
   filas.ensacado=all.filter(c=>c.tipoCarga==="ensacado");
