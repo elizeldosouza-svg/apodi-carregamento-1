@@ -14,55 +14,125 @@
   --acc:#6c63ff;--acc2:#5a52e0;
   --gr:#00d68f;--rd:#ff4d6a;--ye:#ffc107;--or:#ff8c42;--bl:#4da6ff;
   --r:8px;--rl:12px;
+  --sb-l-w:260px;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif}
-
-/* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
 
 /* ══════ LAYOUT ══════ */
-.app{display:grid;grid-template-rows:48px 1fr 24px;grid-template-columns:260px 1fr 280px;height:100vh;overflow:hidden}
+.app{
+  display:grid;
+  grid-template-rows:48px 1fr 24px;
+  grid-template-columns:var(--sb-l-w) 1fr 280px;
+  height:100vh;
+  overflow:hidden;
+  transition:grid-template-columns .2s ease;
+}
+.app.sb-collapsed{
+  --sb-l-w:0px;
+  grid-template-columns:0px 1fr 280px;
+}
+.app.sb-collapsed .sidebar-l{
+  width:0;overflow:hidden;border:none;
+}
 
 /* ══════ TOPBAR ══════ */
-.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:100}
-.logo{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:900;color:var(--acc);letter-spacing:2px;margin-right:8px;white-space:nowrap}
+.topbar{
+  grid-column:1/-1;
+  background:var(--bg2);
+  border-bottom:1px solid var(--bd);
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  gap:8px;
+  z-index:100;
+  overflow-x:auto;
+  flex-wrap:nowrap;
+}
+.topbar::-webkit-scrollbar{height:2px}
+.logo{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:900;color:var(--acc);letter-spacing:2px;margin-right:4px;white-space:nowrap;flex-shrink:0}
 .logo span{color:var(--t2);font-weight:700}
 .tb-sep{width:1px;height:20px;background:var(--bd);flex-shrink:0}
-.tb-select{padding:5px 10px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;min-width:160px}
+.tb-select{padding:5px 10px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;min-width:160px;flex-shrink:0}
 .tb-select:focus{outline:none;border-color:var(--acc)}
-.tb-btn{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'DM Sans',sans-serif}
+.tb-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'DM Sans',sans-serif;flex-shrink:0}
 .tb-btn:hover{background:var(--bg4);color:var(--tx);border-color:var(--bd2)}
-.tb-btn svg{width:14px;height:14px;flex-shrink:0}
+.tb-btn svg{width:13px;height:13px;flex-shrink:0}
 .tb-btn.acc{background:var(--acc);border-color:var(--acc);color:#fff}
 .tb-btn.acc:hover{background:var(--acc2)}
 .tb-btn.ok{background:var(--gr);border-color:var(--gr);color:#000}
 .tb-btn.ok:hover{opacity:.9}
-.tb-gap{flex:1}
-.zoom-wrap{display:flex;align-items:center;gap:6px}
+.tb-btn.dl{background:rgba(77,166,255,.12);border-color:rgba(77,166,255,.4);color:#4da6ff}
+.tb-btn.dl:hover{background:rgba(77,166,255,.22);color:#7bc4ff}
+.tb-gap{flex:1;min-width:4px}
+.zoom-wrap{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .zoom-val{font-size:11px;color:var(--t2);min-width:36px;text-align:center;font-family:'JetBrains Mono',monospace}
 
+/* Toggle sidebar btn */
+.sb-toggle{display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;color:var(--t2);cursor:pointer;transition:all .15s;flex-shrink:0}
+.sb-toggle:hover{background:var(--bg4);color:var(--tx)}
+
 /* ══════ SIDEBAR ESQUERDA ══════ */
-.sidebar-l{background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
-.sb-section{border-bottom:1px solid var(--bd);padding:10px}
+.sidebar-l{
+  background:var(--bg2);
+  border-right:1px solid var(--bd);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  transition:width .2s ease;
+  min-width:0;
+}
+.sb-section{border-bottom:1px solid var(--bd);padding:10px;flex-shrink:0}
 .sb-title{font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
-.tela-grid{display:flex;flex-direction:column;gap:4px}
-.tela-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;transition:all .12s;border:1px solid transparent}
+
+/* Categorias */
+.sb-cat{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:8px 10px 4px;display:flex;align-items:center;gap:6px}
+.sb-cat::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tela-grid{display:flex;flex-direction:column;gap:2px;padding:0 6px 6px}
+.tela-item{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 8px;border-radius:var(--r);
+  cursor:pointer;transition:all .12s;
+  border:1px solid transparent;
+  position:relative;
+}
 .tela-item:hover{background:var(--bg3);border-color:var(--bd)}
 .tela-item.on{background:rgba(108,99,255,.12);border-color:rgba(108,99,255,.3)}
-.tela-icon{width:28px;height:20px;background:var(--bg4);border-radius:4px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.tela-icon{width:26px;height:20px;background:var(--bg4);border-radius:4px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
 .tela-item.on .tela-icon{border-color:rgba(108,99,255,.4)}
-.tela-name{font-size:12px;font-weight:500;color:var(--t2);flex:1}
+.tela-name{font-size:11.5px;font-weight:500;color:var(--t2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tela-item.on .tela-name{color:var(--tx)}
-
-/* Elementos */
-.el-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.el-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);cursor:pointer;font-size:10px;color:var(--t2);transition:all .15s}
-.el-btn:hover{background:var(--bg4);color:var(--tx);border-color:var(--bd2)}
-.el-btn svg{width:16px;height:16px}
+/* Dirty flag */
+.dirty-dot{width:6px;height:6px;border-radius:50%;background:var(--or);flex-shrink:0;display:none}
+.tela-item.dirty .dirty-dot{display:block}
+/* Link externo */
+.tela-ext{opacity:0;width:14px;height:14px;color:var(--t3);flex-shrink:0;transition:opacity .15s}
+.tela-item:hover .tela-ext{opacity:.7}
+.tela-item.on .tela-ext{opacity:.5}
+/* Tooltip URL */
+.tela-item[data-url]:hover::after{
+  content:attr(data-url);
+  position:absolute;
+  left:calc(100% + 6px);
+  top:50%;transform:translateY(-50%);
+  background:#1e1e2a;
+  border:1px solid var(--bd2);
+  color:var(--t2);
+  font-size:9px;
+  font-family:'JetBrains Mono',monospace;
+  padding:4px 8px;
+  border-radius:5px;
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:200;
+  max-width:240px;
+}
 
 /* Lista de layers */
-.layers{flex:1;overflow-y:auto;padding:10px}
+.layers-wrap{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.layers-header{padding:8px 10px 4px;flex-shrink:0}
+.layers{flex:1;overflow-y:auto;padding:6px 6px}
 .layer-item{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:11px;color:var(--t2);transition:all .12s;border:1px solid transparent}
 .layer-item:hover{background:var(--bg3)}
 .layer-item.on{background:rgba(108,99,255,.1);border-color:rgba(108,99,255,.25);color:var(--tx)}
@@ -77,27 +147,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .canvas-wrap{position:relative;flex-shrink:0}
 .canvas-bg-grid{position:absolute;inset:0;background-image:radial-gradient(circle,var(--bd) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;z-index:0}
 .canvas{position:relative;z-index:1;overflow:hidden}
-/* Régua topo */
 .ruler-h{position:sticky;top:0;left:0;height:20px;background:var(--bg2);border-bottom:1px solid var(--bd);z-index:50;pointer-events:none;font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace}
 
 /* ══════ ELEMENTOS ══════ */
 .cel{position:absolute;cursor:default;user-select:none;transition:outline .1s}
 .cel:hover{outline:1.5px dashed rgba(108,99,255,.5);outline-offset:1px}
 .cel.sel{outline:2px solid var(--acc)!important;outline-offset:1px}
-/* Handles */
 .rh{position:absolute;width:7px;height:7px;background:var(--acc);border-radius:2px;z-index:20;display:none}
 .cel.sel .rh{display:block}
 .rh-br{bottom:-4px;right:-4px;cursor:se-resize}
 .rh-r{right:-4px;top:50%;transform:translateY(-50%);cursor:e-resize}
 .rh-b{bottom:-4px;left:50%;transform:translateX(-50%);cursor:s-resize}
 .rh-tl{top:-4px;left:-4px;cursor:nw-resize}
-/* Label tipo */
 .cel-label{position:absolute;top:-18px;left:0;font-size:9px;background:var(--acc);color:#fff;padding:1px 5px;border-radius:3px;display:none;white-space:nowrap;pointer-events:none;font-family:'DM Sans',sans-serif}
 .cel.sel .cel-label{display:block}
 
 /* ══════ SIDEBAR DIREITA ══════ */
-.sidebar-r{background:var(--bg2);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
-.prop-tabs{display:flex;border-bottom:1px solid var(--bd)}
+.sidebar-r{background:var(--bg2);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;min-width:280px}
+.prop-tabs{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0}
 .ptab{flex:1;padding:9px 4px;font-size:11px;font-weight:500;text-align:center;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;transition:all .15s}
 .ptab.on{color:var(--acc);border-bottom-color:var(--acc)}
 .props{flex:1;overflow-y:auto;padding:12px}
@@ -115,7 +182,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .no-sel-msg{text-align:center;padding:32px 16px;color:var(--t3)}
 .no-sel-msg svg{width:32px;height:32px;margin:0 auto 10px;display:block;opacity:.3}
 .no-sel-msg p{font-size:12px;line-height:1.6}
-/* Btn prop */
 .pr-btn{width:100%;padding:7px;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;color:var(--t2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;font-family:'DM Sans',sans-serif;margin-bottom:5px}
 .pr-btn:hover{background:var(--bg4);color:var(--tx)}
 .pr-btn.danger{color:var(--rd);border-color:rgba(255,77,106,.3)}
@@ -125,14 +191,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .code-area{padding:12px;display:none;flex-direction:column;gap:8px;flex:1;overflow:hidden}
 .code-area.show{display:flex}
 .code-block{flex:1;overflow:auto;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);white-space:pre;line-height:1.7}
-.code-block .kw{color:#c792ea}.code-block .str{color:#c3e88d}.code-block .num{color:#f78c6c}.code-block .cm{color:#546e7a}
 
 /* ══════ STATUSBAR ══════ */
-.statusbar{grid-column:1/-1;background:var(--bg2);border-top:1px solid var(--bd);display:flex;align-items:center;padding:0 14px;gap:16px}
-.sb{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.statusbar{grid-column:1/-1;background:var(--bg2);border-top:1px solid var(--bd);display:flex;align-items:center;padding:0 14px;gap:16px;flex-shrink:0}
+.sb{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;white-space:nowrap}
 .sb b{color:var(--t2);font-weight:600}
 
-/* ══════ TOOLTIP COPY ══════ */
+/* ══════ TOAST ══════ */
 .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:var(--gr);color:#000;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;display:none;z-index:9999;animation:fadeup .3s ease}
 @keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
@@ -147,27 +212,58 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .modal-body{flex:1;overflow:auto;padding:16px}
 .code-output{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a9b1d6;line-height:1.8;white-space:pre;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:14px;overflow:auto;max-height:480px}
 .modal-foot{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end}
+
+/* ══════ RESPONSIVO ══════ */
+@media (max-width:1100px){
+  :root{--sb-l-w:220px}
+  .sidebar-r{min-width:240px}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:0px 1fr 240px}
+  .sidebar-l{width:0;overflow:hidden;border:none}
+  .app.sb-open{grid-template-columns:220px 1fr 0px}
+  .app.sb-open .sidebar-l{width:220px;overflow:hidden}
+  .app.sb-open .sidebar-r{display:none}
+  .sidebar-r{min-width:220px}
+  .tb-select{min-width:130px}
+}
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="app" id="app">
 
 <!-- ── TOPBAR ── -->
 <div class="topbar">
+  <!-- Toggle sidebar -->
+  <button class="sb-toggle" id="sb-toggle-btn" onclick="toggleSidebar()" title="Mostrar/ocultar painel de telas">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+  </button>
   <div class="logo">APODI <span>EDITOR</span></div>
   <div class="tb-sep"></div>
   <select class="tb-select" id="tela-sel" onchange="carregarTela(this.value)">
     <option value="">— Selecionar tela —</option>
-    <option value="posto1">Posto 1 — Entrada</option>
-    <option value="triagem">Triagem</option>
-    <option value="carregamento">Carregamento</option>
-    <option value="enlonamento">Enlonamento</option>
-    <option value="faturamento">Faturamento — Saída</option>
-    <option value="senha">Painel de Chamada (TV)</option>
+    <optgroup label="Operacional">
+      <option value="posto1">Posto 1 — Entrada</option>
+      <option value="portaria">Portaria</option>
+      <option value="triagem">Triagem</option>
+      <option value="carregamento">Carregamento</option>
+      <option value="enlonamento">Enlonamento</option>
+      <option value="faturamento">Faturamento — Saída</option>
+    </optgroup>
+    <optgroup label="Gestão">
+      <option value="master">Master — Rastreio</option>
+      <option value="patio">Pátio</option>
+      <option value="analise">Análise</option>
+      <option value="justificativas">Justificativas</option>
+      <option value="placas">Placas</option>
+    </optgroup>
+    <optgroup label="Sistema">
+      <option value="senha">Painel TV</option>
+      <option value="admin">Admin</option>
+    </optgroup>
   </select>
   <div class="tb-sep"></div>
-  <!-- Adicionar elemento -->
   <button class="tb-btn" onclick="addEl('texto')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>Texto
   </button>
@@ -188,7 +284,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l4-4-4 4 4 4M3 7h13a4 4 0 010 8H11"/></svg>Desfazer
   </button>
   <div class="tb-gap"></div>
-  <!-- Zoom -->
   <div class="zoom-wrap">
     <button class="tb-btn" style="padding:4px 8px" onclick="zoom(-10)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -202,29 +297,103 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <button class="tb-btn acc" id="btn-aplicar" onclick="aplicarEdicao()" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Aplicar edição
   </button>
+  <button class="tb-btn dl" id="btn-baixar" onclick="baixarHTML()" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Baixar HTML
+  </button>
   <button class="tb-btn ok" id="btn-codigo" onclick="mostrarCodigo()" style="display:none">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Ver / Copiar código
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Ver código
   </button>
 </div>
 
 <!-- ── SIDEBAR ESQUERDA ── -->
-<div class="sidebar-l">
-  <div class="sb-section">
-    <div class="sb-title">Telas do sistema</div>
-    <div class="tela-grid" id="tela-list">
-      <div class="tela-item" data-tela="posto1" onclick="carregarTelaBtn('posto1',this)"><div class="tela-icon">🏁</div><span class="tela-name">Posto 1</span></div>
-      <div class="tela-item" data-tela="triagem" onclick="carregarTelaBtn('triagem',this)"><div class="tela-icon">📦</div><span class="tela-name">Triagem</span></div>
-      <div class="tela-item" data-tela="carregamento" onclick="carregarTelaBtn('carregamento',this)"><div class="tela-icon">🏗️</div><span class="tela-name">Carregamento</span></div>
-      <div class="tela-item" data-tela="enlonamento" onclick="carregarTelaBtn('enlonamento',this)"><div class="tela-icon">🪢</div><span class="tela-name">Enlonamento</span></div>
-      <div class="tela-item" data-tela="faturamento" onclick="carregarTelaBtn('faturamento',this)"><div class="tela-icon">🧾</div><span class="tela-name">Faturamento</span></div>
-      <div class="tela-item" data-tela="senha" onclick="carregarTelaBtn('senha',this)"><div class="tela-icon">📺</div><span class="tela-name">Painel TV</span></div>
+<div class="sidebar-l" id="sidebar-l">
+  <div style="flex:1;overflow-y:auto;overflow-x:hidden">
+
+    <!-- OPERACIONAL -->
+    <div class="sb-cat">Operacional</div>
+    <div class="tela-grid">
+      <div class="tela-item" data-tela="posto1" data-url="apodi-carregamento.vercel.app/posto1" onclick="carregarTelaBtn('posto1',this)">
+        <div class="tela-icon">🏁</div><span class="tela-name">Posto 1</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('posto1')" title="Abrir tela"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="portaria" data-url="apodi-carregamento.vercel.app/portaria" onclick="carregarTelaBtn('portaria',this)">
+        <div class="tela-icon">🚧</div><span class="tela-name">Portaria</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('portaria')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="triagem" data-url="apodi-carregamento.vercel.app/triagem" onclick="carregarTelaBtn('triagem',this)">
+        <div class="tela-icon">📦</div><span class="tela-name">Triagem</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('triagem')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="carregamento" data-url="apodi-carregamento.vercel.app/carregamento" onclick="carregarTelaBtn('carregamento',this)">
+        <div class="tela-icon">🏗️</div><span class="tela-name">Carregamento</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('carregamento')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="enlonamento" data-url="apodi-carregamento.vercel.app/enlonamento" onclick="carregarTelaBtn('enlonamento',this)">
+        <div class="tela-icon">🪢</div><span class="tela-name">Enlonamento</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('enlonamento')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="faturamento" data-url="apodi-carregamento.vercel.app/faturamento" onclick="carregarTelaBtn('faturamento',this)">
+        <div class="tela-icon">🧾</div><span class="tela-name">Faturamento</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('faturamento')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
     </div>
-  </div>
-  <div class="sb-section">
-    <div class="sb-title">Layers</div>
-  </div>
-  <div class="layers" id="layers-list">
-    <div style="text-align:center;padding:20px;color:var(--t3);font-size:11px">Selecione uma tela</div>
+
+    <!-- GESTÃO -->
+    <div class="sb-cat">Gestão</div>
+    <div class="tela-grid">
+      <div class="tela-item" data-tela="master" data-url="apodi-carregamento.vercel.app/master" onclick="carregarTelaBtn('master',this)">
+        <div class="tela-icon">📊</div><span class="tela-name">Master</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('master')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="patio" data-url="apodi-carregamento.vercel.app/patio" onclick="carregarTelaBtn('patio',this)">
+        <div class="tela-icon">🅿️</div><span class="tela-name">Pátio</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('patio')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="analise" data-url="apodi-carregamento.vercel.app/analise" onclick="carregarTelaBtn('analise',this)">
+        <div class="tela-icon">📈</div><span class="tela-name">Análise</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('analise')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="justificativas" data-url="apodi-carregamento.vercel.app/justificativas" onclick="carregarTelaBtn('justificativas',this)">
+        <div class="tela-icon">📝</div><span class="tela-name">Justificativas</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('justificativas')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="placas" data-url="apodi-carregamento.vercel.app/placas" onclick="carregarTelaBtn('placas',this)">
+        <div class="tela-icon">🚗</div><span class="tela-name">Placas</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('placas')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+    </div>
+
+    <!-- SISTEMA -->
+    <div class="sb-cat">Sistema</div>
+    <div class="tela-grid">
+      <div class="tela-item" data-tela="senha" data-url="apodi-carregamento.vercel.app/senha" onclick="carregarTelaBtn('senha',this)">
+        <div class="tela-icon">📺</div><span class="tela-name">Painel TV</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('senha')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="admin" data-url="apodi-carregamento.vercel.app/admin" onclick="carregarTelaBtn('admin',this)">
+        <div class="tela-icon">⚙️</div><span class="tela-name">Admin</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('admin')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+    </div>
+
+    <!-- Layers -->
+    <div class="sb-cat" style="margin-top:4px">Layers</div>
+    <div class="layers" id="layers-list">
+      <div style="text-align:center;padding:16px 8px;color:var(--t3);font-size:11px">Selecione uma tela</div>
+    </div>
   </div>
 </div>
 
@@ -246,18 +415,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="ptab on" onclick="setTab('props',this)">Propriedades</div>
     <div class="ptab" onclick="setTab('codigo',this)">Código</div>
   </div>
-  <div class="props" id="tab-props">
+  <div class="props" id="tab-props" style="display:flex;flex-direction:column">
     <div class="no-sel-msg" id="no-sel">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 15l5 5M10 17a7 7 0 100-14 7 7 0 000 14z"/></svg>
       <p>Clique em um elemento para editar suas propriedades</p>
     </div>
     <div id="props-form" style="display:none">
-      <!-- Conteúdo -->
       <div class="pg">
         <div class="pg-title">Conteúdo</div>
         <div class="pr"><span class="pl">Texto</span><input class="pi" id="p-txt" oninput="sp('_txt',this.value)" placeholder="..."/></div>
       </div>
-      <!-- Tipografia -->
       <div class="pg">
         <div class="pg-title">Tipografia</div>
         <div class="pr">
@@ -268,12 +435,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="pr">
           <span class="pl">Peso</span>
           <select class="pi-sel" id="p-fw" onchange="sp('fontWeight',this.value)">
-            <option value="300">Leve 300</option>
-            <option value="400">Normal 400</option>
-            <option value="500">Médio 500</option>
-            <option value="600">Semi 600</option>
-            <option value="700">Negrito 700</option>
-            <option value="800">Extra 800</option>
+            <option value="300">Leve 300</option><option value="400">Normal 400</option>
+            <option value="500">Médio 500</option><option value="600">Semi 600</option>
+            <option value="700">Negrito 700</option><option value="800">Extra 800</option>
             <option value="900">Black 900</option>
           </select>
         </div>
@@ -285,20 +449,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="pr">
           <span class="pl">Alinhamento</span>
           <select class="pi-sel" id="p-ta" onchange="sp('textAlign',this.value)">
-            <option value="left">Esquerda</option>
-            <option value="center">Centro</option>
-            <option value="right">Direita</option>
+            <option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option>
           </select>
         </div>
         <div class="pr">
           <span class="pl">Família</span>
           <select class="pi-sel" id="p-ff" onchange="sp('fontFamily',this.value)">
-            <option value="">Padrão</option>
-            <option value="system-ui,sans-serif">System UI</option>
+            <option value="">Padrão</option><option value="system-ui,sans-serif">System UI</option>
             <option value="'Rajdhani',sans-serif">Rajdhani</option>
             <option value="'JetBrains Mono',monospace">JetBrains Mono</option>
-            <option value="monospace">Monospace</option>
-            <option value="'DM Sans',sans-serif">DM Sans</option>
+            <option value="monospace">Monospace</option><option value="'DM Sans',sans-serif">DM Sans</option>
           </select>
         </div>
         <div class="pr">
@@ -306,7 +466,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <input class="pi" id="p-ls" placeholder="1px" oninput="sp('letterSpacing',this.value)" style="max-width:70px"/>
         </div>
       </div>
-      <!-- Layout -->
       <div class="pg">
         <div class="pg-title">Layout e posição</div>
         <div class="pr">
@@ -333,7 +492,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <span style="font-size:10px;color:var(--t3)">%</span>
         </div>
       </div>
-      <!-- Aparência -->
       <div class="pg">
         <div class="pg-title">Aparência</div>
         <div class="pr">
@@ -354,7 +512,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <input class="pi" id="p-tshadow" placeholder="0 0 20px #fff" oninput="sp('textShadow',this.value)"/>
         </div>
       </div>
-      <!-- Ações -->
       <div class="pg">
         <div class="pg-title">Ações</div>
         <button class="pr-btn" onclick="dupEl()">
@@ -372,9 +529,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       </div>
     </div>
   </div>
-  <!-- Tab código (preview inline) -->
   <div id="tab-codigo" style="display:none;flex:1;overflow:hidden;flex-direction:column">
-    <div style="padding:10px 12px;font-size:11px;color:var(--t2)">Clique em <b style="color:var(--gr)">"Ver / Copiar código"</b> na toolbar para gerar o código completo da tela editada.</div>
+    <div style="padding:10px 12px;font-size:11px;color:var(--t2)">Clique em <b style="color:var(--gr)">"Ver código"</b> na toolbar para gerar o código completo da tela editada.</div>
   </div>
 </div>
 
@@ -385,7 +541,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <span class="sb" id="sb-s" style="display:none">Sel: <b id="sb-sel">—</b></span>
   <span class="sb" id="sb-p" style="display:none">Pos: <b id="sb-pos">—</b></span>
   <span class="sb" id="sb-z" style="display:none">Dim: <b id="sb-dim">—</b></span>
-  <span class="sb" style="margin-left:auto">Ctrl+Z desfazer · Delete deletar</span>
+  <span class="sb" style="margin-left:auto">Ctrl+Z desfazer · Ctrl+S salvar · Delete deletar</span>
 </div>
 
 </div><!-- /app -->
@@ -425,14 +581,24 @@ const TELAS={
     {id:"p_lpl",tipo:"texto",txt:"PLACA DO CAMINHÃO",x:20,y:236,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
     {id:"p_ipl",tipo:"caixa",txt:"ABC1234",x:20,y:256,w:400,h:54,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"20px",fontWeight:"700",color:"#dff0ff",textAlign:"center",letterSpacing:"3px",padding:"14px",fontFamily:"monospace"}},
     {id:"p_ltc",tipo:"texto",txt:"TIPO DE CARGA",x:20,y:326,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
-    {id:"p_en",tipo:"botao",txt:"📦 Ensacado",x:20,y:346,w:122,h:72,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"13px",fontWeight:"700",color:"#7aafcc",textAlign:"center",padding:"8px 4px",display:"flex",alignItems:"center",justifyContent:"center"}},
-    {id:"p_gr",tipo:"botao",txt:"🚛 Granel",x:158,y:346,w:122,h:72,s:{background:"rgba(0,212,255,.08)",border:"2px solid #00d4ff",borderRadius:"10px",fontSize:"13px",fontWeight:"700",color:"#00d4ff",textAlign:"center",padding:"8px 4px",display:"flex",alignItems:"center",justifyContent:"center"}},
-    {id:"p_bb",tipo:"botao",txt:"🛍️ Big Bag",x:296,y:346,w:122,h:72,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"13px",fontWeight:"700",color:"#7aafcc",textAlign:"center",padding:"8px 4px",display:"flex",alignItems:"center",justifyContent:"center"}},
+    {id:"p_en",tipo:"botao",txt:"📦 Ensacado",x:20,y:346,w:122,h:72,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"13px",fontWeight:"700",color:"#7aafcc",textAlign:"center",padding:"8px 4px"}},
+    {id:"p_gr",tipo:"botao",txt:"🚛 Granel",x:158,y:346,w:122,h:72,s:{background:"rgba(0,212,255,.08)",border:"2px solid #00d4ff",borderRadius:"10px",fontSize:"13px",fontWeight:"700",color:"#00d4ff",textAlign:"center",padding:"8px 4px"}},
+    {id:"p_bb",tipo:"botao",txt:"🛍️ Big Bag",x:296,y:346,w:122,h:72,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"13px",fontWeight:"700",color:"#7aafcc",textAlign:"center",padding:"8px 4px"}},
     {id:"p_lcim",tipo:"texto",txt:"TIPO DE CIMENTO",x:20,y:434,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
     {id:"p_c1",tipo:"botao",txt:"CP II F",x:20,y:454,w:122,h:46,s:{background:"rgba(255,208,0,.08)",border:"2px solid #ffd000",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#ffd000",textAlign:"center",fontFamily:"monospace"}},
     {id:"p_c2",tipo:"botao",txt:"CP III",x:158,y:454,w:122,h:46,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#7aafcc",textAlign:"center",fontFamily:"monospace"}},
     {id:"p_c3",tipo:"botao",txt:"CP V",x:296,y:454,w:122,h:46,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#7aafcc",textAlign:"center",fontFamily:"monospace"}},
     {id:"p_go",tipo:"botao",txt:"✅ REGISTRAR ENTRADA",x:20,y:518,w:400,h:52,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"10px",fontSize:"16px",fontWeight:"800",color:"#000",textAlign:"center",letterSpacing:"1px"}},
+  ]},
+  portaria:{label:"Portaria",w:440,h:700,bg:"#0a0f1e",els:[
+    {id:"po_ic",tipo:"texto",txt:"🚧",x:195,y:20,w:50,h:52,s:{fontSize:"44px",textAlign:"center"}},
+    {id:"po_h1",tipo:"texto",txt:"PORTARIA",x:60,y:76,w:320,h:28,s:{fontSize:"18px",fontWeight:"800",color:"#00d4ff",textAlign:"center",letterSpacing:"1px",textTransform:"uppercase"}},
+    {id:"po_sub",tipo:"texto",txt:"Registro de entrada e saída na portaria",x:80,y:108,w:280,h:20,s:{fontSize:"12px",color:"#7aafcc",textAlign:"center"}},
+    {id:"po_lpl",tipo:"texto",txt:"PLACA DO CAMINHÃO",x:20,y:152,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
+    {id:"po_ipl",tipo:"caixa",txt:"ABC1234",x:20,y:172,w:400,h:54,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"20px",fontWeight:"700",color:"#dff0ff",textAlign:"center",letterSpacing:"3px",padding:"14px",fontFamily:"monospace"}},
+    {id:"po_ini",tipo:"botao",txt:"▶ PORTARIA INÍCIO",x:20,y:244,w:192,h:52,s:{background:"rgba(0,212,255,.08)",border:"2px solid #00d4ff",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#00d4ff",textAlign:"center"}},
+    {id:"po_fim",tipo:"botao",txt:"⏹ PORTARIA FIM",x:226,y:244,w:192,h:52,s:{background:"rgba(0,232,150,.08)",border:"2px solid #00e896",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#00e896",textAlign:"center"}},
+    {id:"po_pdf",tipo:"botao",txt:"📄 Exportar PDF",x:20,y:314,w:400,h:46,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"14px",fontWeight:"600",color:"#7aafcc",textAlign:"center"}},
   ]},
   faturamento:{label:"Faturamento — Saída",w:440,h:600,bg:"#0a0f1e",els:[
     {id:"f_ic",tipo:"texto",txt:"🧾",x:195,y:20,w:50,h:56,s:{fontSize:"44px",textAlign:"center"}},
@@ -444,17 +610,15 @@ const TELAS={
     {id:"f_ipl",tipo:"caixa",txt:"ABC1234",x:20,y:260,w:400,h:54,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"20px",fontWeight:"700",color:"#dff0ff",textAlign:"center",letterSpacing:"3px",padding:"14px",fontFamily:"monospace"}},
     {id:"f_go",tipo:"botao",txt:"🚀 CONFIRMAR SAÍDA",x:20,y:334,w:400,h:54,s:{background:"linear-gradient(135deg,#00e896,#009960)",border:"none",borderRadius:"10px",fontSize:"16px",fontWeight:"800",color:"#000",textAlign:"center"}},
   ]},
-  triagem:{label:"Triagem de Palete",w:440,h:700,bg:"#0a0f1e",els:[
+  triagem:{label:"Triagem",w:440,h:700,bg:"#0a0f1e",els:[
     {id:"t_ic",tipo:"texto",txt:"📦",x:195,y:20,w:50,h:52,s:{fontSize:"44px",textAlign:"center"}},
-    {id:"t_h1",tipo:"texto",txt:"TRIAGEM DE PALETE",x:60,y:76,w:320,h:28,s:{fontSize:"18px",fontWeight:"800",color:"#00d4ff",textAlign:"center",letterSpacing:"1px",textTransform:"uppercase"}},
+    {id:"t_h1",tipo:"texto",txt:"TRIAGEM",x:60,y:76,w:320,h:28,s:{fontSize:"18px",fontWeight:"800",color:"#00d4ff",textAlign:"center",letterSpacing:"1px",textTransform:"uppercase"}},
     {id:"t_sub",tipo:"texto",txt:"Registre a triagem do palete",x:100,y:108,w:240,h:20,s:{fontSize:"12px",color:"#7aafcc",textAlign:"center"}},
     {id:"t_lpl",tipo:"texto",txt:"PLACA DO CAMINHÃO",x:20,y:152,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
     {id:"t_ipl",tipo:"caixa",txt:"ABC1234",x:20,y:172,w:400,h:54,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"20px",fontWeight:"700",color:"#dff0ff",textAlign:"center",letterSpacing:"3px",padding:"14px",fontFamily:"monospace"}},
-    {id:"t_lfoto",tipo:"texto",txt:"FOTO DO PALETE",x:20,y:242,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
-    {id:"t_foto",tipo:"caixa",txt:"📷  Tirar foto",x:20,y:262,w:400,h:120,s:{background:"#0f1a2e",border:"2px dashed #1e3558",borderRadius:"10px",fontSize:"14px",color:"#7aafcc",textAlign:"center",display:"flex",alignItems:"center",justifyContent:"center"}},
-    {id:"t_lobs",tipo:"texto",txt:"OBSERVAÇÕES",x:20,y:398,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
-    {id:"t_obs",tipo:"caixa",txt:"Observações...",x:20,y:418,w:400,h:80,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"14px",color:"#3a6880",padding:"12px 16px"}},
-    {id:"t_go",tipo:"botao",txt:"✅ CONFIRMAR TRIAGEM",x:20,y:516,w:400,h:52,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"10px",fontSize:"16px",fontWeight:"800",color:"#000",textAlign:"center",letterSpacing:"1px"}},
+    {id:"t_foto",tipo:"caixa",txt:"📷  Tirar foto",x:20,y:242,w:400,h:120,s:{background:"#0f1a2e",border:"2px dashed #1e3558",borderRadius:"10px",fontSize:"14px",color:"#7aafcc",textAlign:"center"}},
+    {id:"t_obs",tipo:"caixa",txt:"Observações...",x:20,y:378,w:400,h:80,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"14px",color:"#3a6880",padding:"12px 16px"}},
+    {id:"t_go",tipo:"botao",txt:"✅ CONFIRMAR TRIAGEM",x:20,y:476,w:400,h:52,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"10px",fontSize:"16px",fontWeight:"800",color:"#000",textAlign:"center",letterSpacing:"1px"}},
   ]},
   carregamento:{label:"Carregamento",w:440,h:700,bg:"#0a0f1e",els:[
     {id:"c_ic",tipo:"texto",txt:"🏗️",x:195,y:20,w:50,h:52,s:{fontSize:"44px",textAlign:"center"}},
@@ -462,7 +626,7 @@ const TELAS={
     {id:"c_sub",tipo:"texto",txt:"Registre o carregamento do veículo",x:80,y:108,w:280,h:20,s:{fontSize:"12px",color:"#7aafcc",textAlign:"center"}},
     {id:"c_lpl",tipo:"texto",txt:"PLACA DO CAMINHÃO",x:20,y:152,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
     {id:"c_ipl",tipo:"caixa",txt:"ABC1234",x:20,y:172,w:400,h:54,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"20px",fontWeight:"700",color:"#dff0ff",textAlign:"center",letterSpacing:"3px",padding:"14px",fontFamily:"monospace"}},
-    {id:"c_foto",tipo:"caixa",txt:"📷  Tirar foto do carregamento",x:20,y:242,w:400,h:120,s:{background:"#0f1a2e",border:"2px dashed #1e3558",borderRadius:"10px",fontSize:"14px",color:"#7aafcc",textAlign:"center",display:"flex",alignItems:"center",justifyContent:"center"}},
+    {id:"c_foto",tipo:"caixa",txt:"📷  Tirar foto do carregamento",x:20,y:242,w:400,h:120,s:{background:"#0f1a2e",border:"2px dashed #1e3558",borderRadius:"10px",fontSize:"14px",color:"#7aafcc",textAlign:"center"}},
     {id:"c_go",tipo:"botao",txt:"✅ CONFIRMAR CARREGAMENTO",x:20,y:516,w:400,h:52,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#000",textAlign:"center",letterSpacing:"1px"}},
   ]},
   enlonamento:{label:"Enlonamento",w:440,h:700,bg:"#0a0f1e",els:[
@@ -471,18 +635,50 @@ const TELAS={
     {id:"en_sub",tipo:"texto",txt:"Registre o enlonamento da carga",x:80,y:108,w:280,h:20,s:{fontSize:"12px",color:"#7aafcc",textAlign:"center"}},
     {id:"en_lpl",tipo:"texto",txt:"PLACA DO CAMINHÃO",x:20,y:152,w:400,h:16,s:{fontSize:"10px",fontWeight:"700",color:"#7aafcc",letterSpacing:".6px",textTransform:"uppercase"}},
     {id:"en_ipl",tipo:"caixa",txt:"ABC1234",x:20,y:172,w:400,h:54,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"20px",fontWeight:"700",color:"#dff0ff",textAlign:"center",letterSpacing:"3px",padding:"14px",fontFamily:"monospace"}},
-    {id:"en_foto",tipo:"caixa",txt:"📷  Foto do enlonamento",x:20,y:242,w:400,h:120,s:{background:"#0f1a2e",border:"2px dashed #1e3558",borderRadius:"10px",fontSize:"14px",color:"#7aafcc",textAlign:"center",display:"flex",alignItems:"center",justifyContent:"center"}},
+    {id:"en_foto",tipo:"caixa",txt:"📷  Foto do enlonamento",x:20,y:242,w:400,h:120,s:{background:"#0f1a2e",border:"2px dashed #1e3558",borderRadius:"10px",fontSize:"14px",color:"#7aafcc",textAlign:"center"}},
     {id:"en_go",tipo:"botao",txt:"✅ CONFIRMAR ENLONAMENTO",x:20,y:516,w:400,h:52,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#000",textAlign:"center",letterSpacing:"1px"}},
+  ]},
+  master:{label:"Master — Rastreio Geral",w:1200,h:700,bg:"#060d18",els:[
+    {id:"m_h1",tipo:"texto",txt:"RASTREIO GERAL — APODI CIMENTOS",x:20,y:20,w:500,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#00d4ff",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"m_badge",tipo:"caixa",txt:"● TEMPO REAL",x:540,y:24,w:110,h:24,s:{background:"rgba(0,214,143,.1)",border:"1px solid #00d68f",borderRadius:"20px",fontSize:"10px",fontWeight:"700",color:"#00d68f",textAlign:"center",letterSpacing:"2px"}},
+    {id:"m_tbl",tipo:"caixa",txt:"Tabela de veículos",x:20,y:70,w:1160,h:500,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"16px"}},
+  ]},
+  patio:{label:"Pátio — Status Tempo Real",w:900,h:700,bg:"#060d18",els:[
+    {id:"pt_h1",tipo:"texto",txt:"STATUS DO PÁTIO",x:20,y:20,w:400,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#00d4ff",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"pt_grid",tipo:"caixa",txt:"Grid de veículos no pátio",x:20,y:70,w:860,h:580,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"16px"}},
+  ]},
+  analise:{label:"Análise — TMAC e Gráficos",w:1100,h:800,bg:"#060d18",els:[
+    {id:"an_h1",tipo:"texto",txt:"ANÁLISE DE DESEMPENHO",x:20,y:20,w:500,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#00d4ff",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"an_tmac",tipo:"caixa",txt:"TMAC Médio: 1h 42min",x:20,y:70,w:240,h:80,s:{background:"rgba(0,212,255,.06)",border:"2px solid rgba(0,212,255,.3)",borderRadius:"10px",fontSize:"16px",fontWeight:"700",color:"#00d4ff",textAlign:"center",padding:"20px"}},
+    {id:"an_chart",tipo:"caixa",txt:"Gráfico de barras",x:20,y:170,w:1060,h:500,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"16px"}},
+  ]},
+  justificativas:{label:"Justificativas",w:440,h:700,bg:"#0a0f1e",els:[
+    {id:"ju_ic",tipo:"texto",txt:"📝",x:195,y:20,w:50,h:52,s:{fontSize:"44px",textAlign:"center"}},
+    {id:"ju_h1",tipo:"texto",txt:"JUSTIFICATIVAS",x:60,y:76,w:320,h:28,s:{fontSize:"18px",fontWeight:"800",color:"#ffc107",textAlign:"center",letterSpacing:"1px",textTransform:"uppercase"}},
+    {id:"ju_sub",tipo:"texto",txt:"Pendências que exigem justificativa",x:80,y:108,w:280,h:20,s:{fontSize:"12px",color:"#7aafcc",textAlign:"center"}},
+    {id:"ju_lista",tipo:"caixa",txt:"Lista de pendências",x:20,y:146,w:400,h:420,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"14px"}},
+    {id:"ju_pdf",tipo:"botao",txt:"📄 Exportar PDF",x:20,y:584,w:400,h:46,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"14px",fontWeight:"600",color:"#7aafcc",textAlign:"center"}},
+  ]},
+  placas:{label:"Histórico por Placa",w:440,h:700,bg:"#0a0f1e",els:[
+    {id:"pl_ic",tipo:"texto",txt:"🚗",x:195,y:20,w:50,h:52,s:{fontSize:"44px",textAlign:"center"}},
+    {id:"pl_h1",tipo:"texto",txt:"HISTÓRICO POR PLACA",x:50,y:76,w:340,h:28,s:{fontSize:"17px",fontWeight:"800",color:"#00d4ff",textAlign:"center",letterSpacing:"1px",textTransform:"uppercase"}},
+    {id:"pl_ipl",tipo:"caixa",txt:"Digite a placa...",x:20,y:120,w:400,h:54,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"20px",fontWeight:"700",color:"#dff0ff",textAlign:"center",letterSpacing:"3px",padding:"14px",fontFamily:"monospace"}},
+    {id:"pl_buscar",tipo:"botao",txt:"🔍 BUSCAR",x:20,y:186,w:400,h:46,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"10px",fontSize:"14px",fontWeight:"800",color:"#000",textAlign:"center"}},
+    {id:"pl_hist",tipo:"caixa",txt:"Histórico de viagens",x:20,y:248,w:400,h:360,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"14px"}},
   ]},
   senha:{label:"Painel de Chamada (TV)",w:700,h:500,bg:"#020810",els:[
     {id:"sv_bg",tipo:"caixa",txt:"",x:0,y:0,w:700,h:64,s:{background:"#05101e",borderBottom:"2px solid #00d4ff"}},
     {id:"sv_logo",tipo:"texto",txt:"🏭  APODI CIMENTOS — PAINEL DE CHAMADA",x:16,y:18,w:420,h:28,s:{fontSize:"15px",fontWeight:"900",color:"#00d4ff",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
     {id:"sv_clk",tipo:"texto",txt:"22:14:37",x:560,y:14,w:130,h:36,s:{fontSize:"26px",fontWeight:"800",color:"#ffd000",fontFamily:"monospace",letterSpacing:"3px",textAlign:"right"}},
     {id:"sv_tag",tipo:"texto",txt:"🔔 VEÍCULO CHAMADO PARA ENTRADA",x:90,y:84,w:330,h:20,s:{fontSize:"10px",fontWeight:"800",color:"#fb923c",textAlign:"center",letterSpacing:"4px"}},
-    {id:"sv_tipo",tipo:"texto",txt:"🚛 GRANEL",x:185,y:106,w:140,h:20,s:{fontSize:"13px",fontWeight:"900",color:"#fb923c",textAlign:"center",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
     {id:"sv_placa",tipo:"caixa",txt:"ABC1234",x:60,y:128,w:390,h:116,s:{background:"rgba(251,146,60,.06)",border:"3px solid rgba(251,146,60,.35)",borderRadius:"16px",fontSize:"76px",fontWeight:"900",color:"#fb923c",textAlign:"center",letterSpacing:"6px",padding:"10px",fontFamily:"monospace"}},
     {id:"sv_ac",tipo:"texto",txt:"AC: AC-0042",x:110,y:256,w:290,h:28,s:{fontSize:"20px",fontWeight:"700",color:"rgba(251,146,60,.75)",textAlign:"center",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
-    {id:"sv_num",tipo:"texto",txt:"Chamada Nº 017",x:165,y:286,w:180,h:18,s:{fontSize:"11px",color:"#4a7a9a",textAlign:"center",letterSpacing:"3px"}},
+  ]},
+  admin:{label:"Admin — Painel de Controle",w:1000,h:700,bg:"#060d18",els:[
+    {id:"ad_h1",tipo:"texto",txt:"⚙️ PAINEL ADMIN",x:20,y:20,w:400,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#ff4d6a",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"ad_badge",tipo:"caixa",txt:"🔒 ACESSO RESTRITO",x:430,y:24,w:140,h:24,s:{background:"rgba(255,77,106,.1)",border:"1px solid #ff4d6a",borderRadius:"20px",fontSize:"10px",fontWeight:"700",color:"#ff4d6a",textAlign:"center",letterSpacing:"1px"}},
+    {id:"ad_form",tipo:"caixa",txt:"Formulário de edição de veículos",x:20,y:70,w:600,h:580,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"20px"}},
+    {id:"ad_log",tipo:"caixa",txt:"Log de ações",x:640,y:70,w:340,h:580,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",color:"#3a6880",padding:"14px",fontFamily:"monospace"}},
   ]},
 };
 
@@ -490,7 +686,56 @@ const TELAS={
 // ESTADO
 // ══════════════════════════════════════════════════════════════════
 let ELS=[], SEL=null, TELA=null, HIST=[], ZOOM=100, nextId=1;
+const DIRTY=new Set(); // telas modificadas
 const cor={texto:"#6c63ff",botao:"#00d68f",caixa:"#4da6ff",input:"#ffc107",divisor:"#ff8c42"};
+const URLS={
+  posto1:"https://apodi-carregamento.vercel.app/posto1",
+  portaria:"https://apodi-carregamento.vercel.app/portaria",
+  triagem:"https://apodi-carregamento.vercel.app/triagem",
+  carregamento:"https://apodi-carregamento.vercel.app/carregamento",
+  enlonamento:"https://apodi-carregamento.vercel.app/enlonamento",
+  faturamento:"https://apodi-carregamento.vercel.app/faturamento",
+  master:"https://apodi-carregamento.vercel.app/master",
+  patio:"https://apodi-carregamento.vercel.app/patio",
+  analise:"https://apodi-carregamento.vercel.app/analise",
+  justificativas:"https://apodi-carregamento.vercel.app/justificativas",
+  placas:"https://apodi-carregamento.vercel.app/placas",
+  senha:"https://apodi-carregamento.vercel.app/senha",
+  admin:"https://apodi-carregamento.vercel.app/admin",
+};
+
+// ══════════════════════════════════════════════════════════════════
+// SIDEBAR TOGGLE
+// ══════════════════════════════════════════════════════════════════
+let sbOpen=true;
+window.toggleSidebar=()=>{
+  sbOpen=!sbOpen;
+  const app=document.getElementById("app");
+  app.classList.toggle("sb-collapsed",!sbOpen);
+};
+
+// ══════════════════════════════════════════════════════════════════
+// ABRIR TELA PRODUÇÃO
+// ══════════════════════════════════════════════════════════════════
+window.abrirTela=(tela)=>{
+  const url=URLS[tela];
+  if(url)window.open(url,"_blank");
+};
+
+// ══════════════════════════════════════════════════════════════════
+// DIRTY FLAG
+// ══════════════════════════════════════════════════════════════════
+function marcarDirty(tela){
+  if(!tela)return;
+  DIRTY.add(tela);
+  const item=document.querySelector(`.tela-item[data-tela="${tela}"]`);
+  if(item)item.classList.add("dirty");
+}
+function limparDirty(tela){
+  DIRTY.delete(tela);
+  const item=document.querySelector(`.tela-item[data-tela="${tela}"]`);
+  if(item)item.classList.remove("dirty");
+}
 
 // ══════════════════════════════════════════════════════════════════
 // CARREGAR TELA
@@ -507,11 +752,12 @@ function carregarTela(val){
   document.getElementById("sb-tela").textContent=t.label;
   document.getElementById("btn-aplicar").style.display="flex";
   document.getElementById("btn-codigo").style.display="flex";
+  document.getElementById("btn-baixar").style.display="flex";
   document.getElementById("tela-sel").value=val;
   renderAll();escProps();
   document.querySelectorAll(".tela-item").forEach(el=>el.classList.toggle("on",el.dataset.tela===val));
 }
-function carregarTelaBtn(val,el){carregarTela(val);}
+function carregarTelaBtn(val){carregarTela(val);}
 
 // ══════════════════════════════════════════════════════════════════
 // RENDER
@@ -529,15 +775,12 @@ function mkEl(d){
   div.className="cel";div.dataset.id=d.id;
   div.style.cssText=`left:${d.x}px;top:${d.y}px;width:${d.w}px;height:${d.h}px;position:absolute;cursor:move;user-select:none;display:flex;align-items:center;justify-content:center;`;
   Object.assign(div.style,d.s||{});
-  // Texto interno sem override flex
   const txt=document.createElement("span");
   txt.style.cssText="pointer-events:none;width:100%;text-align:inherit";
   txt.textContent=d.txt||"";
   div.appendChild(txt);
-  // Label tipo
   const lbl=document.createElement("div");
   lbl.className="cel-label";lbl.textContent=d.id+" · "+d.tipo;div.appendChild(lbl);
-  // Handles
   [["br","bottom:-4px;right:-4px;cursor:se-resize"],
    ["r","right:-4px;top:50%;transform:translateY(-50%);cursor:e-resize"],
    ["b","bottom:-4px;left:50%;transform:translateX(-50%);cursor:s-resize"],
@@ -574,6 +817,7 @@ function onMD(e){
     const el=document.querySelector(`.cel[data-id="${id}"]`);
     if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";el.style.width=d.w+"px";el.style.height=d.h+"px";}
     syncPos(d);
+    marcarDirty(TELA);
   }
   function up(){document.removeEventListener("mousemove",mv);document.removeEventListener("mouseup",up);}
   document.addEventListener("mousemove",mv);document.addEventListener("mouseup",up);
@@ -640,7 +884,6 @@ function fillProps(d){
   document.getElementById("p-tshadow").value=s.textShadow||"";
   try{document.getElementById("p-bg").value=toHex(s.background)||"#0f1a2e";}catch(e){}
 }
-
 function toHex(v){
   if(!v)return null;
   if(v.startsWith("#")&&(v.length===4||v.length===7))return v;
@@ -648,7 +891,6 @@ function toHex(v){
 }
 function tryColor(id,v){try{document.getElementById(id).value=v;}catch(e){}}
 
-// sp = set property
 window.sp=(prop,val)=>{
   if(!SEL)return;
   const d=ELS.find(e=>e.id===SEL);if(!d)return;
@@ -661,6 +903,7 @@ window.sp=(prop,val)=>{
     const el=document.querySelector(`.cel[data-id="${SEL}"]`);
     if(el)el.style[prop]=val;
   }
+  marcarDirty(TELA);
 };
 window.aPos=()=>{
   if(!SEL)return;
@@ -669,7 +912,7 @@ window.aPos=()=>{
   d.y=parseInt(document.getElementById("p-y").value)||0;
   const el=document.querySelector(`.cel[data-id="${SEL}"]`);
   if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";}
-  syncPos(d);
+  syncPos(d);marcarDirty(TELA);
 };
 window.aDim=()=>{
   if(!SEL)return;
@@ -678,7 +921,7 @@ window.aDim=()=>{
   d.h=parseInt(document.getElementById("p-h").value)||40;
   const el=document.querySelector(`.cel[data-id="${SEL}"]`);
   if(el){el.style.width=d.w+"px";el.style.height=d.h+"px";}
-  syncPos(d);
+  syncPos(d);marcarDirty(TELA);
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -702,6 +945,7 @@ window.addEl=(tipo)=>{
   selEl(id);
   document.getElementById("sb-n").textContent=ELS.length;
   renderLayers();
+  marcarDirty(TELA);
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -713,6 +957,7 @@ window.delEl=()=>{
   document.querySelector(`.cel[data-id="${SEL}"]`)?.remove();
   SEL=null;escProps();
   document.getElementById("sb-n").textContent=ELS.length;
+  marcarDirty(TELA);
 };
 window.dupEl=()=>{
   if(!SEL)return;salvarHist();
@@ -722,6 +967,7 @@ window.dupEl=()=>{
   document.getElementById("canvas").appendChild(mkEl(n));
   selEl(n.id);
   document.getElementById("sb-n").textContent=ELS.length;
+  marcarDirty(TELA);
 };
 window.moveEl=(dir)=>{
   if(!SEL)return;salvarHist();
@@ -737,7 +983,7 @@ window.moveEl=(dir)=>{
 // ══════════════════════════════════════════════════════════════════
 function renderLayers(){
   const el=document.getElementById("layers-list");
-  if(!ELS.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px">Nenhum elemento</div>';return;}
+  if(!ELS.length){el.innerHTML='<div style="text-align:center;padding:16px 8px;color:var(--t3);font-size:11px">Nenhum elemento</div>';return;}
   el.innerHTML=[...ELS].reverse().map(d=>`
     <div class="layer-item${SEL===d.id?" on":""}" onclick="selEl('${d.id}')">
       <div class="layer-dot" style="background:${cor[d.tipo]||"#888"}"></div>
@@ -775,11 +1021,70 @@ window.desfazer=()=>{
 window.aplicarEdicao=()=>{
   if(!TELA)return;
   TELAS[TELA].els=JSON.parse(JSON.stringify(ELS));
+  limparDirty(TELA);
   const btn=document.getElementById("btn-aplicar");
   const orig=btn.innerHTML;
-  btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Aplicado!';
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Aplicado!';
   btn.style.background="var(--gr)";btn.style.borderColor="var(--gr)";btn.style.color="#000";
   setTimeout(()=>{btn.innerHTML=orig;btn.style.background="";btn.style.borderColor="";btn.style.color="";},2500);
+  showToast("✓ Edição aplicada · Ctrl+S para baixar");
+};
+
+// ══════════════════════════════════════════════════════════════════
+// BAIXAR HTML
+// ══════════════════════════════════════════════════════════════════
+window.baixarHTML=()=>{
+  if(!TELA)return;
+  const t=TELAS[TELA];
+  const htmlEls=ELS.map(d=>{
+    const ss=Object.entries(d.s||{}).map(([k,v])=>{
+      const prop=k.replace(/([A-Z])/g,c=>"-"+c.toLowerCase());
+      return`${prop}:${v}`;
+    }).join(";");
+    return`  <div class="el-${d.id}" style="position:absolute;left:${Math.round(d.x)}px;top:${Math.round(d.y)}px;width:${Math.round(d.w)}px;height:${Math.round(d.h)}px;${ss}">${d.txt||""}</div>`;
+  }).join("\n");
+  const estilos=ELS.map(d=>{
+    const s=Object.entries(d.s||{}).map(([k,v])=>{
+      const prop=k.replace(/([A-Z])/g,c=>"-"+c.toLowerCase());
+      return`  ${prop}: ${v};`;
+    }).join("\n");
+    return`.el-${d.id} {\n  position: absolute;\n  left: ${Math.round(d.x)}px;\n  top: ${Math.round(d.y)}px;\n  width: ${Math.round(d.w)}px;\n  height: ${Math.round(d.h)}px;\n${s}\n}`;
+  }).join("\n\n");
+  const htmlCompleto=`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${t.label} — Apodi Cimentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800;900&family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:${t.bg};min-height:100vh;font-family:'DM Sans',sans-serif;}
+.tela-container{position:relative;width:${t.w}px;height:${t.h}px;background:${t.bg};margin:0 auto;}
+
+${estilos}
+</style>
+</head>
+<body>
+<!-- ============================================
+     ${t.label}
+     Gerado pelo Editor Visual Apodi
+     ${new Date().toLocaleString("pt-BR")}
+     ============================================ -->
+<div class="tela-container">
+${htmlEls}
+</div>
+</body>
+</html>`;
+  const blob=new Blob([htmlCompleto],{type:"text/html;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=`${TELA}.html`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast(`✓ ${TELA}.html baixado`);
+  limparDirty(TELA);
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -813,10 +1118,19 @@ window.mostrarCodigo=()=>{
 window.copiarCodigo=()=>{
   const codigo=gerarCodigo();
   navigator.clipboard?.writeText(codigo).catch(()=>{});
-  const t=document.getElementById("toast");
-  t.style.display="block";
-  setTimeout(()=>{t.style.display="none";},2800);
+  showToast("✓ Copiado para a área de transferência");
 };
+
+// ══════════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════════
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.style.display="block";
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{t.style.display="none";},2800);
+}
 
 // ══════════════════════════════════════════════════════════════════
 // TABS
@@ -836,7 +1150,8 @@ document.getElementById("canvas").addEventListener("mousedown",e=>{
 
 // Teclado
 document.addEventListener("keydown",e=>{
-  if(e.ctrlKey&&e.key==="z"){desfazer();return;}
+  if(e.ctrlKey&&e.key==="z"){e.preventDefault();desfazer();return;}
+  if(e.ctrlKey&&e.key==="s"){e.preventDefault();TELA?baixarHTML():null;return;}
   if((e.key==="Delete"||e.key==="Backspace")&&SEL&&!["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)){
     delEl();
   }
@@ -849,7 +1164,7 @@ document.addEventListener("keydown",e=>{
     if(e.key==="ArrowDown")d.y+=step;
     const el=document.querySelector(`.cel[data-id="${SEL}"]`);
     if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";}
-    syncPos(d);e.preventDefault();
+    syncPos(d);marcarDirty(TELA);e.preventDefault();
   }
 });
 </script>
