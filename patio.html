@@ -105,12 +105,53 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--gr)}
 .dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
 @keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+
+/* ── 5 colunas Pátio ── */
+.patio-5col{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px;align-items:start}
+@media(max-width:900px){.patio-5col{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.patio-5col{grid-template-columns:repeat(2,1fr)}}
+.col-grupo{display:flex;flex-direction:column;gap:8px}
+.col-header{border-radius:8px 8px 0 0;padding:9px 12px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:800;letter-spacing:.8px;display:flex;align-items:center;justify-content:center;gap:6px;border-bottom:2px solid transparent}
+.col-header.h-ens1{background:rgba(0,212,255,.13);color:#00d4ff;border-color:#00d4ff}
+.col-header.h-ens2{background:rgba(0,180,220,.1);color:#00bcd4;border-color:#00bcd4}
+.col-header.h-gran1{background:rgba(251,146,60,.13);color:#fb923c;border-color:#fb923c}
+.col-header.h-gran2{background:rgba(230,120,40,.1);color:#e07830;border-color:#e07830}
+.col-header.h-bb{background:rgba(0,232,150,.13);color:#00e896;border-color:#00e896}
+.col-cards{display:flex;flex-direction:column;gap:8px;min-height:60px}
+.col-vazio{text-align:center;padding:20px 8px;color:var(--t3);font-size:11px;background:var(--bg2);border:1px dashed var(--bd);border-radius:var(--rs)}
+
+/* ── Botões pátio no header ── */
+.btn-patio-view{display:flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-decoration:none;white-space:nowrap}
+.btn-patio-view:hover{background:rgba(0,232,150,.15);border-color:var(--gr)}
+.btn-patio-pdf{display:flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid rgba(255,208,0,.4);border-radius:20px;background:rgba(255,208,0,.07);color:var(--ye);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
+.btn-patio-pdf:hover{background:rgba(255,208,0,.15);border-color:var(--ye)}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:var(--bl);letter-spacing:.5px}
+.modal-close{background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;line-height:1;padding:2px 6px}
+.modal-close:hover{color:var(--rd)}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.modal-table{width:100%;border-collapse:collapse;font-size:12px}
+.modal-table th{background:var(--bg3);color:var(--t2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--bd)}
+.modal-table td{padding:8px 10px;border-bottom:1px solid rgba(22,40,64,.7);color:var(--tx)}
+.modal-table tr:hover td{background:rgba(0,212,255,.04)}
+.modal-placa{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;color:var(--bl)}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+.modal-btn-pdf{padding:8px 20px;background:var(--ye);color:#000;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif}
+.modal-btn-close{padding:8px 16px;background:transparent;color:var(--t2);border:1px solid var(--bd);border-radius:8px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif}
+.modal-btn-close:hover{border-color:var(--rd);color:var(--rd)}
 </style>
 </head>
 <body>
 <div class="top">
   <div class="logo">🏭 STATUS DO PÁTIO</div>
   <div class="live"><div class="dot"></div>AO VIVO</div>
+  <button class="btn-patio-view" onclick="abrirModalPatio()">👁️ Ver Pátio</button>
+  <button class="btn-patio-pdf" onclick="abrirModalPatioPDF()">📄 PDF c/ Filtro</button>
   <a href="/analise" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
   <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
@@ -254,10 +295,82 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 
     </div>
 
-    <!-- ── Seção lista de veículos aguardando ── -->
+    <!-- ── 5 Colunas Pátio ── -->
     <div id="sec-aguardando" style="display:none;margin-bottom:24px">
       <div class="section-title">🏁 Aguardando no Pátio <span id="cnt-aguardando"></span></div>
-      <div class="grid" id="grid-aguardando"></div>
+      <div class="patio-5col" id="patio-5col">
+        <!-- col Ensacado 1 -->
+        <div class="col-grupo">
+          <div class="col-header h-ens1">📦 Ensacado</div>
+          <div class="col-cards" id="col-ens1"></div>
+        </div>
+        <!-- col Ensacado 2 -->
+        <div class="col-grupo">
+          <div class="col-header h-ens2">📦 Ensacado</div>
+          <div class="col-cards" id="col-ens2"></div>
+        </div>
+        <!-- col Granel 1 -->
+        <div class="col-grupo">
+          <div class="col-header h-gran1">🚛 Granel</div>
+          <div class="col-cards" id="col-gran1"></div>
+        </div>
+        <!-- col Granel 2 -->
+        <div class="col-grupo">
+          <div class="col-header h-gran2">🚛 Granel</div>
+          <div class="col-cards" id="col-gran2"></div>
+        </div>
+        <!-- col Big Bag -->
+        <div class="col-grupo">
+          <div class="col-header h-bb">🛍️ Big Bag</div>
+          <div class="col-cards" id="col-bb1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Modal Ver Pátio ── -->
+    <div class="modal-overlay" id="modal-patio">
+      <div class="modal-box">
+        <div class="modal-head">
+          <div class="modal-title">🏭 Veículos Aguardando no Pátio</div>
+          <button class="modal-close" onclick="fecharModal('modal-patio')">✕</button>
+        </div>
+        <div class="modal-body">
+          <table class="modal-table">
+            <thead>
+              <tr>
+                <th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Turno</th>
+              </tr>
+            </thead>
+            <tbody id="modal-patio-tbody"></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn-close" onclick="fecharModal('modal-patio')">Fechar</button>
+          <button class="modal-btn-pdf" onclick="gerarPDFPatio(false)">📄 Exportar PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Modal PDF c/ Filtro ── -->
+    <div class="modal-overlay" id="modal-patio-pdf">
+      <div class="modal-box" style="max-width:500px">
+        <div class="modal-head">
+          <div class="modal-title">📄 Relatório PDF com Filtro</div>
+          <button class="modal-close" onclick="fecharModal('modal-patio-pdf')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="cal-fields" style="grid-template-columns:1fr 1fr;display:grid;gap:8px">
+            <div class="cal-field"><label>Data início</label><input type="date" id="pdf-data-ini"/></div>
+            <div class="cal-field"><label>Data fim</label><input type="date" id="pdf-data-fim"/></div>
+            <div class="cal-field"><label>Hora início</label><input type="time" id="pdf-hora-ini" value="00:00"/></div>
+            <div class="cal-field"><label>Hora fim</label><input type="time" id="pdf-hora-fim" value="23:59"/></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn-close" onclick="fecharModal('modal-patio-pdf')">Cancelar</button>
+          <button class="modal-btn-pdf" onclick="gerarPDFPatio(true)">📄 Gerar PDF</button>
+        </div>
+      </div>
     </div>
 
     <div id="empty-all" class="empty" style="display:none">Nenhum veículo aguardando no pátio agora.</div>
@@ -379,59 +492,227 @@ function makeCard(c){
 
 function set(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 
+// ── Distribuição nas 5 colunas ──
+function distribuirColunas(ens,gran,bb){
+  const metEns=Math.ceil(ens.length/2);
+  const ens1=ens.slice(0,metEns);
+  const ens2=ens.slice(metEns);
+  const metGran=Math.ceil(gran.length/2);
+  const gran1=gran.slice(0,metGran);
+  const gran2=gran.slice(metGran);
+
+  function renderCol(colId,lista){
+    const el=document.getElementById(colId);
+    if(!el)return;
+    if(!lista.length){
+      el.innerHTML='<div class="col-vazio">Vazio</div>';
+      return;
+    }
+    el.innerHTML=lista.map(makeCard).join("");
+  }
+  renderCol("col-ens1",ens1);
+  renderCol("col-ens2",ens2);
+  renderCol("col-gran1",gran1);
+  renderCol("col-gran2",gran2);
+  renderCol("col-bb1",bb);
+}
+
 function renderAll(snap){
   const hj=hoje();
-  // Base: apenas posto1 (ainda não passaram pela portaria)
-  let base=snap.filter(c=>(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1");
-  // Se há filtro de data/hora aplica sobre toda base snapshot
+  let base=snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";});
   if(FILTRO){
-    const{di,df,hi,hf}=FILTRO;
+    const di=FILTRO.di;const df=FILTRO.df;const hi=FILTRO.hi;const hf=FILTRO.hf;
     const tsIni=new Date(di+"T"+hi+":00").getTime();
     const tsFim=new Date(df+"T"+hf+":59").getTime();
-    base=snap.filter(c=>{
+    base=snap.filter(function(c){
       const en=getTS(c,"entrada","ts");
       if(!en)return false;
       return en.getTime()>=tsIni&&en.getTime()<=tsFim&&c.setorAtual==="posto1";
     });
   }
 
+  // Ordenar mais antigo primeiro (menor timestamp = topo)
+  base.sort(function(a,b){
+    const ea=getTS(a,"entrada","ts");
+    const eb=getTS(b,"entrada","ts");
+    if(!ea)return 1;if(!eb)return -1;
+    return ea.getTime()-eb.getTime();
+  });
+
   document.getElementById("loading-wrap").style.display="none";
   document.getElementById("content").style.display="block";
 
-  // TME Geral
   const tmeGeral=calcTME(base);
   set("tme-geral",tmeGeral?durStr(tmeGeral):"—");
-  set("tme-ens",calcTME(base.filter(c=>c.tipoCarga==="ensacado"))?durStr(calcTME(base.filter(c=>c.tipoCarga==="ensacado"))):"—");
-  set("tme-gran",calcTME(base.filter(c=>c.tipoCarga==="granel"))?durStr(calcTME(base.filter(c=>c.tipoCarga==="granel"))):"—");
-  set("tme-bb",calcTME(base.filter(c=>c.tipoCarga==="bigbag"))?durStr(calcTME(base.filter(c=>c.tipoCarga==="bigbag"))):"—");
+  const ensAll=base.filter(function(c){return c.tipoCarga==="ensacado";});
+  const granAll=base.filter(function(c){return c.tipoCarga==="granel";});
+  const bbAll=base.filter(function(c){return c.tipoCarga==="bigbag";});
+  set("tme-ens",calcTME(ensAll)?durStr(calcTME(ensAll)):"—");
+  set("tme-gran",calcTME(granAll)?durStr(calcTME(granAll)):"—");
+  set("tme-bb",calcTME(bbAll)?durStr(calcTME(bbAll)):"—");
 
-  // Cards de carga
-  const ens=base.filter(c=>c.tipoCarga==="ensacado");
-  const gran=base.filter(c=>c.tipoCarga==="granel");
-  const bb=base.filter(c=>c.tipoCarga==="bigbag");
-  set("cc-ens",ens.length);
-  set("cc-gran",gran.length);
-  set("cc-bb",bb.length);
-  // mini cimentos
-  ["ens","gran","bb"].forEach((tipo,i)=>{
-    const lst=[ens,gran,bb][i];
-    set("cc-"+tipo+"-cp2f",lst.filter(c=>c.tipoCimento==="CP II F").length);
-    set("cc-"+tipo+"-cp3",lst.filter(c=>c.tipoCimento==="CP III").length);
-    set("cc-"+tipo+"-cp5",lst.filter(c=>c.tipoCimento==="CP V").length);
+  set("cc-ens",ensAll.length);
+  set("cc-gran",granAll.length);
+  set("cc-bb",bbAll.length);
+  ["ens","gran","bb"].forEach(function(tipo,i){
+    const lst=[ensAll,granAll,bbAll][i];
+    set("cc-"+tipo+"-cp2f",lst.filter(function(c){return c.tipoCimento==="CP II F";}).length);
+    set("cc-"+tipo+"-cp3",lst.filter(function(c){return c.tipoCimento==="CP III";}).length);
+    set("cc-"+tipo+"-cp5",lst.filter(function(c){return c.tipoCimento==="CP V";}).length);
   });
 
-  // Seção lista veículos
   const sec=document.getElementById("sec-aguardando");
   const cnt=document.getElementById("cnt-aguardando");
-  const grid=document.getElementById("grid-aguardando");
   if(base.length){
     sec.style.display="block";
-    cnt.textContent=`· ${base.length} veículo${base.length!==1?"s":""}`;
-    grid.innerHTML=base.map(makeCard).join("");
+    cnt.textContent="· "+base.length+" veículo"+(base.length!==1?"s":"");
+    distribuirColunas(ensAll,granAll,bbAll);
   } else {
     sec.style.display="none";
   }
   document.getElementById("empty-all").style.display=base.length===0?"block":"none";
+}
+
+// ── Modal ──
+window.abrirModalPatio=function(){
+  const snap=DADOS_SNAPSHOT;
+  const hj=hoje();
+  const base=snap.filter(function(c){
+    return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
+  });
+  base.sort(function(a,b){
+    const ea=getTS(a,"entrada","ts");
+    const eb=getTS(b,"entrada","ts");
+    if(!ea)return 1;if(!eb)return -1;
+    return ea.getTime()-eb.getTime();
+  });
+  document.getElementById("modal-patio-tbody").innerHTML=buildTabelaPatio(base);
+  document.getElementById("modal-patio").classList.add("show");
+};
+
+window.abrirModalPatioPDF=function(){
+  const hoje2=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+  document.getElementById("pdf-data-ini").value=hoje2;
+  document.getElementById("pdf-data-fim").value=hoje2;
+  document.getElementById("modal-patio-pdf").classList.add("show");
+};
+
+window.fecharModal=function(id){
+  document.getElementById(id).classList.remove("show");
+};
+
+function buildTabelaPatio(lista){
+  if(!lista.length)return'<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">Nenhum veículo</td></tr>';
+  var rows="";
+  for(var i=0;i<lista.length;i++){
+    var c=lista[i];
+    var en=getTS(c,"entrada","ts");
+    var espera=en?Date.now()-en.getTime():null;
+    var turno=getTurno(en);
+    var placa=c.placa||"—";
+    var ac=c.ac||"—";
+    var tipoCargaLabel=c.tipoCargaLabel||c.tipoCarga||"—";
+    var tipoCimento=c.tipoCimento||"—";
+    var tempoStr=espera?durStr(espera):"—";
+    var entradaStr=fmtT(en);
+    var turnoStr=turno||"—";
+    var alertaCl=(espera&&espera>LIMITE_ALERTA)?' style="color:var(--rd)"':"";
+    rows+="<tr>";
+    rows+='<td><span class="modal-placa"'+alertaCl+">"+placa+"</span></td>";
+    rows+="<td>"+ac+"</td>";
+    rows+="<td>"+tipoCargaLabel+"</td>";
+    rows+="<td>"+tipoCimento+"</td>";
+    rows+='<td'+alertaCl+">"+tempoStr+"</td>";
+    rows+="<td>"+entradaStr+"</td>";
+    rows+="<td>"+turnoStr+"</td>";
+    rows+="</tr>";
+  }
+  return rows;
+}
+
+window.gerarPDFPatio=function(comFiltro){
+  var lista=[];
+  var titulo="Pátio – Snapshot Atual";
+  var subtitulo="";
+  if(comFiltro){
+    var di=document.getElementById("pdf-data-ini").value;
+    var df=document.getElementById("pdf-data-fim").value||di;
+    var hi=document.getElementById("pdf-hora-ini").value||"00:00";
+    var hf=document.getElementById("pdf-hora-fim").value||"23:59";
+    if(!di){alert("Informe a data início.");return;}
+    var tsIni=new Date(di+"T"+hi+":00").getTime();
+    var tsFim=new Date(df+"T"+hf+":59").getTime();
+    lista=DADOS_SNAPSHOT.filter(function(c){
+      var en=getTS(c,"entrada","ts");
+      if(!en)return false;
+      return en.getTime()>=tsIni&&en.getTime()<=tsFim&&c.setorAtual==="posto1";
+    });
+    titulo="Pátio – Relatório por Período";
+    subtitulo=(di===df?di:di+" a "+df)+" | "+hi+"–"+hf;
+    fecharModal("modal-patio-pdf");
+  } else {
+    var hj=hoje();
+    lista=DADOS_SNAPSHOT.filter(function(c){
+      return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
+    });
+    fecharModal("modal-patio");
+  }
+  lista.sort(function(a,b){
+    var ea=getTS(a,"entrada","ts");
+    var eb=getTS(b,"entrada","ts");
+    if(!ea)return 1;if(!eb)return -1;
+    return ea.getTime()-eb.getTime();
+  });
+  imprimirPDF(lista,titulo,subtitulo);
+};
+
+function imprimirPDF(lista,titulo,subtitulo){
+  var agora=new Date().toLocaleString("pt-BR",{timeZone:"America/Fortaleza"});
+  var linhas="";
+  for(var i=0;i<lista.length;i++){
+    var c=lista[i];
+    var en=getTS(c,"entrada","ts");
+    var espera=en?Date.now()-en.getTime():null;
+    var turno=getTurno(en);
+    var placa=c.placa||"—";
+    var ac=c.ac||"—";
+    var tipoCargaLabel=c.tipoCargaLabel||c.tipoCarga||"—";
+    var tipoCimento=c.tipoCimento||"—";
+    var tempoStr=espera?durStr(espera):"—";
+    var entradaStr=fmtT(en);
+    var turnoStr=turno||"—";
+    var alertaStyle=(espera&&espera>LIMITE_ALERTA)?" background:#fff0f3;color:#c00;":"";
+    linhas+="<tr style='"+alertaStyle+"'>";
+    linhas+="<td>"+placa+"</td>";
+    linhas+="<td>"+ac+"</td>";
+    linhas+="<td>"+tipoCargaLabel+"</td>";
+    linhas+="<td>"+tipoCimento+"</td>";
+    linhas+="<td>"+tempoStr+"</td>";
+    linhas+="<td>"+entradaStr+"</td>";
+    linhas+="<td>"+turnoStr+"</td>";
+    linhas+="</tr>";
+  }
+  var html="<!DOCTYPE html><html><head><meta charset='UTF-8'><title>"+titulo+"</title>";
+  html+="<style>body{font-family:Arial,sans-serif;font-size:12px;color:#111;margin:20px}";
+  html+="h2{color:#0a2a5c;margin-bottom:4px}p{color:#555;margin-bottom:14px;font-size:11px}";
+  html+="table{width:100%;border-collapse:collapse}th{background:#0a2a5c;color:#fff;padding:7px 9px;text-align:left;font-size:11px}";
+  html+="td{padding:6px 9px;border-bottom:1px solid #ddd;font-size:11px}";
+  html+="tr:nth-child(even){background:#f5f8ff}";
+  html+=".footer{margin-top:18px;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:8px}";
+  html+="@media print{body{margin:10px}.no-print{display:none}}";
+  html+="</style></head><body>";
+  html+="<div style='display:flex;justify-content:space-between;align-items:center'>";
+  html+="<div><h2>"+titulo+"</h2>";
+  if(subtitulo)html+="<p>Período: "+subtitulo+"</p>";
+  html+="</div><div style='font-size:11px;color:#555'>"+agora+"</div></div>";
+  html+="<table><thead><tr>";
+  html+="<th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Turno</th>";
+  html+="</tr></thead><tbody>"+linhas+"</tbody></table>";
+  html+="<div class='footer'>Total: "+lista.length+" veículo"+(lista.length!==1?"s":"")+" · Gerado em "+agora+" · Apodi Cimentos</div>";
+  html+="<div class='no-print' style='margin-top:16px'><button onclick='window.print()' style='padding:8px 20px;background:#0a2a5c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px'>🖨️ Imprimir / Salvar PDF</button></div>";
+  html+="</body></html>";
+  var w=window.open("","_blank");
+  if(w){w.document.write(html);w.document.close();}
 }
 
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
