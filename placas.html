@@ -117,6 +117,7 @@ tr.first-row td.placa-td{color:var(--bl);font-size:14px;font-family:'Rajdhani',s
   <!-- Linha ações: busca + botões -->
   <div class="filter-row" style="margin-bottom:12px">
     <span class="row-label">🔎 Buscar:</span>
+    <input class="search-input" id="q-acnf" type="text" placeholder="Ex: AC-001, NF 549366..." oninput="window.render()" autocomplete="off" style="width:200px"/>
     <input class="search-input" id="q-placa" type="text" placeholder="Ex: ABC1234, XYZ5678..." oninput="window.render()" autocomplete="off"/>
     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
       <!-- Botao filtrar data/hora -->
@@ -409,6 +410,12 @@ function getList(){
     const placas=q.split(/[,\s;]+/).map(s=>s.trim()).filter(Boolean);
     list=list.filter(c=>placas.some(p=>c.placa?.includes(p)));
   }
+  // Filtro busca por AC ou Nota Fiscal
+  const qac=(document.getElementById("q-acnf")?.value||"").toUpperCase().trim();
+  if(qac){
+    const termos=qac.split(/[,;]+/).map(s=>s.trim()).filter(Boolean);
+    list=list.filter(c=>termos.some(t=>c.ac?.toUpperCase().includes(t)||c.notaFiscal?.toUpperCase().includes(t)));
+  }
 
   return list;
 }
@@ -440,6 +447,13 @@ window.render=()=>{
   // Ordenacao: padrao maior para menor na primeira vez
   if(SORT_COL==="placa"){
     placas.sort((a,b)=>SORT_DIR*(a>b?1:a<b?-1:0));
+  } else if(SORT_COL==="portaria_ini"){
+    placas.sort((a,b)=>{
+      const dayA=Object.keys(placaMap[a])[0],dayB=Object.keys(placaMap[b])[0];
+      const tA=placaMap[a][dayA]&&placaMap[a][dayA][0]?getTS(placaMap[a][dayA][0],"portaria","inicio"):null;
+      const tB=placaMap[b][dayB]&&placaMap[b][dayB][0]?getTS(placaMap[b][dayB][0],"portaria","inicio"):null;
+      return SORT_DIR*((tB?tB.getTime():0)-(tA?tA.getTime():0));
+    });
   } else if(SORT_COL==="media"){
     placas.sort((a,b)=>SORT_DIR*(placaAvg[b]-placaAvg[a]));
   } else if(SORT_COL&&SORT_COL.startsWith("day_")){
@@ -475,8 +489,8 @@ window.render=()=>{
   let html=`<table><thead><tr>`;
   html+=`<th class="placa-th ${thCls('placa')}" onclick="setSort('placa')" style="cursor:pointer">Placa</th>`;
   html+=`<th class="carga-th">Tipo Carga</th>`;
-  html+=`<th class="visit-th">Portaria Inicio</th>`;
-  html+=`<th class="${thCls('entrada')}" onclick="setSort('entrada')" style="cursor:pointer">Entrada</th>`;
+  html+=`<th class="visit-th ${thCls('portaria_ini')}" onclick="setSort('portaria_ini')" style="cursor:pointer">Portaria Inicio</th>`;
+  html+=`<th class="${thCls('entrada')}" onclick="setSort('entrada')" style="cursor:pointer">Posto1</th>`;
   days.forEach(d=>html+=`<th class="${thCls('day_'+d)}" onclick="setSort('day_${d}')" style="cursor:pointer">${fmtDay(d)}</th>`);
   html+=`<th class="${thCls('media')}" onclick="setSort('media')" style="cursor:pointer;color:var(--pu)">Media</th>`;
   html+=`</tr></thead><tbody>`;
@@ -497,18 +511,19 @@ window.render=()=>{
         html+=`<td class="carga-td" rowspan="${maxVisits}">${tipoCargaLabel(tc)}</td>`;
       }
 
-      // Portaria Inicio (ex-Visita) — numero da visita
-      html+=`<td class="visit-td">#${vi+1}</td>`;
-
-      // Entrada
-      let entradaStr="—";
+      // Portaria Inicio — data e hora real de portaria.inicio
+      // Posto1 — hora de entrada.ts
+      let portariaIniStr="—";
+      let posto1Str="—";
       const firstDayWithVisit=days.find(d=>dayData[d]&&dayData[d][vi]);
       if(firstDayWithVisit&&dayData[firstDayWithVisit][vi]){
         const ptI=getTS(dayData[firstDayWithVisit][vi],"portaria","inicio");
         const en=getTS(dayData[firstDayWithVisit][vi],"entrada","ts");
-        entradaStr=ptI?fmtT(ptI):en?fmtT(en):"—";
+        portariaIniStr=ptI?fmtDT(ptI):"—";
+        posto1Str=en?fmtT(en):"—";
       }
-      html+=`<td style="font-size:10px;color:var(--t2)">${entradaStr}</td>`;
+      html+=`<td style="font-size:10px;color:var(--bl)">${portariaIniStr}</td>`;
+      html+=`<td style="font-size:10px;color:var(--t2)">${posto1Str}</td>`;
 
       // Celulas por dia
       days.forEach(day=>{
