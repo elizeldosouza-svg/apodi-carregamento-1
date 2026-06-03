@@ -321,7 +321,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <!-- BARRA DE VOZ -->
 <div class="voice-bar">
   <span class="voice-label">🔊 Falar:</span>
-  <input class="voice-input" id="voice-txt" type="text" value="Atenção motorista de placa A B C 1 2 3 4, comparecer no Posto 1 para coletar Autorização de Carregamento." placeholder="Digite o texto para falar..."/>
+  <input class="voice-input" id="voice-txt" type="text" value="Atenção motorista proprietário do veículo de placa A B C 1 2 3 4, comparecer ao Posto 1 com urgência para coletar A C, Autorização de Carregamento, e em seguida dirigir-se para Fábrica." placeholder="Digite o texto para falar..."/>
   <button class="voice-btn" onclick="falarTexto()">▶ Falar</button>
 </div>
 
@@ -363,10 +363,11 @@ let lastId=null,lastPlaca=null,lastChamada=null;
 // ── ausência ticker: lista de ausentes do dia (últimas 2h) ──
 let ausentes=[]; // [{placa, ac, motivo, ts}]
 
-// ── Fila: veículos aguardando no posto1 (sem filtro de data — igual ao Pátio) ──
+// ── Fila: veículos aguardando no posto1 ──
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
+  const hj=hoje();
   const all=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>c.setorAtual==="posto1")
+    .filter(c=>c.data===hj&&c.setorAtual==="posto1")
     .sort((a,b)=>(a.criadoEm?.toDate?.()?.getTime()||0)-(b.criadoEm?.toDate?.()?.getTime()||0));
   filas.granel=all.filter(c=>c.tipoCarga==="granel");
   filas.ensacado=all.filter(c=>c.tipoCarga==="ensacado");
@@ -377,8 +378,16 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
 
 // ── Chamadas: colecao chamadas_fila ──
 onSnapshot(collection(db,"chamadas_fila"),snap=>{
+  const hj=hoje();
   const docs=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>c.data===hoje())
+    .filter(c=>{
+      // Aceita se data bate com hoje OU se criadoEm é de hoje (fallback)
+      if(c.data===hj)return true;
+      const ts=c.criadoEm?.toDate?.();
+      if(!ts)return false;
+      const dataTs=ts.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+      return dataTs===hj;
+    })
     .sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0));
   if(!docs.length){showIdle();return;}
   const last=docs[0];
@@ -616,7 +625,7 @@ function doSound(){
 // ── Voz automática da placa chamada ──
 function falarPlaca(placa){
   const placaFalada=placa.split("").join(" ");
-  const texto=`Atenção motorista de placa ${placaFalada}, comparecer no Posto 1 para coletar Autorização de Carregamento.`;
+  const texto=`Atenção motorista proprietário do veículo de placa ${placaFalada}, comparecer ao Posto 1 com urgência para coletar A C, Autorização de Carregamento, e em seguida dirigir-se para Fábrica.`;
   document.getElementById("voice-txt").value=texto;
   setTimeout(()=>_falar(texto),1200);
 }
