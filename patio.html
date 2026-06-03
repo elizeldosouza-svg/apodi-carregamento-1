@@ -10,19 +10,69 @@
 body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
 .top{background:var(--bg2);border-bottom:2px solid var(--bl);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:12px}
 .logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--bl);flex:1;letter-spacing:1px}
-.live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--gr)}
-.dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
-@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
-.back-btn{padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
-.back-btn:hover{border-color:var(--bl);color:var(--bl)}
 .wrap{max-width:1200px;margin:0 auto;padding:20px 16px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
-.kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px;text-align:center;position:relative}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
-.k0::before{background:var(--bl)}.k1::before{background:var(--ye)}.k2::before{background:var(--rd)}.k3::before{background:var(--pu)}.k4::before{background:var(--gr)}
-.kv{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:800}
-.k0 .kv{color:var(--bl)}.k1 .kv{color:var(--ye)}.k2 .kv{color:var(--rd)}.k3 .kv{color:var(--pu)}.k4 .kv{color:var(--gr)}
-.kl{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+
+/* ── TME Painel ── */
+.tme-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:700px){.tme-row{grid-template-columns:1fr 1fr}}
+.tme-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.tme-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.tme-geral::before{background:var(--ye)}
+.tme-ens::before{background:#00d4ff}
+.tme-gran::before{background:#fb923c}
+.tme-bb::before{background:#00e896}
+.tme-label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.tme-val{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:800;line-height:1}
+.tme-geral .tme-val{color:var(--ye)}
+.tme-ens .tme-val{color:#00d4ff}
+.tme-gran .tme-val{color:#fb923c}
+.tme-bb .tme-val{color:#00e896}
+.tme-sub{font-size:10px;color:var(--t3);margin-top:4px}
+.tme-geral{grid-column:1;background:linear-gradient(135deg,var(--bg2),rgba(255,208,0,.04))}
+
+/* ── Carga cards ── */
+.carga-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:700px){.carga-row{grid-template-columns:1fr}}
+.carga-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
+.carga-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.cc-ens::before{background:#00d4ff}
+.cc-gran::before{background:#fb923c}
+.cc-bb::before{background:#00e896}
+.cc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cc-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;letter-spacing:.5px}
+.cc-ens .cc-title{color:#00d4ff}
+.cc-gran .cc-title{color:#fb923c}
+.cc-bb .cc-title{color:#00e896}
+.cc-total{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:800;line-height:1}
+.cc-ens .cc-total{color:#00d4ff}
+.cc-gran .cc-total{color:#fb923c}
+.cc-bb .cc-total{color:#00e896}
+.cc-sub{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;margin-bottom:14px}
+.cc-cimentos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cim-mini{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 6px;text-align:center}
+.cim-mini-label{font-size:8px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.cim-mini-val{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--ye)}
+.cim-mini-sub{font-size:8px;color:var(--t3);margin-top:1px}
+
+/* ── Calendário ── */
+.cal-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.cal-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg2);border:1px solid var(--b2);border-radius:20px;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.cal-btn:hover,.cal-btn.active{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.cal-popup{position:absolute;z-index:500;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;min-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
+.cal-popup.show{display:block}
+.cal-popup-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);margin-bottom:12px;letter-spacing:.5px}
+.cal-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.cal-field label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px}
+.cal-field input{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
+.cal-field input:focus{border-color:var(--bl)}
+.cal-actions{display:flex;gap:8px;justify-content:flex-end}
+.cal-apply{padding:7px 18px;background:var(--bl);color:#000;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif}
+.cal-clear{padding:7px 14px;background:transparent;color:var(--t2);border:1px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.cal-clear:hover{border-color:var(--rd);color:var(--rd)}
+.filtro-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(255,208,0,.1);border:1px solid rgba(255,208,0,.3);border-radius:20px;font-size:11px;font-weight:700;color:var(--ye)}
+.filtro-badge button{background:none;border:none;color:var(--ye);cursor:pointer;font-size:13px;line-height:1;padding:0}
+
+/* ── Seção Aguardando ── */
 .section-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--bl);letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .section-title span{font-size:11px;font-weight:400;color:var(--t2);font-family:'Inter',sans-serif}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
@@ -41,6 +91,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .vcard.alerta .vcard-tempo{color:var(--rd)}
 .vcard-tempo-label{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 .vcard-entrada{font-size:10px;color:var(--t3);margin-top:6px}
+.vcard-cim{font-size:9px;font-weight:700;color:var(--ye);margin-top:3px;font-family:monospace;letter-spacing:.3px}
 .empty{text-align:center;padding:48px;color:var(--t3);font-size:13px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r)}
 .spin{width:28px;height:28px;border:3px solid var(--bd);border-top-color:var(--bl);border-radius:50%;animation:ro .7s linear infinite;margin:40px auto 10px}
 @keyframes ro{to{transform:rotate(360deg)}}
@@ -50,178 +101,166 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .t-b{background:rgba(255,208,0,.15);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
 .t-c{background:rgba(167,139,250,.15);color:var(--pu);border:1px solid rgba(167,139,250,.3)}
 .alerta-badge{display:inline-block;background:rgba(255,68,102,.2);border:1px solid rgba(255,68,102,.4);color:#ff4466;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:5px;letter-spacing:.3px}
-@media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr)}}
-
-/* ── 5 COLUNAS AGUARDANDO ── */
-.cols5-wrap{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;margin-bottom:24px}
-.col5{display:flex;flex-direction:column;gap:0;min-width:0}
-.col5-header{border-radius:var(--r) var(--r) 0 0;padding:8px 10px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:6px}
-.col5-header.h-ensacado{background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);border-bottom:none;color:#00d4ff}
-.col5-header.h-granel{background:rgba(251,146,60,.15);border:1px solid rgba(251,146,60,.3);border-bottom:none;color:#fb923c}
-.col5-header.h-bigbag{background:rgba(0,232,150,.15);border:1px solid rgba(0,232,150,.3);border-bottom:none;color:#00e896}
-.col5-body{display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:0 0 var(--r) var(--r);min-height:60px;flex:1}
-.col5-body.b-ensacado{background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.15);border-top:none}
-.col5-body.b-granel{background:rgba(251,146,60,.03);border:1px solid rgba(251,146,60,.15);border-top:none}
-.col5-body.b-bigbag{background:rgba(0,232,150,.03);border:1px solid rgba(0,232,150,.15);border-top:none}
-.col5-empty{text-align:center;padding:20px 8px;color:var(--t3);font-size:11px}
-@media(max-width:900px){.cols5-wrap{grid-template-columns:1fr 1fr 1fr}}
-@media(max-width:600px){.cols5-wrap{grid-template-columns:1fr 1fr}}
-
-/* ── MODAL PÁTIO ── */
-.modal-patio{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);padding:16px;overflow-y:auto}
-.modal-patio.show{display:flex}
-.mp-box{background:#0b1524;border:1px solid #1e3a58;border-radius:14px;width:100%;max-width:1000px;margin:auto;overflow:hidden}
-.mp-head{padding:14px 18px;border-bottom:1px solid #1e3a58;display:flex;align-items:center;gap:10px}
-.mp-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:#e2eeff;flex:1;letter-spacing:1px}
-.mp-close{width:30px;height:30px;border:1px solid #1e3a58;border-radius:6px;background:transparent;color:#7a9fd4;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.mp-close:hover{border-color:#ff4466;color:#ff4466}
-.mp-body{padding:16px 18px;overflow-x:auto}
-.mp-info{font-size:11px;color:#7a9fd4;margin-bottom:10px}
-.mp-table{width:100%;border-collapse:collapse;font-size:11px}
-.mp-table th{text-align:center;padding:8px 10px;font-size:9px;font-weight:700;color:#fff;background:#003366;text-transform:uppercase;letter-spacing:.5px;border:1px solid #1e3a58;white-space:nowrap}
-.mp-table td{padding:7px 10px;border:1px solid #1e3a58;vertical-align:middle;color:#e2eeff;text-align:center}
-.mp-table tr:nth-child(even) td{background:rgba(0,212,255,.04)}
-.mp-foot{padding:12px 18px;border-top:1px solid #1e3a58;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-.mp-pdf-btn{padding:10px 22px;border:none;border-radius:10px;background:#00d4ff;color:#000;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px;transition:opacity .2s}
-.mp-pdf-btn:hover{opacity:.85}
-.mp-filtros{padding:12px 18px;border-bottom:1px solid #1e3a58;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.mp-filtros label{font-size:10px;color:#7a9fd4;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.mp-filtros input{padding:6px 10px;background:#060d18;border:1px solid #1e3a58;border-radius:6px;color:#e2eeff;font-size:12px;font-family:monospace;outline:none}
-.mp-filtros input:focus{border-color:#00d4ff}
-.mp-btn-buscar{padding:7px 16px;border:none;border-radius:6px;background:#00d4ff;color:#000;font-size:11px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
-
-/* ── BOTÕES HEADER ── */
-.hdr-btn-patio{padding:6px 14px;border:1px solid rgba(0,212,255,.4);border-radius:20px;background:rgba(0,212,255,.07);color:#00d4ff;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
-.hdr-btn-patio:hover{background:rgba(0,212,255,.15)}
-.hdr-btn-pdf{padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:#00e896;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
-.hdr-btn-pdf:hover{background:rgba(0,232,150,.15)}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr)}.tme-row{grid-template-columns:1fr 1fr}}
+.live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--gr)}
+.dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 </style>
 </head>
 <body>
 <div class="top">
   <div class="logo">🏭 STATUS DO PÁTIO</div>
-  <div class="live"><div class="dot"></div>Ao vivo</div>
-  <button class="hdr-btn-patio" onclick="abrirModalPatio()">👁️ Ver Pátio</button>
-  <button class="hdr-btn-pdf" onclick="abrirModalPDF()">📄 Relatório PDF</button>
+  <div class="live"><div class="dot"></div>AO VIVO</div>
   <a href="/analise" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
   <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
-  <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,232,150,.15)'" onmouseout="this.style.background='rgba(0,232,150,.07)'">🏭 Pátio</a>
+  <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s">🏭 Pátio</a>
   <a href="/master" style="padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.07)';this.style.color='var(--bl)'" onmouseout="this.style.background='transparent';this.style.color='var(--t2)'">← Master</a>
 </div>
 
-<!-- MODAL VER PÁTIO (snapshot) -->
-<div class="modal-patio" id="modal-patio">
-  <div class="mp-box">
-    <div class="mp-head">
-      <div class="mp-title">👁️ VEÍCULOS AGUARDANDO NO PÁTIO</div>
-      <button class="mp-close" onclick="document.getElementById('modal-patio').classList.remove('show')">✕</button>
-    </div>
-    <div class="mp-body">
-      <div class="mp-info" id="mp-info">—</div>
-      <div id="mp-body"></div>
-    </div>
-    <div class="mp-foot">
-      <button class="mp-close" style="padding:8px 16px;width:auto;border-radius:8px" onclick="document.getElementById('modal-patio').classList.remove('show')">Fechar</button>
-      <button class="mp-pdf-btn" onclick="gerarPDFPatio()">📄 Exportar PDF</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL RELATÓRIO PDF COM FILTRO -->
-<div class="modal-patio" id="modal-pdf">
-  <div class="mp-box">
-    <div class="mp-head">
-      <div class="mp-title">📄 RELATÓRIO DO PÁTIO — FILTRO</div>
-      <button class="mp-close" onclick="document.getElementById('modal-pdf').classList.remove('show')">✕</button>
-    </div>
-    <div class="mp-filtros">
-      <label>Data</label>
-      <input type="date" id="pdf-data"/>
-      <label>Hora Ini</label>
-      <input type="time" id="pdf-hora-ini" value="00:00" style="width:90px"/>
-      <label>Hora Fim</label>
-      <input type="time" id="pdf-hora-fim" value="23:59" style="width:90px"/>
-      <button class="mp-btn-buscar" onclick="buscarRelatorioPDF()">🔍 Buscar</button>
-    </div>
-    <div class="mp-body">
-      <div class="mp-info" id="pdf-info">Selecione filtros e clique em Buscar.</div>
-      <div id="pdf-body"></div>
-    </div>
-    <div class="mp-foot">
-      <button class="mp-close" style="padding:8px 16px;width:auto;border-radius:8px" onclick="document.getElementById('modal-pdf').classList.remove('show')">Fechar</button>
-      <button class="mp-pdf-btn" id="btn-gerar-pdf" style="display:none" onclick="gerarPDFFiltrado()">📄 Exportar PDF</button>
-    </div>
-  </div>
-</div>
 <div class="wrap">
   <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando...</div></div>
   <div id="content" style="display:none">
-    <div class="kpis">
-      <div class="kpi k0"><div class="kv" id="k-total">—</div><div class="kl">Total no Pátio</div></div>
-      <div class="kpi k1"><div class="kv" id="k-aguard">—</div><div class="kl">Aguard. Triagem</div></div>
-      <div class="kpi k2"><div class="kv" id="k-triagem">—</div><div class="kl">Em Triagem</div></div>
-      <div class="kpi k3"><div class="kv" id="k-carga">—</div><div class="kl">Carregando</div></div>
-      <div class="kpi k4"><div class="kv" id="k-enlone">—</div><div class="kl">Enlonando</div></div>
-    </div>
 
-    <!-- Aguardando Triagem — 5 COLUNAS -->
-    <div id="sec-aguardando" style="display:none;margin-bottom:24px">
-      <div class="section-title">🏁 Aguardando Triagem <span id="cnt-aguardando"></span></div>
-      <div class="cols5-wrap">
-        <!-- Ensacado col 1 -->
-        <div class="col5">
-          <div class="col5-header h-ensacado">📦 Ensacado</div>
-          <div class="col5-body b-ensacado" id="col-ens-1"></div>
+    <!-- ── Barra Calendário ── -->
+    <div class="cal-bar" style="position:relative">
+      <button class="cal-btn" id="cal-toggle" onclick="toggleCal()">📅 Filtrar por Data/Hora</button>
+      <div id="filtro-badge-wrap"></div>
+      <div class="cal-popup" id="cal-popup">
+        <div class="cal-popup-title">📅 Consultar período</div>
+        <div class="cal-fields">
+          <div class="cal-field"><label>Data início</label><input type="date" id="f-data-ini"/></div>
+          <div class="cal-field"><label>Data fim</label><input type="date" id="f-data-fim"/></div>
+          <div class="cal-field"><label>Hora início</label><input type="time" id="f-hora-ini" value="00:00"/></div>
+          <div class="cal-field"><label>Hora fim</label><input type="time" id="f-hora-fim" value="23:59"/></div>
         </div>
-        <!-- Ensacado col 2 -->
-        <div class="col5">
-          <div class="col5-header h-ensacado">📦 Ensacado</div>
-          <div class="col5-body b-ensacado" id="col-ens-2"></div>
-        </div>
-        <!-- Granel col 1 -->
-        <div class="col5">
-          <div class="col5-header h-granel">🚛 Granel</div>
-          <div class="col5-body b-granel" id="col-gra-1"></div>
-        </div>
-        <!-- Granel col 2 -->
-        <div class="col5">
-          <div class="col5-header h-granel">🚛 Granel</div>
-          <div class="col5-body b-granel" id="col-gra-2"></div>
-        </div>
-        <!-- Big Bag col 1 -->
-        <div class="col5">
-          <div class="col5-header h-bigbag">🛍️ Big Bag</div>
-          <div class="col5-body b-bigbag" id="col-bb-1"></div>
+        <div class="cal-actions">
+          <button class="cal-clear" onclick="limparFiltro()">Limpar</button>
+          <button class="cal-apply" onclick="aplicarFiltro()">Aplicar</button>
         </div>
       </div>
     </div>
 
-    <!-- Em Triagem -->
-    <div id="sec-triagem" style="display:none;margin-bottom:24px">
-      <div class="section-title">📦 Em Triagem <span id="cnt-triagem"></span></div>
-      <div class="grid" id="grid-triagem"></div>
+    <!-- ── TME Cards ── -->
+    <div class="tme-row">
+      <div class="tme-card tme-geral" style="grid-column:1">
+        <div class="tme-label">⏱ TME Espera Geral</div>
+        <div class="tme-val" id="tme-geral">—</div>
+        <div class="tme-sub">tempo médio de espera no pátio</div>
+      </div>
+      <div class="tme-card tme-ens">
+        <div class="tme-label">📦 TME Ensacado</div>
+        <div class="tme-val" id="tme-ens">—</div>
+        <div class="tme-sub">tempo médio de espera</div>
+      </div>
+      <div class="tme-card tme-gran">
+        <div class="tme-label">🚛 TME Granel</div>
+        <div class="tme-val" id="tme-gran">—</div>
+        <div class="tme-sub">tempo médio de espera</div>
+      </div>
+      <div class="tme-card tme-bb">
+        <div class="tme-label">🛍️ TME Big Bag</div>
+        <div class="tme-val" id="tme-bb">—</div>
+        <div class="tme-sub">tempo médio de espera</div>
+      </div>
     </div>
 
-    <!-- Carregamento -->
-    <div id="sec-carga" style="display:none;margin-bottom:24px">
-      <div class="section-title">🏗️ Carregamento <span id="cnt-carga"></span></div>
-      <div class="grid" id="grid-carga"></div>
+    <!-- ── Cards de Carga com mini-cimentos ── -->
+    <div class="carga-row">
+
+      <!-- ENSACADO -->
+      <div class="carga-card cc-ens">
+        <div class="cc-header">
+          <div>
+            <div class="cc-title">📦 ENSACADO</div>
+            <div class="cc-sub">caminhões aguardando</div>
+          </div>
+          <div class="cc-total" id="cc-ens">0</div>
+        </div>
+        <div class="cc-cimentos">
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP II F</div>
+            <div class="cim-mini-val" id="cc-ens-cp2f">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP III</div>
+            <div class="cim-mini-val" id="cc-ens-cp3">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP V</div>
+            <div class="cim-mini-val" id="cc-ens-cp5">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRANEL -->
+      <div class="carga-card cc-gran">
+        <div class="cc-header">
+          <div>
+            <div class="cc-title">🚛 GRANEL</div>
+            <div class="cc-sub">caminhões aguardando</div>
+          </div>
+          <div class="cc-total" id="cc-gran">0</div>
+        </div>
+        <div class="cc-cimentos">
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP II F</div>
+            <div class="cim-mini-val" id="cc-gran-cp2f">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP III</div>
+            <div class="cim-mini-val" id="cc-gran-cp3">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP V</div>
+            <div class="cim-mini-val" id="cc-gran-cp5">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BIG BAG -->
+      <div class="carga-card cc-bb">
+        <div class="cc-header">
+          <div>
+            <div class="cc-title">🛍️ BIG BAG</div>
+            <div class="cc-sub">caminhões aguardando</div>
+          </div>
+          <div class="cc-total" id="cc-bb">0</div>
+        </div>
+        <div class="cc-cimentos">
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP II F</div>
+            <div class="cim-mini-val" id="cc-bb-cp2f">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP III</div>
+            <div class="cim-mini-val" id="cc-bb-cp3">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+          <div class="cim-mini">
+            <div class="cim-mini-label">CP V</div>
+            <div class="cim-mini-val" id="cc-bb-cp5">0</div>
+            <div class="cim-mini-sub">veíc.</div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Enlonamento -->
-    <div id="sec-enlone" style="display:none;margin-bottom:24px">
-      <div class="section-title">🪢 Enlonamento <span id="cnt-enlone"></span></div>
-      <div class="grid" id="grid-enlone"></div>
+    <!-- ── Seção lista de veículos aguardando ── -->
+    <div id="sec-aguardando" style="display:none;margin-bottom:24px">
+      <div class="section-title">🏁 Aguardando no Pátio <span id="cnt-aguardando"></span></div>
+      <div class="grid" id="grid-aguardando"></div>
     </div>
 
-    <!-- Ag. Faturamento -->
-    <div id="sec-fat" style="display:none;margin-bottom:24px">
-      <div class="section-title">🧾 Aguard. Faturamento <span id="cnt-fat"></span></div>
-      <div class="grid" id="grid-fat"></div>
-    </div>
-
-    <div id="empty-all" class="empty" style="display:none">Nenhum veículo no pátio agora.</div>
+    <div id="empty-all" class="empty" style="display:none">Nenhum veículo aguardando no pátio agora.</div>
   </div>
 </div>
 
@@ -231,42 +270,100 @@ import{getFirestore,collection,onSnapshot}from"https://www.gstatic.com/firebasej
 
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
+
+// ── SVGs ──
 const svgs_e="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjYwIiB2aWV3Qm94PSIwIDAgMjAwIDI2MCIgcm9sZT0iaW1nIj4KPHRpdGxlPlNhY28gZGUgY2ltZW50byBlbnNhY2FkbzwvdGl0bGU+CjxkZXNjPklsdXN0cmHDp8OjbyBkZSB1bSBzYWNvIGRlIGNpbWVudG8gY2luemEgY29tIGxvZ28gQXBvZGk8L2Rlc2M+CjwhLS0gU2FjbyBwcmluY2lwYWwgLS0+CjxyZWN0IHg9IjI1IiB5PSIzMCIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIyMDAiIHJ4PSI4IiBmaWxsPSIjYzhjMGIwIi8+CjwhLS0gRmFpeGEgbGF0ZXJhbCBlc3F1ZXJkYSAtLT4KPHJlY3QgeD0iMjUiIHk9IjMwIiB3aWR0aD0iMTgiIGhlaWdodD0iMjAwIiByeD0iOCIgZmlsbD0iI2EwOTg4OCIvPgo8IS0tIEZhaXhhIGxhdGVyYWwgZGlyZWl0YSAtLT4KPHJlY3QgeD0iMTU3IiB5PSIzMCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjIwMCIgcng9IjgiIGZpbGw9IiNhMDk4ODgiLz4KPCEtLSBEb2JyYSB0b3BvIC0tPgo8ZWxsaXBzZSBjeD0iMTAwIiBjeT0iMzAiIHJ4PSI3NSIgcnk9IjEwIiBmaWxsPSIjYjhiMGEwIi8+CjwhLS0gRG9icmEgYmFzZSAtLT4KPGVsbGlwc2UgY3g9IjEwMCIgY3k9IjIzMCIgcng9Ijc1IiByeT0iMTAiIGZpbGw9IiNhMDk4ODgiLz4KPCEtLSBDb3N0dXJhIHRvcG8gLS0+CjxsaW5lIHgxPSI0MyIgeTE9IjI4IiB4Mj0iMTU3IiB5Mj0iMjgiIHN0cm9rZT0iIzg4ODA3MCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI2LDQiLz4KPCEtLSBDb3N0dXJhIGJhc2UgLS0+CjxsaW5lIHgxPSI0MyIgeTE9IjIzMiIgeDI9IjE1NyIgeTI9IjIzMiIgc3Ryb2tlPSIjODg4MDcwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjYsNCIvPgo8IS0tIMOBcmVhIGNlbnRyYWwgZG8gcsOzdHVsbyAtLT4KPHJlY3QgeD0iNDMiIHk9IjU1IiB3aWR0aD0iMTE0IiBoZWlnaHQ9IjE0NSIgcng9IjQiIGZpbGw9IiNkOGQwYzAiLz4KPCEtLSBGYWl4YSBhenVsIGVzY3VybyB0b3BvIHLDs3R1bG8gLS0+CjxyZWN0IHg9IjQzIiB5PSI1NSIgd2lkdGg9IjExNCIgaGVpZ2h0PSIzOCIgcng9IjQiIGZpbGw9IiMxYTJhNGEiLz4KPCEtLSBUZXh0byBDSU1FTlRPIC0tPgo8dGV4dCB4PSIxMDAiIHk9IjcyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXNpemU9IjkiIGZpbGw9IiNjOGEwMjAiIGxldHRlci1zcGFjaW5nPSIyIj5DSU1FTlRPPC90ZXh0Pgo8IS0tIExvZ28gQSAtLT4KPHBvbHlnb24gcG9pbnRzPSIxMDAsNjIgOTMsNzggMTA3LDc4IiBmaWxsPSIjYzhhMDIwIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iODgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IndoaXRlIiBsZXR0ZXItc3BhY2luZz0iMSI+QVBPREk8L3RleHQ+CjwhLS0gVGlwbyAtLT4KPHJlY3QgeD0iNDMiIHk9IjkzIiB3aWR0aD0iMTE0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjMmE0YThhIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTA1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXNpemU9IjkiIGZpbGw9IndoaXRlIj5DUCBJSS0zMjwvdGV4dD4KPCEtLSBGYWl4YSBsYXJhbmphIFVTTyBHRVJBTCAtLT4KPHJlY3QgeD0iNDMiIHk9IjE1NSIgd2lkdGg9IjExNCIgaGVpZ2h0PSIyNiIgcng9IjAiIGZpbGw9IiNkMDQwMTAiLz4KPHRleHQgeD0iMTAwIiB5PSIxNzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IndoaXRlIj5VU08gR0VSQUw8L3RleHQ+CjwhLS0gTGluaGFzIGRlIGluZm8gLS0+CjxyZWN0IHg9IjQzIiB5PSIxODEiIHdpZHRoPSIxMTQiIGhlaWdodD0iMTkiIGZpbGw9IiMxYTJhNGEiLz4KPHRleHQgeD0iMTAwIiB5PSIxOTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI3IiBmaWxsPSIjYWFiYmRkIj5TRUNBR0VNICDCtyAgUkVTSVNUw4pOQ0lBPC90ZXh0Pgo8IS0tIEVzdHJlbGFzIHNlY2FnZW0gLS0+Cjx0ZXh0IHg9IjYyIiB5PSIyMDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI5IiBmaWxsPSIjYzhhMDIwIj7imIXimIXimIXimIXimIU8L3RleHQ+CjwhLS0gRXN0cmVsYXMgcmVzaXN0w6puY2lhIC0tPgo8dGV4dCB4PSIxMzgiIHk9IjIwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjkiIGZpbGw9IiNjOGEwMjAiPuKYheKYheKYheKYheKYhTwvdGV4dD4KPCEtLSBUZXh0byBwZXNvIC0tPgo8dGV4dCB4PSIxMDAiIHk9IjIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zaXplPSI4IiBmaWxsPSIjNjY2Ij41MCBrZzwvdGV4dD4KPC9zdmc+Cg==";
 const svgs_g="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2ODAiIGhlaWdodD0iMzIwIiB2aWV3Qm94PSIwIDAgNjgwIDMyMCIgcm9sZT0iaW1nIj4KPHRpdGxlPkNhbWluaMOjbyBiZXRvbmVpcmE8L3RpdGxlPgo8ZGVzYz5JbHVzdHJhw6fDo28gZGUgdW0gY2FtaW5ow6NvIGJldG9uZWlyYSBhbWFyZWxvIGNvbSB0YW1ib3IgZ2lyYXTDs3JpbyBjaW56YTwvZGVzYz4KCjwhLS0gQ2FiaW5lIC0tPgo8cmVjdCB4PSI2MCIgeT0iMTQwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjExMCIgcng9IjEyIiBmaWxsPSIjNWE2Mzc4Ii8+CjxyZWN0IHg9Ijc1IiB5PSIxMTUiIHdpZHRoPSIxMzAiIGhlaWdodD0iOTAiIHJ4PSIxMCIgZmlsbD0iIzVhNjM3OCIvPgo8IS0tIEphbmVsYSBjYWJpbmUgLS0+CjxyZWN0IHg9Ijg1IiB5PSIxMjUiIHdpZHRoPSIxMTAiIGhlaWdodD0iNjIiIHJ4PSI3IiBmaWxsPSIjYThjOGU4Ii8+CjxyZWN0IHg9Ijg1IiB5PSIxMjUiIHdpZHRoPSI1MiIgaGVpZ2h0PSI2MiIgcng9IjciIGZpbGw9IiM5MGI4ZDgiLz4KPCEtLSBEZXRhbGhlIGNhYmluZSAtLT4KPHJlY3QgeD0iNjAiIHk9IjE5NSIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxMCIgcng9IjAiIGZpbGw9IiM0YTUzNjgiLz4KPCEtLSBHcmFkZSBmcm9udGFsIC0tPgo8cmVjdCB4PSI2MCIgeT0iMTY1IiB3aWR0aD0iMjUiIGhlaWdodD0iNjAiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+CjxyZWN0IHg9IjYzIiB5PSIxNzAiIHdpZHRoPSIxOSIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iI2Y1Yzg0MiIvPgo8cmVjdCB4PSI2MyIgeT0iMTgzIiB3aWR0aD0iMTkiIGhlaWdodD0iOCIgcng9IjIiIGZpbGw9IiNmNWM4NDIiLz4KPHJlY3QgeD0iNjMiIHk9IjE5NiIgd2lkdGg9IjE5IiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjZDBkNGRjIi8+CjwhLS0gRmFyb2wgLS0+CjxyZWN0IHg9IjYyIiB5PSIxNTMiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgcng9IjMiIGZpbGw9IiNmZmZkZTAiLz4KPGVsbGlwc2UgY3g9IjcyIiBjeT0iMTU4IiByeD0iNyIgcnk9IjQiIGZpbGw9IiNmZmUwNjYiLz4KCjwhLS0gQ2hhc3NpIC8gcGxhdGFmb3JtYSAtLT4KPHJlY3QgeD0iNTUiIHk9IjI0OCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSIyMiIgcng9IjQiIGZpbGw9IiM0YTUzNjgiLz4KPHJlY3QgeD0iNTUiIHk9IjI0OCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSI2IiByeD0iNCIgZmlsbD0iIzVhNjM3OCIvPgoKPCEtLSBUYW1ib3IgYmV0b25laXJhIC0tPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMTU1IiByeT0iMTE4IiBmaWxsPSIjZThiODAwIi8+CjxlbGxpcHNlIGN4PSI0MzAiIGN5PSIxODAiIHJ4PSIxNDAiIHJ5PSIxMDUiIGZpbGw9IiNmNWM4NDIiLz4KPCEtLSBMaXN0cmFzIGRvIHRhbWJvciAtLT4KPHBhdGggZD0iTTMwMCAxMzAgUTQzMCAxMDAgNTYwIDEzMCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTI5MCAxNzAgUTQzMCAxNDAgNTcwIDE3MCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTI5NSAyMTAgUTQzMCAxODUgNTY1IDIxMCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTMxMCAyNDAgUTQzMCAyMjUgNTUwIDI0MCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPCEtLSBDZW50cm8gdGFtYm9yIC0tPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMjIiIHJ5PSIyMiIgZmlsbD0iI2Q0YTUwMCIvPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMTIiIHJ5PSIxMiIgZmlsbD0iI2M4OWEwMCIvPgo8IS0tIEJvY2EgZG8gdGFtYm9yIGVzcXVlcmRhIC0tPgo8ZWxsaXBzZSBjeD0iMjg1IiBjeT0iMTc4IiByeD0iMjgiIHJ5PSIzOCIgZmlsbD0iI2Q0YTUwMCIvPgo8ZWxsaXBzZSBjeD0iMjg1IiBjeT0iMTc4IiByeD0iMTgiIHJ5PSIyNiIgZmlsbD0iI2I4ODgwMCIvPgo8IS0tIFNhw61kYSBkbyB0YW1ib3IgZGlyZWl0YSAtLT4KPGVsbGlwc2UgY3g9IjU3NSIgY3k9IjE3OCIgcng9IjIwIiByeT0iMjgiIGZpbGw9IiNkNGE1MDAiLz4KCjwhLS0gU3Vwb3J0ZSB0YW1ib3IgLS0+CjxyZWN0IHg9IjIwMCIgeT0iMjE4IiB3aWR0aD0iMzAiIGhlaWdodD0iMzUiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+CjxyZWN0IHg9IjU3MCIgeT0iMjI4IiB3aWR0aD0iMjUiIGhlaWdodD0iMjUiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+Cgo8IS0tIFJvZGEgZGlhbnRlaXJhIC0tPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyNzIiIHI9IjM4IiBmaWxsPSIjMmQzMTQyIi8+CjxjaXJjbGUgY3g9IjEzMCIgY3k9IjI3MiIgcj0iMjgiIGZpbGw9IiM0YTUzNjgiLz4KPGNpcmNsZSBjeD0iMTMwIiBjeT0iMjcyIiByPSIxNCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyNzIiIHI9IjciIGZpbGw9IiM2YTczODgiLz4KPGNpcmNsZSBjeD0iMTMwIiBjeT0iMjU4IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyODYiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iMTE2IiBjeT0iMjcyIiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+Cgo8IS0tIFJvZGFzIHRyYXNlaXJhcyAtLT4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjcyIiByPSIzOCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSI0OTAiIGN5PSIyNzIiIHI9IjI4IiBmaWxsPSIjNGE1MzY4Ii8+CjxjaXJjbGUgY3g9IjQ5MCIgY3k9IjI3MiIgcj0iMTQiIGZpbGw9IiMyZDMxNDIiLz4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjcyIiByPSI3IiBmaWxsPSIjNmE3Mzg4Ii8+CjxjaXJjbGUgY3g9IjQ5MCIgY3k9IjI1OCIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSI1MDQiIGN5PSIyNzIiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjg2IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjQ3NiIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgoKPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjcyIiByPSIzOCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSI1NTAiIGN5PSIyNzIiIHI9IjI4IiBmaWxsPSIjNGE1MzY4Ii8+CjxjaXJjbGUgY3g9IjU1MCIgY3k9IjI3MiIgcj0iMTQiIGZpbGw9IiMyZDMxNDIiLz4KPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjcyIiByPSI3IiBmaWxsPSIjNmE3Mzg4Ii8+CjxjaXJjbGUgY3g9IjU1MCIgY3k9IjI1OCIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSI1NjQiIGN5PSIyNzIiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjg2IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjUzNiIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgoKPCEtLSBQYXJhbGFtYXMgLS0+CjxlbGxpcHNlIGN4PSIxMzAiIGN5PSIyNDUiIHJ4PSI0OCIgcnk9IjEyIiBmaWxsPSIjNGE1MzY4Ii8+CjxlbGxpcHNlIGN4PSI1MjAiIGN5PSIyNDUiIHJ4PSI2OCIgcnk9IjEyIiBmaWxsPSIjNGE1MzY4Ii8+Cgo8IS0tIENhbGhhIGRlIHNhw61kYSAtLT4KPHBhdGggZD0iTTU4MCAyMzAgTDYzMCAyODAgTDYyMCAyODQgTDU3MCAyMzggWiIgZmlsbD0iIzhhOTM5OCIvPgo8cmVjdCB4PSI2MTgiIHk9IjI3MiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjgiIHJ4PSIzIiBmaWxsPSIjNmE3Mzg4Ii8+Cgo8IS0tIEVzcGVsaG8gcmV0cm92aXNvciAtLT4KPHJlY3QgeD0iNTAiIHk9IjEzOCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEwIiByeD0iMiIgZmlsbD0iIzRhNTM2OCIvPgoKPCEtLSBMYXRlcmFsIGNhYmluZSAtLT4KPHJlY3QgeD0iMTkwIiB5PSIyMDUiIHdpZHRoPSIyOCIgaGVpZ2h0PSI0NSIgcng9IjMiIGZpbGw9IiM2YTczODgiLz4KCjwvc3ZnPgo=";
 const svgs_b="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjQwIiB2aWV3Qm94PSIwIDAgMjAwIDI0MCIgcm9sZT0iaW1nIj4KPHRpdGxlPkJpZyBiYWc8L3RpdGxlPgo8ZGVzYz5JbHVzdHJhw6fDo28gZGUgdW0gYmlnIGJhZyBicmFuY28gY29tIGFsw6dhczwvZGVzYz4KPCEtLSBBbMOnYXMgLS0+CjxyZWN0IHg9IjU1IiB5PSIxNSIgd2lkdGg9IjE4IiBoZWlnaHQ9IjQwIiByeD0iNiIgZmlsbD0iI2RkZDhkMCIgc3Ryb2tlPSIjYmJiOGIwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8cmVjdCB4PSIxMjciIHk9IjE1IiB3aWR0aD0iMTgiIGhlaWdodD0iNDAiIHJ4PSI2IiBmaWxsPSIjZGRkOGQwIiBzdHJva2U9IiNiYmI4YjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CjwhLS0gQWJlcnR1cmEgYWzDp2FzIChsb29wcykgLS0+CjxyZWN0IHg9IjUzIiB5PSI4IiB3aWR0aD0iMjIiIGhlaWdodD0iMTQiIHJ4PSI3IiBmaWxsPSJub25lIiBzdHJva2U9IiNiYmI4YjAiIHN0cm9rZS13aWR0aD0iMyIvPgo8cmVjdCB4PSIxMjUiIHk9IjgiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNCIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2JiYjhiMCIgc3Ryb2tlLXdpZHRoPSIzIi8+CjwhLS0gQ29ycG8gcHJpbmNpcGFsIC0tPgo8cmVjdCB4PSIyMCIgeT0iNDgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTY1IiByeD0iNiIgZmlsbD0iI2U4ZTRkZSIvPgo8IS0tIEZhY2UgZnJvbnRhbCBtYWlzIGNsYXJhIC0tPgo8cmVjdCB4PSIyNSIgeT0iNTMiIHdpZHRoPSIxNTAiIGhlaWdodD0iMTU1IiByeD0iNCIgZmlsbD0iI2YwZWNlNiIvPgo8IS0tIENvc3R1cmFzIHZlcnRpY2FpcyAtLT4KPGxpbmUgeDE9IjM1IiB5MT0iNTMiIHgyPSIzNSIgeTI9IjIwOCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjxsaW5lIHgxPSIxNjUiIHkxPSI1MyIgeDI9IjE2NSIgeTI9IjIwOCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjwhLS0gQ29zdHVyYXMgaG9yaXpvbnRhaXMgLS0+CjxsaW5lIHgxPSIyNSIgeTE9IjEwMCIgeDI9IjE3NSIgeTI9IjEwMCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjxsaW5lIHgxPSIyNSIgeTE9IjE2MCIgeDI9IjE3NSIgeTI9IjE2MCIgc3Ryb2tlPSIjZDBjY2M2IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwzIi8+CjwhLS0gUmVmb3LDp28gdG9wbyAtLT4KPHJlY3QgeD0iMjAiIHk9IjQ4IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE0IiByeD0iNCIgZmlsbD0iI2Q4ZDRjZSIvPgo8IS0tIFJlZm9yw6dvIGJhc2UgLS0+CjxyZWN0IHg9IjIwIiB5PSIyMDAiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTMiIHJ4PSI0IiBmaWxsPSIjZDBjY2M2Ii8+CjwhLS0gUmVmb3LDp28gY2FudG9zIC0tPgo8cmVjdCB4PSIyMCIgeT0iNDgiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNjUiIHJ4PSI0IiBmaWxsPSIjZDhkNGNlIi8+CjxyZWN0IHg9IjE2NCIgeT0iNDgiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNjUiIHJ4PSI0IiBmaWxsPSIjZDhkNGNlIi8+CjwhLS0gVGV4dG8gQklHIEJBRyAtLT4KPHRleHQgeD0iMTAwIiB5PSIxMzgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNhOGE0OWUiIGxldHRlci1zcGFjaW5nPSIxIj5CSUcgQkFHPC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9IjE1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjkiIGZpbGw9IiNiOGI0YWUiPjEwMDAga2c8L3RleHQ+CjwhLS0gU29tYnJhIGJhc2UgLS0+CjxlbGxpcHNlIGN4PSIxMDAiIGN5PSIyMTgiIHJ4PSI3OCIgcnk9IjciIGZpbGw9IiNjMGJjYjYiIG9wYWNpdHk9IjAuNSIvPgo8L3N2Zz4K";
 
-function hoje(){
-  return new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-}
-function durStr(ms){
-  if(!ms||ms<0)return"";
-  const m=Math.round(ms/60000);
-  return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?" "+m%60+"m":"");
-}
+// ── Helpers ──
+function hoje(){return new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");}
+function durStr(ms){if(!ms||ms<0)return"—";const m=Math.round(ms/60000);return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?" "+m%60+"m":"");}
 function fmtT(d){return d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—";}
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
-function getTurno(d){
-  if(!d)return null;
-  const h=d.getHours();
-  if(h>=23||h<7)return"A";
-  if(h>=7&&h<15)return"B";
-  return"C";
-}
+function getTurno(d){if(!d)return null;const h=d.getHours();if(h>=23||h<7)return"A";if(h>=7&&h<15)return"B";return"C";}
 function tipoCls(t){return{ensacado:"tp-ensacado",granel:"tp-granel",bigbag:"tp-bigbag"}[t]||"";}
-const LIMITE_ALERTA=90*60*1000; // 1h30
+const LIMITE_ALERTA=90*60*1000;
 
+// ── Filtro de data/hora ──
+let FILTRO=null;
+window.toggleCal=()=>{
+  const p=document.getElementById("cal-popup");
+  p.classList.toggle("show");
+};
+window.aplicarFiltro=()=>{
+  const di=document.getElementById("f-data-ini").value;
+  const df=document.getElementById("f-data-fim").value||di;
+  const hi=document.getElementById("f-hora-ini").value||"00:00";
+  const hf=document.getElementById("f-hora-fim").value||"23:59";
+  if(!di){alert("Informe a data início.");return;}
+  FILTRO={di,df,hi,hf};
+  document.getElementById("cal-popup").classList.remove("show");
+  const badge=document.getElementById("filtro-badge-wrap");
+  badge.innerHTML=`<div class="filtro-badge">📅 ${di===df?di:di+" a "+df} · ${hi}–${hf} <button onclick="limparFiltro()">✕</button></div>`;
+  renderAll(DADOS_SNAPSHOT);
+};
+window.limparFiltro=()=>{
+  FILTRO=null;
+  document.getElementById("filtro-badge-wrap").innerHTML="";
+  document.getElementById("f-data-ini").value="";
+  document.getElementById("f-data-fim").value="";
+  document.getElementById("f-hora-ini").value="00:00";
+  document.getElementById("f-hora-fim").value="23:59";
+  document.getElementById("cal-popup").classList.remove("show");
+  renderAll(DADOS_SNAPSHOT);
+};
+
+// Fechar popup ao clicar fora
+document.addEventListener("click",e=>{
+  const popup=document.getElementById("cal-popup");
+  const btn=document.getElementById("cal-toggle");
+  if(popup&&!popup.contains(e.target)&&e.target!==btn){popup.classList.remove("show");}
+});
+
+// ── Filtragem ──
+let DADOS_SNAPSHOT=[];
+function filtrarDados(todos){
+  if(!FILTRO)return todos;
+  const{di,df,hi,hf}=FILTRO;
+  const tsIni=new Date(di+"T"+hi+":00").getTime();
+  const tsFim=new Date(df+"T"+hf+":59").getTime();
+  return todos.filter(c=>{
+    const en=getTS(c,"entrada","ts");
+    if(!en)return false;
+    const t=en.getTime();
+    return t>=tsIni&&t<=tsFim;
+  });
+}
+
+// ── TME ──
+function calcTME(lista){
+  if(!lista.length)return null;
+  const agora=Date.now();
+  const esperas=lista.map(c=>{
+    const en=getTS(c,"entrada","ts");
+    if(!en)return null;
+    // Se tem portaria.inicio, usa esse como fim da espera, senão usa agora
+    const fim=getTS(c,"portaria","inicio");
+    return fim?fim.getTime()-en.getTime():agora-en.getTime();
+  }).filter(x=>x!==null&&x>0);
+  if(!esperas.length)return null;
+  return esperas.reduce((a,b)=>a+b,0)/esperas.length;
+}
+
+// ── Card veículo ──
 function makeCard(c){
   const en=getTS(c,"entrada","ts");
   const espera=en?Date.now()-en.getTime():null;
   const alerta=espera&&espera>LIMITE_ALERTA;
   const turno=getTurno(en);
   const tipoRaw=c.tipoCargaLabel||"";
-    const tipoSVG={
-      "Ensacado":`<img src='${svgs_e}' style='width:12px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px'> Ensacado`,
-      "Granel":`<img src='${svgs_g}' style='width:18px;height:10px;object-fit:contain;vertical-align:middle;margin-right:3px'> Granel`,
-      "Big Bag":`<img src='${svgs_b}' style='width:13px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px'> Big Bag`,
-    };
-    const tipo=tipoSVG[tipoRaw]||tipoRaw;
+  const tipoSVG={
+    "Ensacado":`<img src='${svgs_e}' style='width:12px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px'> Ensacado`,
+    "Granel":`<img src='${svgs_g}' style='width:18px;height:10px;object-fit:contain;vertical-align:middle;margin-right:3px'> Granel`,
+    "Big Bag":`<img src='${svgs_b}' style='width:13px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px'> Big Bag`,
+  };
+  const tipo=tipoSVG[tipoRaw]||tipoRaw;
   const tipoCl=tipoCls(c.tipoCarga);
   return`<div class="vcard${alerta?" alerta":""}">
     <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h30</span>':''}
@@ -274,275 +371,75 @@ function makeCard(c){
     </div>
     <div class="vcard-ac">AC: ${c.ac}</div>
     ${tipo?`<span class="vcard-tipo ${tipoCl}">${tipo}</span>`:""}
-    ${espera?`<div class="vcard-tempo">${durStr(espera)}</div><div class="vcard-tempo-label">no pátio</div>`:""}
+    ${c.tipoCimento?`<div class="vcard-cim">⚗️ ${c.tipoCimento}</div>`:""}
+    ${espera?`<div class="vcard-tempo">${durStr(espera)}</div><div class="vcard-tempo-label">aguardando</div>`:""}
     <div class="vcard-entrada">Entrada: ${fmtT(en)}</div>
   </div>`;
 }
 
-// Cache global para modais
-let CACHE_AGUARDANDO=[];
-let CACHE_TODOS_HD=[];
+function set(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 
-function showSection(id,gridId,cntId,list){
-  const sec=document.getElementById(id);
-  if(!list.length){sec.style.display="none";return;}
-  sec.style.display="block";
-  document.getElementById(cntId).textContent=`· ${list.length} veículo${list.length!==1?"s":""}`;
-  document.getElementById(gridId).innerHTML=list.map(makeCard).join("");
-}
-
-// Ordena por entrada mais antiga primeiro
-function sortAntigo(list){
-  return [...list].sort((a,b)=>{
-    const ta=a.entrada?.ts?.toDate?.()?.getTime()||0;
-    const tb=b.entrada?.ts?.toDate?.()?.getTime()||0;
-    return ta-tb;
-  });
-}
-
-// Distribui lista em 2 colunas: primeira metade col1, segunda metade col2
-function distribuir2cols(list){
-  const meio=Math.ceil(list.length/2);
-  return{col1:list.slice(0,meio),col2:list.slice(meio)};
-}
-
-function renderCol(id,list){
-  const el=document.getElementById(id);
-  if(!el)return;
-  el.innerHTML=list.length?list.map(makeCard).join(""):`<div class="col5-empty">—</div>`;
-}
-
-function render5Colunas(aguardando){
-  const sorted=sortAntigo(aguardando);
-  const ens=sorted.filter(c=>c.tipoCarga==="ensacado");
-  const gra=sorted.filter(c=>c.tipoCarga==="granel");
-  const bb=sorted.filter(c=>c.tipoCarga==="bigbag");
-  const {col1:e1,col2:e2}=distribuir2cols(ens);
-  const {col1:g1,col2:g2}=distribuir2cols(gra);
-  renderCol("col-ens-1",e1);
-  renderCol("col-ens-2",e2);
-  renderCol("col-gra-1",g1);
-  renderCol("col-gra-2",g2);
-  renderCol("col-bb-1",bb);
-}
-
-onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
+function renderAll(snap){
   const hj=hoje();
-  const todos=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>c.data===hj&&c.setorAtual!=="concluido");
-  CACHE_TODOS_HD=snap.docs.map(d=>({id:d.id,...d.data()}));
+  // Base: apenas posto1 (ainda não passaram pela portaria)
+  let base=snap.filter(c=>(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1");
+  // Se há filtro de data/hora aplica sobre toda base snapshot
+  if(FILTRO){
+    const{di,df,hi,hf}=FILTRO;
+    const tsIni=new Date(di+"T"+hi+":00").getTime();
+    const tsFim=new Date(df+"T"+hf+":59").getTime();
+    base=snap.filter(c=>{
+      const en=getTS(c,"entrada","ts");
+      if(!en)return false;
+      return en.getTime()>=tsIni&&en.getTime()<=tsFim&&c.setorAtual==="posto1";
+    });
+  }
 
   document.getElementById("loading-wrap").style.display="none";
   document.getElementById("content").style.display="block";
 
-  // KPIs
-  document.getElementById("k-total").textContent=todos.length;
-  document.getElementById("k-aguard").textContent=todos.filter(c=>c.setorAtual==="posto1").length;
-  document.getElementById("k-triagem").textContent=todos.filter(c=>c.setorAtual?.startsWith("triagem")).length;
-  document.getElementById("k-carga").textContent=todos.filter(c=>c.setorAtual?.startsWith("carregamento")).length;
-  document.getElementById("k-enlone").textContent=todos.filter(c=>c.setorAtual?.startsWith("enlonamento")).length;
+  // TME Geral
+  const tmeGeral=calcTME(base);
+  set("tme-geral",tmeGeral?durStr(tmeGeral):"—");
+  set("tme-ens",calcTME(base.filter(c=>c.tipoCarga==="ensacado"))?durStr(calcTME(base.filter(c=>c.tipoCarga==="ensacado"))):"—");
+  set("tme-gran",calcTME(base.filter(c=>c.tipoCarga==="granel"))?durStr(calcTME(base.filter(c=>c.tipoCarga==="granel"))):"—");
+  set("tme-bb",calcTME(base.filter(c=>c.tipoCarga==="bigbag"))?durStr(calcTME(base.filter(c=>c.tipoCarga==="bigbag"))):"—");
 
-  // Seções
-  const aguardando=todos.filter(c=>c.setorAtual==="posto1");
-  const triagem=todos.filter(c=>c.setorAtual?.startsWith("triagem"));
-  const carga=todos.filter(c=>c.setorAtual?.startsWith("carregamento"));
-  const enlone=todos.filter(c=>c.setorAtual?.startsWith("enlonamento"));
-  const fat=todos.filter(c=>c.setorAtual==="faturamento_aguardando");
+  // Cards de carga
+  const ens=base.filter(c=>c.tipoCarga==="ensacado");
+  const gran=base.filter(c=>c.tipoCarga==="granel");
+  const bb=base.filter(c=>c.tipoCarga==="bigbag");
+  set("cc-ens",ens.length);
+  set("cc-gran",gran.length);
+  set("cc-bb",bb.length);
+  // mini cimentos
+  ["ens","gran","bb"].forEach((tipo,i)=>{
+    const lst=[ens,gran,bb][i];
+    set("cc-"+tipo+"-cp2f",lst.filter(c=>c.tipoCimento==="CP II F").length);
+    set("cc-"+tipo+"-cp3",lst.filter(c=>c.tipoCimento==="CP III").length);
+    set("cc-"+tipo+"-cp5",lst.filter(c=>c.tipoCimento==="CP V").length);
+  });
 
-  CACHE_AGUARDANDO=aguardando;
-
-  // Seção aguardando com 5 colunas
-  const secAg=document.getElementById("sec-aguardando");
-  if(aguardando.length){
-    secAg.style.display="block";
-    document.getElementById("cnt-aguardando").textContent=`· ${aguardando.length} veículo${aguardando.length!==1?"s":""}`;
-    render5Colunas(aguardando);
-  }else{
-    secAg.style.display="none";
+  // Seção lista veículos
+  const sec=document.getElementById("sec-aguardando");
+  const cnt=document.getElementById("cnt-aguardando");
+  const grid=document.getElementById("grid-aguardando");
+  if(base.length){
+    sec.style.display="block";
+    cnt.textContent=`· ${base.length} veículo${base.length!==1?"s":""}`;
+    grid.innerHTML=base.map(makeCard).join("");
+  } else {
+    sec.style.display="none";
   }
+  document.getElementById("empty-all").style.display=base.length===0?"block":"none";
+}
 
-  showSection("sec-triagem","grid-triagem","cnt-triagem",triagem);
-  showSection("sec-carga","grid-carga","cnt-carga",carga);
-  showSection("sec-enlone","grid-enlone","cnt-enlone",enlone);
-  showSection("sec-fat","grid-fat","cnt-fat",fat);
-
-  const emptyAll=document.getElementById("empty-all");
-  emptyAll.style.display=todos.length===0?"block":"none";
+onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
+  DADOS_SNAPSHOT=snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderAll(DADOS_SNAPSHOT);
 });
 
-// ── HELPERS MODAL ──────────────────────────────────────────────
-const fmtDT2=ts=>{
-  if(!ts)return"—";
-  const d=ts.toDate?ts.toDate():new Date(ts);
-  return d.toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
-};
-const fmtData2=ts=>{
-  if(!ts)return"—";
-  const d=ts.toDate?ts.toDate():new Date(ts);
-  return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric"});
-};
-function getTurnoStr(d){
-  if(!d)return"—";
-  const h=d.getHours();
-  return(h>=23||h<7)?"A":h>=7&&h<15?"B":"C";
-}
-
-function buildLinhasPatio(lista,forPrint=false){
-  const tdS=forPrint?"border:1px solid #ccc;padding:6px 10px;text-align:center":"border:1px solid #1e3a58;padding:7px 10px;text-align:center";
-  return lista.map((c,i)=>{
-    const en=c.entrada?.ts?.toDate?.();
-    const espera=en?Date.now()-en.getTime():null;
-    const turno=en?getTurnoStr(en):"—";
-    const tipoCargaLabel=c.tipoCargaLabel||c.tipoCarga||"—";
-    const tipoCim=c.tipoCimento||"—";
-    const tempoStr=espera?durStr(espera):"—";
-    const placaStyle=forPrint?"font-weight:bold;font-family:monospace;letter-spacing:1px":"font-weight:bold;font-family:monospace;letter-spacing:1px;color:#00d4ff";
-    return`<tr>
-      <td style="${tdS}">${i+1}</td>
-      <td style="${tdS};${placaStyle}">${c.placa||"—"}</td>
-      <td style="${tdS}">${c.ac||"—"}</td>
-      <td style="${tdS}">${tipoCargaLabel}</td>
-      <td style="${tdS}">${tipoCim}</td>
-      <td style="${tdS}">${tempoStr}</td>
-      <td style="${tdS}">${en?fmtDT2(c.entrada.ts):"—"}</td>
-      <td style="${tdS}">${turno}</td>
-    </tr>`;
-  }).join("");
-}
-
-function buildTabelaPatio(lista,forPrint=false){
-  const thS=forPrint?'style="background:#003366;color:#fff;padding:7px 10px;font-size:10pt;text-align:center;border:1px solid #ccc"':'';  const tblCls=forPrint?'':' class="mp-table"';  const tblStyle=forPrint?' style="border-collapse:collapse;width:100%"':'';
-  const vzPrint='<tr><td colspan="8" style="text-align:center;padding:16px">Nenhum registro</td></tr>';
-  const vzModal='<tr><td colspan="8" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>';
-  const corpo=buildLinhasPatio(lista,forPrint)||(forPrint?vzPrint:vzModal);
-  return '<table'+tblCls+tblStyle+'><thead><tr>'
-    +'<th '+thS+'>Nº</th>'
-    +'<th '+thS+'>Placa</th>'
-    +'<th '+thS+'>AC</th>'
-    +'<th '+thS+'>Tipo Carga</th>'
-    +'<th '+thS+'>Tipo Cimento</th>'
-    +'<th '+thS+'>Tempo Espera</th>'
-    +'<th '+thS+'>Entrada</th>'
-    +'<th '+thS+'>Turno</th>'
-    +'</tr></thead><tbody>'+corpo+'</tbody></table>';
-}
-
-// ── MODAL VER PÁTIO (snapshot atual) ──
-window.abrirModalPatio=()=>{
-  const sorted=sortAntigo(CACHE_AGUARDANDO);
-  const agora=new Date().toLocaleString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-  document.getElementById("mp-info").textContent=`Snapshot: ${agora} · ${sorted.length} veículo${sorted.length!==1?"s":""} aguardando triagem`;
-  document.getElementById("mp-body").innerHTML=buildTabelaPatio(sorted);
-  document.getElementById("modal-patio").classList.add("show");
-};
-
-window.gerarPDFPatio=()=>{
-  const sorted=sortAntigo(CACHE_AGUARDANDO);
-  const agora=new Date().toLocaleString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-  const linhas=buildLinhasPatio(sorted,true);
-  abrirJanelaPDF("Pátio — Snapshot "+agora,agora,"Snapshot: "+agora,sorted.length,linhas);
-};
-
-// ── MODAL RELATÓRIO PDF COM FILTRO ──
-window.abrirModalPDF=()=>{
-  const hj=hoje();
-  document.getElementById("pdf-data").value=hj;
-  document.getElementById("pdf-info").textContent="Selecione filtros e clique em Buscar.";
-  document.getElementById("pdf-body").innerHTML="";
-  document.getElementById("btn-gerar-pdf").style.display="none";
-  document.getElementById("modal-pdf").classList.add("show");
-};
-
-window.buscarRelatorioPDF=()=>{
-  const dataVal=document.getElementById("pdf-data").value||hoje();
-  const hIni=document.getElementById("pdf-hora-ini").value||"00:00";
-  const hFim=document.getElementById("pdf-hora-fim").value||"23:59";
-  const [hiH,hiM]=hIni.split(":").map(Number);
-  const [hfH,hfM]=hFim.split(":").map(Number);
-  const [ano,mes,dia]=dataVal.split("-").map(Number);
-  const tsIni=new Date(ano,mes-1,dia,hiH,hiM,0).getTime();
-  const tsFim=new Date(ano,mes-1,dia,hfH,hfM,59).getTime();
-
-  let lista=CACHE_TODOS_HD.filter(c=>{
-    if(c.data!==dataVal)return false;
-    if(c.setorAtual!=="posto1"&&c.setorAtual!=="concluido")return false;
-    // Filtra por horário de entrada
-    const en=c.entrada?.ts?.toDate?.()?.getTime();
-    if(en)return en>=tsIni&&en<=tsFim;
-    return true;
-  });
-  lista=sortAntigo(lista);
-
-  const [a,m,d2]=dataVal.split("-");
-  const dtFmt=`${d2}/${m}/${a}`;
-  document.getElementById("pdf-info").textContent=`Data: ${dtFmt} · ${hIni}h às ${hFim}h · ${lista.length} veículo${lista.length!==1?"s":""}`;
-  document.getElementById("pdf-body").innerHTML=buildTabelaPatio(lista);
-  document.getElementById("btn-gerar-pdf").style.display=lista.length?"flex":"none";
-  // guarda para exportar
-  window._pdfFiltradoLista=lista;
-  window._pdfFiltradoInfo={dataVal,hIni,hFim};
-};
-
-window.gerarPDFFiltrado=()=>{
-  const lista=window._pdfFiltradoLista||[];
-  const{dataVal,hIni,hFim}=window._pdfFiltradoInfo||{dataVal:hoje(),hIni:"00:00",hFim:"23:59"};
-  const [a,m,d2]=dataVal.split("-");
-  const dtFmt=`${d2}/${m}/${a}`;
-  const linhas=buildLinhasPatio(lista,true);
-  abrirJanelaPDF(`Pátio — ${dtFmt} ${hIni}-${hFim}`,dtFmt,`Data: ${dtFmt} · ${hIni}h às ${hFim}h`,lista.length,linhas);
-};
-
-function abrirJanelaPDF(titulo,dtFmt,infoStr,total,linhas){
-  const janela=window.open("","_blank","width=1000,height=700");
-  janela.document.write(`<!DOCTYPE html>
-<html lang="pt-BR"><head>
-<meta charset="UTF-8"/>
-<title>Relatório Pátio — ${titulo}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,sans-serif;font-size:11pt;padding:24px;color:#000}
-  h2{font-size:14pt;font-weight:bold;text-align:center;margin-bottom:14pt;text-transform:uppercase;letter-spacing:1px}
-  .hinfo{margin-bottom:16pt;border-bottom:2px solid #000;padding-bottom:10pt;font-size:11pt;line-height:2}
-  .hinfo b{margin-right:8px}
-  table.reg{border-collapse:collapse;width:100%}
-  table.reg th{background:#003366;color:#fff;padding:7px 10px;font-size:10pt;text-align:center;border:1px solid #ccc}
-  table.reg td{padding:7px 10px;font-size:10pt;border:1px solid #ccc;text-align:center}
-  table.reg tr:nth-child(even) td{background:#f0f4fb}
-  .footer{margin-top:20pt;font-size:8pt;color:#888;text-align:center;border-top:1pt solid #ccc;padding-top:6pt}
-  @media print{@page{margin:1.5cm;size:A4 landscape}}
-</style>
-</head><body>
-<h2>Relatório de Pátio — Veículos Aguardando</h2>
-<div class="hinfo">
-  <b>Apodi Cimentos</b> &nbsp;·&nbsp; ${infoStr} &nbsp;·&nbsp; Total: ${total} veículo${total!==1?"s":""}
-</div>
-<table class="reg">
-  <thead><tr>
-    <th style="width:36px">Nº</th>
-    <th>Placa</th>
-    <th>AC</th>
-    <th>Tipo Carga</th>
-    <th>Tipo Cimento</th>
-    <th>Tempo Espera</th>
-    <th>Entrada</th>
-    <th>Turno</th>
-  </tr></thead>
-  <tbody>${linhas||'<tr><td colspan="8" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
-</table>
-<div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${titulo}</div>
-</body></html>`);
-  janela.document.close();janela.focus();
-  setTimeout(()=>janela.print(),600);
-}
-
-// Atualiza tempo a cada minuto
-setInterval(()=>{
-  document.querySelectorAll(".vcard-tempo").forEach(el=>{
-    // re-render triggered by onSnapshot on next tick
-  });
-  // Force re-render via fake update
-  const ev=new Event("visibilitychange");
-  document.dispatchEvent(ev);
-},60000);
+// Re-render a cada minuto (atualiza tempos)
+setInterval(()=>renderAll(DADOS_SNAPSHOT),60000);
 </script>
 </body></html>
