@@ -100,6 +100,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 <body>
 <div class="top">
   <div class="logo">🏭 STATUS DO PÁTIO</div>
+  <div class="live"><div class="dot"></div>Ao vivo</div>
   <button class="hdr-btn-patio" onclick="abrirModalPatio()">👁️ Ver Pátio</button>
   <button class="hdr-btn-pdf" onclick="abrirModalPDF()">📄 Relatório PDF</button>
   <a href="/analise" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">📊 Análise</a>
@@ -410,20 +411,20 @@ function buildLinhasPatio(lista,forPrint=false){
 }
 
 function buildTabelaPatio(lista,forPrint=false){
-  const thS=forPrint?"background:#003366;color:#fff;padding:7px 10px;font-size:10pt;text-align:center;border:1px solid #ccc":"";
-  return`<table class="${forPrint?"":"mp-table"}" style="${forPrint?"border-collapse:collapse;width:100%":""}">
-    <thead><tr>
-      <th ${forPrint?`style="${thS}"`}>Nº</th>
-      <th ${forPrint?`style="${thS}"`}>Placa</th>
-      <th ${forPrint?`style="${thS}"`}>AC</th>
-      <th ${forPrint?`style="${thS}"`}>Tipo Carga</th>
-      <th ${forPrint?`style="${thS}"`}>Tipo Cimento</th>
-      <th ${forPrint?`style="${thS}"`}>Tempo Espera</th>
-      <th ${forPrint?`style="${thS}"`}>Entrada</th>
-      <th ${forPrint?`style="${thS}"`}>Turno</th>
-    </tr></thead>
-    <tbody>${buildLinhasPatio(lista,forPrint)||`<tr><td colspan="8" style="text-align:center;padding:16px${forPrint?"":";color:#3a6880"}">Nenhum registro</td></tr>`}</tbody>
-  </table>`;
+  const thS=forPrint?'style="background:#003366;color:#fff;padding:7px 10px;font-size:10pt;text-align:center;border:1px solid #ccc"':'';  const tblCls=forPrint?'':' class="mp-table"';  const tblStyle=forPrint?' style="border-collapse:collapse;width:100%"':'';
+  const vzPrint='<tr><td colspan="8" style="text-align:center;padding:16px">Nenhum registro</td></tr>';
+  const vzModal='<tr><td colspan="8" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>';
+  const corpo=buildLinhasPatio(lista,forPrint)||(forPrint?vzPrint:vzModal);
+  return '<table'+tblCls+tblStyle+'><thead><tr>'
+    +'<th '+thS+'>Nº</th>'
+    +'<th '+thS+'>Placa</th>'
+    +'<th '+thS+'>AC</th>'
+    +'<th '+thS+'>Tipo Carga</th>'
+    +'<th '+thS+'>Tipo Cimento</th>'
+    +'<th '+thS+'>Tempo Espera</th>'
+    +'<th '+thS+'>Entrada</th>'
+    +'<th '+thS+'>Turno</th>'
+    +'</tr></thead><tbody>'+corpo+'</tbody></table>';
 }
 
 // ── MODAL VER PÁTIO (snapshot atual) ──
