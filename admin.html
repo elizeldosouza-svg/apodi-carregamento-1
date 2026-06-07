@@ -77,11 +77,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .tot-todos{background:rgba(0,212,255,.08);color:var(--bl);border-color:rgba(0,212,255,.25)}
 .tot-proc{background:rgba(255,208,0,.08);color:var(--ye);border-color:rgba(255,208,0,.25)}
 .tot-conc{background:rgba(0,232,150,.08);color:var(--gr);border-color:rgba(0,232,150,.25)}
-.cal-extra-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)}
-.cal-extra-row .pb{font-size:9px;padding:3px 8px}
-.cal-hora-row{display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--bd);font-size:10px;color:var(--t2)}
-.cal-hora-row input[type=time]{background:var(--bg4);border:1px solid var(--bd);border-radius:5px;color:var(--tx);padding:3px 7px;font-size:10px;font-family:'Inter',sans-serif;outline:none;width:80px}
-.cal-hora-row input[type=time]:focus{border-color:var(--rd)}
+/* calendário inline removido — agora é popover */
 /* TABLE */
 .tcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
 .thead-bar{padding:12px 18px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
@@ -223,13 +219,9 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <!-- FILTROS -->
     <div class="filter-block">
 
-      <!-- Layout: filtros à esquerda | calendário à direita -->
-      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:10px">
 
-        <!-- Coluna esquerda: todos os filtros em linha -->
-        <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px">
-
-          <!-- Linha 1: Período + Exportar -->
+          <!-- Linha 1: Período + Calendário popover + Horário + Exportar -->
           <div class="filter-row">
             <span class="row-label">📅 Período</span>
             <button class="pb pb-periodo on" onclick="setPeriod('hoje',this)">Hoje</button>
@@ -239,6 +231,42 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <button class="pb pb-periodo" onclick="setPeriod('mes',this)">Mês</button>
             <button class="pb pb-periodo" onclick="setPeriod('mes_passado',this)">Mês Passado</button>
             <button class="pb pb-periodo" onclick="setPeriod('ano',this)">Ano</button>
+            <!-- Botão calendário popover -->
+            <div style="position:relative;display:inline-flex">
+              <button class="pb" id="cal-toggle-btn" onclick="calToggle(event)" style="border-color:var(--t3);gap:4px">
+                📅 <span id="cal-btn-label">Data</span> ▾
+              </button>
+              <!-- Popover -->
+              <div id="cal-popover" style="display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:500;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px;box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:260px">
+                <div class="cal-nav">
+                  <button onclick="calMove(-1)">‹</button>
+                  <span class="cal-month" id="cal-title"></span>
+                  <button onclick="calMove(1)">›</button>
+                </div>
+                <div class="cal-grid" id="cal-grid"></div>
+                <div class="cal-extra-row" style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
+                  <button class="pb" onclick="calHoje()" style="font-size:9px;padding:3px 8px">📍 Hoje</button>
+                  <button class="pb" id="cal-clear" onclick="calClear()" style="display:none;font-size:9px;padding:3px 8px">✕ Limpar</button>
+                </div>
+                <!-- Semanas -->
+                <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)">
+                  <div style="font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Semana do Ano</div>
+                  <div id="cal-semanas" style="display:flex;flex-wrap:wrap;gap:2px;max-height:52px;overflow-y:auto"></div>
+                </div>
+                <!-- Meses -->
+                <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)">
+                  <div style="font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Mês</div>
+                  <div id="cal-meses" style="display:flex;flex-wrap:wrap;gap:2px"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Horário sempre visível -->
+            <div style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--t2);margin-left:2px">
+              <span>⏰</span>
+              <input type="time" id="cal-h-ini" value="00:00" onchange="render()" style="background:var(--bg3);border:1px solid var(--b2);border-radius:5px;color:var(--tx);padding:3px 6px;font-size:10px;font-family:'Inter',sans-serif;outline:none;width:76px"/>
+              <span style="color:var(--t3)">–</span>
+              <input type="time" id="cal-h-fim" value="23:59" onchange="render()" style="background:var(--bg3);border:1px solid var(--b2);border-radius:5px;color:var(--tx);padding:3px 6px;font-size:10px;font-family:'Inter',sans-serif;outline:none;width:76px"/>
+            </div>
             <button class="rel-btn-m" style="margin-left:auto" onclick="abrirRelatorioAdmin()">📋 Visualizar PDF</button>
             <button class="export-btn" onclick="exportExcel()">📊 Exportar Excel</button>
           </div>
@@ -284,8 +312,8 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
               <option value="">— Setor Atual —</option>
               <option value="posto1">Entrada</option>
               <option value="portaria_inicio">Em Portaria</option>
-            <option value="portaria_fim">Portaria OK</option>
-            <option value="triagem_inicio">Em Triagem</option>
+              <option value="portaria_fim">Portaria OK</option>
+              <option value="triagem_inicio">Em Triagem</option>
               <option value="triagem_fim">Triagem OK</option>
               <option value="carregamento_inicio">Carregando</option>
               <option value="carregamento_fim">Carregado</option>
@@ -297,41 +325,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <input class="fi" id="q-global" type="text" placeholder="🔍 Placa ou AC..." oninput="render()" style="min-width:140px;flex:1"/>
           </div>
 
-        </div><!-- /coluna esquerda -->
-
-        <!-- Coluna direita: Calendário -->
-        <div class="cal-wrap" id="cal-wrap" style="flex-shrink:0;min-width:260px">
-          <div class="cal-nav">
-            <button onclick="calMove(-1)">‹</button>
-            <span class="cal-month" id="cal-title"></span>
-            <button onclick="calMove(1)">›</button>
-          </div>
-          <div class="cal-grid" id="cal-grid"></div>
-          <!-- Ações rápidas -->
-          <div class="cal-extra-row">
-            <button class="pb" onclick="calHoje()">📍 Hoje</button>
-            <button class="pb" id="cal-clear" onclick="calClear()" style="display:none">✕ Limpar</button>
-          </div>
-          <!-- Semanas -->
-          <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)">
-            <div style="font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Semana do Ano</div>
-            <div id="cal-semanas" style="display:flex;flex-wrap:wrap;gap:2px;max-height:58px;overflow-y:auto"></div>
-          </div>
-          <!-- Meses -->
-          <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)">
-            <div style="font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Mês</div>
-            <div id="cal-meses" style="display:flex;flex-wrap:wrap;gap:2px"></div>
-          </div>
-          <!-- Intervalo de horário -->
-          <div class="cal-hora-row">
-            <span>⏰ De</span>
-            <input type="time" id="cal-h-ini" value="00:00" onchange="render()"/>
-            <span>Até</span>
-            <input type="time" id="cal-h-fim" value="23:59" onchange="render()"/>
-          </div>
-        </div>
-
-      </div><!-- /layout dois lados -->
+      </div><!-- /colunas -->
 
     </div><!-- /filter-block -->
 
@@ -514,7 +508,7 @@ function calInit(){
   calRender();calRenderExtras();
 }
 window.calMove=dir=>{CAL_M+=dir;if(CAL_M>11){CAL_M=0;CAL_Y++;}else if(CAL_M<0){CAL_M=11;CAL_Y--;}calRender();};
-window.calClear=()=>{MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;CAL_SHIFT_START=null;calRender();calRenderExtras();document.getElementById("cal-clear").style.display="none";render();};
+window.calClear=()=>{MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;CAL_SHIFT_START=null;calRender();calRenderExtras();document.getElementById("cal-clear").style.display="none";updateCalBtnLabel();render();};
 window.calHoje=()=>{
   const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   const pad=n=>String(n).padStart(2,"0");
@@ -523,7 +517,7 @@ window.calHoje=()=>{
   CAL_Y=tz.getFullYear();CAL_M=tz.getMonth();
   MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
   document.getElementById("cal-clear").style.display="block";
-  calRender();calRenderExtras();render();
+  calRender();calRenderExtras();updateCalBtnLabel();render();
 };
 function calRender(){
   const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
@@ -597,7 +591,7 @@ window.calSemana=w=>{
   CAL_SEL_SEMANA=w;CAL_SEL_MES=null;
   MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
   document.getElementById("cal-clear").style.display="block";
-  calRender();calRenderExtras();render();
+  calRender();calRenderExtras();updateCalBtnLabel();render();
 };
 window.calMes=m=>{
   const pad=n=>String(n).padStart(2,"0");
@@ -607,7 +601,7 @@ window.calMes=m=>{
   CAL_SEL_MES=m;CAL_SEL_SEMANA=null;
   MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
   document.getElementById("cal-clear").style.display="block";
-  calRender();calRenderExtras();render();
+  calRender();calRenderExtras();updateCalBtnLabel();render();
 };
 window.calSelect=(d,evt)=>{
   const pad=n=>String(n).padStart(2,"0");
@@ -623,8 +617,46 @@ window.calSelect=(d,evt)=>{
   }
   MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
   document.getElementById("cal-clear").style.display="block";
-  calRender();render();
+  calRender();updateCalBtnLabel();
+  // Fechar popover após seleção de intervalo ou dia único sem shift
+  if(!(evt&&evt.shiftKey))calClose();
+  render();
 };
+// -- Popover calendário -------------------------------------------------------
+window.calToggle=evt=>{
+  evt.stopPropagation();
+  const p=document.getElementById("cal-popover");
+  const open=p.style.display==="block";
+  p.style.display=open?"none":"block";
+  if(!open){
+    // Ajustar posição: se vai sair da tela à direita, alinhar à direita do botão
+    const btn=document.getElementById("cal-toggle-btn");
+    const rect=btn.getBoundingClientRect();
+    if(rect.left+280>window.innerWidth){p.style.left="auto";p.style.right="0";}
+    else{p.style.left="0";p.style.right="auto";}
+  }
+};
+function calClose(){document.getElementById("cal-popover").style.display="none";}
+document.addEventListener("click",e=>{
+  const pop=document.getElementById("cal-popover");
+  const btn=document.getElementById("cal-toggle-btn");
+  if(pop&&btn&&!pop.contains(e.target)&&!btn.contains(e.target))calClose();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")calClose();});
+function updateCalBtnLabel(){
+  const el=document.getElementById("cal-btn-label");if(!el)return;
+  const pad=n=>String(n).padStart(2,"0");
+  const fmtD=s=>{const[y,m,d]=s.split("-");return d+"/"+m;};
+  if(MDATA&&MDATA_FIM&&MDATA!==MDATA_FIM)el.textContent=fmtD(MDATA)+" → "+fmtD(MDATA_FIM);
+  else if(MDATA)el.textContent=fmtD(MDATA);
+  else el.textContent="Data";
+  // destacar botão quando tem seleção
+  const btn=document.getElementById("cal-toggle-btn");
+  if(btn){
+    if(MDATA){btn.style.borderColor="var(--rd)";btn.style.color="var(--rd)";}
+    else{btn.style.borderColor="";btn.style.color="";}
+  }
+}
 // Ordenação
 window.sortBy=col=>{
   if(SORT_COL===col){SORT_DIR*=-1;}else{SORT_COL=col;SORT_DIR=-1;}
@@ -948,7 +980,7 @@ window.exportExcel=()=>{
 };
 
 // -- setters de filtro ------------------------------------------------------
-window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;document.getElementById("cal-clear").style.display="none";calRender();calRenderExtras();document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;document.getElementById("cal-clear").style.display="none";calRender();calRenderExtras();updateCalBtnLabel();document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setDia=(d,el)=>{MDIA=d;document.querySelectorAll(".pb-dia").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll("[class*='pb-turno']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setCarga=(t,el)=>{MTC=t;document.querySelectorAll("[class*='pb-carga']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
