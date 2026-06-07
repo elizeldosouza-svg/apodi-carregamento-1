@@ -146,34 +146,34 @@ tr.alerta .turno{opacity:.7}
 @media(max-width:768px){.tcard{display:none}.cards{display:flex}.stats{grid-template-columns:repeat(4,1fr)}.export-btn span{display:none}}
 
 /* ══ CALENDÁRIO MASTER ══ */
+.cal-popup{position:absolute;right:0;top:100%;margin-top:6px;z-index:500;display:none}
+.cal-popup.show{display:block}
+.cal-wrap-m{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;min-width:228px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.cal-nav-m{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-nav-m button{width:26px;height:26px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cal-nav-m button:hover{border-color:var(--bl);color:var(--bl)}
+.cal-month-m{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--tx);letter-spacing:.5px}
+.cal-grid-m{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow-m{text-align:center;font-size:8px;font-weight:700;color:var(--t3);padding:2px 0;text-transform:uppercase}
+.cal-day-m{text-align:center;font-size:11px;padding:5px 2px;border-radius:5px;cursor:pointer;color:var(--t2);transition:all .12s;user-select:none;position:relative}
+.cal-day-m:hover:not(.cal-empty-m):not(.cal-today-m):not(.cal-sel-m){background:var(--bg4);color:var(--tx)}
+.cal-day-m.cal-empty-m{cursor:default}
+.cal-day-m.cal-today-m{color:var(--bl);font-weight:700}
+.cal-day-m.cal-today-m::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--bl);border-radius:50%}
+.cal-day-m.cal-sel-m{background:var(--bl);color:var(--bg);font-weight:700}
+.cal-day-m.cal-has-m{font-weight:600;color:var(--tx)}
+.cal-day-m.cal-has-m.cal-today-m{color:var(--bl)}
+.cal-clear-m{margin-top:8px;width:100%;padding:5px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t3);font-size:10px;cursor:pointer;transition:all .15s;text-align:center}
+.cal-clear-m:hover{border-color:var(--bl);color:var(--bl)}
 .cal-toggle{position:relative}
 .cal-btn{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .cal-btn:hover{border-color:var(--bl);color:var(--bl)}
 .cal-btn.has-date{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.08)}
-.cal-popup{position:absolute;right:0;top:100%;margin-top:8px;z-index:500;display:none}
-.cal-popup.show{display:block}
-.cal-wrap-m{background:#0c1e34;border:1px solid #173250;border-radius:15px;padding:20px;min-width:280px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
-.cal-nav-m{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.cal-nav-m button{width:38px;height:38px;border:none;border-radius:10px;background:#102844;color:var(--tx);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.cal-nav-m button:hover{background:var(--bl);color:#000}
-.cal-month-m{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--tx);letter-spacing:.5px}
-.cal-grid-m{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-dow-m{text-align:center;font-size:9px;font-weight:700;color:#6f8fb8;padding:4px 0;text-transform:uppercase}
-.cal-day-m{height:36px;display:flex;justify-content:center;align-items:center;border-radius:10px;cursor:pointer;color:var(--t2);font-size:12px;transition:all .2s;user-select:none;position:relative}
-.cal-day-m:hover:not(.cal-empty-m):not(.cal-sel-m){background:#14304d;color:var(--tx)}
-.cal-day-m.cal-empty-m{cursor:default}
-.cal-day-m.cal-today-m{color:var(--bl);font-weight:700}
-.cal-day-m.cal-today-m::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--bl);border-radius:50%}
-.cal-day-m.cal-sel-m{background:var(--bl);color:#000;font-weight:700;border-radius:10px}
-.cal-day-m.cal-has-m{font-weight:600;color:var(--tx)}
-.cal-day-m.cal-has-m.cal-today-m{color:var(--bl)}
-.cal-clear-m{margin-top:12px;width:100%;padding:8px;border:1px solid var(--bd);border-radius:10px;background:transparent;color:var(--t3);font-size:11px;cursor:pointer;transition:all .2s;text-align:center;font-weight:600}
-.cal-clear-m:hover{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
 </style>
 </head>
 <body>
 <div class="top">
-  <div class="logo">👁️ MASTER — TMAC ONLINE</div>
+  <div class="logo">👁️ MASTER — PROCESSOS EM TEMPO REAL</div>
   <a href="/analise" style="padding:6px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.08);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.08)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
   <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
@@ -218,7 +218,8 @@ tr.alerta .turno{opacity:.7}
     <button class="pb" onclick="setPeriod('mes',this)">Esse Mês</button>
     <button class="pb" onclick="setPeriod('ano',this)">Esse Ano</button>
     <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
-    <button class="rel-btn-m">📋 <span>Relatório PDF</span></button>
+      <button class="rel-btn-m" onclick="abrirRelatorioMaster()">👁️ <span>Visualizar PDF</span></button>
+      <button class="rel-btn-m" onclick="exportarPDFMaster()">📄 <span>PDF c/Filtro</span></button>
   </div>
 
   <div class="filter-row">
@@ -271,7 +272,7 @@ tr.alerta .turno{opacity:.7}
           <th data-col="cimento" style="min-width:52px">Cim.</th>
           <th data-col="ac" style="min-width:54px">AC</th>
           <th data-col="data" style="min-width:50px">Data</th>
-          <th data-col="entrada" style="min-width:50px">Posto1</th>
+          <th data-col="entrada" style="min-width:50px">Entrada</th>
           <th data-col="setor" style="min-width:70px">Setor<br>Atual</th>
           <th data-col="ptI" style="min-width:52px">🏛️<br>Port.Ini</th>
           <th data-col="ptF" style="min-width:52px">🏛️<br>Port.Fim</th>
@@ -281,7 +282,7 @@ tr.alerta .turno{opacity:.7}
           <th data-col="caF" style="min-width:52px">🏗️<br>Carga Fim</th>
           <th data-col="enI" style="min-width:52px">🪢<br>Enl.Ini</th>
           <th data-col="enF" style="min-width:52px">🪢<br>Enl.Fim</th>
-          <th data-col="saida" style="min-width:52px">🧾<br>Fatur</th>
+          <th data-col="saida" style="min-width:52px">🧾<br>Saída</th>
           <th data-col="tmac" style="min-width:48px">⏱️<br>TMAC</th>
           <th data-col="nf" style="min-width:70px">Nota<br>Fiscal</th>
           <th data-col="status" style="min-width:60px">Status</th>
@@ -412,7 +413,6 @@ function getSortVal(c,col){
     case"caI":return tsVal(c,"carregamento","inicio");case"caF":return tsVal(c,"carregamento","fim");
     case"enI":return tsVal(c,"enlonamento","inicio");case"enF":return tsVal(c,"enlonamento","fim");
     case"saida":return tsVal(c,"faturamento","ts");case"tmac":return calcTMAC(c)??-1;
-    case"nf":return c.notaFiscal||"";case"status":return c.setorAtual||"";
     default:return 0;
   }
 }
@@ -430,9 +430,7 @@ document.addEventListener("click",e=>{
 });
 
 let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t",MDATA=null;
-let MDATA_SET=new Set(); // multi-seleção via shift
 let CAL_Y_M=0,CAL_M_M=0;
-let CAL_LAST_SEL=null; // último dia clicado (para range shift)
 
 function calInitM(){
   const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
@@ -457,15 +455,13 @@ window.calMoveM=dir=>{
 };
 window.calClearM=()=>{
   MDATA=null;
-  MDATA_SET.clear();
-  CAL_LAST_SEL=null;
   document.getElementById("cal-clear-m").style.display="none";
   document.getElementById("cal-btn").classList.remove("has-date");
   document.getElementById("cal-btn-txt").textContent="Data";
   document.getElementById("cal-popup").classList.remove("show");
   // Restaura filtro período
   MP="hoje";
-  document.querySelectorAll(".pb").forEach(b=>b.classList.toggle("on",b.textContent.trim()==="Hoje"));
+  document.querySelectorAll(".pb").forEach(b=>b.classList.toggle("on",b.textContent.trim()==="HOJE"));
   calRenderM();render();
 };
 function calRenderM(){
@@ -479,7 +475,6 @@ function calRenderM(){
   const todayY=tz.getFullYear(),todayM=tz.getMonth(),todayD=tz.getDate();
   const firstDow=new Date(CAL_Y_M,CAL_M_M,1).getDay();
   const daysInMonth=new Date(CAL_Y_M,CAL_M_M+1,0).getDate();
-  // compatibilidade: MDATA único legado
   const selD=MDATA?parseInt(MDATA.split("-")[2]):null;
   const selY=MDATA?parseInt(MDATA.split("-")[0]):null;
   const selM=MDATA?parseInt(MDATA.split("-")[1])-1:null;
@@ -487,57 +482,28 @@ function calRenderM(){
   for(let i=0;i<firstDow;i++)html2+=`<div class="cal-day-m cal-empty-m"></div>`;
   for(let d=1;d<=daysInMonth;d++){
     const isToday=d===todayD&&CAL_M_M===todayM&&CAL_Y_M===todayY;
-    const legacySel=d===selD&&CAL_M_M===selM&&CAL_Y_M===selY;
-    const multiSel=MDATA_SET.has(`${CAL_Y_M}-${pad(CAL_M_M+1)}-${pad(d)}`);
-    const isSel=legacySel||multiSel;
+    const isSel=d===selD&&CAL_M_M===selM&&CAL_Y_M===selY;
     const hasData=comDados.has(d);
     let cls="cal-day-m";
     if(isToday)cls+=" cal-today-m";
     if(isSel)cls+=" cal-sel-m";
     if(hasData&&!isSel)cls+=" cal-has-m";
-    html2+=`<div class="${cls}" onclick="calSelectM(event,${d})">${d}</div>`;
+    html2+=`<div class="${cls}" onclick="calSelectM(${d})">${d}</div>`;
   }
   document.getElementById("cal-grid-m").innerHTML=html2;
 }
-window.calSelectM=(ev,d)=>{
+window.calSelectM=d=>{
   const pad=n=>String(n).padStart(2,"0");
-  const dateStr=`${CAL_Y_M}-${pad(CAL_M_M+1)}-${pad(d)}`;
-
-  if(ev.shiftKey&&CAL_LAST_SEL){
-    // Range: preenche todos os dias entre o último clicado e o atual
-    const last=CAL_LAST_SEL;
-    const start=Math.min(last,d);
-    const end=Math.max(last,d);
-    for(let i=start;i<=end;i++){
-      MDATA_SET.add(`${CAL_Y_M}-${pad(CAL_M_M+1)}-${pad(i)}`);
-    }
-    MDATA=null; // desativa seleção única legada
-  } else {
-    // Clique simples: limpa set e seleciona só esse dia
-    MDATA_SET.clear();
-    MDATA_SET.add(dateStr);
-    MDATA=null;
-    CAL_LAST_SEL=d;
-  }
-
-  // Atualiza label do botão
-  const sorted=[...MDATA_SET].sort();
-  let label;
-  if(sorted.length===1){
-    const dt=new Date(sorted[0]+"T12:00:00");
-    label=dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});
-  } else {
-    const first=new Date(sorted[0]+"T12:00:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
-    const last2=new Date(sorted[sorted.length-1]+"T12:00:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
-    label=`${first}→${last2} (${sorted.length}d)`;
-  }
+  MDATA=`${CAL_Y_M}-${pad(CAL_M_M+1)}-${pad(d)}`;
+  const dt=new Date(CAL_Y_M,CAL_M_M,d);
+  const label=dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});
   document.getElementById("cal-btn").classList.add("has-date");
   document.getElementById("cal-btn-txt").textContent=label;
   document.getElementById("cal-clear-m").style.display="block";
   // Reseta filtro de período para não conflitar
   MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
   calRenderM();
-  if(!ev.shiftKey)document.getElementById("cal-popup").classList.remove("show");
+  document.getElementById("cal-popup").classList.remove("show");
   render();
 };
 
@@ -584,12 +550,8 @@ function dataRef(c){
 function noperiodo(c,s,e,mdata){
   const dr=dataRef(c);
   if(!dr)return false;
-  // Multi-seleção calendário
-  if(MDATA_SET.size>0){
-    return MDATA_SET.has(dr);
-  }
-  // Seleção única legada (compatibilidade)
   if(mdata){
+    // Calendário: concluídos cuja saída = data, OU em processo cuja entrada = data
     return dr===mdata;
   }
   // Período normal: veículo preso (em processo de dia anterior) sempre incluído
@@ -867,9 +829,6 @@ window.exportarPDFMaster=()=>{
   const{per,list,turno,carga,cim,st}=buildRelInfo();
   const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
   const hora=new Date().toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
-  const pad2=n=>String(n).padStart(2,"0");
-  const now=new Date();
-  const fname=`relatorio_rastreio_${now.getFullYear()}${pad2(now.getMonth()+1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}.html`;
   const linhas=list.map((c,i)=>{
     const en=getTS(c,"entrada","ts");
     const sa=getTS(c,"faturamento","ts");
@@ -897,55 +856,39 @@ window.exportarPDFMaster=()=>{
       ${td(c.setorAtual==="concluido"||c.faturamento?.ts?"Concluido":"Em processo","font-size:7pt")}
     </tr>`;
   }).join("");
-  const html=[
-    "<!DOCTYPE html><html lang='pt-BR'><head>",
-    "<meta charset='UTF-8'><title>Relatorio Rastreio - "+dtNow+"</title>",
-    "<style>",
-    "*{box-sizing:border-box;margin:0;padding:0}",
-    "body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}",
-    "h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}",
-    ".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}",
-    "table{border-collapse:collapse;width:100%}",
-    "th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}",
-    "td{padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;vertical-align:middle}",
-    ".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}",
-    "@media print{body{padding:0}@page{margin:.8cm;size:A4 landscape}}",
-    "</style></head><body>",
-    "<h2>Relatorio de Rastreio de Carregamento</h2>",
-    "<div class='info'>Apodi Cimentos &nbsp;&middot; Periodo: <b>"+per+"</b> &nbsp;&middot; Turno: <b>"+turno+"</b> &nbsp;&middot; Carga: <b>"+carga+"</b> &nbsp;&middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &nbsp;&middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &nbsp;&middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>",
-    "<table><thead><tr>",
-    "<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor</th>",
-    "<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>",
-    "<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>",
-    "<th>Saida</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>",
-    "</tr></thead><tbody>",
-    linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>",
-    "</tbody></table>",
-    "<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>",
-    "<div style='margin-top:16pt;text-align:center'>",
-    "<button onclick='window.print()' style='padding:8px 24px;background:#003366;color:#fff;border:none;border-radius:6px;font-size:10pt;font-weight:bold;cursor:pointer'>🖨️ Imprimir / Salvar como PDF</button>",
-    "</div>",
-    "</body></html>"
-  ].join("");
-  // Download direto — compatível com todos os navegadores sem bloqueio de popup
-  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
+  const partes=[];
+  partes.push("<!DOCTYPE html><html lang='pt-BR'><head>");
+  partes.push("<meta charset='UTF-8'><title>Relatorio Rastreio - "+dtNow+"</title>");
+  partes.push("<style>");
+  partes.push("*{box-sizing:border-box;margin:0;padding:0}");
+  partes.push("body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}");
+  partes.push("h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}");
+  partes.push(".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}");
+  partes.push("table{border-collapse:collapse;width:100%}");
+  partes.push("th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}");
+  partes.push(".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}");
+  partes.push("@page{margin:.8cm;size:A4 landscape}");
+  partes.push("</style></head><body>");
+  partes.push("<h2>Relatorio de Rastreio de Carregamento</h2>");
+  partes.push("<div class='info'>Apodi Cimentos &nbsp;&middot; Periodo: <b>"+per+"</b> &nbsp;&middot; Turno: <b>"+turno+"</b> &nbsp;&middot; Carga: <b>"+carga+"</b> &nbsp;&middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &nbsp;&middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &nbsp;&middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>");
+  partes.push("<table><thead><tr>");
+  partes.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor</th>");
+  partes.push("<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
+  partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>");
+  partes.push("<th>Saida</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>");
+  partes.push("</tr></thead><tbody>");
+  partes.push(linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes.push("</tbody></table>");
+  partes.push("<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>");
+  partes.push("<script>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
+  partes.push("</body></html>");
+  const blob=new Blob([partes.join("")],{type:"text/html;charset=utf-8"});
+  const blobUrl=URL.createObjectURL(blob);
   const a=document.createElement("a");
-  a.href=url;
-  a.download=fname;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},3000);
+  a.href=blobUrl;a.target="_blank";a.rel="noopener noreferrer";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
 };
-
-// Garante disparo do botão Relatório PDF independente de escopo de módulo
-document.addEventListener("DOMContentLoaded",()=>{
-  const btn=document.querySelector(".rel-btn-m");
-  if(btn)btn.addEventListener("click",()=>{
-    if(typeof abrirRelatorioMaster==="function")abrirRelatorioMaster();
-    else if(typeof window.abrirRelatorioMaster==="function")window.abrirRelatorioMaster();
-  });
-});
 </script>
 <!-- Badge Admin -->
 <script>
