@@ -76,9 +76,13 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .tcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
 .thead{padding:14px 18px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .thead small{font-size:11px;color:var(--t2);font-weight:400;font-family:'Inter',sans-serif}
-.tscroll{overflow-x:auto}
+.tscroll{overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--b2) var(--bg2)}
+.tscroll::-webkit-scrollbar{height:7px;width:7px}
+.tscroll::-webkit-scrollbar-track{background:var(--bg2)}
+.tscroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
+.tscroll::-webkit-scrollbar-thumb:hover{background:var(--bl)}
 table{width:100%;border-collapse:collapse;font-size:10px;table-layout:auto}
-th{text-align:center;font-size:8px;font-weight:700;color:var(--t3);text-transform:uppercase;padding:6px 5px;border-bottom:1px solid var(--bd);white-space:normal;word-break:break-word;line-height:1.3;cursor:pointer;user-select:none;transition:color .15s;vertical-align:bottom}
+th{text-align:center;font-size:8px;font-weight:700;color:var(--t3);text-transform:uppercase;padding:6px 5px;border-bottom:1px solid var(--bd);white-space:normal;word-break:break-word;line-height:1.3;cursor:pointer;user-select:none;transition:color .15s;vertical-align:bottom;position:sticky;top:0;background:var(--bg2);z-index:10}
 th:hover{color:var(--t2)}
 th.sort-asc,th.sort-desc{color:var(--bl)}
 th.sort-asc::after{content:" ▲";font-size:8px}
@@ -173,7 +177,7 @@ tr.alerta .turno{opacity:.7}
 </head>
 <body>
 <div class="top">
-  <div class="logo">👁️ MASTER — PROCESSOS EM TEMPO REAL</div>
+  <div class="logo">👁️ MASTER — TMAC ONLINE</div>
   <a href="/analise" style="padding:6px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.08);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.08)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
   <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
@@ -216,6 +220,8 @@ tr.alerta .turno{opacity:.7}
     <button class="pb" onclick="setPeriod('ontem',this)">Ontem</button>
     <button class="pb" onclick="setPeriod('semana',this)">Essa Semana</button>
     <button class="pb" onclick="setPeriod('mes',this)">Esse Mês</button>
+    <button class="pb" onclick="setPeriod('semana_passada',this)">Semana Passada</button>
+    <button class="pb" onclick="setPeriod('mes_passado',this)">Mês Passado</button>
     <button class="pb" onclick="setPeriod('ano',this)">Esse Ano</button>
     <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
       <button class="rel-btn-m" onclick="abrirRelatorioMaster()">👁️ <span>Visualizar PDF</span></button>
@@ -247,9 +253,9 @@ tr.alerta .turno{opacity:.7}
 
   <div class="filter-row" style="margin-bottom:16px">
     <input class="fi" id="q" type="text" placeholder="🔍 Placa ou AC..." oninput="render()"/>
-    <button class="fb on" onclick="setF('t',this)">Todos</button>
-    <button class="fb" onclick="setF('a',this)">Em processo</button>
-    <button class="fb" onclick="setF('c',this)">Concluídos</button>
+    <button class="fb on" onclick="setF('t',this)">Todos (<span id="cnt-f-t">0</span>)</button>
+    <button class="fb" onclick="setF('a',this)">Em processo (<span id="cnt-f-a">0</span>)</button>
+    <button class="fb" onclick="setF('c',this)">Concluídos (<span id="cnt-f-c">0</span>)</button>
   </div>
 
   <!-- Card: Aguardando Triagem -->
@@ -272,7 +278,7 @@ tr.alerta .turno{opacity:.7}
           <th data-col="cimento" style="min-width:52px">Cim.</th>
           <th data-col="ac" style="min-width:54px">AC</th>
           <th data-col="data" style="min-width:50px">Data</th>
-          <th data-col="entrada" style="min-width:50px">Entrada</th>
+          <th data-col="entrada" style="min-width:50px">Posto1</th>
           <th data-col="setor" style="min-width:70px">Setor<br>Atual</th>
           <th data-col="ptI" style="min-width:52px">🏛️<br>Port.Ini</th>
           <th data-col="ptF" style="min-width:52px">🏛️<br>Port.Fim</th>
@@ -282,7 +288,7 @@ tr.alerta .turno{opacity:.7}
           <th data-col="caF" style="min-width:52px">🏗️<br>Carga Fim</th>
           <th data-col="enI" style="min-width:52px">🪢<br>Enl.Ini</th>
           <th data-col="enF" style="min-width:52px">🪢<br>Enl.Fim</th>
-          <th data-col="saida" style="min-width:52px">🧾<br>Saída</th>
+          <th data-col="saida" style="min-width:52px">🧾<br>Fatur</th>
           <th data-col="tmac" style="min-width:48px">⏱️<br>TMAC</th>
           <th data-col="nf" style="min-width:70px">Nota<br>Fiscal</th>
           <th data-col="status" style="min-width:60px">Status</th>
@@ -318,6 +324,8 @@ import{getFirestore,collection,onSnapshot,query,orderBy}from"https://www.gstatic
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 
+const LIMITE_MS=130*60*1000;
+
 function periodDates(p){
   const now=new Date();
   const tz=new Date(now.toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
@@ -326,7 +334,9 @@ function periodDates(p){
   if(p==="hoje")return{s:fmt(tz),e:fmt(tz)};
   if(p==="ontem"){const y=new Date(tz);y.setDate(tz.getDate()-1);return{s:fmt(y),e:fmt(y)};}
   if(p==="semana"){const d=new Date(tz);d.setDate(tz.getDate()-tz.getDay());return{s:fmt(d),e:fmt(tz)};}
+  if(p==="semana_passada"){const d=new Date(tz);const dow=tz.getDay();const ini=new Date(tz);ini.setDate(tz.getDate()-dow-7);const fim=new Date(tz);fim.setDate(tz.getDate()-dow-1);return{s:fmt(ini),e:fmt(fim)};}
   if(p==="mes"){const s=new Date(tz.getFullYear(),tz.getMonth(),1);return{s:fmt(s),e:fmt(tz)};}
+  if(p==="mes_passado"){const s=new Date(tz.getFullYear(),tz.getMonth()-1,1);const e=new Date(tz.getFullYear(),tz.getMonth(),0);return{s:fmt(s),e:fmt(e)};}
   if(p==="ano"){const s=new Date(tz.getFullYear(),0,1);return{s:fmt(s),e:fmt(tz)};}
   return{s:fmt(tz),e:fmt(tz)};
 }
@@ -613,6 +623,14 @@ window.render=()=>{
   document.getElementById("s4").textContent=period.filter(c=>c.setorAtual==="faturamento_aguardando").length;
   document.getElementById("s5").textContent=period.filter(c=>c.setorAtual==="concluido").length;
 
+  // Totais botões Todos/Em processo/Concluídos
+  const cntTodos=period.length;
+  const cntProcesso=period.filter(c=>c.setorAtual!=="concluido").length;
+  const cntConcluidos=period.filter(c=>c.setorAtual==="concluido").length;
+  document.getElementById("cnt-f-t").textContent=cntTodos;
+  document.getElementById("cnt-f-a").textContent=cntProcesso;
+  document.getElementById("cnt-f-c").textContent=cntConcluidos;
+
   // Card: Aguardando Triagem — resumo simples
   const aguardando=ALL.filter(c=>{
     const{s,e}=periodDates(MP);
@@ -793,7 +811,7 @@ function buildRelRows(list){
 }
 
 function buildRelInfo(){
-  const periodos={hoje:"Hoje",ontem:"Ontem",semana:"Esta Semana",mes:"Este Mes",ano:"Este Ano"};
+  const periodos={hoje:"Hoje",ontem:"Ontem",semana:"Esta Semana",semana_passada:"Semana Passada",mes:"Este Mes",mes_passado:"Mes Passado",ano:"Este Ano"};
   const turnos={t:"Todos",A:"Turno A (23h-07h)",B:"Turno B (07h-15h)",C:"Turno C (15h-23h)"};
   const cargas={t:"Todos",granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"};
   const cimentos={t:"Todos","CP II F":"CP II F","CP III":"CP III","CP V":"CP V"};
@@ -839,55 +857,52 @@ window.exportarPDFMaster=()=>{
     const tmacMs=sa&&en?sa-en:en?Date.now()-en:null;
     const over=tmacMs&&tmacMs>LIMITE_MS;
     const bg=i%2===1?"#f5f8ff":"#fff";
-    const td=(v,ex="")=>`<td style="padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;${ex}">${v||""}</td>`;
-    return`<tr style="background:${bg}">
-      ${td(c.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")}
-      ${td(c.ac)}
-      ${td((c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||""),"font-size:7pt")}
-      ${td(c.data)}${td(fmtRel(en))}
-      ${td((c.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")}
-      ${td(fmtRel(ptI))}${td(fmtRel(ptF))}
-      ${td(fmtRel(trI))}${td(fmtRel(trF))}
-      ${td(fmtRel(caI))}${td(fmtRel(caF))}
-      ${td(fmtRel(enI))}${td(fmtRel(enF))}
-      ${td(fmtRel(sa))}
-      ${td(tmacMs!=null?durStr(tmacMs):"",(over?"color:#cc0000":"color:#006600")+";font-weight:bold")}
-      ${td(c.notaFiscal||"")}
-      ${td(c.setorAtual==="concluido"||c.faturamento?.ts?"Concluido":"Em processo","font-size:7pt")}
-    </tr>`;
+    const td=(v,ex="")=>"<td style='padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;"+ex+"'>"+(v||"")+"</td>";
+    return "<tr style='background:"+bg+"'>"
+      +td(c.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")
+      +td(c.ac)
+      +td((c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||""),"font-size:7pt")
+      +td(c.data)+td(fmtRel(en))
+      +td((c.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")
+      +td(fmtRel(ptI))+td(fmtRel(ptF))
+      +td(fmtRel(trI))+td(fmtRel(trF))
+      +td(fmtRel(caI))+td(fmtRel(caF))
+      +td(fmtRel(enI))+td(fmtRel(enF))
+      +td(fmtRel(sa))
+      +td(tmacMs!=null?durStr(tmacMs):"",(over?"color:#cc0000":"color:#006600")+";font-weight:bold")
+      +td(c.notaFiscal||"")
+      +td(c.setorAtual==="concluido"||c.faturamento?.ts?"Concluido":"Em processo","font-size:7pt")
+      +"</tr>";
   }).join("");
-  const partes=[];
-  partes.push("<!DOCTYPE html><html lang='pt-BR'><head>");
-  partes.push("<meta charset='UTF-8'><title>Relatorio Rastreio - "+dtNow+"</title>");
-  partes.push("<style>");
-  partes.push("*{box-sizing:border-box;margin:0;padding:0}");
-  partes.push("body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}");
-  partes.push("h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}");
-  partes.push(".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}");
-  partes.push("table{border-collapse:collapse;width:100%}");
-  partes.push("th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}");
-  partes.push(".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}");
-  partes.push("@page{margin:.8cm;size:A4 landscape}");
-  partes.push("</style></head><body>");
-  partes.push("<h2>Relatorio de Rastreio de Carregamento</h2>");
-  partes.push("<div class='info'>Apodi Cimentos &nbsp;&middot; Periodo: <b>"+per+"</b> &nbsp;&middot; Turno: <b>"+turno+"</b> &nbsp;&middot; Carga: <b>"+carga+"</b> &nbsp;&middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &nbsp;&middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &nbsp;&middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>");
-  partes.push("<table><thead><tr>");
-  partes.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor</th>");
-  partes.push("<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
-  partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>");
-  partes.push("<th>Saida</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>");
-  partes.push("</tr></thead><tbody>");
-  partes.push(linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
-  partes.push("</tbody></table>");
-  partes.push("<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>");
-  partes.push("<script>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
-  partes.push("</body></html>");
-  const blob=new Blob([partes.join("")],{type:"text/html;charset=utf-8"});
-  const blobUrl=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=blobUrl;a.target="_blank";a.rel="noopener noreferrer";
-  document.body.appendChild(a);a.click();
-  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
+  const html="<!DOCTYPE html><html lang='pt-BR'><head>"
+    +"<meta charset='UTF-8'><title>Relatorio Rastreio - "+dtNow+"</title>"
+    +"<style>"
+    +"*{box-sizing:border-box;margin:0;padding:0}"
+    +"body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}"
+    +"h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}"
+    +".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}"
+    +"table{border-collapse:collapse;width:100%}"
+    +"th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}"
+    +".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}"
+    +"@page{margin:.8cm;size:A4 landscape}"
+    +"</style></head><body>"
+    +"<h2>Relatorio de Rastreio de Carregamento</h2>"
+    +"<div class='info'>Apodi Cimentos &middot; Periodo: <b>"+per+"</b> &middot; Turno: <b>"+turno+"</b> &middot; Carga: <b>"+carga+"</b> &middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>"
+    +"<table><thead><tr>"
+    +"<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Posto1</th><th>Setor</th>"
+    +"<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>"
+    +"<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>"
+    +"<th>Fatur</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>"
+    +"</tr></thead><tbody>"
+    +(linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>")
+    +"</tbody></table>"
+    +"<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>"
+    +"</body></html>";
+  const janela=window.open("","_blank","width=1200,height=800");
+  janela.document.write(html);
+  janela.document.close();
+  janela.focus();
+  setTimeout(()=>janela.print(),600);
 };
 </script>
 <!-- Badge Admin -->
