@@ -8,7 +8,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--pu:#a78bfa;--or:#fb923c;--tm:#ff9f43;--r:12px;--rs:8px}
-body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-box{width:100%;max-width:360px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:32px}
 .login-ic{font-size:48px;text-align:center;display:block;margin-bottom:10px}
@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .nav-btn:hover{border-color:var(--bl);color:var(--bl)}
 .sair-btn{padding:6px 14px;border:1px solid rgba(255,68,102,.3);border-radius:20px;background:transparent;color:var(--rd);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
 .sair-btn:hover{background:rgba(255,68,102,.1)}
-.wrap{max-width:1500px;margin:0 auto;padding:16px}
+.wrap{max-width:100%;margin:0 auto;padding:16px}
 /* FILTER ROWS */
 .filter-block{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
 .filter-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -52,15 +52,44 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 /* setor select */
 .dselect-filter{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 12px;font-size:11px;font-family:'Inter',sans-serif;outline:none;cursor:pointer;min-width:160px}
 .dselect-filter:focus{border-color:var(--rd)}
-.export-btn{margin-left:auto;padding:7px 16px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.export-btn{padding:7px 16px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .export-btn:hover{background:rgba(0,232,150,.15)}
+.rel-btn-m{padding:7px 16px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.rel-btn-m:hover{background:rgba(167,139,250,.15)}
+.mrel-overlay{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);padding:12px;overflow-y:auto}
+.mrel-overlay.show{display:flex}
+.mrel-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);width:100%;max-width:1500px;margin:auto;overflow:hidden}
+.mrel-head{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mrel-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:var(--tx);flex:1;letter-spacing:1px}
+.mrel-info{font-size:11px;color:var(--t2);width:100%}
+.mrel-body{padding:12px 16px;overflow-x:auto}
+.mrel-foot{padding:10px 16px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end}
+.mrel-close{width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:13px}
+.mrel-close:hover{border-color:var(--rd);color:var(--rd)}
+.mrel-table{width:100%;border-collapse:collapse;font-size:9px}
+.mrel-table th{text-align:center;padding:6px 5px;font-size:8px;font-weight:700;color:#fff;background:#003366;text-transform:uppercase;letter-spacing:.4px;border:1px solid #1e3a58;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}
+.mrel-table td{padding:5px 6px;border:1px solid var(--bd);vertical-align:middle;font-size:9px;color:var(--tx);text-align:center}
+.mrel-table tr:nth-child(even) td{background:rgba(0,212,255,.03)}
+.pdf-btn-m{padding:9px 20px;border:none;border-radius:8px;background:var(--bl);color:#000;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;text-transform:uppercase}
+.pdf-btn-m:hover{opacity:.88}
+.totais-bar{display:flex;gap:8px;align-items:center;margin-left:auto}
+.tot-pill{padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;cursor:default;border:1px solid}
+.tot-todos{background:rgba(0,212,255,.08);color:var(--bl);border-color:rgba(0,212,255,.25)}
+.tot-proc{background:rgba(255,208,0,.08);color:var(--ye);border-color:rgba(255,208,0,.25)}
+.tot-conc{background:rgba(0,232,150,.08);color:var(--gr);border-color:rgba(0,232,150,.25)}
+.cal-extra-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)}
+.cal-extra-row .pb{font-size:9px;padding:3px 8px}
+.cal-hora-row{display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--bd);font-size:10px;color:var(--t2)}
+.cal-hora-row input[type=time]{background:var(--bg4);border:1px solid var(--bd);border-radius:5px;color:var(--tx);padding:3px 7px;font-size:10px;font-family:'Inter',sans-serif;outline:none;width:80px}
+.cal-hora-row input[type=time]:focus{border-color:var(--rd)}
 /* TABLE */
 .tcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
 .thead-bar{padding:12px 18px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .thead-bar small{font-size:11px;color:var(--t2);font-weight:400;font-family:'Inter',sans-serif}
 .tscroll{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}
-th{text-align:left;font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;padding:0;border-bottom:1px solid var(--bd);white-space:nowrap;cursor:default;user-select:none;transition:color .15s}
+th{text-align:left;font-size:9px;font-weight:600;color:#b0c8e8;text-transform:uppercase;padding:0;border-bottom:1px solid var(--bd);white-space:nowrap;cursor:default;user-select:none;transition:color .15s;background:#0d1f35}
+.tscroll::-webkit-scrollbar{height:4px}.tscroll::-webkit-scrollbar-track{background:var(--bg2)}.tscroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
 th[data-col]{cursor:pointer}
 th[data-col]:hover .th-label,th[data-col]:hover .th-plain{color:var(--t2)}
 th.sort-asc .th-label::after,th.sort-asc .th-plain::after{content:" ▲";font-size:8px;color:var(--rd)}
@@ -113,6 +142,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .cal-day.cal-today{color:var(--bl);font-weight:700}
 .cal-day.cal-today::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--bl);border-radius:50%}
 .cal-day.cal-sel{background:var(--rd);color:#fff;font-weight:700;border-radius:5px}
+.cal-day.cal-range{background:rgba(255,68,102,.2);color:var(--tx);border-radius:3px}
 .cal-day.cal-has{font-weight:600;color:var(--tx)}
 .cal-day.cal-has.cal-today{color:var(--bl)}
 .cal-clear{margin-top:8px;width:100%;padding:4px;border:1px solid var(--bd);border-radius:5px;background:transparent;color:var(--t3);font-size:10px;cursor:pointer;transition:all .15s;text-align:center}
@@ -205,8 +235,11 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <button class="pb pb-periodo on" onclick="setPeriod('hoje',this)">Hoje</button>
             <button class="pb pb-periodo" onclick="setPeriod('ontem',this)">Ontem</button>
             <button class="pb pb-periodo" onclick="setPeriod('semana',this)">Semana</button>
+            <button class="pb pb-periodo" onclick="setPeriod('semana_passada',this)">Sem. Passada</button>
             <button class="pb pb-periodo" onclick="setPeriod('mes',this)">Mês</button>
+            <button class="pb pb-periodo" onclick="setPeriod('mes_passado',this)">Mês Passado</button>
             <button class="pb pb-periodo" onclick="setPeriod('ano',this)">Ano</button>
+            <button class="rel-btn-m" style="margin-left:auto" onclick="abrirRelatorioAdmin()">📋 Visualizar PDF</button>
             <button class="export-btn" onclick="exportExcel()">📊 Exportar Excel</button>
           </div>
 
@@ -267,14 +300,35 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
         </div><!-- /coluna esquerda -->
 
         <!-- Coluna direita: Calendário -->
-        <div class="cal-wrap" id="cal-wrap" style="flex-shrink:0">
+        <div class="cal-wrap" id="cal-wrap" style="flex-shrink:0;min-width:260px">
           <div class="cal-nav">
             <button onclick="calMove(-1)">‹</button>
             <span class="cal-month" id="cal-title"></span>
             <button onclick="calMove(1)">›</button>
           </div>
           <div class="cal-grid" id="cal-grid"></div>
-          <button class="cal-clear" id="cal-clear" onclick="calClear()" style="display:none">✕ Limpar data selecionada</button>
+          <!-- Ações rápidas -->
+          <div class="cal-extra-row">
+            <button class="pb" onclick="calHoje()">📍 Hoje</button>
+            <button class="pb" id="cal-clear" onclick="calClear()" style="display:none">✕ Limpar</button>
+          </div>
+          <!-- Semanas -->
+          <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)">
+            <div style="font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Semana do Ano</div>
+            <div id="cal-semanas" style="display:flex;flex-wrap:wrap;gap:2px;max-height:58px;overflow-y:auto"></div>
+          </div>
+          <!-- Meses -->
+          <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)">
+            <div style="font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Mês</div>
+            <div id="cal-meses" style="display:flex;flex-wrap:wrap;gap:2px"></div>
+          </div>
+          <!-- Intervalo de horário -->
+          <div class="cal-hora-row">
+            <span>⏰ De</span>
+            <input type="time" id="cal-h-ini" value="00:00" onchange="render()"/>
+            <span>Até</span>
+            <input type="time" id="cal-h-fim" value="23:59" onchange="render()"/>
+          </div>
         </div>
 
       </div><!-- /layout dois lados -->
@@ -283,27 +337,33 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 
     <!-- TABELA -->
     <div class="tcard">
-      <div class="thead-bar">🔧 Registros <small id="cnt"></small></div>
+      <div class="thead-bar">🔧 Registros
+        <div class="totais-bar">
+          <span class="tot-pill tot-todos" id="tot-todos">Todos (0)</span>
+          <span class="tot-pill tot-proc" id="tot-proc">Em processo (0)</span>
+          <span class="tot-pill tot-conc" id="tot-conc">Concluídos (0)</span>
+        </div>
+      </div>
       <div id="ld"><div class="spin"></div></div>
       <div class="tscroll" id="tbl" style="display:none">
         <table>
           <thead><tr>
-            <th><div class="th-wrap"><div class="th-label">Placa</div><input class="th-input" id="fi-placa" placeholder="filtrar..." oninput="render()"/></div></th>
-            <th><div class="th-wrap"><div class="th-label">AC</div><input class="th-input" id="fi-ac" placeholder="filtrar..." oninput="render()"/></div></th>
-            <th><div class="th-plain">Data</div></th>
-            <th><div class="th-plain">Turno</div></th>
-            <th><div class="th-plain">Tipo Carga</div></th>
-            <th><div class="th-plain">Entrada</div></th>
-            <th><div class="th-plain">Setor Atual</div></th>
-            <th><div class="th-plain">🏛️ Portaria Ini</div></th>
-            <th><div class="th-plain">🏛️ Portaria Fim</div></th>
-            <th><div class="th-plain">📦 Triagem Ini</div></th>
-            <th><div class="th-plain">📦 Triagem Fim</div></th>
-            <th><div class="th-plain">🏗️ Carga Ini</div></th>
-            <th><div class="th-plain">🏗️ Carga Fim</div></th>
-            <th><div class="th-plain">🪢 Enlone Ini</div></th>
-            <th><div class="th-plain">🪢 Enlone Fim</div></th>
-            <th><div class="th-plain">🧾 Saída</div></th>
+            <th data-col="placa" onclick="sortBy('placa')"><div class="th-plain">Placa</div></th>
+            <th data-col="ac" onclick="sortBy('ac')"><div class="th-plain">AC</div></th>
+            <th data-col="data" onclick="sortBy('data')"><div class="th-plain">Data</div></th>
+            <th data-col="turno" onclick="sortBy('turno')"><div class="th-plain">Turno</div></th>
+            <th data-col="tipoCarga" onclick="sortBy('tipoCarga')"><div class="th-plain">Tipo Carga</div></th>
+            <th data-col="entrada" onclick="sortBy('entrada')"><div class="th-plain">Posto1</div></th>
+            <th data-col="setorAtual" onclick="sortBy('setorAtual')"><div class="th-plain">Setor Atual</div></th>
+            <th data-col="ptI" onclick="sortBy('ptI')"><div class="th-plain">🏛️ Portaria Ini</div></th>
+            <th data-col="ptF" onclick="sortBy('ptF')"><div class="th-plain">🏛️ Portaria Fim</div></th>
+            <th data-col="trI" onclick="sortBy('trI')"><div class="th-plain">📦 Triagem Ini</div></th>
+            <th data-col="trF" onclick="sortBy('trF')"><div class="th-plain">📦 Triagem Fim</div></th>
+            <th data-col="caI" onclick="sortBy('caI')"><div class="th-plain">🏗️ Carga Ini</div></th>
+            <th data-col="caF" onclick="sortBy('caF')"><div class="th-plain">🏗️ Carga Fim</div></th>
+            <th data-col="enI" onclick="sortBy('enI')"><div class="th-plain">🪢 Enlone Ini</div></th>
+            <th data-col="enF" onclick="sortBy('enF')"><div class="th-plain">🪢 Enlone Fim</div></th>
+            <th data-col="sa" onclick="sortBy('sa')"><div class="th-plain">🧾 Fatur</div></th>
             <th><div class="th-plain" style="text-align:center">Editar</div></th>
           </tr></thead>
           <tbody id="tbody"></tbody>
@@ -350,6 +410,10 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
         <div class="dfield">
           <label>Data do registro</label>
           <input class="dinput" id="d-data" type="date"/>
+        </div>
+        <div class="dfield">
+          <label>Nota Fiscal</label>
+          <input class="dinput" id="d-nf" type="text" placeholder="Nº da NF"/>
         </div>
         <div class="dfield">
           <label>Setor Atual</label>
@@ -403,6 +467,22 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
   </div>
 </div>
 
+<!-- MODAL PDF ADMIN -->
+<div class="mrel-overlay" id="mrel-overlay">
+  <div class="mrel-box">
+    <div class="mrel-head">
+      <div class="mrel-title">📋 RELATÓRIO ADMIN — APODI CIMENTOS</div>
+      <button class="mrel-close" onclick="document.getElementById('mrel-overlay').classList.remove('show')">✕</button>
+      <div class="mrel-info" id="mrel-info"></div>
+    </div>
+    <div class="mrel-body"><div id="mrel-body"></div></div>
+    <div class="mrel-foot">
+      <button class="mrel-close" style="padding:8px 16px;width:auto" onclick="document.getElementById('mrel-overlay').classList.remove('show')">Fechar</button>
+      <button class="pdf-btn-m" onclick="exportarPDFAdmin()">📄 Exportar PDF</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import{getFirestore,collection,onSnapshot,query,orderBy,updateDoc,deleteDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -423,25 +503,35 @@ function isAdminLogado(){
   return false;
 }
 let logado=isAdminLogado();
-let ALL=[],MP="hoje",MDIA="t",MT="t",MTC="t",MSTATUS="t",SELECTED_ID=null,MDATA=null;
-// calend-rio
-let CAL_Y=0,CAL_M=0;
+let ALL=[],MP="hoje",MDIA="t",MT="t",MTC="t",MSTATUS="t",SELECTED_ID=null,MDATA=null,MDATA_FIM=null;
+let SORT_COL=null,SORT_DIR=-1;
+let CAL_SHIFT_START=null;
+// calendário
+let CAL_Y=0,CAL_M=0,CAL_SEL_SEMANA=null,CAL_SEL_MES=null;
 function calInit(){
   const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   CAL_Y=tz.getFullYear();CAL_M=tz.getMonth();
-  calRender();
+  calRender();calRenderExtras();
 }
 window.calMove=dir=>{CAL_M+=dir;if(CAL_M>11){CAL_M=0;CAL_Y++;}else if(CAL_M<0){CAL_M=11;CAL_Y--;}calRender();};
-window.calClear=()=>{MDATA=null;calRender();document.getElementById("cal-clear").style.display="none";render();};
+window.calClear=()=>{MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;CAL_SHIFT_START=null;calRender();calRenderExtras();document.getElementById("cal-clear").style.display="none";render();};
+window.calHoje=()=>{
+  const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  const pad=n=>String(n).padStart(2,"0");
+  MDATA=CAL_Y+"-"+pad(CAL_M+1)+"-"+pad(tz.getDate());
+  MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;CAL_SHIFT_START=null;
+  CAL_Y=tz.getFullYear();CAL_M=tz.getMonth();
+  MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
+  document.getElementById("cal-clear").style.display="block";
+  calRender();calRenderExtras();render();
+};
 function calRender(){
   const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
   const DOWS=["D","S","T","Q","Q","S","S"];
-  document.getElementById("cal-title").textContent=`${MESES[CAL_M]} ${CAL_Y}`;
-  // datas com dados no m-s
+  document.getElementById("cal-title").textContent=MESES[CAL_M]+" "+CAL_Y;
   const pad=n=>String(n).padStart(2,"0");
-  const prefix=`${CAL_Y}-${pad(CAL_M+1)}-`;
+  const prefix=CAL_Y+"-"+pad(CAL_M+1)+"-";
   const comDados=new Set(ALL.filter(c=>c.data&&c.data.startsWith(prefix)).map(c=>parseInt(c.data.split("-")[2])));
-  // hoje em Fortaleza
   const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   const todayY=tz.getFullYear(),todayM=tz.getMonth(),todayD=tz.getDate();
   const firstDow=new Date(CAL_Y,CAL_M,1).getDay();
@@ -449,29 +539,120 @@ function calRender(){
   const selD=MDATA?parseInt(MDATA.split("-")[2]):null;
   const selY=MDATA?parseInt(MDATA.split("-")[0]):null;
   const selM=MDATA?parseInt(MDATA.split("-")[1])-1:null;
-  let html=DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join("");
-  for(let i=0;i<firstDow;i++)html+=`<div class="cal-day cal-empty"></div>`;
+  const selFD=MDATA_FIM?parseInt(MDATA_FIM.split("-")[2]):null;
+  const selFY=MDATA_FIM?parseInt(MDATA_FIM.split("-")[0]):null;
+  const selFM=MDATA_FIM?parseInt(MDATA_FIM.split("-")[1])-1:null;
+  let html="";
+  DOWS.forEach(d=>{html+="<div class=\"cal-dow\">"+d+"</div>";});
+  for(let i=0;i<firstDow;i++)html+="<div class=\"cal-day cal-empty\"></div>";
   for(let d=1;d<=daysInMonth;d++){
     const isToday=d===todayD&&CAL_M===todayM&&CAL_Y===todayY;
-    const isSel=d===selD&&CAL_M===selM&&CAL_Y===selY;
+    const isSel=(d===selD&&CAL_M===selM&&CAL_Y===selY)||(d===selFD&&CAL_M===selFM&&CAL_Y===selFY);
+    const isRange=MDATA&&MDATA_FIM&&(()=>{
+      const cur=new Date(CAL_Y,CAL_M,d);
+      const s=new Date(MDATA);const e=new Date(MDATA_FIM);
+      return cur>s&&cur<e;
+    })();
     const hasData=comDados.has(d);
     let cls="cal-day";
     if(isToday)cls+=" cal-today";
     if(isSel)cls+=" cal-sel";
-    if(hasData&&!isSel)cls+=" cal-has";
-    html+=`<div class="${cls}" onclick="calSelect(${d})">${d}</div>`;
+    else if(isRange)cls+=" cal-range";
+    if(hasData&&!isSel&&!isRange)cls+=" cal-has";
+    html+="<div class=\""+cls+"\" onclick=\"calSelect("+d+",event)\">"+d+"</div>";
   }
   document.getElementById("cal-grid").innerHTML=html;
 }
-window.calSelect=d=>{
+function calRenderExtras(){
+  // Semanas 1-53
+  const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  const ano=CAL_Y||tz.getFullYear();
+  const getWeekNum=d=>{const j1=new Date(d.getFullYear(),0,1);return Math.ceil(((d-j1)/86400000+j1.getDay()+1)/7);};
+  const totalSem=getWeekNum(new Date(ano,11,31));
+  let semHtml="";
+  for(let w=1;w<=totalSem;w++){
+    const ativo=CAL_SEL_SEMANA===w?"background:var(--rd);color:#fff;border-color:var(--rd)":"";
+    semHtml+="<button class=\"pb\" style=\"font-size:8px;padding:2px 5px;min-width:24px;"+ativo+"\" onclick=\"calSemana("+w+")\">"+w+"</button>";
+  }
+  document.getElementById("cal-semanas").innerHTML=semHtml;
+  // Meses 1-12
+  const MABREV=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  let mesHtml="";
+  for(let m=0;m<12;m++){
+    const ativo=CAL_SEL_MES===m?"background:var(--rd);color:#fff;border-color:var(--rd)":"";
+    mesHtml+="<button class=\"pb\" style=\"font-size:9px;padding:2px 7px;"+ativo+"\" onclick=\"calMes("+m+")\">"+MABREV[m]+"</button>";
+  }
+  document.getElementById("cal-meses").innerHTML=mesHtml;
+}
+window.calSemana=w=>{
+  const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  const ano=CAL_Y||tz.getFullYear();
+  // primeiro dia da semana w no ano
+  const j1=new Date(ano,0,1);
+  const diaInicio=new Date(j1.getTime()+(w-1)*7*86400000-(j1.getDay())*86400000);
+  const diaFim=new Date(diaInicio.getTime()+6*86400000);
   const pad=n=>String(n).padStart(2,"0");
-  MDATA=`${CAL_Y}-${pad(CAL_M+1)}-${pad(d)}`;
-  // quando seleciona data espec-fica, reseta o filtro de per-odo para n-o conflitar
+  const fmt=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  MDATA=fmt(diaInicio);MDATA_FIM=fmt(diaFim);
+  CAL_SEL_SEMANA=w;CAL_SEL_MES=null;
   MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
-  calRender();
   document.getElementById("cal-clear").style.display="block";
+  calRender();calRenderExtras();render();
+};
+window.calMes=m=>{
+  const pad=n=>String(n).padStart(2,"0");
+  const ano=CAL_Y;
+  const ultimo=new Date(ano,m+1,0).getDate();
+  MDATA=ano+"-"+pad(m+1)+"-01";MDATA_FIM=ano+"-"+pad(m+1)+"-"+pad(ultimo);
+  CAL_SEL_MES=m;CAL_SEL_SEMANA=null;
+  MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
+  document.getElementById("cal-clear").style.display="block";
+  calRender();calRenderExtras();render();
+};
+window.calSelect=(d,evt)=>{
+  const pad=n=>String(n).padStart(2,"0");
+  const dateStr=CAL_Y+"-"+pad(CAL_M+1)+"-"+pad(d);
+  if(evt&&evt.shiftKey&&CAL_SHIFT_START){
+    // Seleção de intervalo
+    const a=CAL_SHIFT_START<dateStr?CAL_SHIFT_START:dateStr;
+    const b=CAL_SHIFT_START<dateStr?dateStr:CAL_SHIFT_START;
+    MDATA=a;MDATA_FIM=b;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;
+  }else{
+    MDATA=dateStr;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;
+    CAL_SHIFT_START=dateStr;
+  }
+  MP="ano";document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));
+  document.getElementById("cal-clear").style.display="block";
+  calRender();render();
+};
+// Ordenação
+window.sortBy=col=>{
+  if(SORT_COL===col){SORT_DIR*=-1;}else{SORT_COL=col;SORT_DIR=-1;}
+  document.querySelectorAll("th[data-col]").forEach(th=>{
+    th.classList.remove("sort-asc","sort-desc");
+    if(th.dataset.col===SORT_COL)th.classList.add(SORT_DIR===-1?"sort-desc":"sort-asc");
+  });
   render();
 };
+function getSortVal(c,col){
+  if(col==="placa")return c.placa||"";
+  if(col==="ac")return c.ac||"";
+  if(col==="data")return c.data||"";
+  if(col==="turno")return getTurno(getTS(c,"entrada","ts"))||"";
+  if(col==="tipoCarga")return c.tipoCarga||"";
+  if(col==="setorAtual")return c.setorAtual||"";
+  if(col==="entrada")return(getTS(c,"entrada","ts")||new Date(0)).getTime();
+  if(col==="ptI")return(getTS(c,"portaria","inicio")||new Date(0)).getTime();
+  if(col==="ptF")return(getTS(c,"portaria","fim")||new Date(0)).getTime();
+  if(col==="trI")return(getTS(c,"triagem","inicio")||new Date(0)).getTime();
+  if(col==="trF")return(getTS(c,"triagem","fim")||new Date(0)).getTime();
+  if(col==="caI")return(getTS(c,"carregamento","inicio")||new Date(0)).getTime();
+  if(col==="caF")return(getTS(c,"carregamento","fim")||new Date(0)).getTime();
+  if(col==="enI")return(getTS(c,"enlonamento","inicio")||new Date(0)).getTime();
+  if(col==="enF")return(getTS(c,"enlonamento","fim")||new Date(0)).getTime();
+  if(col==="sa")return(getTS(c,"faturamento","ts")||new Date(0)).getTime();
+  return"";
+}
 
 // -- helpers ----------------------------------------------------------------
 function periodDates(p){
@@ -482,7 +663,17 @@ function periodDates(p){
   if(p==="hoje")return{s:fmt(tz),e:fmt(tz)};
   if(p==="ontem"){const y=new Date(tz);y.setDate(tz.getDate()-1);return{s:fmt(y),e:fmt(y)};}
   if(p==="semana"){const d=new Date(tz);d.setDate(tz.getDate()-tz.getDay());return{s:fmt(d),e:fmt(tz)};}
+  if(p==="semana_passada"){
+    const fim=new Date(tz);fim.setDate(tz.getDate()-tz.getDay()-1);
+    const ini=new Date(fim);ini.setDate(fim.getDate()-6);
+    return{s:fmt(ini),e:fmt(fim)};
+  }
   if(p==="mes"){const s=new Date(tz.getFullYear(),tz.getMonth(),1);return{s:fmt(s),e:fmt(tz)};}
+  if(p==="mes_passado"){
+    const s=new Date(tz.getFullYear(),tz.getMonth()-1,1);
+    const e=new Date(tz.getFullYear(),tz.getMonth(),0);
+    return{s:fmt(s),e:fmt(e)};
+  }
   if(p==="ano"){const s=new Date(tz.getFullYear(),0,1);return{s:fmt(s),e:fmt(tz)};}
   return{s:fmt(tz),e:fmt(tz)};
 }
@@ -532,8 +723,25 @@ function cellT(d){return d?`<span class="d">${fmtT(d)}</span>`:`<span class="w">
 // -- filtros ----------------------------------------------------------------
 function getFiltered(){
   const{s,e}=periodDates(MP);
-  // Se data espec-fica selecionada no calend-rio, usa ela; sen-o usa per-odo
-  let list=MDATA?ALL.filter(c=>c.data===MDATA):ALL.filter(c=>c.data>=s&&c.data<=e);
+  // Filtro de data: data específica, intervalo (shift+click ou semana/mês) ou período
+  let list;
+  if(MDATA&&MDATA_FIM){
+    list=ALL.filter(c=>c.data>=MDATA&&c.data<=MDATA_FIM);
+  }else if(MDATA){
+    list=ALL.filter(c=>c.data===MDATA);
+  }else{
+    list=ALL.filter(c=>c.data>=s&&c.data<=e);
+  }
+  // Filtro de horário
+  const hIni=document.getElementById("cal-h-ini")?.value||"00:00";
+  const hFim=document.getElementById("cal-h-fim")?.value||"23:59";
+  if(hIni!=="00:00"||hFim!=="23:59"){
+    list=list.filter(c=>{
+      const en=getTS(c,"entrada","ts");if(!en)return true;
+      const hh=en.getHours().toString().padStart(2,"0")+":"+en.getMinutes().toString().padStart(2,"0");
+      return hh>=hIni&&hh<=hFim;
+    });
+  }
   // Dia da semana
   if(MDIA!=="t")list=list.filter(c=>String(getDiaSemana(c))===MDIA);
   // Turno
@@ -543,24 +751,35 @@ function getFiltered(){
   // Status
   if(MSTATUS==="a")list=list.filter(c=>c.setorAtual!=="concluido");
   if(MSTATUS==="c")list=list.filter(c=>c.setorAtual==="concluido");
-  // Setor espec-fico
+  // Setor específico
   const setor=document.getElementById("f-setor-filter")?.value||"";
   if(setor)list=list.filter(c=>c.setorAtual===setor);
   // Busca global
   const q=(document.getElementById("q-global")?.value||"").toUpperCase();
-  if(q)list=list.filter(c=>c.placa?.includes(q)||c.ac?.includes(q));
-  // Filtros inline por coluna
-  const fp=(document.getElementById("fi-placa")?.value||"").toUpperCase();
-  if(fp)list=list.filter(c=>c.placa?.includes(fp));
-  const fac=(document.getElementById("fi-ac")?.value||"").toUpperCase();
-  if(fac)list=list.filter(c=>c.ac?.toUpperCase().includes(fac));
+  if(q)list=list.filter(c=>c.placa?.includes(q)||c.ac?.includes(q)||c.notaFiscal?.toUpperCase().includes(q));
   return list;
 }
 
 window.render=()=>{
-  const list=getFiltered();
+  let list=getFiltered();
+  // Aplicar sort
+  if(SORT_COL){
+    list=[...list].sort((a,b)=>{
+      const av=getSortVal(a,SORT_COL),bv=getSortVal(b,SORT_COL);
+      return av<bv?SORT_DIR:av>bv?-SORT_DIR:0;
+    });
+  }
   const tb=document.getElementById("tbody"),em=document.getElementById("emp");
-  document.getElementById("cnt").textContent=list.length+" registro"+(list.length!==1?"s":"");
+  // Totais
+  const total=list.length;
+  const proc=list.filter(c=>c.setorAtual!=="concluido").length;
+  const conc=list.filter(c=>c.setorAtual==="concluido").length;
+  const totTodos=document.getElementById("tot-todos");
+  const totProc=document.getElementById("tot-proc");
+  const totConc=document.getElementById("tot-conc");
+  if(totTodos)totTodos.textContent="Todos ("+total+")";
+  if(totProc)totProc.textContent="Em processo ("+proc+")";
+  if(totConc)totConc.textContent="Concluídos ("+conc+")";
   if(!list.length){tb.innerHTML="";em.style.display="block";return;}
   em.style.display="none";
   tb.innerHTML=list.map(c=>{
@@ -607,6 +826,7 @@ window.openDrawer=id=>{
   document.getElementById("d-setor-pill").innerHTML=pill(c.setorAtual);
   document.getElementById("d-placa").value=c.placa||"";
   document.getElementById("d-ac").value=c.ac||"";
+  document.getElementById("d-nf").value=c.notaFiscal||"";
   document.getElementById("d-tipo").value=c.tipoCarga||"";
   document.getElementById("d-cimento").value=c.tipoCimento||"";
   document.getElementById("d-data").value=c.data||"";
@@ -650,6 +870,7 @@ window.salvar=async()=>{
     const u={
       placa:(document.getElementById("d-placa").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""),
       ac:document.getElementById("d-ac").value.trim().toUpperCase(),
+      notaFiscal:document.getElementById("d-nf").value.trim(),
       tipoCarga:tipo,tipoCargaLabel:tipoMap[tipo]||"",
       tipoCimento:cimento,tipoCimentoLabel:cimMap[cimento]||"",
       setorAtual:document.getElementById("d-setor").value,
@@ -727,7 +948,7 @@ window.exportExcel=()=>{
 };
 
 // -- setters de filtro ------------------------------------------------------
-window.setPeriod=(p,el)=>{MP=p;MDATA=null;document.getElementById("cal-clear").style.display="none";calRender();document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL_SEL_MES=null;document.getElementById("cal-clear").style.display="none";calRender();calRenderExtras();document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setDia=(d,el)=>{MDIA=d;document.querySelectorAll(".pb-dia").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll("[class*='pb-turno']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setCarga=(t,el)=>{MTC=t;document.querySelectorAll("[class*='pb-carga']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
@@ -763,7 +984,7 @@ function iniciar(){
     ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
     document.getElementById("ld").style.display="none";
     document.getElementById("tbl").style.display="block";
-    calRender(); // atualiza pontos de dados no calend-rio
+    calRender();calRenderExtras();
     render();
     if(SELECTED_ID){const still=ALL.find(x=>x.id===SELECTED_ID);if(still)openDrawer(SELECTED_ID);}
   });
@@ -777,5 +998,108 @@ if(logado){
   document.getElementById("login-screen").style.display="flex";
   document.getElementById("app-screen").style.display="none";
 }
+// -- PDF Admin ---------------------------------------------------------------
+function buildPeriodoLabel(){
+  if(MDATA&&MDATA_FIM)return MDATA+" a "+MDATA_FIM;
+  if(MDATA)return MDATA;
+  const{s,e}=periodDates(MP);
+  return s===e?s:s+" a "+e;
+}
+window.abrirRelatorioAdmin=()=>{
+  const list=getFiltered();
+  const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const per=buildPeriodoLabel();
+  document.getElementById("mrel-info").innerHTML=
+    "Período: <b>"+per+"</b> &nbsp;· Total: <b>"+list.length+" veículo"+(list.length!==1?"s":"")+"</b> &nbsp;· Gerado: <b>"+dtNow+"</b>";
+  if(!list.length){
+    document.getElementById("mrel-body").innerHTML="<div style='text-align:center;padding:32px;color:var(--t3)'>Nenhum registro com os filtros selecionados.</div>";
+  }else{
+    let rows="";
+    list.forEach(c=>{
+      const en=getTS(c,"entrada","ts");
+      const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
+      const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
+      const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
+      const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
+      const sa=getTS(c,"faturamento","ts");
+      rows+="<tr>";
+      rows+="<td style='text-align:left;font-weight:bold;color:var(--bl);font-family:monospace'>"+( c.placa||"")+"</td>";
+      rows+="<td>"+(c.ac||"")+"</td>";
+      rows+="<td>"+(c.notaFiscal||"")+"</td>";
+      rows+="<td>"+(c.data||"")+"</td>";
+      rows+="<td>"+(c.tipoCarga||"")+"</td>";
+      rows+="<td>"+cellT(en)+"</td>";
+      rows+="<td>"+cellT(ptI)+"</td><td>"+cellT(ptF)+"</td>";
+      rows+="<td>"+cellT(trI)+"</td><td>"+cellT(trF)+"</td>";
+      rows+="<td>"+cellT(caI)+"</td><td>"+cellT(caF)+"</td>";
+      rows+="<td>"+cellT(enI)+"</td><td>"+cellT(enF)+"</td>";
+      rows+="<td>"+cellT(sa)+"</td>";
+      rows+="<td>"+pill(c.setorAtual)+"</td>";
+      rows+="</tr>";
+    });
+    document.getElementById("mrel-body").innerHTML=
+      "<table class='mrel-table'><thead><tr>"+
+      "<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>"+
+      "<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>"+
+      "<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>"+
+      "<th>Fatur.</th><th>Setor</th>"+
+      "</tr></thead><tbody>"+rows+"</tbody></table>";
+  }
+  document.getElementById("mrel-overlay").classList.add("show");
+};
+window.exportarPDFAdmin=()=>{
+  const list=getFiltered();
+  const per=buildPeriodoLabel();
+  const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const hora=new Date().toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
+  const fmtRel=d=>d?d.toLocaleString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit"}):"";
+  const td=(v,ex)=>"<td style='padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;"+(ex||"")+"'>"+(v||"")+"</td>";
+  const linhas=list.map((c,i)=>{
+    const en=getTS(c,"entrada","ts");
+    const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
+    const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
+    const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
+    const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
+    const sa=getTS(c,"faturamento","ts");
+    const bg=i%2===1?"#f5f8ff":"#fff";
+    return "<tr style='background:"+bg+"'>"+
+      td(c.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")+
+      td(c.ac)+td(c.notaFiscal||"")+td(c.data)+
+      td(({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||""),"font-size:7pt")+
+      td(fmtRel(en))+td(fmtRel(ptI))+td(fmtRel(ptF))+
+      td(fmtRel(trI))+td(fmtRel(trF))+
+      td(fmtRel(caI))+td(fmtRel(caF))+
+      td(fmtRel(enI))+td(fmtRel(enF))+
+      td(fmtRel(sa))+
+      td((c.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")+
+      "</tr>";
+  }).join("");
+  const partes=[];
+  partes.push("<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>Admin - "+dtNow+"</title>");
+  partes.push("<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}");
+  partes.push("h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}");
+  partes.push(".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}");
+  partes.push("table{border-collapse:collapse;width:100%}");
+  partes.push("th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}");
+  partes.push(".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}");
+  partes.push("@page{margin:.8cm;size:A4 landscape}</style></head><body>");
+  partes.push("<h2>Relatório Admin — Apodi Cimentos</h2>");
+  partes.push("<div class='info'>Período: <b>"+per+"</b> &nbsp;· Total: <b>"+list.length+" veículo"+(list.length!==1?"s":"")+"</b> &nbsp;· Gerado em: <b>"+dtNow+" às "+hora+"</b></div>");
+  partes.push("<table><thead><tr>");
+  partes.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>");
+  partes.push("<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
+  partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th><th>Fatur.</th><th>Setor</th>");
+  partes.push("</tr></thead><tbody>");
+  partes.push(linhas||"<tr><td colspan='16' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes.push("</tbody></table>");
+  partes.push("<div class='footer'>Sistema Admin — Apodi Cimentos — "+dtNow+"</div>");
+  partes.push("<scr"+"ipt>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
+  partes.push("</body></html>");
+  const blob=new Blob([partes.join("")],{type:"text/html;charset=utf-8"});
+  const blobUrl=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=blobUrl;a.target="_blank";a.rel="noopener noreferrer";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
+};
 </script>
-</body></html>
