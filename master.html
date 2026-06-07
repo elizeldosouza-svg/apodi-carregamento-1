@@ -222,8 +222,8 @@ tr.alerta .turno{opacity:.7}
     <div class="st s6"><div class="sv" id="s6">—</div><div class="sl">TMAC Geral</div></div>
     <div class="st s7"><div class="sv" id="s7">—</div><div class="sl">TME · Espera</div></div>
     <div class="st s8"><div class="sv" id="s8">—</div><div class="sl">TMC · Carga</div></div>
-    <div class="st s9"><div class="sv" id="s9">—</div><div class="sl">TMP · Portaria</div></div>
-    <div class="st s10"><div class="sv" id="s10">—</div><div class="sl">TMF · Fila</div></div>
+    <div class="st s9"><div class="sv" id="s9">—</div><div class="sl">TMF · Fila</div></div>
+    <div class="st s10"><div class="sv" id="s10">—</div><div class="sl">TMP · Portaria</div></div>
   </div>
 
   <div class="filter-row">
@@ -266,8 +266,10 @@ tr.alerta .turno{opacity:.7}
       <span class="deate-label">Até</span>
       <input class="deate-input" type="time" id="hora-ate" value="" onchange="render()">
     </div>
-    <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
-    <button class="rel-btn-m" onclick="abrirRelatorioMaster()">👁️ <span>Visualizar PDF</span></button>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
+      <button class="rel-btn-m" onclick="abrirRelatorioMaster()">👁️ <span>Visualizar PDF</span></button>
+    </div>
   </div>
 
   <div class="filter-row">
@@ -818,17 +820,17 @@ window.render=()=>{
   }).filter(v=>v!=null);
   document.getElementById("s8").textContent=tmcVals.length?durStr(tmcVals.reduce((a,b)=>a+b,0)/tmcVals.length):"—";
 
-  const tmpVals=period.map(c=>{
-    const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
-    return(ptI&&ptF)?ptF-ptI:null;
-  }).filter(v=>v!=null);
-  document.getElementById("s9").textContent=tmpVals.length?durStr(tmpVals.reduce((a,b)=>a+b,0)/tmpVals.length):"—";
-
   const tmfVals=concluidos.map(c=>{
     const enF=getTS(c,"enlonamento","fim"),sa=getTS(c,"faturamento","ts");
     return(enF&&sa)?sa-enF:null;
   }).filter(v=>v!=null);
-  document.getElementById("s10").textContent=tmfVals.length?durStr(tmfVals.reduce((a,b)=>a+b,0)/tmfVals.length):"—";
+  document.getElementById("s9").textContent=tmfVals.length?durStr(tmfVals.reduce((a,b)=>a+b,0)/tmfVals.length):"—";
+
+  const tmpVals=period.map(c=>{
+    const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
+    return(ptI&&ptF)?ptF-ptI:null;
+  }).filter(v=>v!=null);
+  document.getElementById("s10").textContent=tmpVals.length?durStr(tmpVals.reduce((a,b)=>a+b,0)/tmpVals.length):"—";
 
   const list=getFiltered();
   document.getElementById("cnt").textContent=list.length+" "+(list.length===1?"veículo":"veículos");
