@@ -51,6 +51,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .ttb-cp3.on{border-color:#ffd000;color:#ffd000;background:rgba(255,208,0,.10)}
 .ttb-cp5.on{border-color:#ffd000;color:#ffd000;background:rgba(255,208,0,.10)}
 .ttb-cim-todos.on{border-color:#ffd000;color:#ffd000;background:rgba(255,208,0,.07)}
+.tmpo-btn{padding:6px 0;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.3px;min-width:110px;text-align:center}
+.tmpo-btn:hover:not(.on){border-color:var(--t2);color:var(--tx)}
+.tmpo-todos.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.tmpo-tmac.on{border-color:var(--tm);color:var(--tm);background:rgba(255,159,67,.10)}
+.tmpo-tme.on{border-color:#38bdf8;color:#38bdf8;background:rgba(56,189,248,.10)}
+.tmpo-tmc.on{border-color:#34d399;color:#34d399;background:rgba(52,211,153,.10)}
+.tmpo-tmf.on{border-color:#f472b6;color:#f472b6;background:rgba(244,114,182,.10)}
+.tmpo-tmp.on{border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.10)}
 .cim-pill{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle;font-family:monospace;letter-spacing:.3px;background:rgba(255,208,0,.12);color:#ffd000;border:1px solid rgba(255,208,0,.3)}
 .export-btn{margin-left:auto;padding:7px 16px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .rel-btn-m{padding:7px 16px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:5px;white-space:nowrap}
@@ -67,7 +75,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .mrel-close{width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:13px}
 .mrel-close:hover{border-color:var(--rd);color:var(--rd)}
 .mrel-table{width:100%;border-collapse:collapse;font-size:9px}
-.mrel-table th{text-align:center;padding:6px 5px;font-size:8px;font-weight:700;color:#fff;background:#003366;text-transform:uppercase;letter-spacing:.4px;border:1px solid #1e3a58;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}
+.mrel-table th{text-align:center;padding:6px 5px;font-size:8px;font-weight:700;color:#b0c8e8;background:#0d1f35;text-transform:uppercase;letter-spacing:.4px;border:1px solid #1e3a58;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}
 .mrel-table td{padding:5px 6px;border:1px solid var(--bd);vertical-align:middle;font-size:9px;color:var(--tx);text-align:center}
 .mrel-table tr:nth-child(even) td{background:rgba(0,212,255,.03)}
 .pdf-btn-m{padding:9px 20px;border:none;border-radius:8px;background:var(--bl);color:#000;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;text-transform:uppercase}
@@ -82,7 +90,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .tscroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
 .tscroll::-webkit-scrollbar-thumb:hover{background:var(--bl)}
 table{width:100%;border-collapse:collapse;font-size:10px;table-layout:auto}
-th{text-align:center;font-size:8px;font-weight:700;color:var(--t3);text-transform:uppercase;padding:6px 5px;border-bottom:1px solid var(--bd);white-space:normal;word-break:break-word;line-height:1.3;cursor:pointer;user-select:none;transition:color .15s;vertical-align:bottom;position:sticky;top:0;background:var(--bg2);z-index:10}
+th{text-align:center;font-size:8px;font-weight:700;color:#b0c8e8;text-transform:uppercase;padding:6px 5px;border-bottom:1px solid var(--bd);white-space:normal;word-break:break-word;line-height:1.3;cursor:pointer;user-select:none;transition:color .15s;vertical-align:bottom;position:sticky;top:0;background:#0d1f35;z-index:10}
 th:hover{color:var(--t2)}
 th.sort-asc,th.sort-desc{color:var(--bl)}
 th.sort-asc::after{content:" ▲";font-size:8px}
@@ -150,9 +158,18 @@ tr.alerta .turno{opacity:.7}
 @media(max-width:768px){.tcard{display:none}.cards{display:flex}.stats{grid-template-columns:repeat(4,1fr)}.export-btn span{display:none}}
 
 /* ══ CALENDÁRIO MASTER ══ */
-.cal-popup{position:absolute;right:0;top:100%;margin-top:6px;z-index:500;display:none}
+.cal-popup{position:absolute;left:0;top:100%;margin-top:6px;z-index:500;display:none}
 .cal-popup.show{display:block}
-.cal-wrap-m{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;min-width:228px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.cal-wrap-m{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:flex;gap:12px}
+.cal-main-col{flex:1;min-width:200px}
+.cal-side-col{width:108px;display:flex;flex-direction:column;gap:6px;border-left:1px solid var(--bd);padding-left:10px}
+.cal-side-label{font-size:8px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.cal-side-scroll{max-height:180px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--b2) transparent;display:flex;flex-direction:column;gap:2px}
+.cal-side-btn{padding:3px 6px;border:1px solid var(--bd);border-radius:5px;background:transparent;color:var(--t2);font-size:10px;cursor:pointer;transition:all .12s;text-align:left;white-space:nowrap}
+.cal-side-btn:hover{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.cal-side-btn.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.12)}
+.cal-today-btn{width:100%;padding:5px;border:1px solid var(--gr);border-radius:6px;background:rgba(0,232,150,.07);color:var(--gr);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center;margin-bottom:4px}
+.cal-today-btn:hover{background:rgba(0,232,150,.15)}
 .cal-nav-m{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .cal-nav-m button{width:26px;height:26px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .cal-nav-m button:hover{border-color:var(--bl);color:var(--bl)}
@@ -160,19 +177,28 @@ tr.alerta .turno{opacity:.7}
 .cal-grid-m{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .cal-dow-m{text-align:center;font-size:8px;font-weight:700;color:var(--t3);padding:2px 0;text-transform:uppercase}
 .cal-day-m{text-align:center;font-size:11px;padding:5px 2px;border-radius:5px;cursor:pointer;color:var(--t2);transition:all .12s;user-select:none;position:relative}
-.cal-day-m:hover:not(.cal-empty-m):not(.cal-today-m):not(.cal-sel-m){background:var(--bg4);color:var(--tx)}
+.cal-day-m:hover:not(.cal-empty-m){background:var(--bg4);color:var(--tx)}
 .cal-day-m.cal-empty-m{cursor:default}
 .cal-day-m.cal-today-m{color:var(--bl);font-weight:700}
 .cal-day-m.cal-today-m::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--bl);border-radius:50%}
-.cal-day-m.cal-sel-m{background:var(--bl);color:var(--bg);font-weight:700}
+.cal-day-m.cal-sel-m{background:var(--bl);color:var(--bg);font-weight:700;border-radius:0}
+.cal-day-m.cal-sel-ini{border-radius:5px 0 0 5px;background:var(--bl);color:var(--bg);font-weight:700}
+.cal-day-m.cal-sel-fim{border-radius:0 5px 5px 0;background:var(--bl);color:var(--bg);font-weight:700}
+.cal-day-m.cal-in-range{background:rgba(0,212,255,.15);color:var(--tx)}
 .cal-day-m.cal-has-m{font-weight:600;color:var(--tx)}
 .cal-day-m.cal-has-m.cal-today-m{color:var(--bl)}
 .cal-clear-m{margin-top:8px;width:100%;padding:5px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t3);font-size:10px;cursor:pointer;transition:all .15s;text-align:center}
-.cal-clear-m:hover{border-color:var(--bl);color:var(--bl)}
+.cal-clear-m:hover{border-color:var(--rd);color:var(--rd)}
 .cal-toggle{position:relative}
 .cal-btn{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .cal-btn:hover{border-color:var(--bl);color:var(--bl)}
-.cal-btn.has-date{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.08)}
+.cal-btn.has-date{border-color:var(--rd);color:var(--rd);background:rgba(255,68,102,.08)}
+/* De/Até time inputs */
+.deate-wrap{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.deate-label{font-size:10px;color:var(--t2);font-weight:600}
+.deate-input{background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--tx);padding:4px 8px;font-size:11px;font-family:'Inter',sans-serif;outline:none;width:76px}
+.deate-input:focus{border-color:var(--bl)}
+.deate-sep{color:var(--t3);font-size:11px}
 </style>
 </head>
 <body>
@@ -184,20 +210,6 @@ tr.alerta .turno{opacity:.7}
   <a href="/portaria" style="padding:6px 14px;border:1px solid rgba(0,212,255,.4);border-radius:20px;background:rgba(0,212,255,.07);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.15)'" onmouseout="this.style.background='rgba(0,212,255,.07)'">🏛️ Portaria</a>
   <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,232,150,.15)'" onmouseout="this.style.background='rgba(0,232,150,.07)'">🏭 Pátio</a>
   <a href="/admin" style="padding:6px 14px;border:1px solid rgba(255,68,102,.5);border-radius:20px;background:rgba(255,68,102,.1);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.2)'" onmouseout="this.style.background='rgba(255,68,102,.1)'">🔧 Admin</a>
-  <div class="cal-toggle" id="cal-toggle">
-    <button class="cal-btn" id="cal-btn" onclick="toggleCal()">📅 <span id="cal-btn-txt">Data</span></button>
-    <div class="cal-popup" id="cal-popup">
-      <div class="cal-wrap-m">
-        <div class="cal-nav-m">
-          <button onclick="calMoveM(-1)">‹</button>
-          <span class="cal-month-m" id="cal-title-m"></span>
-          <button onclick="calMoveM(1)">›</button>
-        </div>
-        <div class="cal-grid-m" id="cal-grid-m"></div>
-        <button class="cal-clear-m" id="cal-clear-m" onclick="calClearM()" style="display:none">✕ Limpar data</button>
-      </div>
-    </div>
-  </div>
   <div class="live"><div class="dot"></div>AO VIVO</div>
 </div>
 <div class="wrap">
@@ -223,6 +235,41 @@ tr.alerta .turno{opacity:.7}
     <button class="pb" onclick="setPeriod('semana_passada',this)">Semana Passada</button>
     <button class="pb" onclick="setPeriod('mes_passado',this)">Mês Passado</button>
     <button class="pb" onclick="setPeriod('ano',this)">Esse Ano</button>
+    <!-- Botão calendário com popover -->
+    <div class="cal-toggle" id="cal-toggle" style="position:relative">
+      <button class="cal-btn" id="cal-btn" onclick="toggleCal()">📅 <span id="cal-btn-txt">Data</span> ▾</button>
+      <div class="cal-popup" id="cal-popup">
+        <div class="cal-wrap-m">
+          <!-- Coluna principal: grid de dias -->
+          <div class="cal-main-col">
+            <div class="cal-nav-m">
+              <button onclick="calMoveM(-1)">‹</button>
+              <span class="cal-month-m" id="cal-title-m"></span>
+              <button onclick="calMoveM(1)">›</button>
+            </div>
+            <div class="cal-grid-m" id="cal-grid-m"></div>
+            <button class="cal-today-btn" onclick="calTodayM()">📅 Hoje</button>
+            <button class="cal-clear-m" id="cal-clear-m" onclick="calClearM()" style="display:none">✕ Limpar</button>
+            <div style="font-size:9px;color:var(--t3);margin-top:6px;text-align:center">Shift+Click para intervalo</div>
+          </div>
+          <!-- Coluna lateral: Semanas e Meses -->
+          <div class="cal-side-col">
+            <div class="cal-side-label">Semanas</div>
+            <div class="cal-side-scroll" id="cal-semanas"></div>
+            <div class="cal-side-label" style="margin-top:8px">Meses</div>
+            <div class="cal-side-scroll" id="cal-meses"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Filtro De/Até horário (sempre visível) -->
+    <div class="deate-wrap">
+      <span class="deate-label">⏰ De</span>
+      <input class="deate-input" type="time" id="hora-de" value="" onchange="render()">
+      <span class="deate-sep">→</span>
+      <span class="deate-label">Até</span>
+      <input class="deate-input" type="time" id="hora-ate" value="" onchange="render()">
+    </div>
     <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
     <button class="rel-btn-m" onclick="abrirRelatorioMaster()">👁️ <span>Visualizar PDF</span></button>
   </div>
@@ -248,6 +295,16 @@ tr.alerta .turno{opacity:.7}
     <button class="ttb ttb-cp2f" onclick="setTipoCimento('CP II F',this)">CP II F (<span id="cnt-cp2f">0</span>)</button>
     <button class="ttb ttb-cp3" onclick="setTipoCimento('CP III',this)">CP III (<span id="cnt-cp3">0</span>)</button>
     <button class="ttb ttb-cp5" onclick="setTipoCimento('CP V',this)">CP V (<span id="cnt-cp5">0</span>)</button>
+  </div>
+
+  <div class="filter-row">
+    <span class="row-label">⏱️ Tempo:</span>
+    <button class="tmpo-btn tmpo-todos on" onclick="setTempo('t',this)">Todos (<span id="cnt-tmpo-t">0</span>)</button>
+    <button class="tmpo-btn tmpo-tmac" onclick="setTempo('tmac',this)">TMAC Total (<span id="cnt-tmpo-tmac">0</span>)</button>
+    <button class="tmpo-btn tmpo-tme" onclick="setTempo('tme',this)">TME Espera (<span id="cnt-tmpo-tme">0</span>)</button>
+    <button class="tmpo-btn tmpo-tmc" onclick="setTempo('tmc',this)">TMC Carga (<span id="cnt-tmpo-tmc">0</span>)</button>
+    <button class="tmpo-btn tmpo-tmf" onclick="setTempo('tmf',this)">TMF Fila (<span id="cnt-tmpo-tmf">0</span>)</button>
+    <button class="tmpo-btn tmpo-tmp" onclick="setTempo('tmp',this)">TMP Portaria (<span id="cnt-tmpo-tmp">0</span>)</button>
   </div>
 
   <div class="filter-row" style="margin-bottom:16px">
@@ -438,23 +495,27 @@ document.addEventListener("click",e=>{
   updateSortHeaders();render();
 });
 
-let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t",MDATA=null;
+let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t",MDATA=null,MDATA_FIM=null,CAL_AGUARD_INI=false,MTEMPO="t";
 let CAL_Y_M=0,CAL_M_M=0;
 
 function calInitM(){
   const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   CAL_Y_M=tz.getFullYear();CAL_M_M=tz.getMonth();
+  calBuildSide();
   calRenderM();
 }
 window.toggleCal=()=>{
   const p=document.getElementById("cal-popup");
   p.classList.toggle("show");
-  if(p.classList.contains("show"))calRenderM();
+  if(p.classList.contains("show")){calBuildSide();calRenderM();}
 };
-// Fecha ao clicar fora
+// Fecha ao clicar fora ou Esc
 document.addEventListener("click",e=>{
   const t=document.getElementById("cal-toggle");
   if(t&&!t.contains(e.target))document.getElementById("cal-popup").classList.remove("show");
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape")document.getElementById("cal-popup").classList.remove("show");
 });
 window.calMoveM=dir=>{
   CAL_M_M+=dir;
@@ -462,57 +523,136 @@ window.calMoveM=dir=>{
   else if(CAL_M_M<0){CAL_M_M=11;CAL_Y_M--;}
   calRenderM();
 };
+window.calTodayM=()=>{
+  const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  CAL_Y_M=tz.getFullYear();CAL_M_M=tz.getMonth();
+  const pad=n=>String(n).padStart(2,"0");
+  MDATA=pad(tz.getFullYear())+"-"+pad(tz.getMonth()+1)+"-"+pad(tz.getDate());
+  MDATA_FIM=null;CAL_AGUARD_INI=false;
+  calUpdateBtn();calRenderM();
+  document.getElementById("cal-popup").classList.remove("show");
+  MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
+  render();
+};
 window.calClearM=()=>{
-  MDATA=null;
+  MDATA=null;MDATA_FIM=null;CAL_AGUARD_INI=false;
   document.getElementById("cal-clear-m").style.display="none";
-  document.getElementById("cal-btn").classList.remove("has-date");
+  const btn=document.getElementById("cal-btn");
+  btn.classList.remove("has-date");
   document.getElementById("cal-btn-txt").textContent="Data";
   document.getElementById("cal-popup").classList.remove("show");
-  // Restaura filtro período
   MP="hoje";
-  document.querySelectorAll(".pb").forEach(b=>b.classList.toggle("on",b.textContent.trim()==="HOJE"));
+  document.querySelectorAll(".pb").forEach(b=>b.classList.toggle("on",b.textContent.trim().startsWith("Hoje")));
   calRenderM();render();
+};
+function calUpdateBtn(){
+  const pad=n=>String(n).padStart(2,"0");
+  const btn=document.getElementById("cal-btn");
+  const txt=document.getElementById("cal-btn-txt");
+  const clearBtn=document.getElementById("cal-clear-m");
+  if(!MDATA){btn.classList.remove("has-date");txt.textContent="Data";clearBtn.style.display="none";return;}
+  btn.classList.add("has-date");clearBtn.style.display="block";
+  const fmtShort=s=>{const[y,m,d]=s.split("-");return pad(parseInt(d))+"/"+pad(parseInt(m));};
+  if(MDATA_FIM&&MDATA_FIM!==MDATA)txt.textContent=fmtShort(MDATA)+" → "+fmtShort(MDATA_FIM);
+  else txt.textContent=fmtShort(MDATA);
+}
+function calBuildSide(){
+  const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
+  const thisYear=tz.getFullYear();
+  // Semanas ISO da semana atual pra trás
+  const semEl=document.getElementById("cal-semanas");
+  if(!semEl)return;
+  const semanas=[];
+  for(let w=1;w<=53;w++){
+    // Calcula ini/fim da semana w do ano corrente (ISO: semana começa segunda)
+    const jan4=new Date(thisYear,0,4);
+    const startOfW1=new Date(jan4);
+    startOfW1.setDate(jan4.getDate()-(jan4.getDay()||7)+1);
+    const ini=new Date(startOfW1);
+    ini.setDate(startOfW1.getDate()+(w-1)*7);
+    const fim=new Date(ini);fim.setDate(ini.getDate()+6);
+    if(ini.getFullYear()>thisYear)break;
+    semanas.push({w,ini,fim});
+  }
+  const pad=n=>String(n).padStart(2,"0");
+  const fmt=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  const fmtShort=d=>pad(d.getDate())+"/"+pad(d.getMonth()+1);
+  semEl.innerHTML=semanas.map(({w,ini,fim})=>{
+    const iniS=fmt(ini),fimS=fmt(fim);
+    const isActive=MDATA===iniS&&MDATA_FIM===fimS;
+    return "<button class='cal-side-btn"+(isActive?" on":"")+"' onclick='calSetRange(\""+iniS+"\",\""+fimS+"\")'>S"+String(w).padStart(2,"0")+" "+fmtShort(ini)+"→"+fmtShort(fim)+"</button>";
+  }).join("");
+  // Meses
+  const MESES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  const mesEl=document.getElementById("cal-meses");
+  if(!mesEl)return;
+  mesEl.innerHTML=MESES.map((nm,idx)=>{
+    const ini=new Date(thisYear,idx,1);
+    const fim=new Date(thisYear,idx+1,0);
+    const iniS=fmt(ini),fimS=fmt(fim);
+    const isActive=MDATA===iniS&&MDATA_FIM===fimS;
+    return "<button class='cal-side-btn"+(isActive?" on":"")+"' onclick='calSetRange(\""+iniS+"\",\""+fimS+"\")'>"+nm+" "+thisYear+"</button>";
+  }).join("");
+}
+window.calSetRange=(ini,fim)=>{
+  MDATA=ini;MDATA_FIM=fim;CAL_AGUARD_INI=false;
+  MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
+  calUpdateBtn();calBuildSide();calRenderM();
+  document.getElementById("cal-popup").classList.remove("show");
+  render();
 };
 function calRenderM(){
   const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
   const DOWS=["D","S","T","Q","Q","S","S"];
   document.getElementById("cal-title-m").textContent=MESES[CAL_M_M]+" "+CAL_Y_M;
   const pad=n=>String(n).padStart(2,"0");
-  const prefix=`${CAL_Y_M}-${pad(CAL_M_M+1)}-`;
+  const prefix=pad(CAL_Y_M)+"-"+pad(CAL_M_M+1)+"-";
   const comDados=new Set(ALL.filter(c=>c.data&&c.data.startsWith(prefix)).map(c=>parseInt(c.data.split("-")[2])));
   const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   const todayY=tz.getFullYear(),todayM=tz.getMonth(),todayD=tz.getDate();
   const firstDow=new Date(CAL_Y_M,CAL_M_M,1).getDay();
   const daysInMonth=new Date(CAL_Y_M,CAL_M_M+1,0).getDate();
-  const selD=MDATA?parseInt(MDATA.split("-")[2]):null;
-  const selY=MDATA?parseInt(MDATA.split("-")[0]):null;
-  const selM=MDATA?parseInt(MDATA.split("-")[1])-1:null;
-  let html2=DOWS.map(d=>`<div class="cal-dow-m">${d}</div>`).join("");
-  for(let i=0;i<firstDow;i++)html2+=`<div class="cal-day-m cal-empty-m"></div>`;
+  // Calcula range selecionado
+  const rangeIni=MDATA?new Date(MDATA):null;
+  const rangeFim=MDATA_FIM?new Date(MDATA_FIM):MDATA?new Date(MDATA):null;
+  let html2=DOWS.map(d=>"<div class='cal-dow-m'>"+d+"</div>").join("");
+  for(let i=0;i<firstDow;i++)html2+="<div class='cal-day-m cal-empty-m'></div>";
   for(let d=1;d<=daysInMonth;d++){
+    const cur=new Date(CAL_Y_M,CAL_M_M,d);
+    const curS=CAL_Y_M+"-"+pad(CAL_M_M+1)+"-"+pad(d);
     const isToday=d===todayD&&CAL_M_M===todayM&&CAL_Y_M===todayY;
-    const isSel=d===selD&&CAL_M_M===selM&&CAL_Y_M===selY;
+    const isIni=MDATA&&curS===MDATA;
+    const isFim=MDATA_FIM&&curS===MDATA_FIM;
+    const isSingle=isIni&&(!MDATA_FIM||MDATA_FIM===MDATA);
+    const inRange=rangeIni&&rangeFim&&cur>rangeIni&&cur<rangeFim;
     const hasData=comDados.has(d);
     let cls="cal-day-m";
     if(isToday)cls+=" cal-today-m";
-    if(isSel)cls+=" cal-sel-m";
-    if(hasData&&!isSel)cls+=" cal-has-m";
-    html2+=`<div class="${cls}" onclick="calSelectM(${d})">${d}</div>`;
+    if(isSingle)cls+=" cal-sel-m";
+    else if(isIni)cls+=" cal-sel-ini";
+    else if(isFim)cls+=" cal-sel-fim";
+    else if(inRange)cls+=" cal-in-range";
+    if(hasData&&!isIni&&!isFim&&!isSingle)cls+=" cal-has-m";
+    html2+="<div class='"+cls+"' onclick='calSelectM("+d+",event)'>"+d+"</div>";
   }
   document.getElementById("cal-grid-m").innerHTML=html2;
 }
-window.calSelectM=d=>{
+window.calSelectM=(d,evt)=>{
   const pad=n=>String(n).padStart(2,"0");
-  MDATA=`${CAL_Y_M}-${pad(CAL_M_M+1)}-${pad(d)}`;
-  const dt=new Date(CAL_Y_M,CAL_M_M,d);
-  const label=dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});
-  document.getElementById("cal-btn").classList.add("has-date");
-  document.getElementById("cal-btn-txt").textContent=label;
-  document.getElementById("cal-clear-m").style.display="block";
-  // Reseta filtro de período para não conflitar
+  const dateStr=CAL_Y_M+"-"+pad(CAL_M_M+1)+"-"+pad(d);
+  if(evt&&evt.shiftKey&&MDATA&&!CAL_AGUARD_INI){
+    // shift+click: define fim do intervalo
+    if(dateStr<MDATA){MDATA_FIM=MDATA;MDATA=dateStr;}
+    else MDATA_FIM=dateStr;
+    CAL_AGUARD_INI=false;
+  } else {
+    // clique simples: inicia novo intervalo
+    MDATA=dateStr;MDATA_FIM=null;CAL_AGUARD_INI=false;
+  }
   MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
-  calRenderM();
-  document.getElementById("cal-popup").classList.remove("show");
+  calUpdateBtn();calBuildSide();calRenderM();
+  // Fecha automaticamente só se clique simples (sem shift)
+  if(!evt||!evt.shiftKey)document.getElementById("cal-popup").classList.remove("show");
   render();
 };
 
@@ -533,11 +673,12 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
 // Inicializa calendário assim que página carrega
 calInitM();
 
-window.setPeriod=(p,el)=>{MP=p;MDATA=null;document.getElementById("cal-btn").classList.remove("has-date");document.getElementById("cal-btn-txt").textContent="Data";document.getElementById("cal-clear-m").style.display="none";calRenderM();document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_AGUARD_INI=false;document.getElementById("cal-btn").classList.remove("has-date");document.getElementById("cal-btn-txt").textContent="Data";document.getElementById("cal-clear-m").style.display="none";calRenderM();document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setF=(f,el)=>{MF=f;document.querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCimento=(t,el)=>{MTCIM=t;document.querySelectorAll(".ttb-cim-todos,.ttb-cp2f,.ttb-cp3,.ttb-cp5").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTempo=(t,el)=>{MTEMPO=t;document.querySelectorAll(".tmpo-btn").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 
 // ── Helper: retorna o timestamp de referência do veículo para filtros ──
@@ -556,23 +697,40 @@ function dataRef(c){
   return ts.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
 }
 
-function noperiodo(c,s,e,mdata){
+function noperiodo(c,s,e,mdata,mdataFim){
   const dr=dataRef(c);
   if(!dr)return false;
   if(mdata){
-    // Calendário: concluídos cuja saída = data, OU em processo cuja entrada = data
-    return dr===mdata;
+    const fim=mdataFim||mdata;
+    return dr>=mdata&&dr<=fim;
   }
   // Período normal: veículo preso (em processo de dia anterior) sempre incluído
   if(c.setorAtual!=="concluido"&&c.data&&c.data<s)return true;
   return dr>=s&&dr<=e;
 }
 
+function tempoDisp(c,tipo){
+  const en=getTS(c,"entrada","ts");
+  const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
+  const trI=getTS(c,"triagem","inicio");
+  const enF=getTS(c,"enlonamento","fim");
+  const sa=getTS(c,"faturamento","ts");
+  if(tipo==="tmac")return en&&sa?true:false;
+  if(tipo==="tme"){const primeiraEtapa=ptI||trI;return en&&primeiraEtapa?true:false;}
+  if(tipo==="tmc")return trI&&enF?true:false;
+  if(tipo==="tmf"){const enFl=getTS(c,"enlonamento","fim");return enFl&&sa?true:false;}
+  if(tipo==="tmp")return ptI&&ptF?true:false;
+  return true;
+}
+
 function getFiltered(){
   const{s,e}=periodDates(MP);
   const mdata=MDATA||null;
+  const mdataFim=MDATA_FIM||null;
+  const horaDE=document.getElementById("hora-de")?.value||"";
+  const horaATE=document.getElementById("hora-ate")?.value||"";
 
-  let list=ALL.filter(c=>noperiodo(c,s,e,mdata));
+  let list=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
   const seen=new Set();
   list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
   if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
@@ -580,6 +738,19 @@ function getFiltered(){
   if(MTCIM!=="t")list=list.filter(c=>c.tipoCimento===MTCIM);
   if(MF==="a")list=list.filter(c=>c.setorAtual!=="concluido");
   if(MF==="c")list=list.filter(c=>c.setorAtual==="concluido");
+  // Filtro De/Até horário por entrada
+  if(horaDE||horaATE){
+    list=list.filter(c=>{
+      const en=getTS(c,"entrada","ts");
+      if(!en)return false;
+      const hhmm=en.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"}).replace(/[^0-9:]/g,"").substring(0,5);
+      if(horaDE&&hhmm<horaDE)return false;
+      if(horaATE&&hhmm>horaATE)return false;
+      return true;
+    });
+  }
+  // Filtro Tempo
+  if(MTEMPO!=="t")list=list.filter(c=>tempoDisp(c,MTEMPO));
   const q=(document.getElementById("q")?.value||"").toUpperCase();
   if(q)list=list.filter(c=>c.placa?.includes(q)||c.ac?.includes(q));
   if(SORT_COL){
@@ -594,8 +765,9 @@ function getFiltered(){
 window.render=()=>{
   const{s,e}=periodDates(MP);
   const mdata=MDATA||null;
+  const mdataFim=MDATA_FIM||null;
 
-  let period=ALL.filter(c=>noperiodo(c,s,e,mdata));
+  let period=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
   const seenSt=new Set();
   period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
   if(MT!=="t")period=period.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
@@ -603,7 +775,7 @@ window.render=()=>{
   if(MTCIM!=="t")period=period.filter(c=>c.tipoCimento===MTCIM);
 
   // Atualiza totais nos botões Carga e Cimento
-  const allPeriod=ALL.filter(c=>noperiodo(c,s,e,mdata));
+  const allPeriod=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
   const allSeen=new Set();
   const allP=allPeriod.filter(c=>{if(allSeen.has(c.id))return false;allSeen.add(c.id);return true;});
   document.getElementById("cnt-carga-t").textContent=allP.length;
@@ -614,6 +786,14 @@ window.render=()=>{
   document.getElementById("cnt-cp2f").textContent=allP.filter(c=>c.tipoCimento==="CP II F").length;
   document.getElementById("cnt-cp3").textContent=allP.filter(c=>c.tipoCimento==="CP III").length;
   document.getElementById("cnt-cp5").textContent=allP.filter(c=>c.tipoCimento==="CP V").length;
+
+  // Contadores filtro Tempo
+  document.getElementById("cnt-tmpo-t").textContent=period.length;
+  document.getElementById("cnt-tmpo-tmac").textContent=period.filter(c=>tempoDisp(c,"tmac")).length;
+  document.getElementById("cnt-tmpo-tme").textContent=period.filter(c=>tempoDisp(c,"tme")).length;
+  document.getElementById("cnt-tmpo-tmc").textContent=period.filter(c=>tempoDisp(c,"tmc")).length;
+  document.getElementById("cnt-tmpo-tmf").textContent=period.filter(c=>tempoDisp(c,"tmf")).length;
+  document.getElementById("cnt-tmpo-tmp").textContent=period.filter(c=>tempoDisp(c,"tmp")).length;
 
   document.getElementById("s0").textContent=period.length;
   document.getElementById("s1").textContent=period.filter(c=>c.setorAtual?.startsWith("triagem")).length;
@@ -632,8 +812,7 @@ window.render=()=>{
 
   // Card: Aguardando Triagem — resumo simples
   const aguardando=ALL.filter(c=>{
-    const{s,e}=periodDates(MP);
-    return c.data>=s&&c.data<=e&&c.setorAtual==="posto1";
+    return noperiodo(c,s,e,mdata,mdataFim)&&c.setorAtual==="posto1";
   });
   const cardAg=document.getElementById("card-aguardando");
   if(aguardando.length>0){
