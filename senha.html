@@ -299,6 +299,16 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </div>
 </div>
 
+<!-- OVERLAY ATIVAR SOM -->
+<div id="overlay-som" style="position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(2,8,16,.92);backdrop-filter:blur(6px)">
+  <div style="text-align:center;padding:40px 48px;background:#05101e;border:2px solid rgba(0,212,255,.3);border-radius:20px;max-width:380px">
+    <div style="font-size:56px;margin-bottom:16px">🔊</div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:900;color:#00d4ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Painel de Chamada</div>
+    <div style="font-size:13px;color:#4a7a9a;margin-bottom:28px;line-height:1.6">Toque para ativar o som e<br>iniciar o painel de chamadas.</div>
+    <button onclick="ativarSom()" style="padding:14px 40px;border:none;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#0099bb);color:#000;font-size:15px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;width:100%">▶ Ativar e Iniciar</button>
+  </div>
+</div>
+
 <!-- OVERLAY AUSÊNCIA -->
 <div class="overlay-aus" id="overlay-aus">
   <div class="aus-card">
@@ -363,6 +373,49 @@ let lastId=null,lastPlaca=null,lastChamada=null;
 // ── ausência ticker: lista de ausentes do dia (últimas 2h) ──
 let ausentes=[]; // [{placa, ac, motivo, ts}]
 
+// ── Ativar som (obrigatório pelo browser antes de AudioContext/SpeechSynthesis) ──
+window.ativarSom=()=>{
+  // Inicializa AudioContext para desbloquear no browser
+  try{const A=new AudioContext();const o=A.createOscillator();const g=A.createGain();o.connect(g);g.connect(A.destination);g.gain.setValueAtTime(0,A.currentTime);o.start();o.stop(A.currentTime+0.01);}catch(e){}
+  // Inicializa SpeechSynthesis
+  try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u);}catch(e){}
+  document.getElementById("overlay-som").style.display="none";
+};
+
+// ── BroadcastChannel: recebe chamadas do posto1 (mesmo computador, mesma origem) ──
+const BC=new BroadcastChannel("tmac_chamada");
+BC.onmessage=(ev)=>{
+  const msg=ev.data;
+  if(!msg)return;
+  if(msg.tipo==="cancelar"){
+    // Posto1 cancelou a chamada: volta para idle/última placa
+    lastId=null;
+    showIdle();
+    return;
+  }
+  // Nova chamada via canal — executa imediatamente (som + voz + visual)
+  const tp=msg.tipoCarga||"ensacado";
+  // Evita reprocessar se Firebase já chegou com o mesmo id
+  if(msg.firebaseId&&msg.firebaseId===lastId)return;
+  lastId=msg.firebaseId||null;
+  lastPlaca=msg.placa||null;
+  lastChamada={placa:msg.placa||"—",ac:msg.ac||"—",tp,num:msg.numero||null};
+  document.getElementById("idle").style.display="none";
+  const ca=document.getElementById("call-active");
+  ca.style.display="flex";
+  ca.className="call-active c-"+tp;
+  document.getElementById("tipo-pill").textContent=TLABEL[tp]||tp;
+  const pb=document.getElementById("placa-box");
+  pb.className="placa-box placa-size enter";
+  pb.textContent=msg.placa||"—";
+  setTimeout(()=>{pb.classList.replace("enter","beat");},520);
+  const acEl=document.getElementById("call-ac");
+  acEl.textContent="AC: "+(msg.ac||"—");
+  acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
+  document.getElementById("call-num").textContent=msg.numero?"Chamada Nº "+String(msg.numero).padStart(3,"0"):"";
+  doFlash();doSound();falarPlaca(msg.placa||"");
+};
+
 // ── Fila: veículos aguardando no posto1 ──
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const hj=hoje();
@@ -376,7 +429,7 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   renderTicker();
 });
 
-// ── Chamadas: colecao chamadas_fila ──
+// ── Chamadas: colecao chamadas_fila (fallback/sync para TV externa ou rede diferente) ──
 onSnapshot(collection(db,"chamadas_fila"),snap=>{
   const hj=hoje();
   const docs=snap.docs.map(d=>({id:d.id,...d.data()}))
@@ -392,15 +445,16 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
   if(!docs.length){showIdle();return;}
   const last=docs[0];
   if(last.id!==lastId){
+    // BroadcastChannel ainda não processou (TV externa / rede diferente): executa tudo
+    const jaProcessadoBC=(lastId===null&&lastChamada&&lastChamada.placa===last.placa);
     lastId=last.id;
     lastPlaca=last.placa||null;
     const tp=last.tipoCarga||"ensacado";
     lastChamada={placa:last.placa||"—",ac:last.ac||"—",tp,num:last.numero||null};
-    // Mostra direto no call-active (mesmo visual da chamada ativa)
     document.getElementById("idle").style.display="none";
     const ca=document.getElementById("call-active");
     ca.style.display="flex";
-    ca.className=`call-active c-${tp}`;
+    ca.className="call-active c-"+tp;
     document.getElementById("tipo-pill").textContent=TLABEL[tp]||tp;
     const pb=document.getElementById("placa-box");
     pb.className="placa-box placa-size enter";
@@ -409,8 +463,10 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
     const acEl=document.getElementById("call-ac");
     acEl.textContent="AC: "+(last.ac||"—");
     acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
-    document.getElementById("call-num").textContent=last.numero?`Chamada Nº ${String(last.numero).padStart(3,"0")}`:"";
-    doFlash();doSound();falarPlaca(last.placa||"");
+    document.getElementById("call-num").textContent=last.numero?"Chamada Nº "+String(last.numero).padStart(3,"0"):"";
+    // Só dispara som/voz se o BroadcastChannel NÃO processou esta chamada (TV externa)
+    if(!jaProcessadoBC){doFlash();doSound();falarPlaca(last.placa||"");}
+    else{doFlash();}
   }
 });
 
