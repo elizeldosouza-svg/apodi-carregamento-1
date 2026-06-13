@@ -129,6 +129,9 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <button class="btn-nao" onclick="abrirModalJust()">✕ Não compareceu</button>
       <button class="btn-chegou" onclick="confirmarChegada()">✓ Chegou</button>
     </div>
+    <div style="display:none;margin-bottom:6px" id="btn-cancelar-wrap">
+      <button onclick="cancelarChamada()" style="width:100%;padding:9px;border:1.5px solid rgba(255,208,0,.35);border-radius:10px;background:rgba(255,208,0,.06);color:#ffd000;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px">⏹ Cancelar Chamada</button>
+    </div>
     <div class="modal-r" id="modal-just">
       <div class="modal-r-box">
         <div class="mr-title">⚠️ Justificativa — não compareceu</div>
@@ -232,6 +235,9 @@ function showMsg(type,txt){
 
 let FILA=[],CHAMADO_ATUAL=null,MOT_SEL=null,CH_SECS=0,CH_INTERVAL=null,CONTADOR_CHAMADA=0;
 
+// ── BroadcastChannel: publica chamadas para senha.html (mesmo computador) ──
+const BC=new BroadcastChannel("tmac_chamada");
+
 (async()=>{
   try{
     const{doc,getDoc}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
@@ -285,18 +291,21 @@ window.chamarPlaca=async(id)=>{
   document.getElementById("ch-meta").textContent=(cim?cim+" · ":"")+tpL+" · "+v.ac+" · chamado "+hora;
   document.getElementById("strip").className="chamado-strip";
   document.getElementById("ch-actions").style.display="flex";
+  document.getElementById("btn-cancelar-wrap").style.display="block";
   renderFila();
   CONTADOR_CHAMADA++;
   try{
     const{addDoc:aD,doc,setDoc,Timestamp:TS}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
     const ts=new Date();
-    await aD(collection(db,"chamadas_fila"),{
+    const ref=await aD(collection(db,"chamadas_fila"),{
       numero:CONTADOR_CHAMADA,placa:v.placa,ac:v.ac,
       tipoCarga:v.tipoCarga||null,tipoCimento:v.tipoCimento||null,
       veiculoId:v.id,data:hoje(),
       criadoEm:TS.fromDate(ts),status:"chamado"
     });
     await setDoc(doc(db,"config","chamadas_contador_"+hoje()),{n:CONTADOR_CHAMADA});
+    // Publica no BroadcastChannel para senha.html reagir imediatamente (mesmo computador)
+    BC.postMessage({placa:v.placa,ac:v.ac,tipoCarga:v.tipoCarga||"ensacado",numero:CONTADOR_CHAMADA,firebaseId:ref.id});
   }catch(e){showMsg("er","Erro: "+e.message);}
   showMsg("ok","📢 "+v.placa+" chamado — Nº "+String(CONTADOR_CHAMADA).padStart(3,"0"));
 };
@@ -308,7 +317,23 @@ window.confirmarChegada=()=>{
   document.getElementById("ch-meta").textContent="Nenhum veículo chamado";
   document.getElementById("strip").className="chamado-strip vazio";
   document.getElementById("ch-actions").style.display="none";
+  document.getElementById("btn-cancelar-wrap").style.display="none";
   document.getElementById("ch-counter").textContent="00:00";
+  renderFila();
+};
+
+window.cancelarChamada=()=>{
+  if(CH_INTERVAL)clearInterval(CH_INTERVAL);
+  CHAMADO_ATUAL=null;CH_SECS=0;
+  document.getElementById("ch-placa").textContent="—";
+  document.getElementById("ch-meta").textContent="Nenhum veículo chamado";
+  document.getElementById("strip").className="chamado-strip vazio";
+  document.getElementById("ch-actions").style.display="none";
+  document.getElementById("btn-cancelar-wrap").style.display="none";
+  document.getElementById("ch-counter").textContent="00:00";
+  // Notifica senha.html para voltar ao idle
+  BC.postMessage({tipo:"cancelar"});
+  showMsg("wn","⏹ Chamada cancelada");
   renderFila();
 };
 
