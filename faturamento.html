@@ -135,9 +135,12 @@ const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDo
 const db=getFirestore(app);
 const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
-let HD=[];
+let HD=[],HD_REL=[];
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
-  const hj=hoje();HD=snap.docs.map(d=>{return{id:d.id,...d.data()}}).filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
+  const hj=hoje();
+  const todos=snap.docs.map(d=>{return{id:d.id,...d.data()}});
+  HD=todos.filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
+  HD_REL=todos; // relatório: olha TODOS os documentos, sem excluir concluído/dia anterior
 });
 window.chk=()=>{
   const a=document.getElementById("ac").value.trim();
@@ -212,7 +215,7 @@ function buildRegistrosRel(){
   const [hfH,hfM]=hFim.split(":").map(Number);
   const iniMin=hiH*60+hiM,fimMin=hfH*60+hfM;
   // Só entram registros com faturamento.ts preenchido (já liberados)
-  let r=HD.filter(c=>{
+  let r=HD_REL.filter(c=>{
     if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
     const ft=c.faturamento?.ts?.toDate?.();
     if(!ft)return false;
@@ -229,15 +232,23 @@ function buildRegistrosRel(){
   });
   return r;
 }
+const TIPO_CARGA_LABELS={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
 function buildLinhasRel(registros,forPrint=false){
   const tdStyle=forPrint?"border:1px solid #ccc;padding:6px 10px":"border:1px solid #1e3558;padding:7px 10px;text-align:center";
   return registros.map((c,i)=>{
+    const ft=c.faturamento?.ts?.toDate?.();
+    const carga=TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-";
+    const cimento=c.tipoCimento||c.tipoCimentoLabel||"-";
+    const turno=ft?(getTurno(ft)||"-"):"-";
     return`<tr>
       <td style="${tdStyle};text-align:center">${i+1}</td>
       <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#00e896"}">${c.placa||"-"}</td>
       <td style="${tdStyle}">${c.ac||"-"}</td>
+      <td style="${tdStyle}">${carga}</td>
+      <td style="${tdStyle}">${cimento}</td>
+      <td style="${tdStyle}">${turno}</td>
       <td style="${tdStyle}">${c.notaFiscal||"-"}</td>
-      <td style="${tdStyle}">${c.faturamento?.ts?fmtDT(c.faturamento.ts):"-"}</td>
+      <td style="${tdStyle}">${ft?fmtDT(c.faturamento.ts):"-"}</td>
     </tr>`;
   }).join("");
 }
@@ -254,9 +265,9 @@ window.verRelatorio=()=>{
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
-        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Hora Saída</th>
+        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Nota Fiscal</th><th>Hora Saída</th>
       </tr></thead>
-      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="5" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="8" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
@@ -290,9 +301,9 @@ window.gerarPDF=()=>{
 <div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
-    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Hora Saída</th>
+    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Nota Fiscal</th><th>Hora Saída</th>
   </tr></thead>
-  <tbody>${linhas||'<tr><td colspan="5" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+  <tbody>${linhas||'<tr><td colspan="8" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
 <div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
 </body></html>`);
@@ -303,21 +314,20 @@ window.gerarPDF=()=>{
 window.exportExcel=()=>{
   const registros=buildRegistrosRel();
   if(!registros.length){alert("Nenhum dado para exportar no filtro selecionado.");return;}
-  const tpL={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
   const rows=registros.map(c=>{
     const ft=c.faturamento?.ts?.toDate?.();
     return{
       "Placa":c.placa||"",
       "AC":c.ac||"",
-      "Turno":ft?(getTurno(ft)||""):"",
-      "Carga":tpL[c.tipoCarga]||c.tipoCarga||"",
+      "Carga":TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"",
       "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
+      "Turno":ft?(getTurno(ft)||""):"",
       "Nota Fiscal":c.notaFiscal||"",
       "Hora Saída":fmtEx(ft),
     };
   });
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[{wch:10},{wch:10},{wch:8},{wch:12},{wch:12},{wch:14},{wch:20}];
+  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:12},{wch:8},{wch:14},{wch:20}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Faturamento");
   const{dataIniVal,dataFimVal}=getFiltros();
