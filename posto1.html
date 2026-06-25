@@ -74,6 +74,33 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .hi-meta{font-size:10px;color:rgba(255,68,102,.6);margin-top:1px}
 .hi-obs{font-size:10px;color:rgba(255,68,102,.45);font-style:italic;margin-top:2px}
 .hi-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;background:rgba(255,68,102,.15);color:#ff4466;border:1px solid rgba(255,68,102,.3);white-space:nowrap;flex-shrink:0;margin-left:auto}
+.filtro-rel{background:var(--c1);border:1px solid var(--bd);border-radius:var(--rs);padding:14px;margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.filtro-titulo{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.filtro-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filtro-label{font-size:11px;color:var(--t3);white-space:nowrap;min-width:80px}
+.filtro-input{flex:1;padding:7px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);font-size:12px;font-family:monospace;outline:none;min-width:0}
+.filtro-input:focus{border-color:var(--ac)}
+.filtro-sep{font-size:12px;color:var(--t3)}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.exp-btn{flex:1;padding:12px;border:1px solid rgba(0,212,255,.4);border-radius:var(--rs);background:rgba(0,212,255,.07);color:#00d4ff;font-size:13px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
+.exp-btn:hover{background:rgba(0,212,255,.15)}
+.modal-prev{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);padding:16px;overflow-y:auto}
+.modal-prev.show{display:flex}
+.modal-box{background:#0f1a2e;border:1px solid #1e3558;border-radius:14px;width:100%;max-width:900px;margin:auto;overflow:hidden}
+.modal-head{padding:14px 18px;border-bottom:1px solid #1e3558;display:flex;align-items:center;gap:10px}
+.modal-title{font-family:system-ui,sans-serif;font-size:16px;font-weight:800;color:#dff0ff;flex:1;letter-spacing:1px}
+.modal-close-btn{width:30px;height:30px;border:1px solid #1e3558;border-radius:6px;background:transparent;color:#7aafcc;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.modal-close-btn:hover{border-color:#ff4466;color:#ff4466}
+.modal-body{padding:16px 18px;overflow-x:auto}
+.prev-info{font-size:11px;color:#7aafcc;margin-bottom:10px}
+.prev-table{width:100%;border-collapse:collapse;font-size:11px}
+.prev-table th{text-align:center;padding:8px 10px;font-size:9px;font-weight:700;color:#fff;background:#003366;text-transform:uppercase;letter-spacing:.5px;border:1px solid #1e3558;white-space:nowrap}
+.prev-table td{padding:7px 10px;border:1px solid #1e3558;vertical-align:middle;color:#dff0ff;text-align:center}
+.prev-table tr:nth-child(even) td{background:rgba(0,212,255,.04)}
+.prev-placa{font-family:monospace;font-size:13px;font-weight:700;color:#00d4ff;letter-spacing:1px}
+.modal-foot{padding:12px 18px;border-top:1px solid #1e3558;display:flex;gap:8px;justify-content:flex-end}
+.pdf-btn{padding:10px 22px;border:none;border-radius:10px;background:#00d4ff;color:#000;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px;transition:opacity .2s}
+.pdf-btn:hover{opacity:.88}
 </style>
 </head>
 <body>
@@ -111,6 +138,24 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     <button class="cimento-btn" id="cb-cp5" onclick="setCimento('CP V','CP V',this)">CP V</button>
   </div>
   <button class="go" id="go" onclick="registrar()" disabled>✅ Registrar Entrada</button>
+
+  <div class="filtro-rel">
+    <div class="filtro-titulo">📅 Filtro para o relatório</div>
+    <div class="filtro-row">
+      <span class="filtro-label">Data:</span>
+      <input class="filtro-input" type="date" id="f-data" style="max-width:150px"/>
+    </div>
+    <div class="filtro-row">
+      <span class="filtro-label">Horário:</span>
+      <input class="filtro-input" type="time" id="f-hora-ini" style="max-width:100px" placeholder="00:00"/>
+      <span class="filtro-sep">até</span>
+      <input class="filtro-input" type="time" id="f-hora-fim" style="max-width:100px" placeholder="23:59"/>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
+    <button class="exp-btn" onclick="gerarPDF()">📄 Exportar PDF</button>
+  </div>
 
   <!-- RODAPÉ FILA -->
   <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px">
@@ -162,6 +207,24 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     </div>
   </div>
 
+</div>
+
+<!-- MODAL PREVIEW -->
+<div class="modal-prev" id="modal-prev">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">🏁 CONTROLE DE ATENDIMENTO — POSTO 1</div>
+      <button class="modal-close-btn" onclick="document.getElementById('modal-prev').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="prev-info" id="prev-info"></div>
+      <div id="prev-body"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-close-btn" style="padding:8px 16px;width:auto" onclick="document.getElementById('modal-prev').classList.remove('show')">Fechar</button>
+      <button class="pdf-btn" onclick="gerarPDF()">📄 Exportar PDF</button>
+    </div>
+  </div>
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -232,6 +295,119 @@ function showMsg(type,txt){
   el.className="msg on "+type;el.textContent=txt;
   if(type==="ok")setTimeout(()=>{el.className="msg";el.textContent="";},5000);
 }
+
+// ── Filtro do relatório ──────────────────────────────────────────────
+(()=>{
+  const fd=document.getElementById("f-data");
+  if(fd)fd.value=hoje();
+  const fhi=document.getElementById("f-hora-ini");
+  if(fhi)fhi.value="00:00";
+  const fhf=document.getElementById("f-hora-fim");
+  if(fhf)fhf.value="23:59";
+})();
+const fmtDT=ts=>{
+  if(!ts)return"—";
+  const d=ts.toDate?ts.toDate():new Date(ts);
+  return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric"})+" "+d.toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
+};
+function getFiltros(){
+  const dataVal=document.getElementById("f-data")?.value||hoje();
+  const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
+  const [hiH,hiM]=hIni.split(":").map(Number);
+  const [hfH,hfM]=hFim.split(":").map(Number);
+  const [ano,mes,dia]=dataVal.split("-").map(Number);
+  const tsIni=new Date(ano,mes-1,dia,hiH,hiM,0).getTime();
+  const tsFim=new Date(ano,mes-1,dia,hfH,hfM,59).getTime();
+  return{dataVal,tsIni,tsFim};
+}
+function buildRegistrosRel(){
+  const{dataVal,tsIni,tsFim}=getFiltros();
+  let r=HD.filter(c=>{
+    if(c.data!==dataVal)return false;
+    const en=c.entrada?.ts?.toDate?.()?.getTime();
+    if(en)return en>=tsIni&&en<=tsFim;
+    return true;
+  });
+  r.sort((a,b)=>{
+    const ta=a.entrada?.ts?.toDate?.()?.getTime()||0;
+    const tb=b.entrada?.ts?.toDate?.()?.getTime()||0;
+    return ta-tb;
+  });
+  return r;
+}
+function buildLinhasRel(registros,forPrint=false){
+  const tdStyle=forPrint?"border:1px solid #ccc;padding:6px 10px":"border:1px solid #1e3558;padding:7px 10px;text-align:center";
+  const tpL={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
+  return registros.map((c,i)=>{
+    const tp=tpL[c.tipoCarga]||c.tipoCarga||"-";
+    const cim=c.tipoCimento||c.tipoCimentoLabel||"-";
+    return`<tr>
+      <td style="${tdStyle};text-align:center">${i+1}</td>
+      <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#00d4ff"}">${c.placa||"-"}</td>
+      <td style="${tdStyle}">${c.ac||"-"}</td>
+      <td style="${tdStyle}">${tp}</td>
+      <td style="${tdStyle}">${cim}</td>
+      <td style="${tdStyle}">${c.entrada?.ts?fmtDT(c.entrada.ts):"-"}</td>
+    </tr>`;
+  }).join("");
+}
+window.verRelatorio=()=>{
+  const registros=buildRegistrosRel();
+  const{dataVal}=getFiltros();
+  const [ano,mes,dia]=dataVal.split("-");
+  const dtFmt=`${dia}/${mes}/${ano}`;
+  const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
+  document.getElementById("prev-info").textContent=`Data: ${dtFmt} · ${hIni}h às ${hFim}h · ${registros.length} veículo${registros.length!==1?"s":""}`;
+  document.getElementById("prev-body").innerHTML=`
+    <table class="prev-table">
+      <thead><tr>
+        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Hora Entrada</th>
+      </tr></thead>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="6" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+    </table>`;
+  document.getElementById("modal-prev").classList.add("show");
+};
+window.gerarPDF=()=>{
+  const registros=buildRegistrosRel();
+  const{dataVal}=getFiltros();
+  const [ano,mes,dia]=dataVal.split("-");
+  const dtHj=`${dia}/${mes}/${ano}`;
+  const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
+  const linhas=buildLinhasRel(registros,true);
+  const janela=window.open("","_blank","width=900,height=700");
+  janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"/>
+<title>Controle de Atendimento — Posto 1 — ${dtHj} ${hIni}-${hFim}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;font-size:11pt;padding:24px;color:#000}
+  h2{font-size:14pt;font-weight:bold;text-align:center;margin-bottom:14pt;text-transform:uppercase;letter-spacing:1px}
+  .hinfo{margin-bottom:16pt;border-bottom:2px solid #000;padding-bottom:10pt;font-size:11pt}
+  table.reg{border-collapse:collapse;width:100%}
+  table.reg th{background:#003366;color:#fff;padding:7px 10px;font-size:10pt;text-align:center;border:1px solid #ccc}
+  table.reg td{padding:7px 10px;font-size:10pt;border:1px solid #ccc;text-align:center}
+  table.reg tr:nth-child(even) td{background:#f0f4fb}
+  .footer{margin-top:20pt;font-size:8pt;color:#888;text-align:center;border-top:1pt solid #ccc;padding-top:6pt}
+  @media print{@page{margin:1.5cm;size:A4 landscape}}
+</style>
+</head><body>
+<h2>Controle de Atendimento — Posto 1</h2>
+<div class="hinfo">Data: ${dtHj} &nbsp;·&nbsp; Horário: ${hIni}h às ${hFim}h</div>
+<table class="reg">
+  <thead><tr>
+    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Hora Entrada</th>
+  </tr></thead>
+  <tbody>${linhas||'<tr><td colspan="6" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+</table>
+<div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${dtHj} · ${hIni}h às ${hFim}h</div>
+</body></html>`);
+  janela.document.close();janela.focus();
+  setTimeout(()=>janela.print(),600);
+};
 
 let FILA=[],CHAMADO_ATUAL=null,MOT_SEL=null,CH_SECS=0,CH_INTERVAL=null,CONTADOR_CHAMADA=0;
 
