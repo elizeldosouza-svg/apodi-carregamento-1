@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Justificativas — Atrasos</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -214,6 +215,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
     <div class="modal-foot">
       <span id="rel-total" style="font-size:11px;color:var(--t2);margin-right:auto"></span>
       <button class="modal-close" style="padding:8px 18px;width:auto" onclick="document.getElementById('modal-rel').classList.remove('show')">Fechar</button>
+      <button class="exp-btn" style="background:var(--gr)" onclick="exportarExcel()">📊 Exportar Excel</button>
       <button class="exp-btn" onclick="exportarPdf()">📄 Exportar PDF</button>
     </div>
   </div>
@@ -232,26 +234,10 @@ const TIPO_SVG={
 };
 
 const MOTIVOS=[
-  "Absenteísmo Logístico",
-  "Absenteísmo Produção",
-  "Acúmulo de Veículos",
-  "Ausência de Estoque",
-  "DDS",
-  "Extração de Cimento",
-  "Falha de Processo Infraestrutura",
-  "Falha nos Periféricos da Balança Rodoviária",
-  "Falha Operacional do Assistente",
-  "Falha, Lentidão ou Queda de Processo Sistemas",
-  "Faturamento Parado pelo Setor Fiscal",
-  "Lentidão em Período Chuvoso",
-  "Manutenção Corretiva",
-  "Manutenção Preventiva",
-  "Plataforma de Grades",
-  "Queda de Energia",
-  "Transferência Acima do Plano",
-  "Troca de Turno",
-  "Veículo com Problema Mecânico",
-  "Venda Acima do Plano"
+  "Absenteísmo Logístico","Absenteísmo Produção","Acumulo de Veículos","Ausência de Estoque",
+  "DDS","Extração de Cimento","Falha de Processo Infraestrutura",
+  "Falha nos Periféricos da Balança Rodoviária","Falha Operacional do Assistente",
+  "Falha, Lentidão ou Queda de Processo Sistemas"
 ];
 const LIMITE_MS=130*60*1000; // 2h10
 
@@ -605,7 +591,56 @@ window.abrirRelatorio=()=>{
   document.getElementById("modal-rel").classList.add("show");
 };
 
+window.exportarExcel=()=>{
+  const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
+  const atrasados=ALL.filter(c=>{
+    if(!c.data||c.data<s||c.data>e)return false;
+    if(c.setorAtual==="posto1")return false;
+    const en=getTS(c,"entrada","ts");if(!en)return false;
+    const sa=getTS(c,"faturamento","ts");
+    const agora=sa||new Date();
+    return(agora-en)>LIMITE_MS;
+  })
+  .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
+  .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
+  .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J)
+  .sort((a,b)=>(a.data>b.data?-1:1));
+
+  if(!atrasados.length){alert("Nenhum dado para exportar no filtro selecionado.");return;}
+
+  const rows=atrasados.map(c=>{
+    const en=getTS(c,"entrada","ts");
+    const sa=getTS(c,"faturamento","ts");
+    const agora=sa||new Date();
+    const tmacMs=agora-en;
+    const g=gargalo(c);
+    const temJust=!!(c.justificativa?.motivo);
+    const tipoLabel=(c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"—");
+    return{
+      "Placa":c.placa||"",
+      "AC":c.ac||"",
+      "Turno":getTurno(en)||"",
+      "Tipo":tipoLabel,
+      "Entrada":fmtT(en),
+      "Saída":sa?fmtT(sa):"Em processo",
+      "TMAC":durStr(tmacMs),
+      "Gargalo Principal":g?g.lb:"",
+      "Tempo Gargalo":g?durStr(g.ms):"",
+      "Status":temJust?"Justificado":"Pendente",
+      "Justificativa":(c.justificativa?.motivo||"")+(c.justificativa?.descricao?" — "+c.justificativa.descricao:""),
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!cols"]=[{wch:10},{wch:10},{wch:8},{wch:22},{wch:10},{wch:12},{wch:10},{wch:18},{wch:14},{wch:12},{wch:40}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Justificativas");
+  const turnoSuffix=MT_J!=="t"?`_turno${MT_J}`:"";
+  const fname=s===e?`justificativas_${s}${turnoSuffix}.xlsx`:`justificativas_${s}_a_${e}${turnoSuffix}.xlsx`;
+  XLSX.writeFile(wb,fname);
+};
+
 window.exportarPdf=()=>{
+
   const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
   const hoje=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
   const hora=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"});
