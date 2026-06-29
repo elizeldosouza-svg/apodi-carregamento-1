@@ -179,6 +179,25 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .dmsg.ok{background:rgba(0,232,150,.1);border:1px solid rgba(0,232,150,.3);color:var(--gr);display:block}
 .dmsg.er{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:var(--rd);display:block}
 @media(max-width:700px){.drawer{width:100vw}.drow{grid-template-columns:1fr}}
+.op-grupo{margin-bottom:18px}
+.op-grupo-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);text-transform:uppercase;letter-spacing:.6px;padding:10px 18px;border-bottom:1px solid var(--bd);background:var(--bg3)}
+.op-row{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--bd);font-size:12px}
+.op-row:last-child{border-bottom:none}
+.op-nome-col{flex:1;min-width:0}
+.op-nome-col b{color:var(--tx);font-size:13px}
+.op-meta{color:var(--t3);font-size:10px;margin-top:2px}
+.op-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;text-transform:uppercase;white-space:nowrap}
+.op-badge.ok{background:rgba(0,232,150,.12);color:var(--gr);border:1px solid rgba(0,232,150,.3)}
+.op-badge.pend{background:rgba(255,208,0,.12);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
+.op-badge.inativo{background:rgba(255,68,102,.12);color:var(--rd);border:1px solid rgba(255,68,102,.3)}
+.op-actions{display:flex;gap:6px;flex-shrink:0}
+.op-form{padding:16px 18px;border-bottom:1px solid var(--bd);display:none;flex-direction:column;gap:10px}
+.op-form.show{display:flex}
+.op-form-row{display:flex;gap:10px;flex-wrap:wrap}
+.op-form .fg2{flex:1;min-width:140px;display:flex;flex-direction:column;gap:4px}
+.op-form .fg2 label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.op-form select,.op-form input{padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg3);color:var(--tx);font-size:12px;outline:none}
+.op-form select:focus,.op-form input:focus{border-color:var(--bl)}
 </style>
 </head>
 <body>
@@ -212,6 +231,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <a class="nav-btn" href="/justificativas" target="_blank">⚠️ Justif.</a>
     <a class="nav-btn" href="/placas" target="_blank">🔍 Placas</a>
     <a class="nav-btn" href="/senha" target="_blank">📺 TV</a>
+    <button class="nav-btn" onclick="abrirOperadores()" style="cursor:pointer">👤 Operadores</button>
     <button class="sair-btn" onclick="doLogout()">Sair</button>
   </div>
   <div class="wrap">
@@ -367,6 +387,45 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     </div>
 
   </div>
+
+  <!-- OPERADORES -->
+  <div id="operadores-screen" style="display:none">
+    <div class="wrap">
+      <div class="tcard">
+        <div class="thead-bar">👤 Gestão de Operadores das Telas
+          <div class="totais-bar">
+            <button class="pb" onclick="abrirNovoOperador()">+ Novo Operador</button>
+            <button class="pb" onclick="voltarTabela()">← Voltar</button>
+          </div>
+        </div>
+        <div class="op-form" id="op-form">
+          <div class="op-form-row">
+            <div class="fg2"><label>Tela</label>
+              <select id="op-tela">
+                <option value="posto1">Posto 1 — Apodi</option>
+                <option value="portaria">Portaria — Seguro Segurança</option>
+                <option value="triagem">Triagem — Reforme Paletes</option>
+                <option value="carregamento">Carregamento — Ambipar</option>
+                <option value="enlonamento">Enlonamento — Sousa Clean</option>
+                <option value="faturamento">Faturamento — Apodi</option>
+              </select>
+            </div>
+            <div class="fg2"><label>Nome completo</label><input id="op-nome-in" type="text" placeholder="Ex: João Silva"/></div>
+            <div class="fg2"><label>Usuário</label><input id="op-usuario-in" type="text" placeholder="Ex: joao.silva"/></div>
+          </div>
+          <div class="op-form-row" style="align-items:center">
+            <span style="font-size:11px;color:var(--t3)">Senha inicial gerada automaticamente: <b id="op-senha-preview" style="color:var(--tx)">—</b> (o operador deve trocar no 1º acesso)</span>
+          </div>
+          <div class="op-form-row">
+            <button class="btn-save" onclick="salvarNovoOperador()">💾 Salvar Operador</button>
+            <button class="btn-reabrir" onclick="fecharNovoOperador()">Cancelar</button>
+          </div>
+        </div>
+        <div id="op-list-wrap"><div class="spin"></div></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- DRAWER -->
@@ -479,7 +538,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,query,orderBy,updateDoc,deleteDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,query,orderBy,where,addDoc,getDocs,updateDoc,deleteDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 const CREDS={user:"administrador",pwd:"admin2026"};
@@ -1134,4 +1193,93 @@ window.exportarPDFAdmin=()=>{
   document.body.appendChild(a);a.click();
   setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
 };
+
+// ── Gestão de Operadores das Telas ──────────────────────────────────
+const TELA_LABEL={posto1:"Posto 1 — Apodi",portaria:"Portaria — Seguro Segurança",triagem:"Triagem — Reforme Paletes",carregamento:"Carregamento — Ambipar",enlonamento:"Enlonamento — Sousa Clean",faturamento:"Faturamento — Apodi"};
+const TELA_ORDEM=["posto1","portaria","triagem","carregamento","enlonamento","faturamento"];
+function slugSenha(nome){
+  const primeiro=(nome||"").trim().split(/\s+/)[0]||"operador";
+  return primeiro.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")+"123";
+}
+window.abrirOperadores=()=>{
+  document.querySelector(".wrap").style.display="none";
+  document.getElementById("operadores-screen").style.display="block";
+  carregarOperadores();
+};
+window.voltarTabela=()=>{
+  document.getElementById("operadores-screen").style.display="none";
+  document.querySelector(".wrap").style.display="block";
+};
+window.abrirNovoOperador=()=>{
+  document.getElementById("op-form").classList.add("show");
+  document.getElementById("op-nome-in").value="";
+  document.getElementById("op-usuario-in").value="";
+  document.getElementById("op-senha-preview").textContent="—";
+};
+window.fecharNovoOperador=()=>{document.getElementById("op-form").classList.remove("show");};
+document.addEventListener("input",e=>{
+  if(e.target&&e.target.id==="op-nome-in"){
+    document.getElementById("op-senha-preview").textContent=slugSenha(e.target.value);
+  }
+});
+window.salvarNovoOperador=async()=>{
+  const tela=document.getElementById("op-tela").value;
+  const nome=document.getElementById("op-nome-in").value.trim();
+  let usuario=document.getElementById("op-usuario-in").value.trim().toLowerCase();
+  if(!nome){alert("Informe o nome do operador.");return;}
+  if(!usuario){alert("Informe o usuário de acesso.");return;}
+  const senha=slugSenha(nome);
+  try{
+    await addDoc(collection(db,"operadores_acesso"),{
+      tela,empresa:TELA_LABEL[tela],usuario,nome,senha,
+      primeiroAcesso:true,ativo:true,criadoEm:Timestamp.fromDate(new Date())
+    });
+    fecharNovoOperador();
+    carregarOperadores();
+  }catch(e){alert("Erro ao salvar: "+e.message);}
+};
+window.resetarSenhaOperador=async(id,nome)=>{
+  if(!confirm("Redefinir a senha de "+nome+" para o padrão? O operador precisará criar uma nova senha no próximo acesso."))return;
+  await updateDoc(doc(db,"operadores_acesso",id),{senha:slugSenha(nome),primeiroAcesso:true});
+  carregarOperadores();
+};
+window.toggleAtivoOperador=async(id,ativo)=>{
+  await updateDoc(doc(db,"operadores_acesso",id),{ativo:!ativo});
+  carregarOperadores();
+};
+window.excluirOperador=async(id,nome)=>{
+  if(!confirm("Excluir o acesso de "+nome+"? Esta ação não pode ser desfeita."))return;
+  await deleteDoc(doc(db,"operadores_acesso",id));
+  carregarOperadores();
+};
+async function carregarOperadores(){
+  const wrapEl=document.getElementById("op-list-wrap");
+  wrapEl.innerHTML='<div class="spin"></div>';
+  const snap=await getDocs(collection(db,"operadores_acesso"));
+  const todos=snap.docs.map(d=>({id:d.id,...d.data()}));
+  let html="";
+  TELA_ORDEM.forEach(tela=>{
+    const lista=todos.filter(o=>o.tela===tela).sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
+    html+=`<div class="op-grupo"><div class="op-grupo-title">${TELA_LABEL[tela]} · ${lista.length} operador${lista.length!==1?"es":""}</div>`;
+    if(lista.length===0){
+      html+=`<div class="op-row" style="color:var(--t3)">Nenhum operador cadastrado.</div>`;
+    }else{
+      lista.forEach(o=>{
+        const statusBadge=o.ativo===false?'<span class="op-badge inativo">Inativo</span>':(o.primeiroAcesso?'<span class="op-badge pend">1º acesso pendente</span>':'<span class="op-badge ok">Ativo</span>');
+        html+=`<div class="op-row">
+          <div class="op-nome-col"><b>${o.nome||"—"}</b>
+            <div class="op-meta">usuário: ${o.usuario||"—"} ${statusBadge}</div>
+          </div>
+          <div class="op-actions">
+            <button class="pb" onclick="resetarSenhaOperador('${o.id}','${(o.nome||"").replace(/'/g,"")}')">🔑 Resetar senha</button>
+            <button class="pb" onclick="toggleAtivoOperador('${o.id}',${o.ativo!==false})">${o.ativo===false?"✅ Ativar":"⛔ Desativar"}</button>
+            <button class="btn-excluir" onclick="excluirOperador('${o.id}','${(o.nome||"").replace(/'/g,"")}')">🗑️</button>
+          </div>
+        </div>`;
+      });
+    }
+    html+=`</div>`;
+  });
+  wrapEl.innerHTML=html;
+}
 </script>
