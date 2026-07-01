@@ -88,10 +88,53 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .modal-foot{padding:12px 18px;border-top:1px solid #1e3558;display:flex;gap:8px;justify-content:flex-end}
 .pdf-btn{padding:10px 22px;border:none;border-radius:10px;background:#ff6644;color:#000;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px;transition:opacity .2s}
 .pdf-btn:hover{opacity:.88}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{width:100%;max-width:360px;background:var(--c1);border:1px solid var(--bd);border-radius:var(--r);padding:32px}
+.login-ic{font-size:44px;text-align:center;display:block;margin-bottom:10px}
+.login-title{font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--ac);text-align:center;margin-bottom:4px}
+.login-sub{font-size:11px;color:var(--t3);text-align:center;margin-bottom:20px}
+.login-fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.login-fg label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.login-fg input{background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:12px 14px;font-size:15px;outline:none;transition:border-color .2s;width:100%}
+.login-fg input:focus{border-color:var(--ac)}
+.login-btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-size:14px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;background:var(--ac);color:#001018;transition:all .2s;margin-top:4px}
+.login-btn:active{transform:scale(.97)}
+.login-err{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:#ff4466;padding:10px 14px;border-radius:var(--rs);font-size:12px;text-align:center;margin-bottom:14px;display:none}
+.login-err.on{display:block}
+.login-hint{text-align:center;font-size:10px;color:var(--t3);margin-top:16px}
+.op-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--bd)}
+.op-nome-w{font-size:11px;color:var(--t2)}
+.op-nome-w b{color:var(--tx)}
+.sair-btn{padding:5px 12px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer}
+.sair-btn:hover{border-color:#ff4466;color:#ff4466}
 </style>
 </head>
 <body>
-<div class="box">
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <span class="login-ic">🏗️</span>
+    <div class="login-title">CARREGAMENTO</div>
+    <div class="login-sub">Ambipar</div>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-fg"><label>Usuário</label><input id="l-user" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="login-fg"><label>Senha</label><input id="l-pwd" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-hint">Esqueceu a senha? Solicite ao Admin a redefinição.</div>
+  </div>
+</div>
+<div id="troca-senha-screen" class="login-wrap" style="display:none">
+  <div class="login-box">
+    <span class="login-ic">🔑</span>
+    <div class="login-title">Nova senha</div>
+    <div class="login-sub">Primeiro acesso — defina sua senha</div>
+    <div class="login-err" id="troca-err"></div>
+    <div class="login-fg"><label>Nova senha</label><input id="np1" type="password" autocomplete="new-password"/></div>
+    <div class="login-fg"><label>Confirmar nova senha</label><input id="np2" type="password" autocomplete="new-password"/></div>
+    <button class="login-btn" onclick="doSalvarSenha()">Salvar</button>
+  </div>
+</div>
+<div class="box" id="app-screen" style="display:none">
+  <div class="op-top"><span class="op-nome-w">👤 <b id="op-nome"></b></span><button class="sair-btn" onclick="doLogout()">Sair</button></div>
   <div class="hdr"><span class="ic">🏗️</span><h1>Carregamento</h1></div>
   <div id="msg" class="msg"></div>
   <p style="font-size:12px;color:var(--t2);text-align:center;margin-bottom:14px;line-height:1.6">
@@ -222,8 +265,46 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import{getFirestore,collection,onSnapshot,updateDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{verificarSessao,fazerLogin,salvarNovaSenha,fazerLogout}from"./auth-tela.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
+// -- auth ---------------------------------------------------------------
+const TELA="carregamento";
+let SESSAO=verificarSessao(TELA);
+let PENDENTE=null;
+function mostrarApp(){
+  document.getElementById("login-screen").style.display="none";
+  document.getElementById("troca-senha-screen").style.display="none";
+  document.getElementById("app-screen").style.display="block";
+  document.getElementById("op-nome").textContent=SESSAO.nome;
+}
+window.doLogin=async()=>{
+  const u=document.getElementById("l-user").value;
+  const p=document.getElementById("l-pwd").value;
+  const errEl=document.getElementById("login-err");
+  errEl.className="login-err";
+  const r=await fazerLogin(db,TELA,u,p);
+  if(!r.ok){errEl.textContent=r.erro||"Usuário ou senha incorretos.";errEl.className="login-err on";return;}
+  if(r.primeiroAcesso){
+    PENDENTE=r;
+    document.getElementById("login-screen").style.display="none";
+    document.getElementById("troca-senha-screen").style.display="flex";
+    return;
+  }
+  SESSAO=r;mostrarApp();
+};
+window.doSalvarSenha=async()=>{
+  const p1=document.getElementById("np1").value;
+  const p2=document.getElementById("np2").value;
+  const errEl=document.getElementById("troca-err");
+  errEl.className="login-err";
+  if(p1.length<4){errEl.textContent="A senha deve ter ao menos 4 caracteres.";errEl.className="login-err on";return;}
+  if(p1!==p2){errEl.textContent="As senhas não coincidem.";errEl.className="login-err on";return;}
+  SESSAO=await salvarNovaSenha(db,TELA,PENDENTE.docId,PENDENTE.usuario,PENDENTE.nome,p1);
+  mostrarApp();
+};
+window.doLogout=()=>{fazerLogout(TELA);location.reload();};
+if(SESSAO.logado){mostrarApp();}else{document.getElementById("login-screen").style.display="flex";}
 const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
 function resizeImage(b64,maxW=1800,quality=0.95){return new Promise(resolve=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*(maxW/w));w=maxW;}const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);resolve(c.toDataURL("image/jpeg",quality));};img.src=b64;});}
@@ -338,6 +419,7 @@ function buildLinhasRel(registros,forPrint=false){
       <td style="${tdStyle}">${fim?fmtDT(c.carregamento.fim):"-"}</td>
       <td style="${tdStyle}">${dur}</td>
       <td style="${tdStyle}">${turno}</td>
+      <td style="${tdStyle}">${c.carregamento?.operadorFim||c.carregamento?.operadorInicio||"-"}</td>
     </tr>`;
   }).join("");
 }
@@ -354,9 +436,9 @@ window.verRelatorio=()=>{
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
-        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th>
+        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Empilhador</th>
       </tr></thead>
-      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="9" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="10" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
@@ -390,9 +472,9 @@ window.gerarPDF=()=>{
 <div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
-    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th>
+    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Empilhador</th>
   </tr></thead>
-  <tbody>${linhas||'<tr><td colspan="9" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+  <tbody>${linhas||'<tr><td colspan="10" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
 <div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
 </body></html>`);
@@ -414,10 +496,11 @@ window.exportExcel=()=>{
       "Hora Fim":fmtEx(fim),
       "Duração":ini&&fim?durStr(fim-ini):"",
       "Turno":fim?(getTurno(fim)||""):"",
+      "Empilhador":c.carregamento?.operadorFim||c.carregamento?.operadorInicio||"",
     };
   });
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:12},{wch:20},{wch:20},{wch:10},{wch:8}];
+  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:12},{wch:20},{wch:20},{wch:10},{wch:8},{wch:18}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Carregamento");
   const{dataIniVal,dataFimVal}=getFiltros();
@@ -475,6 +558,7 @@ window.doS=async(t)=>{
     const u={};
     u["carregamento."+(t==="i"?"inicio":"fim")]=Timestamp.fromDate(ts);
     u["carregamento.foto"+(t==="i"?"Ini":"Fim")]=null;
+    u["carregamento.operador"+(t==="i"?"Inicio":"Fim")]=SESSAO.nome||null;
     u.ac=c.ac;
     u.setorAtual=t==="i"?"carregamento_inicio":"carregamento_fim";
     await updateDoc(doc(db,"caminhoes_rastreio",c.id),u);
