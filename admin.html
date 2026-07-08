@@ -383,8 +383,8 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
       <div class="tscroll" id="tbl" style="display:none">
         <table>
           <thead><tr>
-            <th data-col="placa" onclick="sortBy('placa')"><div class="th-plain">Placa</div></th>
             <th><div class="th-plain" style="text-align:center">Nº</div></th>
+            <th data-col="placa" onclick="sortBy('placa')"><div class="th-plain">Placa</div></th>
             <th data-col="ac" onclick="sortBy('ac')"><div class="th-plain">AC</div></th>
             <th data-col="data" onclick="sortBy('data')"><div class="th-plain">Data</div></th>
             <th data-col="turno" onclick="sortBy('turno')"><div class="th-plain">Turno</div></th>
@@ -588,6 +588,16 @@ function getOperadoresRegistro(c){
     c.carregamento?.operadorInicio,c.carregamento?.operadorFim,
     c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim,
     c.faturamento?.operador].filter(Boolean);
+}
+const ETAPAS_OPERADOR=[
+  {label:"Entrada",get:c=>c.entrada?.operador},
+  {label:"Triagem",get:c=>c.triagem?.operadorFim||c.triagem?.operadorInicio},
+  {label:"Carregamento",get:c=>c.carregamento?.operadorFim||c.carregamento?.operadorInicio},
+  {label:"Enlonamento",get:c=>c.enlonamento?.operadorFim||c.enlonamento?.operadorInicio},
+  {label:"Faturamento",get:c=>c.faturamento?.operador}
+];
+function getEtapasOperador(c,nome){
+  return ETAPAS_OPERADOR.filter(et=>et.get(c)===nome).map(et=>et.label);
 }
 function empresaDoRegistro(c){
   const set=new Set();
@@ -930,8 +940,8 @@ window.render=()=>{
     const t=getTurno(en);
     const sel=SELECTED_ID===c.id;
     return`<tr class="data-row${sel?" selected":""}" onclick="openDrawer('${c.id}')">
-      <td><span class="ptag">${c.placa}</span></td>
       <td style="color:var(--t2);text-align:center">${i+1}</td>
+      <td><span class="ptag">${c.placa}</span></td>
       <td style="color:var(--t2)">${c.ac}</td>
       <td style="color:var(--t2);font-size:10px">${c.data||"—"}</td>
       <td>${t?`<span class="turno t-${t.toLowerCase()}">${t}</span>`:"—"}</td>
@@ -1068,6 +1078,7 @@ window.excluir=async()=>{
 window.exportExcel=()=>{
   const list=getFiltered();if(!list.length){alert("Nenhum dado para exportar.");return;}
   const DIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const usuarioSel=document.getElementById("f-usuario-filter")?.value||"";
   const rows=list.map((c,i)=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
@@ -1076,7 +1087,8 @@ window.exportExcel=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const dia=getDiaSemana(c);
-    return{"Nº":i+1,"Placa":c.placa,"AC":c.ac,"Data":c.data||"","Dia":dia!=null?DIAS[dia]:"","Turno":getTurno(en)||"","Tipo Carga":c.tipoCargaLabel||"","Setor Atual":c.setorAtual||"",
+    const setorTxt=usuarioSel?(getEtapasOperador(c,usuarioSel).join(", ")||""):(c.setorAtual||"");
+    return{"Nº":i+1,"Placa":c.placa,"AC":c.ac,"Data":c.data||"","Dia":dia!=null?DIAS[dia]:"","Turno":getTurno(en)||"","Tipo Carga":c.tipoCargaLabel||"","Setor Atual":setorTxt,
       "Entrada":fmtEx(en),"Triagem Ini":fmtEx(trI),"Triagem Fim":fmtEx(trF),
       "Carga Ini":fmtEx(caI),"Carga Fim":fmtEx(caF),
       "Enlone Ini":fmtEx(enI),"Enlone Fim":fmtEx(enF),"Saída":fmtEx(sa)};
@@ -1173,6 +1185,7 @@ window.abrirRelatorioAdmin=()=>{
   document.getElementById("mrel-title").textContent="📋 RELATÓRIO ADMIN — APODI CIMENTOS";
   document.getElementById("mrel-excel-btn").style.display="none";
   const list=getFiltered();
+  const usuarioSel=document.getElementById("f-usuario-filter")?.value||"";
   const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
   const per=buildPeriodoLabel();
   document.getElementById("mrel-info").innerHTML=
@@ -1188,6 +1201,7 @@ window.abrirRelatorioAdmin=()=>{
       const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
       const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
       const sa=getTS(c,"faturamento","ts");
+      const setorCel=usuarioSel?(getEtapasOperador(c,usuarioSel).join(", ")||"—"):pill(c.setorAtual);
       rows+="<tr>";
       rows+="<td style='text-align:center;color:var(--t2)'>"+(i+1)+"</td>";
       rows+="<td style='text-align:left;font-weight:bold;color:var(--bl);font-family:monospace'>"+( c.placa||"")+"</td>";
@@ -1201,7 +1215,7 @@ window.abrirRelatorioAdmin=()=>{
       rows+="<td>"+cellT(caI)+"</td><td>"+cellT(caF)+"</td>";
       rows+="<td>"+cellT(enI)+"</td><td>"+cellT(enF)+"</td>";
       rows+="<td>"+cellT(sa)+"</td>";
-      rows+="<td>"+pill(c.setorAtual)+"</td>";
+      rows+="<td>"+setorCel+"</td>";
       rows+="</tr>";
     });
     document.getElementById("mrel-body").innerHTML=
@@ -1215,13 +1229,7 @@ window.abrirRelatorioAdmin=()=>{
   document.getElementById("mrel-overlay").classList.add("show");
 };
 function getLinhasProdutividade(list){
-  const ETAPAS=[
-    o=>o.entrada?.operador,
-    o=>o.triagem?.operadorFim||o.triagem?.operadorInicio,
-    o=>o.carregamento?.operadorFim||o.carregamento?.operadorInicio,
-    o=>o.enlonamento?.operadorFim||o.enlonamento?.operadorInicio,
-    o=>o.faturamento?.operador
-  ];
+  const usuarioSel=document.getElementById("f-usuario-filter")?.value||"";
   const linhas=[];
   list.forEach(c=>{
     const base={
@@ -1233,9 +1241,11 @@ function getLinhasProdutividade(list){
       enI:getTS(c,"enlonamento","inicio"),enF:getTS(c,"enlonamento","fim"),
       sa:getTS(c,"faturamento","ts")
     };
-    ETAPAS.forEach(getOp=>{
-      const nome=getOp(c);
-      if(nome)linhas.push({...base,operador:nome});
+    ETAPAS_OPERADOR.forEach(et=>{
+      const nome=et.get(c);
+      if(!nome)return;
+      if(usuarioSel&&nome!==usuarioSel)return;
+      linhas.push({...base,operador:nome,etapa:et.label});
     });
   });
   return linhas;
@@ -1268,7 +1278,7 @@ window.abrirProdutividade=()=>{
       rows+="<td>"+cellT(r.caI)+"</td><td>"+cellT(r.caF)+"</td>";
       rows+="<td>"+cellT(r.enI)+"</td><td>"+cellT(r.enF)+"</td>";
       rows+="<td>"+cellT(r.sa)+"</td>";
-      rows+="<td>"+pill(r.setorAtual)+"</td>";
+      rows+="<td>"+(r.etapa||"")+"</td>";
       rows+="<td>"+(r.operador||"")+"</td>";
       rows+="</tr>";
     });
@@ -1294,7 +1304,7 @@ window.exportExcelProdutividade=()=>{
     "Nº":i+1,"Placa":r.placa,"AC":r.ac,"Nota Fiscal":r.notaFiscal||"","Data":r.data||"",
     "Tipo":r.tipoCarga||"","Posto1":fmtEx(r.en),"Port.Ini":fmtEx(r.ptI),"Port.Fim":fmtEx(r.ptF),
     "Trg.Ini":fmtEx(r.trI),"Trg.Fim":fmtEx(r.trF),"Carga Ini":fmtEx(r.caI),"Carga Fim":fmtEx(r.caF),
-    "Enl.Ini":fmtEx(r.enI),"Enl.Fim":fmtEx(r.enF),"Fatur.":fmtEx(r.sa),"Setor":r.setorAtual||"",
+    "Enl.Ini":fmtEx(r.enI),"Enl.Fim":fmtEx(r.enF),"Fatur.":fmtEx(r.sa),"Setor":r.etapa||"",
     "Nome Operador":r.operador||""
   }));
   const ws=XLSX.utils.json_to_sheet(rows);
@@ -1309,6 +1319,7 @@ window.exportarPDFAdmin=()=>{
   const hora=new Date().toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
   const fmtRel=d=>d?d.toLocaleString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit"}):"";
   const td=(v,ex)=>"<td style='padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;"+(ex||"")+"'>"+(v||"")+"</td>";
+  const usuarioSel=document.getElementById("f-usuario-filter")?.value||"";
   const linhas=list.map((c,i)=>{
     const en=getTS(c,"entrada","ts");
     const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
@@ -1317,6 +1328,7 @@ window.exportarPDFAdmin=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const bg=i%2===1?"#f5f8ff":"#fff";
+    const setorTxt=usuarioSel?(getEtapasOperador(c,usuarioSel).join(", ")||"—"):(c.setorAtual||"").replace(/_/g," ");
     return "<tr style='background:"+bg+"'>"+
       td(i+1,"text-align:center;color:#666")+
       td(c.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")+
@@ -1327,7 +1339,7 @@ window.exportarPDFAdmin=()=>{
       td(fmtRel(caI))+td(fmtRel(caF))+
       td(fmtRel(enI))+td(fmtRel(enF))+
       td(fmtRel(sa))+
-      td((c.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")+
+      td(setorTxt,"font-size:6.5pt")+
       "</tr>";
   }).join("");
   const partes=[];
@@ -1378,7 +1390,7 @@ window.exportarPDFProdutividade=()=>{
       td(fmtRel(r.caI))+td(fmtRel(r.caF))+
       td(fmtRel(r.enI))+td(fmtRel(r.enF))+
       td(fmtRel(r.sa))+
-      td((r.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")+
+      td(r.etapa||"","font-size:6.5pt")+
       td(r.operador||"")+
       "</tr>";
   }).join("");
