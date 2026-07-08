@@ -134,6 +134,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .cal-day.cal-today{color:var(--bl);font-weight:700}
 .cal-day.cal-sel{background:var(--pu);color:#fff;font-weight:700;border-radius:5px}
 .cal-day.cal-range{background:rgba(167,139,250,.2);color:var(--tx);border-radius:3px}
+.cor-gr{color:var(--gr)}.cor-rd{color:var(--rd)}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}.turno-grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -310,6 +311,44 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
         <div class="card-title">📋 Resumo de Justificativas</div>
         <div id="just-resumo"></div>
       </div>
+    </div>
+
+    <!-- Indicadores Avançados -->
+    <div style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
+      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--pu);letter-spacing:.5px">📈 INDICADORES AVANÇADOS</span>
+    </div>
+
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="card-title">📊 Comparação com Período Anterior</div>
+        <div id="comp-anterior"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📉 Distribuição TMAC — Percentis</div>
+        <div id="percentis-chart"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">📅 Tendência Diária do TMAC</div>
+      <div class="hr-wrap" id="tendencia-chart" style="height:100px"></div>
+      <div class="hr-labels" id="tendencia-labels"></div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="card-title">📆 Comparação por Dia da Semana</div>
+        <div id="dia-semana-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🏢 Ranking por Empresa Responsável</div>
+        <div id="ranking-empresa"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">💡 Insights Automáticos</div>
+      <div id="insights-box"></div>
     </div>
   </div>
 </div>
@@ -505,12 +544,22 @@ function updateCalBtnLabel(){
   }
 }
 
-function getList(){
-  let list;
-  if(MDATA&&MDATA_FIM)list=ALL.filter(c=>c.data>=MDATA&&c.data<=MDATA_FIM);
-  else if(MDATA)list=ALL.filter(c=>c.data===MDATA);
-  else{const{s,e}=periodDates(MP);list=ALL.filter(c=>c.data>=s&&c.data<=e);}
-
+function getPeriodRange(){
+  if(MDATA&&MDATA_FIM)return{s:MDATA,e:MDATA_FIM};
+  if(MDATA)return{s:MDATA,e:MDATA};
+  return periodDates(MP);
+}
+function getPrevRange(){
+  const{s,e}=getPeriodRange();
+  const pad=n=>String(n).padStart(2,"0");
+  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const sd=new Date(s+"T00:00:00"),ed=new Date(e+"T00:00:00");
+  const days=Math.round((ed-sd)/86400000)+1;
+  const prevEnd=new Date(sd);prevEnd.setDate(sd.getDate()-1);
+  const prevStart=new Date(prevEnd);prevStart.setDate(prevEnd.getDate()-(days-1));
+  return{s:fmt(prevStart),e:fmt(prevEnd)};
+}
+function applyNonDateFilters(list){
   const hIni=document.getElementById("f-h-ini")?.value||"00:00";
   const hFim=document.getElementById("f-h-fim")?.value||"23:59";
   if(hIni!=="00:00"||hFim!=="23:59"){
@@ -537,6 +586,11 @@ function getList(){
   if(mq)list=list.filter(c=>(c.placa||"").toUpperCase().includes(mq)||String(c.ac||"").toUpperCase().includes(mq));
 
   return list;
+}
+function getList(){
+  const{s,e}=getPeriodRange();
+  const base=ALL.filter(c=>c.data>=s&&c.data<=e);
+  return applyNonDateFilters(base);
 }
 
 // ── Render ────────────────────────────────────────────────────────────────
@@ -828,6 +882,181 @@ function render(){
       </div>
       ${semJust.length?`<a href="/justificativas" style="display:block;text-align:center;padding:8px;border:1px solid rgba(255,68,102,.3);border-radius:var(--rs);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;background:rgba(255,68,102,.06)">⚠️ ${semJust.length} pendente${semJust.length>1?"s":""} — Registrar justificativa</a>`:"<div style='text-align:center;font-size:11px;color:var(--gr);padding:8px'>✅ Todas justificativas registradas</div>"}
     `;
+  }
+
+  renderAvancados();
+}
+
+// ── Indicadores Avançados ────────────────────────────────────────────────
+function percentil(arr,p){
+  if(!arr.length)return null;
+  const s=[...arr].sort((a,b)=>a-b);
+  const idx=Math.min(s.length-1,Math.floor(p/100*s.length));
+  return s[idx];
+}
+function compCard(lbl,val,d){
+  return`<div style="background:var(--bg3);border-radius:var(--rs);padding:10px;text-align:center">
+    <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--tx)">${val}</div>
+    <div style="font-size:9px;color:var(--t2);text-transform:uppercase;margin:2px 0 6px">${lbl}</div>
+    <div style="font-size:11px;font-weight:700" class="${d.cls}">${d.txt}</div>
+  </div>`;
+}
+function calcDelta(cur,prev,invert){
+  if(prev==null||prev===0||cur==null)return{txt:"—",cls:""};
+  const pct=Math.round((cur-prev)/prev*100);
+  if(pct===0)return{txt:"■ 0%",cls:""};
+  const bom=invert?pct<0:pct>0;
+  const seta=pct>0?"▲":"▼";
+  return{txt:`${seta} ${Math.abs(pct)}%`,cls:bom?"cor-gr":"cor-rd"};
+}
+
+function renderAvancados(){
+  const list=getList();
+  const conc=list.filter(c=>c.setorAtual==="concluido");
+  const tmacs=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const tmacMedio=avg(tmacs);
+  const taxa=list.length?Math.round(conc.length/list.length*100):0;
+
+  // Período anterior (mesma duração, dia(s) imediatamente anterior(es))
+  const{s:ps,e:pe}=getPrevRange();
+  const prevList=applyNonDateFilters(ALL.filter(c=>c.data>=ps&&c.data<=pe));
+  const prevConc=prevList.filter(c=>c.setorAtual==="concluido");
+  const prevTmacs=prevConc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const prevTmacMedio=avg(prevTmacs);
+  const prevTaxa=prevList.length?Math.round(prevConc.length/prevList.length*100):0;
+
+  const elComp=document.getElementById("comp-anterior");
+  if(elComp){
+    elComp.innerHTML=`
+      <div style="font-size:9px;color:var(--t3);margin-bottom:10px">Comparado com: ${ps===pe?ps:ps+" a "+pe}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        ${compCard("Caminhões",list.length,calcDelta(list.length,prevList.length,true))}
+        ${compCard("TMAC Médio",tmacMedio?durStr(tmacMedio):"—",calcDelta(tmacMedio,prevTmacMedio,false))}
+        ${compCard("Taxa Conclusão",taxa+"%",calcDelta(taxa,prevTaxa,true))}
+      </div>`;
+  }
+
+  // Percentis
+  const p50=percentil(tmacs,50),p90=percentil(tmacs,90);
+  const elPerc=document.getElementById("percentis-chart");
+  if(elPerc){
+    if(!tmacs.length){
+      elPerc.innerHTML=`<div class="empty-state">Sem dados no período</div>`;
+    }else{
+      elPerc.innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+          <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;text-align:center">
+            <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--bl)">${durStr(p50)}</div>
+            <div style="font-size:9px;color:var(--t2);text-transform:uppercase;margin-top:2px">P50 (Mediana)</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;text-align:center">
+            <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--or)">${durStr(p90)}</div>
+            <div style="font-size:9px;color:var(--t2);text-transform:uppercase;margin-top:2px">P90</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--t3)">Média: ${durStr(tmacMedio)} — o P90 mostra o "pior caso" que afeta 10% dos caminhões, mais confiável que a média para medir SLA.</div>`;
+    }
+  }
+
+  // Tendência diária (só concluídos, agrupados por data)
+  const porDia={};
+  conc.forEach(c=>{
+    const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
+    if(en&&sa&&c.data)(porDia[c.data]=porDia[c.data]||[]).push(sa-en);
+  });
+  const diasOrdenados=Object.keys(porDia).sort();
+  const diaAvg=diasOrdenados.map(d=>avg(porDia[d]));
+  const maxDia=Math.max(...diaAvg.filter(v=>v!=null),1);
+  const elTend=document.getElementById("tendencia-chart");
+  const elTendLbl=document.getElementById("tendencia-labels");
+  if(elTend&&elTendLbl){
+    if(diasOrdenados.length<2){
+      elTend.innerHTML=`<div class="empty-state" style="padding:14px 0">Selecione um período com mais de 1 dia (Semana, Mês etc.) para ver a tendência diária.</div>`;
+      elTendLbl.innerHTML="";
+    }else{
+      elTend.innerHTML=diasOrdenados.map((d,i)=>{
+        const v=diaAvg[i];
+        const pct=v?Math.max(Math.round(v/maxDia*100),4):2;
+        return`<div class="hr-col" style="height:${pct}%;background:var(--pu)"><span class="hr-tooltip">${durStr(v)}</span></div>`;
+      }).join("");
+      elTendLbl.innerHTML=diasOrdenados.map(d=>{const p=d.split("-");return`<span class="hr-lbl">${p[2]}/${p[1]}</span>`;}).join("");
+    }
+  }
+
+  // Comparação por dia da semana (dentro do período filtrado)
+  const diasSemanaLbl=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const porSemana=diasSemanaLbl.map((lbl,idx)=>{
+    const itens=conc.filter(c=>{const en=getTS(c,"entrada","ts");return en&&en.getDay()===idx;});
+    const tt=itens.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return sa-en;});
+    return{lbl,avg:avg(tt),count:itens.length};
+  });
+  const elDiaSem=document.getElementById("dia-semana-chart");
+  if(elDiaSem){
+    const maxDS=Math.max(...porSemana.map(d=>d.avg||0),1);
+    elDiaSem.innerHTML=porSemana.map(d=>{
+      const pct=d.avg?Math.round(d.avg/maxDS*100):0;
+      return`<div class="bar-row">
+        <span class="bar-label">${d.lbl}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${d.avg?Math.max(pct,12):0}%;background:#38bdf8">
+            <span class="bar-val">${d.avg?durStr(d.avg):"—"}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  // Ranking por empresa responsável (mesmo mapeamento do admin.html)
+  const empresaEtapas=[
+    {lbl:"Seguro Segurança",etapa:"Portaria",sn:"portaria",ini:"inicio",fim:"fim"},
+    {lbl:"Reforme Paletes",etapa:"Triagem",sn:"triagem",ini:"inicio",fim:"fim"},
+    {lbl:"Ambipar",etapa:"Carregamento",sn:"carregamento",ini:"inicio",fim:"fim"},
+    {lbl:"Sousa Clean",etapa:"Enlonamento",sn:"enlonamento",ini:"inicio",fim:"fim"},
+  ];
+  const empresaData=empresaEtapas.map(e=>{
+    const times=list.map(c=>{const i=getTS(c,e.sn,e.ini),f=getTS(c,e.sn,e.fim);return(i&&f)?f-i:null;}).filter(v=>v!=null);
+    return{...e,avg:avg(times),count:times.length};
+  }).filter(e=>e.avg!=null).sort((a,b)=>b.avg-a.avg);
+  const elRankEmp=document.getElementById("ranking-empresa");
+  if(elRankEmp){
+    if(!empresaData.length){
+      elRankEmp.innerHTML=`<div class="empty-state">Sem dados no período</div>`;
+    }else{
+      elRankEmp.innerHTML=empresaData.map((e,i)=>`
+        <div class="rank-row">
+          <span class="rank-n">${i+1}</span>
+          <span class="rank-pl">${e.lbl}</span>
+          <span class="rank-ct">${e.etapa} · ${e.count} reg.</span>
+          <span class="rank-v">${durStr(e.avg)}</span>
+        </div>`).join("");
+    }
+  }
+
+  // Insights automáticos
+  const SLA_MS=2*60*60*1000+10*60*1000; // 2h10 (regra de negócio do sistema)
+  const acimaSLA=tmacs.filter(t=>t>SLA_MS).length;
+  const pctSLA=tmacs.length?Math.round(acimaSLA/tmacs.length*100):0;
+  const piorDia=porSemana.filter(d=>d.count>0).sort((a,b)=>(b.avg||0)-(a.avg||0))[0];
+
+  const insights=[];
+  if(empresaData.length){
+    insights.push(`🔴 Maior gargalo: <b>${empresaData[0].lbl}</b> (${empresaData[0].etapa}), tempo médio de ${durStr(empresaData[0].avg)}.`);
+  }
+  if(tmacMedio&&prevTmacMedio){
+    const pct=Math.round((tmacMedio-prevTmacMedio)/prevTmacMedio*100);
+    insights.push(pct<=0?`✅ TMAC melhorou ${Math.abs(pct)}% em relação ao período anterior (${ps===pe?ps:ps+" a "+pe}).`:`⚠️ TMAC piorou ${pct}% em relação ao período anterior (${ps===pe?ps:ps+" a "+pe}).`);
+  }
+  if(piorDia&&piorDia.avg){
+    insights.push(`📆 <b>${piorDia.lbl}</b> é o dia com maior TMAC médio dentro do período (${durStr(piorDia.avg)}).`);
+  }
+  if(tmacs.length){
+    insights.push(pctSLA>0?`⏱ ${pctSLA}% dos caminhões concluídos ultrapassaram o SLA de 2h10 (${acimaSLA} de ${tmacs.length}).`:`✅ Nenhum caminhão concluído ultrapassou o SLA de 2h10 no período.`);
+  }
+  const elIns=document.getElementById("insights-box");
+  if(elIns){
+    elIns.innerHTML=insights.length
+      ?insights.map(t=>`<div style="padding:8px 0;border-bottom:1px solid var(--bg3);font-size:12px;color:var(--tx)">${t}</div>`).join("")
+      :`<div class="empty-state">Sem dados suficientes para gerar insights neste período.</div>`;
   }
 }
 
