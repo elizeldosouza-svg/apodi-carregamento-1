@@ -585,6 +585,15 @@ function getOperadoresRegistro(c){
     c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim,
     c.faturamento?.operador].filter(Boolean);
 }
+function empresaDoRegistro(c){
+  const set=new Set();
+  if(c.entrada?.ts||c.faturamento?.ts)set.add("Apodi");
+  if(c.portaria?.inicio||c.portaria?.fim)set.add("Seguro Segurança");
+  if(c.triagem?.inicio||c.triagem?.fim)set.add("Reforme Paletes");
+  if(c.carregamento?.inicio||c.carregamento?.fim)set.add("Ambipar");
+  if(c.enlonamento?.inicio||c.enlonamento?.fim)set.add("Sousa Clean");
+  return set;
+}
 let SORT_COL=null,SORT_DIR=-1;
 let CAL_SHIFT_START=null;
 // calendário
@@ -867,8 +876,8 @@ function getFiltered(){
   if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   // Tipo de carga
   if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
-  // Empresa (via operador de qualquer etapa)
-  if(MEMP!=="t")list=list.filter(c=>getOperadoresRegistro(c).some(n=>TELA_EMPRESA[OPERADOR_TELA[n]]===MEMP));
+  // Empresa (via etapa concluída no registro)
+  if(MEMP!=="t")list=list.filter(c=>empresaDoRegistro(c).has(MEMP));
   // Usuário (via operador de qualquer etapa)
   const usuarioSel=document.getElementById("f-usuario-filter")?.value||"";
   if(usuarioSel)list=list.filter(c=>getOperadoresRegistro(c).includes(usuarioSel));
