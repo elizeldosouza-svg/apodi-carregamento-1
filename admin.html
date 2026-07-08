@@ -288,7 +288,8 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
               <span style="color:var(--t3)">–</span>
               <input type="time" id="cal-h-fim" value="23:59" onchange="render()" style="background:var(--bg3);border:1px solid var(--b2);border-radius:5px;color:var(--tx);padding:3px 6px;font-size:10px;font-family:'Inter',sans-serif;outline:none;width:76px"/>
             </div>
-            <button class="rel-btn-m" style="margin-left:auto" onclick="abrirRelatorioAdmin()">📋 Visualizar PDF</button>
+            <button class="rel-btn-m" style="margin-left:auto" onclick="abrirProdutividade()">📊 Produtividade por Operador</button>
+            <button class="rel-btn-m" onclick="abrirRelatorioAdmin()">📋 Visualizar PDF</button>
             <button class="export-btn" onclick="exportExcel()">📊 Exportar Excel</button>
           </div>
 
@@ -398,6 +399,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <th data-col="enI" onclick="sortBy('enI')"><div class="th-plain">🪢 Enlone Ini</div></th>
             <th data-col="enF" onclick="sortBy('enF')"><div class="th-plain">🪢 Enlone Fim</div></th>
             <th data-col="sa" onclick="sortBy('sa')"><div class="th-plain">🧾 Fatur</div></th>
+            <th data-col="notaFiscal" onclick="sortBy('notaFiscal')"><div class="th-plain">Nota Fiscal</div></th>
             <th><div class="th-plain" style="text-align:center">Editar</div></th>
           </tr></thead>
           <tbody id="tbody"></tbody>
@@ -544,14 +546,15 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 <div class="mrel-overlay" id="mrel-overlay">
   <div class="mrel-box">
     <div class="mrel-head">
-      <div class="mrel-title">📋 RELATÓRIO ADMIN — APODI CIMENTOS</div>
+      <div class="mrel-title" id="mrel-title">📋 RELATÓRIO ADMIN — APODI CIMENTOS</div>
       <button class="mrel-close" onclick="document.getElementById('mrel-overlay').classList.remove('show')">✕</button>
       <div class="mrel-info" id="mrel-info"></div>
     </div>
     <div class="mrel-body"><div id="mrel-body"></div></div>
     <div class="mrel-foot">
       <button class="mrel-close" style="padding:8px 16px;width:auto" onclick="document.getElementById('mrel-overlay').classList.remove('show')">Fechar</button>
-      <button class="pdf-btn-m" onclick="exportarPDFAdmin()">📄 Exportar PDF</button>
+      <button class="pdf-btn-m" id="mrel-excel-btn" style="display:none;background:var(--gr)" onclick="exportExcelProdutividade()">📊 Exportar Excel</button>
+      <button class="pdf-btn-m" onclick="exportarRelatorioAtual()">📄 Exportar PDF</button>
     </div>
   </div>
 </div>
@@ -779,6 +782,7 @@ function getSortVal(c,col){
   if(col==="enI")return(getTS(c,"enlonamento","inicio")||new Date(0)).getTime();
   if(col==="enF")return(getTS(c,"enlonamento","fim")||new Date(0)).getTime();
   if(col==="sa")return(getTS(c,"faturamento","ts")||new Date(0)).getTime();
+  if(col==="notaFiscal")return c.notaFiscal||"";
   return"";
 }
 
@@ -941,6 +945,7 @@ window.render=()=>{
       <td class="ec">${cellT(enI)}</td>
       <td class="ec">${cellT(enF)}</td>
       <td class="ec">${cellT(sa)}</td>
+      <td style="color:var(--t2);font-size:10px;text-align:center">${c.notaFiscal||"—"}</td>
       <td style="text-align:center"><button onclick="event.stopPropagation();openDrawer('${c.id}')" style="padding:3px 10px;border:1px solid var(--rd);border-radius:6px;background:rgba(255,68,102,.08);color:var(--rd);font-size:10px;font-weight:700;cursor:pointer">✏️</button></td>
     </tr>`;
   }).join("");
@@ -1085,7 +1090,7 @@ window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL
 window.setDia=(d,el)=>{MDIA=d;document.querySelectorAll(".pb-dia").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll("[class*='pb-turno']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setCarga=(t,el)=>{MTC=t;document.querySelectorAll("[class*='pb-carga']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
-window.setEmpresa=(t,el)=>{MEMP=t;document.querySelectorAll(".pb-empresa").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setEmpresa=(t,el)=>{MEMP=t;document.querySelectorAll(".pb-empresa").forEach(b=>b.classList.remove("on"));el.classList.add("on");popularSelectUsuario();render();};
 window.setStatus=(s,el)=>{MSTATUS=s;document.querySelectorAll(".pb-status").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 // -- auth + init ------------------------------------------------------------
@@ -1112,19 +1117,25 @@ window.doLogout=()=>{
   document.getElementById("login-screen").style.display="flex";
   document.getElementById("l-user").value="";document.getElementById("l-pwd").value="";
 };
+let OPERADORES_LISTA=[];
 async function carregarOperadoresFiltro(){
   try{
     const snap=await getDocs(collection(db,"operadores_acesso"));
-    const lista=snap.docs.map(d=>d.data()).filter(o=>o.nome);
-    lista.sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
+    OPERADORES_LISTA=snap.docs.map(d=>d.data()).filter(o=>o.nome);
+    OPERADORES_LISTA.sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
     OPERADOR_TELA={};
-    lista.forEach(o=>{OPERADOR_TELA[o.nome]=o.tela;});
-    const sel=document.getElementById("f-usuario-filter");
-    if(sel){
-      sel.innerHTML='<option value="">— Todos os usuários —</option>'+
-        lista.map(o=>`<option value="${o.nome}">${o.nome} (${TELA_EMPRESA[o.tela]||o.tela})</option>`).join("");
-    }
+    OPERADORES_LISTA.forEach(o=>{OPERADOR_TELA[o.nome]=o.tela;});
+    popularSelectUsuario();
   }catch(e){console.error("Erro ao carregar operadores para filtro:",e);}
+}
+function popularSelectUsuario(){
+  const sel=document.getElementById("f-usuario-filter");
+  if(!sel)return;
+  const valorAtual=sel.value;
+  const lista=MEMP==="t"?OPERADORES_LISTA:OPERADORES_LISTA.filter(o=>TELA_EMPRESA[o.tela]===MEMP);
+  sel.innerHTML='<option value="">— Todos os usuários —</option>'+
+    lista.map(o=>`<option value="${o.nome}">${o.nome} (${TELA_EMPRESA[o.tela]||o.tela})</option>`).join("");
+  if(lista.some(o=>o.nome===valorAtual))sel.value=valorAtual;
 }
 function iniciar(){
   calInit();
@@ -1154,7 +1165,11 @@ function buildPeriodoLabel(){
   const{s,e}=periodDates(MP);
   return s===e?s:s+" a "+e;
 }
+let REL_MODE="admin";
 window.abrirRelatorioAdmin=()=>{
+  REL_MODE="admin";
+  document.getElementById("mrel-title").textContent="📋 RELATÓRIO ADMIN — APODI CIMENTOS";
+  document.getElementById("mrel-excel-btn").style.display="none";
   const list=getFiltered();
   const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
   const per=buildPeriodoLabel();
@@ -1195,6 +1210,93 @@ window.abrirRelatorioAdmin=()=>{
       "</tr></thead><tbody>"+rows+"</tbody></table>";
   }
   document.getElementById("mrel-overlay").classList.add("show");
+};
+function getLinhasProdutividade(list){
+  const ETAPAS=[
+    o=>o.entrada?.operador,
+    o=>o.triagem?.operadorFim||o.triagem?.operadorInicio,
+    o=>o.carregamento?.operadorFim||o.carregamento?.operadorInicio,
+    o=>o.enlonamento?.operadorFim||o.enlonamento?.operadorInicio,
+    o=>o.faturamento?.operador
+  ];
+  const linhas=[];
+  list.forEach(c=>{
+    const base={
+      placa:c.placa,ac:c.ac,notaFiscal:c.notaFiscal,data:c.data,tipoCarga:c.tipoCarga,setorAtual:c.setorAtual,
+      en:getTS(c,"entrada","ts"),
+      ptI:getTS(c,"portaria","inicio"),ptF:getTS(c,"portaria","fim"),
+      trI:getTS(c,"triagem","inicio"),trF:getTS(c,"triagem","fim"),
+      caI:getTS(c,"carregamento","inicio"),caF:getTS(c,"carregamento","fim"),
+      enI:getTS(c,"enlonamento","inicio"),enF:getTS(c,"enlonamento","fim"),
+      sa:getTS(c,"faturamento","ts")
+    };
+    ETAPAS.forEach(getOp=>{
+      const nome=getOp(c);
+      if(nome)linhas.push({...base,operador:nome});
+    });
+  });
+  return linhas;
+}
+window.abrirProdutividade=()=>{
+  REL_MODE="produtividade";
+  document.getElementById("mrel-title").textContent="📊 PRODUTIVIDADE POR OPERADOR — APODI CIMENTOS";
+  document.getElementById("mrel-excel-btn").style.display="flex";
+  const list=getFiltered();
+  const linhas2=getLinhasProdutividade(list);
+  const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const per=buildPeriodoLabel();
+  document.getElementById("mrel-info").innerHTML=
+    "Período: <b>"+per+"</b> &nbsp;· Total: <b>"+linhas2.length+" registro"+(linhas2.length!==1?"s":"")+"</b> &nbsp;· Gerado: <b>"+dtNow+"</b>";
+  if(!linhas2.length){
+    document.getElementById("mrel-body").innerHTML="<div style='text-align:center;padding:32px;color:var(--t3)'>Nenhum registro com os filtros selecionados.</div>";
+  }else{
+    let rows="";
+    linhas2.forEach(r=>{
+      rows+="<tr>";
+      rows+="<td style='text-align:left;font-weight:bold;color:var(--bl);font-family:monospace'>"+(r.placa||"")+"</td>";
+      rows+="<td>"+(r.ac||"")+"</td>";
+      rows+="<td>"+(r.notaFiscal||"")+"</td>";
+      rows+="<td>"+(r.data||"")+"</td>";
+      rows+="<td>"+(r.tipoCarga||"")+"</td>";
+      rows+="<td>"+cellT(r.en)+"</td>";
+      rows+="<td>"+cellT(r.ptI)+"</td><td>"+cellT(r.ptF)+"</td>";
+      rows+="<td>"+cellT(r.trI)+"</td><td>"+cellT(r.trF)+"</td>";
+      rows+="<td>"+cellT(r.caI)+"</td><td>"+cellT(r.caF)+"</td>";
+      rows+="<td>"+cellT(r.enI)+"</td><td>"+cellT(r.enF)+"</td>";
+      rows+="<td>"+cellT(r.sa)+"</td>";
+      rows+="<td>"+pill(r.setorAtual)+"</td>";
+      rows+="<td>"+(r.operador||"")+"</td>";
+      rows+="</tr>";
+    });
+    document.getElementById("mrel-body").innerHTML=
+      "<table class='mrel-table'><thead><tr>"+
+      "<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>"+
+      "<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>"+
+      "<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>"+
+      "<th>Fatur.</th><th>Setor</th><th>Nome Operador</th>"+
+      "</tr></thead><tbody>"+rows+"</tbody></table>";
+  }
+  document.getElementById("mrel-overlay").classList.add("show");
+};
+window.exportarRelatorioAtual=()=>{
+  if(REL_MODE==="produtividade")exportarPDFProdutividade();
+  else exportarPDFAdmin();
+};
+window.exportExcelProdutividade=()=>{
+  const list=getFiltered();
+  const linhas2=getLinhasProdutividade(list);
+  if(!linhas2.length){alert("Nenhum dado para exportar.");return;}
+  const rows=linhas2.map(r=>({
+    "Placa":r.placa,"AC":r.ac,"Nota Fiscal":r.notaFiscal||"","Data":r.data||"",
+    "Tipo":r.tipoCarga||"","Posto1":fmtEx(r.en),"Port.Ini":fmtEx(r.ptI),"Port.Fim":fmtEx(r.ptF),
+    "Trg.Ini":fmtEx(r.trI),"Trg.Fim":fmtEx(r.trF),"Carga Ini":fmtEx(r.caI),"Carga Fim":fmtEx(r.caF),
+    "Enl.Ini":fmtEx(r.enI),"Enl.Fim":fmtEx(r.enF),"Fatur.":fmtEx(r.sa),"Setor":r.setorAtual||"",
+    "Nome Operador":r.operador||""
+  }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Produtividade");
+  const{s,e}=periodDates(MP);
+  XLSX.writeFile(wb,s===e?`produtividade_${s}.xlsx`:`produtividade_${s}_${e}.xlsx`);
 };
 window.exportarPDFAdmin=()=>{
   const list=getFiltered();
@@ -1250,6 +1352,57 @@ window.exportarPDFAdmin=()=>{
   a.href=blobUrl;a.target="_blank";a.rel="noopener noreferrer";
   document.body.appendChild(a);a.click();
   setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
+};
+window.exportarPDFProdutividade=()=>{
+  const list=getFiltered();
+  const linhas2=getLinhasProdutividade(list);
+  const per=buildPeriodoLabel();
+  const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const hora=new Date().toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
+  const fmtRel=d=>d?d.toLocaleString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit"}):"";
+  const td=(v,ex)=>"<td style='padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;"+(ex||"")+"'>"+(v||"")+"</td>";
+  const linhasHtml=linhas2.map((r,i)=>{
+    const bg=i%2===1?"#f5f8ff":"#fff";
+    return "<tr style='background:"+bg+"'>"+
+      td(r.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")+
+      td(r.ac)+td(r.notaFiscal||"")+td(r.data)+
+      td(({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[r.tipoCarga]||""),"font-size:7pt")+
+      td(fmtRel(r.en))+td(fmtRel(r.ptI))+td(fmtRel(r.ptF))+
+      td(fmtRel(r.trI))+td(fmtRel(r.trF))+
+      td(fmtRel(r.caI))+td(fmtRel(r.caF))+
+      td(fmtRel(r.enI))+td(fmtRel(r.enF))+
+      td(fmtRel(r.sa))+
+      td((r.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")+
+      td(r.operador||"")+
+      "</tr>";
+  }).join("");
+  const partes2=[];
+  partes2.push("<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>Produtividade - "+dtNow+"</title>");
+  partes2.push("<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}");
+  partes2.push("h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}");
+  partes2.push(".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}");
+  partes2.push("table{border-collapse:collapse;width:100%}");
+  partes2.push("th{background:#003366;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}");
+  partes2.push(".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}");
+  partes2.push("@page{margin:.8cm;size:A4 landscape}</style></head><body>");
+  partes2.push("<h2>Produtividade por Operador — Apodi Cimentos</h2>");
+  partes2.push("<div class='info'>Período: <b>"+per+"</b> &nbsp;· Total: <b>"+linhas2.length+" registro"+(linhas2.length!==1?"s":"")+"</b> &nbsp;· Gerado em: <b>"+dtNow+" às "+hora+"</b></div>");
+  partes2.push("<table><thead><tr>");
+  partes2.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>");
+  partes2.push("<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
+  partes2.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th><th>Fatur.</th><th>Setor</th><th>Nome Operador</th>");
+  partes2.push("</tr></thead><tbody>");
+  partes2.push(linhasHtml||"<tr><td colspan='17' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes2.push("</tbody></table>");
+  partes2.push("<div class='footer'>Sistema Admin — Apodi Cimentos — "+dtNow+"</div>");
+  partes2.push("<scr"+"ipt>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
+  partes2.push("</body></html>");
+  const blob2=new Blob([partes2.join("")],{type:"text/html;charset=utf-8"});
+  const blobUrl2=URL.createObjectURL(blob2);
+  const a2=document.createElement("a");
+  a2.href=blobUrl2;a2.target="_blank";a2.rel="noopener noreferrer";
+  document.body.appendChild(a2);a2.click();
+  setTimeout(()=>{document.body.removeChild(a2);URL.revokeObjectURL(blobUrl2);},4000);
 };
 
 // ── Gestão de Operadores das Telas ──────────────────────────────────
