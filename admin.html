@@ -49,6 +49,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .pb-carga-granel.on{border-color:#fb923c;color:#fb923c;background:rgba(251,146,60,.10)}
 .pb-carga-bigbag.on{border-color:#00e896;color:#00e896;background:rgba(0,232,150,.10)}
 .pb-status.on{border-color:var(--rd);color:var(--rd);background:rgba(255,68,102,.08)}
+.pb-empresa.on{border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.10)}
 /* setor select */
 .dselect-filter{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 12px;font-size:11px;font-family:'Inter',sans-serif;outline:none;cursor:pointer;min-width:160px}
 .dselect-filter:focus{border-color:var(--rd)}
@@ -322,6 +323,25 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <button class="pb pb-carga-bigbag" onclick="setCarga('bigbag',this)">Big Bag</button>
           </div>
 
+          <!-- Linha 4.1: Empresa -->
+          <div class="filter-row">
+            <span class="row-label">🏢 Empresa</span>
+            <button class="pb pb-empresa on" onclick="setEmpresa('t',this)">Todos</button>
+            <button class="pb pb-empresa" onclick="setEmpresa('Apodi',this)">Apodi</button>
+            <button class="pb pb-empresa" onclick="setEmpresa('Seguro Segurança',this)">Seguro Segurança</button>
+            <button class="pb pb-empresa" onclick="setEmpresa('Sousa Clean',this)">Sousa Clean</button>
+            <button class="pb pb-empresa" onclick="setEmpresa('Ambipar',this)">Ambipar</button>
+            <button class="pb pb-empresa" onclick="setEmpresa('Reforme Paletes',this)">Reforme Paletes</button>
+          </div>
+
+          <!-- Linha 4.2: Usuário -->
+          <div class="filter-row">
+            <span class="row-label">👤 Usuário</span>
+            <select class="dselect-filter" id="f-usuario-filter" onchange="render()">
+              <option value="">— Todos os usuários —</option>
+            </select>
+          </div>
+
           <!-- Linha 5: Status + Setor + Busca -->
           <div class="filter-row">
             <span class="row-label">🔎 Status</span>
@@ -556,7 +576,15 @@ function isAdminLogado(){
   return false;
 }
 let logado=isAdminLogado();
-let ALL=[],MP="hoje",MDIA="t",MT="t",MTC="t",MSTATUS="t",SELECTED_ID=null,MDATA=null,MDATA_FIM=null;
+let ALL=[],MP="hoje",MDIA="t",MT="t",MTC="t",MSTATUS="t",MEMP="t",SELECTED_ID=null,MDATA=null,MDATA_FIM=null;
+let OPERADOR_TELA={};
+const TELA_EMPRESA={posto1:"Apodi",portaria:"Seguro Segurança",triagem:"Reforme Paletes",carregamento:"Ambipar",enlonamento:"Sousa Clean",faturamento:"Apodi"};
+function getOperadoresRegistro(c){
+  return[c.entrada?.operador,c.triagem?.operadorInicio,c.triagem?.operadorFim,
+    c.carregamento?.operadorInicio,c.carregamento?.operadorFim,
+    c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim,
+    c.faturamento?.operador].filter(Boolean);
+}
 let SORT_COL=null,SORT_DIR=-1;
 let CAL_SHIFT_START=null;
 // calendário
@@ -839,6 +867,11 @@ function getFiltered(){
   if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   // Tipo de carga
   if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
+  // Empresa (via operador de qualquer etapa)
+  if(MEMP!=="t")list=list.filter(c=>getOperadoresRegistro(c).some(n=>TELA_EMPRESA[OPERADOR_TELA[n]]===MEMP));
+  // Usuário (via operador de qualquer etapa)
+  const usuarioSel=document.getElementById("f-usuario-filter")?.value||"";
+  if(usuarioSel)list=list.filter(c=>getOperadoresRegistro(c).includes(usuarioSel));
   // Status
   if(MSTATUS==="a")list=list.filter(c=>c.setorAtual!=="concluido");
   if(MSTATUS==="c")list=list.filter(c=>c.setorAtual==="concluido");
@@ -1043,6 +1076,7 @@ window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_SEL_SEMANA=null;CAL
 window.setDia=(d,el)=>{MDIA=d;document.querySelectorAll(".pb-dia").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll("[class*='pb-turno']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setCarga=(t,el)=>{MTC=t;document.querySelectorAll("[class*='pb-carga']").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setEmpresa=(t,el)=>{MEMP=t;document.querySelectorAll(".pb-empresa").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setStatus=(s,el)=>{MSTATUS=s;document.querySelectorAll(".pb-status").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 // -- auth + init ------------------------------------------------------------
@@ -1069,8 +1103,23 @@ window.doLogout=()=>{
   document.getElementById("login-screen").style.display="flex";
   document.getElementById("l-user").value="";document.getElementById("l-pwd").value="";
 };
+async function carregarOperadoresFiltro(){
+  try{
+    const snap=await getDocs(collection(db,"operadores_acesso"));
+    const lista=snap.docs.map(d=>d.data()).filter(o=>o.nome);
+    lista.sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
+    OPERADOR_TELA={};
+    lista.forEach(o=>{OPERADOR_TELA[o.nome]=o.tela;});
+    const sel=document.getElementById("f-usuario-filter");
+    if(sel){
+      sel.innerHTML='<option value="">— Todos os usuários —</option>'+
+        lista.map(o=>`<option value="${o.nome}">${o.nome} (${TELA_EMPRESA[o.tela]||o.tela})</option>`).join("");
+    }
+  }catch(e){console.error("Erro ao carregar operadores para filtro:",e);}
+}
 function iniciar(){
   calInit();
+  carregarOperadoresFiltro();
   onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
     ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
     document.getElementById("ld").style.display="none";
