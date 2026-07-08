@@ -1251,8 +1251,9 @@ window.abrirProdutividade=()=>{
     document.getElementById("mrel-body").innerHTML="<div style='text-align:center;padding:32px;color:var(--t3)'>Nenhum registro com os filtros selecionados.</div>";
   }else{
     let rows="";
-    linhas2.forEach(r=>{
+    linhas2.forEach((r,i)=>{
       rows+="<tr>";
+      rows+="<td style='text-align:center;color:var(--t2)'>"+(i+1)+"</td>";
       rows+="<td style='text-align:left;font-weight:bold;color:var(--bl);font-family:monospace'>"+(r.placa||"")+"</td>";
       rows+="<td>"+(r.ac||"")+"</td>";
       rows+="<td>"+(r.notaFiscal||"")+"</td>";
@@ -1270,7 +1271,7 @@ window.abrirProdutividade=()=>{
     });
     document.getElementById("mrel-body").innerHTML=
       "<table class='mrel-table'><thead><tr>"+
-      "<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>"+
+      "<th>Nº</th><th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>"+
       "<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>"+
       "<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>"+
       "<th>Fatur.</th><th>Setor</th><th>Nome Operador</th>"+
@@ -1286,8 +1287,8 @@ window.exportExcelProdutividade=()=>{
   const list=getFiltered();
   const linhas2=getLinhasProdutividade(list);
   if(!linhas2.length){alert("Nenhum dado para exportar.");return;}
-  const rows=linhas2.map(r=>({
-    "Placa":r.placa,"AC":r.ac,"Nota Fiscal":r.notaFiscal||"","Data":r.data||"",
+  const rows=linhas2.map((r,i)=>({
+    "Nº":i+1,"Placa":r.placa,"AC":r.ac,"Nota Fiscal":r.notaFiscal||"","Data":r.data||"",
     "Tipo":r.tipoCarga||"","Posto1":fmtEx(r.en),"Port.Ini":fmtEx(r.ptI),"Port.Fim":fmtEx(r.ptF),
     "Trg.Ini":fmtEx(r.trI),"Trg.Fim":fmtEx(r.trF),"Carga Ini":fmtEx(r.caI),"Carga Fim":fmtEx(r.caF),
     "Enl.Ini":fmtEx(r.enI),"Enl.Fim":fmtEx(r.enF),"Fatur.":fmtEx(r.sa),"Setor":r.setorAtual||"",
@@ -1364,6 +1365,7 @@ window.exportarPDFProdutividade=()=>{
   const linhasHtml=linhas2.map((r,i)=>{
     const bg=i%2===1?"#f5f8ff":"#fff";
     return "<tr style='background:"+bg+"'>"+
+      td(i+1,"text-align:center;color:#666")+
       td(r.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")+
       td(r.ac)+td(r.notaFiscal||"")+td(r.data)+
       td(({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[r.tipoCarga]||""),"font-size:7pt")+
@@ -1388,11 +1390,11 @@ window.exportarPDFProdutividade=()=>{
   partes2.push("<h2>Produtividade por Operador — Apodi Cimentos</h2>");
   partes2.push("<div class='info'>Período: <b>"+per+"</b> &nbsp;· Total: <b>"+linhas2.length+" registro"+(linhas2.length!==1?"s":"")+"</b> &nbsp;· Gerado em: <b>"+dtNow+" às "+hora+"</b></div>");
   partes2.push("<table><thead><tr>");
-  partes2.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>");
+  partes2.push("<th style='text-align:left'>Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>");
   partes2.push("<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
   partes2.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th><th>Fatur.</th><th>Setor</th><th>Nome Operador</th>");
   partes2.push("</tr></thead><tbody>");
-  partes2.push(linhasHtml||"<tr><td colspan='17' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes2.push(linhasHtml||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
   partes2.push("</tbody></table>");
   partes2.push("<div class='footer'>Sistema Admin — Apodi Cimentos — "+dtNow+"</div>");
   partes2.push("<scr"+"ipt>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
