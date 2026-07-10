@@ -146,6 +146,12 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <button class="turno-btn" id="tb-b" onclick="setTurno('B',this)">B · 07h–15h</button>
       <button class="turno-btn" id="tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
     </div>
+    <div class="filtro-row">
+      <span class="filtro-label">Usuário:</span>
+      <select class="filtro-input" id="f-operador" style="cursor:pointer">
+        <option value="">— Todos os usuários —</option>
+      </select>
+    </div>
   </div>
   <div class="btn-row">
     <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
@@ -173,7 +179,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,updateDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,updateDoc,doc,Timestamp,getDocs}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import{verificarSessao,fazerLogin,salvarNovaSenha,fazerLogout}from"./auth-tela.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
@@ -215,7 +221,17 @@ window.doSalvarSenha=async()=>{
 window.doLogout=()=>{fazerLogout(TELA);location.reload();};
 if(SESSAO.logado){mostrarApp();}else{document.getElementById("login-screen").style.display="flex";}
 const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+const ftDateStr=d=>d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
+(async()=>{
+  const sel=document.getElementById("f-operador");
+  if(!sel)return;
+  try{
+    const snap=await getDocs(collection(db,"operadores_acesso"));
+    const nomes=[...new Set(snap.docs.map(d=>d.data()).filter(o=>o.tela==="faturamento").map(o=>o.nome).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    nomes.forEach(n=>{const opt=document.createElement("option");opt.value=n;opt.textContent=n;sel.appendChild(opt);});
+  }catch(e){console.error("Erro ao carregar operadores:",e);}
+})();
 let HD=[],HD_REL=[];
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const hj=hoje();
@@ -295,11 +311,15 @@ function buildRegistrosRel(){
   const [hiH,hiM]=hIni.split(":").map(Number);
   const [hfH,hfM]=hFim.split(":").map(Number);
   const iniMin=hiH*60+hiM,fimMin=hfH*60+hfM;
+  const opFiltro=document.getElementById("f-operador")?.value||"";
   // Só entram registros com faturamento.ts preenchido (já liberados)
+  // Data, horário e turno filtram sempre pela data/hora de SAÍDA (faturamento.ts)
   let r=HD_REL.filter(c=>{
-    if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
     const ft=c.faturamento?.ts?.toDate?.();
     if(!ft)return false;
+    const ftData=ftDateStr(ft);
+    if(ftData<dataIniVal||ftData>dataFimVal)return false;
+    if(opFiltro&&(c.faturamento?.operador||"")!==opFiltro)return false;
     if(MT==="geral"){
       const min=ft.getHours()*60+ft.getMinutes();
       return min>=iniMin&&min<=fimMin;
@@ -343,7 +363,9 @@ window.verRelatorio=()=>{
   const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
   const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
   const horarioTxt=MT==="geral"?` · ${hIni}h às ${hFim}h`:"";
-  document.getElementById("prev-info").textContent=`Período: ${periodoTxt}${horarioTxt} · Turno: ${TURNO_LABELS[MT]} · ${registros.length} veículo${registros.length!==1?"s":""}`;
+  const opSel=document.getElementById("f-operador")?.value||"";
+  const opTxt=opSel?` · Usuário: ${opSel}`:"";
+  document.getElementById("prev-info").textContent=`Período: ${periodoTxt}${horarioTxt} · Turno: ${TURNO_LABELS[MT]}${opTxt} · ${registros.length} veículo${registros.length!==1?"s":""}`;
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
@@ -360,6 +382,8 @@ window.gerarPDF=()=>{
   const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
   const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
   const horarioTxt=MT==="geral"?` &nbsp;·&nbsp; Horário: ${hIni}h às ${hFim}h`:"";
+  const opSel=document.getElementById("f-operador")?.value||"";
+  const opTxt=opSel?` &nbsp;·&nbsp; Usuário: ${opSel}`:"";
   const linhas=buildLinhasRel(registros,true);
   const janela=window.open("","_blank","width=900,height=700");
   janela.document.write(`<!DOCTYPE html>
@@ -380,7 +404,7 @@ window.gerarPDF=()=>{
 </style>
 </head><body>
 <h2>Controle de Faturamento</h2>
-<div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
+<div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}${opTxt}</div>
 <table class="reg">
   <thead><tr>
     <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Nota Fiscal</th><th>Operador</th><th>Hora Saída</th>
@@ -415,7 +439,9 @@ window.exportExcel=()=>{
   XLSX.utils.book_append_sheet(wb,ws,"Faturamento");
   const{dataIniVal,dataFimVal}=getFiltros();
   const turnoSuffix=MT!=="geral"?`_turno${MT}`:"";
-  const fname=dataIniVal===dataFimVal?`faturamento_${dataIniVal}${turnoSuffix}.xlsx`:`faturamento_${dataIniVal}_a_${dataFimVal}${turnoSuffix}.xlsx`;
+  const opSel=document.getElementById("f-operador")?.value||"";
+  const opSuffix=opSel?`_${opSel.split(" ")[0]}`:"";
+  const fname=dataIniVal===dataFimVal?`faturamento_${dataIniVal}${turnoSuffix}${opSuffix}.xlsx`:`faturamento_${dataIniVal}_a_${dataFimVal}${turnoSuffix}${opSuffix}.xlsx`;
   XLSX.writeFile(wb,fname);
 };
 </script>
