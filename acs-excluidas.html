@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ACs Excluídas — Apodi Cimentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#0a0f1e;--bg2:#0f1a2e;--bg3:#0d1f35;--bd:#1e3558;--tx:#dff0ff;
+  --t2:#7aafcc;--t3:#3a6880;--ac:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
+
+/* LOGIN */
+#login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:40px 36px;max-width:340px;width:100%;text-align:center}
+.login-ic{font-size:40px;display:block;margin-bottom:10px}
+.login-title{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:20px;letter-spacing:2px;color:var(--rd);text-transform:uppercase}
+.login-sub{font-size:12px;color:var(--t2);margin:6px 0 22px}
+.login-err{display:none;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:var(--rd);font-size:12px;padding:8px;border-radius:8px;margin-bottom:14px}
+.fg{text-align:left;margin-bottom:14px}
+.fg label{font-size:11px;color:var(--t2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.fg input{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;color:var(--tx);padding:10px 12px;font-size:14px;outline:none}
+.fg input:focus{border-color:var(--rd)}
+.login-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--rd);color:#1a0006;font-weight:800;font-size:13px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;margin-top:6px}
+.login-btn:hover{opacity:.9}
+
+/* APP */
+.top{background:var(--bg2);border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:50}
+.logo{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:15px;letter-spacing:1px;color:var(--rd);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-right:10px}
+.nav-btn{padding:7px 12px;border:1px solid var(--bd);border-radius:7px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap}
+.nav-btn:hover{border-color:var(--ac);color:var(--ac)}
+.sair-btn{margin-left:auto;padding:7px 14px;border:1px solid rgba(255,68,102,.4);border-radius:7px;background:rgba(255,68,102,.08);color:var(--rd);font-size:11px;font-weight:700;cursor:pointer}
+.wrap{max-width:1400px;margin:0 auto;padding:18px 20px 60px}
+
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;min-width:130px}
+.stat-lb{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.stat-v{font-size:22px;font-weight:700;margin-top:3px}
+
+.filter-block{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-block input,.filter-block select{background:var(--bg3);border:1px solid var(--bd);border-radius:7px;color:var(--tx);padding:8px 12px;font-size:12px;outline:none}
+.filter-block input:focus,.filter-block select:focus{border-color:var(--ac)}
+.pb{padding:8px 14px;border:1px solid var(--bd);border-radius:7px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer}
+.pb.on{background:rgba(0,212,255,.1);border-color:var(--ac);color:var(--ac)}
+.pb:hover{border-color:var(--t2)}
+.exp-btn{margin-left:auto;padding:8px 14px;border:1px solid var(--gr);border-radius:7px;background:rgba(0,232,150,.08);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer}
+
+.tcard{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.thead-bar{padding:12px 18px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.thead-bar small{font-size:11px;color:var(--t2);font-weight:400;font-family:'Inter',sans-serif}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+th{text-align:left;font-size:9px;font-weight:700;color:#b0c8e8;text-transform:uppercase;letter-spacing:.4px;padding:9px 12px;border-bottom:1px solid var(--bd);white-space:nowrap;background:var(--bg3)}
+td{padding:9px 12px;border-bottom:1px solid #142640;white-space:nowrap}
+tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+tr:hover td{background:rgba(0,212,255,.04)}
+.placa{font-family:'JetBrains Mono',monospace;color:var(--ac);font-weight:700}
+.muted{color:var(--t2)}
+.empty{padding:40px;text-align:center;color:var(--t3);font-size:13px}
+.acoes{text-align:right}
+.bt{border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-left:5px}
+.bt-rest{background:rgba(0,232,150,.1);border:1px solid var(--gr);color:var(--gr)}
+.bt-rest:hover{background:rgba(0,232,150,.2)}
+.bt-del{background:rgba(255,68,102,.1);border:1px solid var(--rd);color:var(--rd)}
+.bt-del:hover{background:rgba(255,68,102,.2)}
+.msg-toast{position:fixed;bottom:20px;right:20px;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;display:none}
+.msg-toast.ok{background:rgba(0,232,150,.15);border:1px solid var(--gr);color:var(--gr)}
+.msg-toast.er{background:rgba(255,68,102,.15);border:1px solid var(--rd);color:var(--rd)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-wrap">
+  <div class="login-box">
+    <span class="login-ic">🔐</span>
+    <div class="login-title">ADMIN</div>
+    <div class="login-sub">ACs Excluídas — Acesso Restrito</div>
+    <div class="login-err" id="login-err">Usuário ou senha incorretos.</div>
+    <div class="fg"><label>Usuário</label><input id="l-user" type="text" placeholder="administrador" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="fg"><label>Senha</label><input id="l-pwd" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen" style="display:none">
+  <div class="top">
+    <div class="logo">🗑️ ACs EXCLUÍDAS</div>
+    <a class="nav-btn" href="/admin">← Admin</a>
+    <a class="nav-btn" href="/master" target="_blank">📊 Master</a>
+    <button class="sair-btn" onclick="doLogout()">Sair</button>
+  </div>
+  <div class="wrap">
+
+    <div class="stats">
+      <div class="stat"><div class="stat-lb">Total excluídos</div><div class="stat-v" id="st-total">0</div></div>
+      <div class="stat"><div class="stat-lb">Hoje</div><div class="stat-v" id="st-hoje" style="color:var(--ye)">0</div></div>
+      <div class="stat"><div class="stat-lb">Este mês</div><div class="stat-v" id="st-mes" style="color:var(--ac)">0</div></div>
+    </div>
+
+    <div class="filter-block">
+      <input id="f-busca" type="text" placeholder="Buscar placa ou AC" oninput="render()" style="width:180px"/>
+      <select id="f-user" onchange="render()"><option value="t">Todos os usuários</option></select>
+      <button class="pb on" data-p="tudo" onclick="setPeriodo('tudo',this)">Tudo</button>
+      <button class="pb" data-p="hoje" onclick="setPeriodo('hoje',this)">Hoje</button>
+      <button class="pb" data-p="7d" onclick="setPeriodo('7d',this)">7 dias</button>
+      <button class="pb" data-p="30d" onclick="setPeriodo('30d',this)">30 dias</button>
+      <button class="exp-btn" onclick="exportExcel()">⬇ Excel</button>
+    </div>
+
+    <div class="tcard">
+      <div class="thead-bar">Registros excluídos <small id="th-count"></small></div>
+      <div class="tscroll">
+        <table>
+          <thead><tr>
+            <th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Setor no momento</th>
+            <th>Excluído em</th><th>Excluído por</th><th>Motivo</th><th class="acoes">Ações</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="msg-toast" id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import{getFirestore,collection,onSnapshot,addDoc,deleteDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
+const db=getFirestore(app);
+const CREDS={user:"administrador",pwd:"admin2026"};
+
+function isAdminLogado(){
+  if(sessionStorage.getItem("admin_auth")==="1")return true;
+  try{
+    const ts=parseInt(localStorage.getItem("admin_auth_ts")||"0");
+    const ok=localStorage.getItem("admin_auth")==="1"&&ts>0&&(Date.now()-ts)<8*60*60*1000;
+    if(ok){sessionStorage.setItem("admin_auth","1");return true;}
+    localStorage.removeItem("admin_auth");
+    localStorage.removeItem("admin_auth_ts");
+  }catch(ignore){}
+  return false;
+}
+window.doLogin=()=>{
+  const u=document.getElementById("l-user").value.trim();
+  const p=document.getElementById("l-pwd").value;
+  if(u===CREDS.user&&p===CREDS.pwd){
+    localStorage.setItem("admin_auth","1");
+    localStorage.setItem("admin_auth_ts",Date.now().toString());
+    sessionStorage.setItem("admin_auth","1");
+    boot();
+  }else{
+    document.getElementById("login-err").style.display="block";
+  }
+};
+window.doLogout=()=>{
+  localStorage.removeItem("admin_auth");
+  localStorage.removeItem("admin_auth_ts");
+  sessionStorage.removeItem("admin_auth");
+  location.reload();
+};
+
+let ALL=[],MP="tudo",MBUSCA="",MUSER="t";
+
+function hoje(){return new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");}
+function toDate(ts){return ts&&ts.toDate?ts.toDate():(ts?new Date(ts):null);}
+function fmtDT(ts){
+  const d=toDate(ts);if(!d)return"—";
+  return d.toLocaleString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+}
+function showToast(tipo,texto){
+  const el=document.getElementById("toast");
+  el.className="msg-toast "+tipo;el.textContent=texto;el.style.display="block";
+  setTimeout(()=>{el.style.display="none";},3500);
+}
+
+window.setPeriodo=(p,el)=>{
+  MP=p;
+  document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
+  el.classList.add("on");
+  render();
+};
+
+function periodoOk(c){
+  if(MP==="tudo")return true;
+  const d=toDate(c.excluidoEm);if(!d)return false;
+  const now=new Date();
+  if(MP==="hoje"){
+    const dStr=d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+    return dStr===hoje();
+  }
+  const diffDias=(now-d)/86400000;
+  if(MP==="7d")return diffDias<=7;
+  if(MP==="30d")return diffDias<=30;
+  return true;
+}
+
+function getFiltered(){
+  MBUSCA=(document.getElementById("f-busca").value||"").toUpperCase().trim();
+  MUSER=document.getElementById("f-user").value;
+  return ALL.filter(c=>{
+    if(!periodoOk(c))return false;
+    if(MUSER!=="t"&&(c.excluidoPor||"")!==MUSER)return false;
+    if(MBUSCA){
+      const alvo=((c.placa||"")+" "+(c.ac||"")).toUpperCase();
+      if(!alvo.includes(MBUSCA))return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    const da=toDate(a.excluidoEm)||0,db_=toDate(b.excluidoEm)||0;
+    return db_-da;
+  });
+}
+
+function populaUsuarios(){
+  const sel=document.getElementById("f-user");
+  const atual=sel.value;
+  const users=[...new Set(ALL.map(c=>c.excluidoPor).filter(Boolean))].sort();
+  sel.innerHTML='<option value="t">Todos os usuários</option>'+users.map(u=>`<option value="${u}">${u}</option>`).join("");
+  if(users.includes(atual))sel.value=atual;
+}
+
+function renderStats(){
+  document.getElementById("st-total").textContent=ALL.length;
+  const hj=hoje();
+  document.getElementById("st-hoje").textContent=ALL.filter(c=>{
+    const d=toDate(c.excluidoEm);if(!d)return false;
+    return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-")===hj;
+  }).length;
+  const now=new Date();
+  document.getElementById("st-mes").textContent=ALL.filter(c=>{
+    const d=toDate(c.excluidoEm);if(!d)return false;
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  }).length;
+}
+
+window.render=()=>{
+  const list=getFiltered();
+  document.getElementById("th-count").textContent=list.length+" registro"+(list.length!==1?"s":"");
+  const tb=document.getElementById("tbody");
+  if(!list.length){
+    tb.innerHTML='<tr><td colspan="8"><div class="empty">Nenhum registro excluído encontrado.</div></td></tr>';
+    return;
+  }
+  tb.innerHTML=list.map(c=>{
+    return "<tr>"+
+      "<td class='placa'>"+(c.placa||"—")+"</td>"+
+      "<td>"+(c.ac||"—")+"</td>"+
+      "<td class='muted'>"+(c.notaFiscal||"—")+"</td>"+
+      "<td class='muted'>"+((c.setorAtual||"—").replace(/_/g," "))+"</td>"+
+      "<td class='muted'>"+fmtDT(c.excluidoEm)+"</td>"+
+      "<td class='muted'>"+(c.excluidoPor||"—")+"</td>"+
+      "<td class='muted'>"+(c.excluidoMotivo||"—")+"</td>"+
+      "<td class='acoes'>"+
+        "<button class='bt bt-rest' onclick=\"restaurar('"+c.id+"')\">Restaurar</button>"+
+        "<button class='bt bt-del' onclick=\"excluirDefinitivo('"+c.id+"')\">Excluir def.</button>"+
+      "</td>"+
+    "</tr>";
+  }).join("");
+};
+
+window.restaurar=async(id)=>{
+  const c=ALL.find(x=>x.id===id);if(!c)return;
+  if(!confirm("Restaurar o registro da placa "+c.placa+" para o fluxo normal?"))return;
+  try{
+    const{id:_id,idOriginal,excluidoEm,excluidoPor,excluidoMotivo,...dados}=c;
+    await addDoc(collection(db,"caminhoes_rastreio"),dados);
+    await deleteDoc(doc(db,"caminhoes_excluidos",id));
+    showToast("ok","✅ "+c.placa+" restaurado com sucesso.");
+  }catch(e){showToast("er","Erro ao restaurar: "+e.message);}
+};
+
+window.excluirDefinitivo=async(id)=>{
+  const c=ALL.find(x=>x.id===id);if(!c)return;
+  if(!confirm("Excluir DEFINITIVAMENTE o registro da placa "+c.placa+"?\nEsta ação não pode ser desfeita."))return;
+  if(!confirm("Tem certeza mesmo? Não haverá como recuperar este registro."))return;
+  try{
+    await deleteDoc(doc(db,"caminhoes_excluidos",id));
+    showToast("ok","🗑️ Registro removido definitivamente.");
+  }catch(e){showToast("er","Erro ao excluir: "+e.message);}
+};
+
+window.exportExcel=()=>{
+  const list=getFiltered();
+  if(!list.length){alert("Nenhum dado para exportar.");return;}
+  const rows=list.map(c=>({
+    "Placa":c.placa||"","AC":c.ac||"","Nota Fiscal":c.notaFiscal||"",
+    "Setor no momento":(c.setorAtual||"").replace(/_/g," "),
+    "Data original":c.data||"","Excluído em":fmtDT(c.excluidoEm),
+    "Excluído por":c.excluidoPor||"","Motivo":c.excluidoMotivo||""
+  }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Excluidas");
+  XLSX.writeFile(wb,"acs_excluidas_"+hoje()+".xlsx");
+};
+
+function boot(){
+  document.getElementById("login-wrap").style.display="none";
+  document.getElementById("app-screen").style.display="block";
+  onSnapshot(collection(db,"caminhoes_excluidos"),snap=>{
+    ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
+    populaUsuarios();
+    renderStats();
+    render();
+  },err=>{showToast("er","Erro ao carregar: "+err.message);});
+}
+
+if(isAdminLogado())boot();
+</script>
+</body>
+</html>
