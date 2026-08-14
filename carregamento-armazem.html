@@ -225,6 +225,22 @@ tr.alerta .turno{opacity:.7}
     <div class="st s9"><div class="sv" id="s9">—</div><div class="sl">TMEI · Enlone</div></div>
   </div>
 
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno A · 23h–07h</div><div id="tma-turno-a" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
+      <div id="tma-turno-seta-a" style="font-size:22px">—</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno B · 07h–15h</div><div id="tma-turno-b" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
+      <div id="tma-turno-seta-b" style="font-size:22px">—</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno C · 15h–23h</div><div id="tma-turno-c" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
+      <div id="tma-turno-seta-c" style="font-size:22px">—</div>
+    </div>
+  </div>
+  <div style="font-size:10px;color:var(--t3);margin:-10px 0 14px">Meta: 40min por turno · verde ↓ dentro da meta · vermelho ↑ acima da meta</div>
+
   <div class="filter-row">
     <span class="row-label">📅 Período:</span>
     <button class="pb on" onclick="setPeriod('hoje',this)">Hoje</button>
@@ -273,10 +289,10 @@ tr.alerta .turno{opacity:.7}
 
   <div class="filter-row">
     <span class="row-label">🕐 Turno:</span>
-    <button class="tb tb-todos on" onclick="setTurno('t',this)">Todos</button>
-    <button class="tb tb-a" onclick="setTurno('A',this)">A · 23h–07h</button>
-    <button class="tb tb-b" onclick="setTurno('B',this)">B · 07h–15h</button>
-    <button class="tb tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
+    <button class="tb tb-todos on" onclick="setTurno('t',this)">Todos (<span id="cnt-turno-t">0</span>)</button>
+    <button class="tb tb-a" onclick="setTurno('A',this)">A · 23h–07h (<span id="cnt-turno-a">0</span>)</button>
+    <button class="tb tb-b" onclick="setTurno('B',this)">B · 07h–15h (<span id="cnt-turno-b">0</span>)</button>
+    <button class="tb tb-c" onclick="setTurno('C',this)">C · 15h–23h (<span id="cnt-turno-c">0</span>)</button>
   </div>
 
   <div class="filter-row">
@@ -313,7 +329,7 @@ tr.alerta .turno{opacity:.7}
   <!-- Card: Aguardando Triagem -->
   <div id="card-aguardando" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-left:3px solid var(--bl);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;align-items:center;justify-content:space-between">
     <div style="display:flex;align-items:center;gap:12px">
-      <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);letter-spacing:.5px">🏁 AGUARDANDO TRIAGEM</div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);letter-spacing:.5px">🏁 AGUARDANDO PROCESSO</div>
       <div style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:800;color:var(--bl)" id="cnt-aguardando">0</div>
       <div style="font-size:11px;color:var(--t2)" id="txt-aguardando"></div>
     </div>
@@ -326,9 +342,11 @@ tr.alerta .turno{opacity:.7}
     <div class="tscroll" id="tbl" style="display:none">
       <table>
         <thead><tr id="thead-row">
+          <th style="text-align:center;min-width:32px">Nº</th>
           <th data-col="placa" style="text-align:left;min-width:80px">Placa</th>
           <th data-col="cimento" style="min-width:52px">Cim.</th>
           <th data-col="ac" style="min-width:54px">AC</th>
+          <th data-col="data" style="min-width:50px">Data</th>
           <th data-col="setor" style="min-width:70px">Setor<br>Atual</th>
           <th data-col="trI" style="min-width:52px">📦<br>Trg.Ini</th>
           <th data-col="trF" style="min-width:52px">📦<br>Trg.Fim</th>
@@ -445,12 +463,31 @@ function calcTMA(c){
   return p.length?p.reduce((a,b)=>a+b,0):null;
 }
 function isAlerta(c){
-  // So nao pulsa se concluido ou com saída registrada
-  if(!c.setorAtual||c.setorAtual==="concluido"||c.faturamento?.ts)return false;
-  const en=getTS(c,"entrada","ts");
-  if(!en)return false;
-  // Pulsa se passou mais de 1h30 desde a entrada
-  return(Date.now()-en.getTime())>90*60*1000;
+  // Pulsa apenas enquanto a etapa atual (não finalizada) do armazém ultrapassar o limite
+  const s=c.setorAtual;
+  if(s==="triagem_inicio"){
+    const i=getTS(c,"triagem","inicio");
+    return i?(Date.now()-i.getTime())>5*60*1000:false;
+  }
+  if(s==="carregamento_inicio"){
+    const i=getTS(c,"carregamento","inicio");
+    return i?(Date.now()-i.getTime())>20*60*1000:false;
+  }
+  if(s==="enlonamento_inicio"){
+    const i=getTS(c,"enlonamento","inicio");
+    return i?(Date.now()-i.getTime())>15*60*1000:false;
+  }
+  return false;
+}
+function temEtapaArmazem(c){
+  return!!(c.triagem?.inicio||c.triagem?.fim||c.carregamento?.inicio||c.carregamento?.fim||c.enlonamento?.inicio||c.enlonamento?.fim);
+}
+function alertaLabel(c){
+  const s=c.setorAtual;
+  if(s==="triagem_inicio")return"+5min";
+  if(s==="carregamento_inicio")return"+20min";
+  if(s==="enlonamento_inicio")return"+15min";
+  return"";
 }
 function statusFinal(c){
   if(c.setorAtual==="concluido"||c.faturamento?.ts)return`<span class="status-icon status-concluido" title="Concluído">✔</span>`;
@@ -464,6 +501,7 @@ function tsVal(c,sn,f){const d=getTS(c,sn,f);return d?d.getTime():0;}
 function getSortVal(c,col){
   switch(col){
     case"placa":return c.placa||"";case"ac":return c.ac||"";case"cimento":return c.tipoCimento||"";
+    case"data":return c.data||"";
     case"setor":return c.setorAtual||"";
     case"trI":return tsVal(c,"triagem","inicio");case"trF":return tsVal(c,"triagem","fim");
     case"caI":return tsVal(c,"carregamento","inicio");case"caF":return tsVal(c,"carregamento","fim");
@@ -702,6 +740,7 @@ function getFiltered(){
   let list=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
   const seen=new Set();
   list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
+  list=list.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
   if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
   if(MTCIM!=="t")list=list.filter(c=>c.tipoCimento===MTCIM);
@@ -737,13 +776,15 @@ window.render=()=>{
   let period=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
   const seenSt=new Set();
   period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
+  period=period.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
   if(MT!=="t")period=period.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   if(MTC!=="t")period=period.filter(c=>c.tipoCarga===MTC);
   if(MTCIM!=="t")period=period.filter(c=>c.tipoCimento===MTCIM);
 
   const allPeriod=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
   const allSeen=new Set();
-  const allP=allPeriod.filter(c=>{if(allSeen.has(c.id))return false;allSeen.add(c.id);return true;});
+  let allP=allPeriod.filter(c=>{if(allSeen.has(c.id))return false;allSeen.add(c.id);return true;});
+  allP=allP.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
   document.getElementById("cnt-carga-t").textContent=allP.length;
   document.getElementById("cnt-ensacado").textContent=allP.filter(c=>c.tipoCarga==="ensacado").length;
   document.getElementById("cnt-granel").textContent=allP.filter(c=>c.tipoCarga==="granel").length;
@@ -752,6 +793,25 @@ window.render=()=>{
   document.getElementById("cnt-cp2f").textContent=allP.filter(c=>c.tipoCimento==="CP II F").length;
   document.getElementById("cnt-cp3").textContent=allP.filter(c=>c.tipoCimento==="CP III").length;
   document.getElementById("cnt-cp5").textContent=allP.filter(c=>c.tipoCimento==="CP V").length;
+
+  document.getElementById("cnt-turno-t").textContent=allP.length;
+  document.getElementById("cnt-turno-a").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="A").length;
+  document.getElementById("cnt-turno-b").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="B").length;
+  document.getElementById("cnt-turno-c").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="C").length;
+
+  const METATMA=40*60*1000;
+  ["A","B","C"].forEach(t=>{
+    const regs=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
+    const vals=regs.map(calcTMA).filter(v=>v!=null);
+    const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+    const okDentro=avg!=null&&avg<=METATMA;
+    const cor=avg==null?"var(--t3)":(okDentro?"var(--gr)":"var(--rd)");
+    const seta=avg==null?"—":(okDentro?"↓":"↑");
+    const valEl=document.getElementById("tma-turno-"+t.toLowerCase());
+    const setaEl=document.getElementById("tma-turno-seta-"+t.toLowerCase());
+    if(valEl){valEl.textContent=avg!=null?durStr(avg):"—";valEl.style.color=cor;}
+    if(setaEl){setaEl.textContent=seta;setaEl.style.color=cor;}
+  });
 
   document.getElementById("cnt-tmpo-t").textContent=period.length;
   document.getElementById("cnt-tmpo-tma").textContent=period.filter(c=>tempoDisp(c,"tma")).length;
@@ -815,7 +875,7 @@ window.render=()=>{
     return str;
   }
 
-  tb.innerHTML=list.map(c=>{
+  tb.innerHTML=list.map((c,idx)=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
@@ -825,9 +885,11 @@ window.render=()=>{
     const hoje2=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     const incompleto=c.data&&c.data<hoje2&&c.setorAtual!=="concluido";
     return`<tr${alerta?' class="alerta"':incompleto?' class="incompleto"':''}>
-      <td><span class="ptag">${c.placa}</span>${turnoPill(en)}${tipoPill(c)}${alerta?'<span class="alerta-badge">+1h30</span>':''}</td>
+      <td style="text-align:center;color:var(--t3);font-size:11px">${idx+1}</td>
+      <td><span class="ptag">${c.placa}</span>${turnoPill(en)}${tipoPill(c)}${alerta?`<span class="alerta-badge">${alertaLabel(c)}</span>`:''}</td>
       <td style="font-size:11px;font-family:monospace;font-weight:700;color:var(--ye);letter-spacing:.3px">${c.tipoCimento||'<span style="color:var(--t3)">—</span>'}</td>
       <td style="color:var(--t2)">${c.ac}</td>
+      <td style="color:var(--t2);font-size:10px">${c.data||"—"}</td>
       <td>${pill(c.setorAtual)}</td>
       <td class="ec">${cell(trI,null)}</td>
       <td class="ec">${cell(trF,trI)}</td>
@@ -854,7 +916,7 @@ window.render=()=>{
       </div>`;
     }).join("");
     return`<div class="crd${alerta?" alerta":""}">
-      <div class="crd-top"><span class="crd-pl">${c.placa}${alerta?'<span class="alerta-badge" style="font-size:8px">+1h30</span>':''}</span>${pill(c.setorAtual)}</div>
+      <div class="crd-top"><span class="crd-pl">${c.placa}${alerta?`<span class="alerta-badge" style="font-size:8px">${alertaLabel(c)}</span>`:''}</span>${pill(c.setorAtual)}</div>
       <div class="crd-sub">AC: ${c.ac} · ${c.tipoCimento||""} ${turnoPill(en)} ${tipoPill(c)}</div>
       <div class="crd-grid">${etapas}</div>
       <div class="crd-tmac">
