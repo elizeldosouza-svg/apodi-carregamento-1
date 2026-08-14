@@ -359,10 +359,16 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
           <span class="tot-pill tot-conc" id="tot-conc">Concluídos (0)</span>
         </div>
       </div>
+      <div id="bulk-bar" style="display:none;background:rgba(255,68,102,.08);border-bottom:1px solid var(--rd);padding:10px 18px;align-items:center;gap:12px">
+        <span id="bulk-count" style="font-size:12px;font-weight:700;color:var(--rd)">0 selecionados</span>
+        <button onclick="bulkExcluir()" style="border:1px solid var(--rd);background:rgba(255,68,102,.1);color:var(--rd);font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer">🗑️ Excluir selecionados</button>
+        <span onclick="clearSelection()" style="color:var(--t2);font-size:11px;text-decoration:underline;cursor:pointer;margin-left:auto">Limpar seleção</span>
+      </div>
       <div id="ld"><div class="spin"></div></div>
       <div class="tscroll" id="tbl" style="display:none">
         <table>
           <thead><tr>
+            <th style="text-align:center;width:34px"><input type="checkbox" id="chk-all" onclick="toggleSelectAll(this.checked)"/></th>
             <th data-col="placa" onclick="sortBy('placa')"><div class="th-plain">Placa</div></th>
             <th data-col="ac" onclick="sortBy('ac')"><div class="th-plain">AC</div></th>
             <th data-col="data" onclick="sortBy('data')"><div class="th-plain">Data</div></th>
@@ -558,6 +564,7 @@ function isAdminLogado(){
 }
 let logado=isAdminLogado();
 let ALL=[],MP="hoje",MDIA="t",MT="t",MTC="t",MSTATUS="t",SELECTED_ID=null,MDATA=null,MDATA_FIM=null;
+let SELECTED_IDS=new Set();
 let SORT_COL=null,SORT_DIR=-1;
 let CAL_SHIFT_START=null;
 // calendário
@@ -883,7 +890,9 @@ window.render=()=>{
     const sa=getTS(c,"faturamento","ts");
     const t=getTurno(en);
     const sel=SELECTED_ID===c.id;
+    const chk=SELECTED_IDS.has(c.id);
     return`<tr class="data-row${sel?" selected":""}" onclick="openDrawer('${c.id}')">
+      <td style="text-align:center" onclick="event.stopPropagation()"><input type="checkbox" ${chk?"checked":""} onclick="toggleSelect('${c.id}',this.checked)"/></td>
       <td><span class="ptag">${c.placa}</span></td>
       <td style="color:var(--t2)">${c.ac}</td>
       <td style="color:var(--t2);font-size:10px">${c.data||"—"}</td>
@@ -903,6 +912,61 @@ window.render=()=>{
       <td style="text-align:center"><button onclick="event.stopPropagation();openDrawer('${c.id}')" style="padding:3px 10px;border:1px solid var(--rd);border-radius:6px;background:rgba(255,68,102,.08);color:var(--rd);font-size:10px;font-weight:700;cursor:pointer">✏️</button></td>
     </tr>`;
   }).join("");
+  updateBulkBar();
+};
+
+// -- seleção múltipla / exclusão em massa ------------------------------------
+window.toggleSelect=(id,checked)=>{
+  if(checked)SELECTED_IDS.add(id);else SELECTED_IDS.delete(id);
+  updateBulkBar();
+  const chkAll=document.getElementById("chk-all");
+  const visIds=getFiltered().map(c=>c.id);
+  if(chkAll)chkAll.checked=visIds.length>0&&visIds.every(i=>SELECTED_IDS.has(i));
+};
+window.toggleSelectAll=(checked)=>{
+  const visIds=getFiltered().map(c=>c.id);
+  if(checked)visIds.forEach(id=>SELECTED_IDS.add(id));
+  else visIds.forEach(id=>SELECTED_IDS.delete(id));
+  render();
+};
+window.clearSelection=()=>{SELECTED_IDS.clear();render();};
+function updateBulkBar(){
+  const bar=document.getElementById("bulk-bar");
+  const n=SELECTED_IDS.size;
+  if(!bar)return;
+  if(n>0){
+    bar.style.display="flex";
+    document.getElementById("bulk-count").textContent=n+" selecionado"+(n!==1?"s":"");
+  }else{
+    bar.style.display="none";
+    const chkAll=document.getElementById("chk-all");
+    if(chkAll)chkAll.checked=false;
+  }
+}
+window.bulkExcluir=async()=>{
+  const ids=[...SELECTED_IDS];
+  if(!ids.length)return;
+  const lista=ALL.filter(c=>ids.includes(c.id));
+  if(!confirm(`Excluir ${ids.length} registro(s) selecionado(s)?\nOs registros serão movidos para "ACs Excluídas" e poderão ser restaurados depois.`))return;
+  const motivo=prompt("Motivo da exclusão (opcional, aplicado a todos os selecionados):")||"";
+  let ok=0,falhas=0;
+  for(const c of lista){
+    try{
+      const{id,...dados}=c;
+      await addDoc(collection(db,"caminhoes_excluidos"),{
+        ...dados,
+        idOriginal:id,
+        excluidoEm:Timestamp.fromDate(new Date()),
+        excluidoPor:CREDS.user,
+        excluidoMotivo:motivo.trim()
+      });
+      await deleteDoc(doc(db,"caminhoes_rastreio",id));
+      ok++;
+    }catch(e){falhas++;}
+  }
+  SELECTED_IDS.clear();
+  closeDrawer();
+  showMsg(falhas?"er":"ok",falhas?`⚠️ ${ok} excluído(s), ${falhas} falharam.`:`✅ ${ok} registro(s) excluído(s).`);
 };
 
 // -- drawer -----------------------------------------------------------------
