@@ -53,6 +53,10 @@
       "destination": "/admin.html"
     },
     {
+      "source": "/acs-excluidas",
+      "destination": "/acs-excluidas.html"
+    },
+    {
       "source": "/placas",
       "destination": "/placas.html"
     },
