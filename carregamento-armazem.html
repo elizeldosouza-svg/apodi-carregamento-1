@@ -241,6 +241,14 @@ tr.alerta .turno{opacity:.7}
   </div>
   <div style="font-size:10px;color:var(--t3);margin:-10px 0 14px">Meta: 40min por turno · verde ↓ dentro da meta · vermelho ↑ acima da meta</div>
 
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px 16px;margin-bottom:14px">
+    <button id="filtros-toggle-btn" onclick="toggleFiltros()" style="display:flex;align-items:center;gap:8px;background:rgba(0,212,255,.08);border:1px solid var(--bl);color:var(--bl);font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;cursor:pointer;white-space:nowrap">
+      🔍 Filtros <span id="filtros-toggle-icon">▾</span>
+    </button>
+    <div id="filtros-resumo" style="display:flex;gap:6px;flex-wrap:wrap;font-size:9px;color:var(--t2)"></div>
+  </div>
+
+  <div id="filtros-wrap" style="display:none">
   <div class="filter-row">
     <span class="row-label">📅 Período:</span>
     <button class="pb on" onclick="setPeriod('hoje',this)">Hoje</button>
@@ -325,6 +333,7 @@ tr.alerta .turno{opacity:.7}
     <button class="fb" onclick="setF('a',this)">Em processo (<span id="cnt-f-a">0</span>)</button>
     <button class="fb" onclick="setF('c',this)">Concluídos (<span id="cnt-f-c">0</span>)</button>
   </div>
+  </div><!-- /filtros-wrap -->
 
   <!-- Card: Aguardando Processo -->
   <div id="card-aguardando" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-left:3px solid var(--bl);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;align-items:center;gap:16px;flex-wrap:wrap">
@@ -735,6 +744,22 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
 calInitM();
 
 window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_AGUARD_INI=false;document.getElementById("cal-btn").classList.remove("has-date");document.getElementById("cal-btn-txt").textContent="Data";document.getElementById("cal-clear-m").style.display="none";calRenderM();document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.toggleFiltros=()=>{
+  const w=document.getElementById("filtros-wrap");
+  const icon=document.getElementById("filtros-toggle-icon");
+  const visible=w.style.display!=="none";
+  w.style.display=visible?"none":"block";
+  icon.textContent=visible?"▾":"▴";
+};
+function updateFiltrosResumo(total){
+  const periodosLb={hoje:"Hoje",ontem:"Ontem",semana:"Esta Semana",semana_passada:"Semana Passada",mes:"Este Mês",mes_passado:"Mês Passado",ano:"Este Ano"};
+  const turnosLb={t:"Turno: Todos",A:"Turno A",B:"Turno B",C:"Turno C"};
+  const cargasLb={t:"Carga: Todos",granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"};
+  const cimentosLb={t:"Cimento: Todos","CP II F":"CP II F","CP III":"CP III","CP V":"CP V"};
+  const perLb=MDATA?(MDATA===MDATA_FIM||!MDATA_FIM?MDATA:MDATA+" a "+MDATA_FIM):(periodosLb[MP]||MP);
+  const chips=[perLb,turnosLb[MT]||MT,cargasLb[MTC]||MTC,cimentosLb[MTCIM]||MTCIM,total+" veículo"+(total!==1?"s":"")];
+  document.getElementById("filtros-resumo").innerHTML=chips.map(t=>`<span style="background:var(--bg3);border:1px solid var(--b2);border-radius:12px;padding:3px 10px">${t}</span>`).join("");
+}
 window.setF=(f,el)=>{MF=f;document.querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
@@ -915,6 +940,7 @@ window.render=()=>{
   document.getElementById("s6").textContent=partes.length?durStr(partes.reduce((a,b)=>a+b,0)):"—";
 
   const list=getFiltered();
+  updateFiltrosResumo(list.length);
   const listProc=list.filter(c=>c.setorAtual!=="concluido");
   const listConc=list.filter(c=>c.setorAtual==="concluido");
   document.getElementById("cnt-proc").textContent=listProc.length+" "+(listProc.length===1?"veículo":"veículos");
