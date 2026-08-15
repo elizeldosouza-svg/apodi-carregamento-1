@@ -856,7 +856,7 @@ window.render=()=>{
   if(aguardando.length>0||filaFatur.length>0){
     cardAg.style.display="flex";
     document.getElementById("cnt-aguardando").textContent=aguardando.length;
-    document.getElementById("txt-aguardando").textContent="veículo"+(aguardando.length!==1?"s":"")+" na fila";
+    document.getElementById("txt-aguardando").textContent="veículo"+(aguardando.length!==1?"s":"")+" ...";
   } else {
     cardAg.style.display="none";
   }
