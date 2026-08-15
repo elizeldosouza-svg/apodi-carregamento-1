@@ -432,6 +432,10 @@ function getTurno(d){
   if(h>=7&&h<15)return"B";
   return"C";
 }
+function turnoTS(c){
+  // Turno desta tela é baseado no fim do enlonamento; se vazio, usa faturamento; se vazio, usa entrada
+  return getTS(c,"enlonamento","fim")||getTS(c,"faturamento","ts")||getTS(c,"entrada","ts");
+}
 function turnoPill(d){
   const t=getTurno(d);if(!t)return"";
   return`<span class="turno t-${t.toLowerCase()}">${t}</span>`;
@@ -755,7 +759,7 @@ function getFiltered(){
   const seen=new Set();
   list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
   list=list.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
-  if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
+  if(MT!=="t")list=list.filter(c=>getTurno(turnoTS(c))===MT);
   if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
   if(MTCIM!=="t")list=list.filter(c=>c.tipoCimento===MTCIM);
   if(MF==="a")list=list.filter(c=>c.setorAtual!=="concluido");
@@ -791,7 +795,7 @@ window.render=()=>{
   const seenSt=new Set();
   period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
   period=period.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
-  if(MT!=="t")period=period.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
+  if(MT!=="t")period=period.filter(c=>getTurno(turnoTS(c))===MT);
   if(MTC!=="t")period=period.filter(c=>c.tipoCarga===MTC);
   if(MTCIM!=="t")period=period.filter(c=>c.tipoCimento===MTCIM);
 
@@ -809,13 +813,13 @@ window.render=()=>{
   document.getElementById("cnt-cp5").textContent=allP.filter(c=>c.tipoCimento==="CP V").length;
 
   document.getElementById("cnt-turno-t").textContent=allP.length;
-  document.getElementById("cnt-turno-a").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="A").length;
-  document.getElementById("cnt-turno-b").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="B").length;
-  document.getElementById("cnt-turno-c").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="C").length;
+  document.getElementById("cnt-turno-a").textContent=allP.filter(c=>getTurno(turnoTS(c))==="A").length;
+  document.getElementById("cnt-turno-b").textContent=allP.filter(c=>getTurno(turnoTS(c))==="B").length;
+  document.getElementById("cnt-turno-c").textContent=allP.filter(c=>getTurno(turnoTS(c))==="C").length;
 
   const METATMA=40*60*1000;
   ["A","B","C"].forEach(t=>{
-    const regs=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
+    const regs=allP.filter(c=>getTurno(turnoTS(c))===t);
     const vals=regs.map(calcTMA).filter(v=>v!=null);
     const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
     const okDentro=avg!=null&&avg<=METATMA;
@@ -856,7 +860,7 @@ window.render=()=>{
   if(aguardando.length>0||filaFatur.length>0){
     cardAg.style.display="flex";
     document.getElementById("cnt-aguardando").textContent=aguardando.length;
-    document.getElementById("txt-aguardando").textContent="veículo"+(aguardando.length!==1?"s":"")+" ...";
+    document.getElementById("txt-aguardando").textContent="veículo"+(aguardando.length!==1?"s":"")+" na fila";
   } else {
     cardAg.style.display="none";
   }
@@ -908,7 +912,7 @@ window.render=()=>{
     const incompleto=c.data&&c.data<hoje2&&c.setorAtual!=="concluido";
     return`<tr${alerta?' class="alerta"':incompleto?' class="incompleto"':''}>
       <td style="text-align:center;color:var(--t3);font-size:11px">${idx+1}</td>
-      <td><span class="ptag">${c.placa}</span>${turnoPill(en)}${tipoPill(c)}${alerta?`<span class="alerta-badge">${alertaLabel(c)}</span>`:''}</td>
+      <td><span class="ptag">${c.placa}</span>${turnoPill(turnoTS(c))}${tipoPill(c)}${alerta?`<span class="alerta-badge">${alertaLabel(c)}</span>`:''}</td>
       <td style="font-size:11px;font-family:monospace;font-weight:700;color:var(--ye);letter-spacing:.3px">${c.tipoCimento||'<span style="color:var(--t3)">—</span>'}</td>
       <td style="color:var(--t2)">${c.ac}</td>
       <td style="color:var(--t2);font-size:10px">${c.data||"—"}</td>
@@ -941,7 +945,7 @@ window.render=()=>{
     }).join("");
     return`<div class="crd${alerta?" alerta":""}">
       <div class="crd-top"><span class="crd-pl">${c.placa}${alerta?`<span class="alerta-badge" style="font-size:8px">${alertaLabel(c)}</span>`:''}</span>${pill(c.setorAtual)}</div>
-      <div class="crd-sub">AC: ${c.ac} · ${c.tipoCimento||""} ${turnoPill(en)} ${tipoPill(c)}</div>
+      <div class="crd-sub">AC: ${c.ac} · ${c.tipoCimento||""} ${turnoPill(turnoTS(c))} ${tipoPill(c)}</div>
       <div class="crd-grid">${etapas}</div>
       <div class="crd-tmac">
         <div><div class="el">⏱️ TMA</div><div class="ei ${tma!=null?"":"w"}" style="${tma!=null?`color:var(--gr)`:''}"> ${tma!=null?durStr(tma):"em processo"}</div></div>
