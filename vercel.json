@@ -57,6 +57,14 @@
       "destination": "/admin.html"
     },
     {
+      "source": "/acs-excluidas",
+      "destination": "/acs-excluidas.html"
+    },
+    {
+      "source": "/carregamento-armazem",
+      "destination": "/carregamento-armazem.html"
+    },
+    {
       "source": "/placas",
       "destination": "/placas.html"
     },
