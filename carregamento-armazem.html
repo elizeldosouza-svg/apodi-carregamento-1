@@ -345,12 +345,12 @@ tr.alerta .turno{opacity:.7}
     <a href="/patio" style="margin-left:auto;padding:7px 16px;border:1px solid var(--bl);border-radius:20px;background:rgba(0,212,255,.08);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.18)'" onmouseout="this.style.background='rgba(0,212,255,.08)'">Ver Pátio →</a>
   </div>
 
-  <div class="tcard">
-    <div class="thead">📋 Caminhões <small id="cnt"></small></div>
-    <div id="ld"><div class="spin"></div></div>
-    <div class="tscroll" id="tbl" style="display:none">
+  <div id="ld"><div class="spin"></div></div>
+  <div class="tcard" id="tcard-proc">
+    <div class="thead" style="color:var(--ye)"><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:50%;background:var(--ye);display:inline-block"></span>EM PROCESSO</span> <small id="cnt-proc"></small></div>
+    <div class="tscroll" id="tbl-proc" style="display:none">
       <table>
-        <thead><tr id="thead-row">
+        <thead><tr class="thead-row">
           <th style="text-align:center;min-width:32px">Nº</th>
           <th data-col="placa" style="text-align:left;min-width:80px">Placa</th>
           <th data-col="cimento" style="min-width:52px">Cim.</th>
@@ -368,10 +368,38 @@ tr.alerta .turno{opacity:.7}
           <th data-col="nf" style="min-width:70px">Nota<br>Fiscal</th>
           <th data-col="status" style="min-width:60px">Status</th>
         </tr></thead>
-        <tbody id="tbody"></tbody>
+        <tbody id="tbody-proc"></tbody>
       </table>
     </div>
-    <div class="empty" id="emp" style="display:none">🔍 Nenhum resultado.</div>
+    <div class="empty" id="emp-proc" style="display:none">🔍 Nenhum caminhão em processo.</div>
+  </div>
+
+  <div class="tcard" id="tcard-conc" style="margin-top:14px">
+    <div class="thead" style="color:var(--gr)"><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:50%;background:var(--gr);display:inline-block"></span>CONCLUÍDOS</span> <small id="cnt-conc"></small></div>
+    <div class="tscroll" id="tbl-conc" style="display:none">
+      <table>
+        <thead><tr class="thead-row">
+          <th style="text-align:center;min-width:32px">Nº</th>
+          <th data-col="placa" style="text-align:left;min-width:80px">Placa</th>
+          <th data-col="cimento" style="min-width:52px">Cim.</th>
+          <th data-col="ac" style="min-width:54px">AC</th>
+          <th data-col="data" style="min-width:50px">Data</th>
+          <th data-col="setor" style="min-width:70px">Setor<br>Atual</th>
+          <th data-col="trI" style="min-width:52px">📦<br>Trg.Ini</th>
+          <th data-col="trF" style="min-width:52px">📦<br>Trg.Fim</th>
+          <th data-col="caI" style="min-width:52px">🏗️<br>Carga Ini</th>
+          <th data-col="caF" style="min-width:52px">🏗️<br>Carga Fim</th>
+          <th data-col="enI" style="min-width:52px">🪢<br>Enl.Ini</th>
+          <th data-col="enF" style="min-width:52px">🪢<br>Enl.Fim</th>
+          <th data-col="fatur" style="min-width:60px">🧾<br>Fatur</th>
+          <th data-col="tma" style="min-width:48px">⏱️<br>TMA</th>
+          <th data-col="nf" style="min-width:70px">Nota<br>Fiscal</th>
+          <th data-col="status" style="min-width:60px">Status</th>
+        </tr></thead>
+        <tbody id="tbody-conc"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="emp-conc" style="display:none">🔍 Nenhum caminhão concluído.</div>
   </div>
   <div class="cards" id="cards"></div>
 </div>
@@ -529,7 +557,7 @@ function getSortVal(c,col){
   }
 }
 function updateSortHeaders(){
-  document.querySelectorAll("#thead-row th").forEach(th=>{
+  document.querySelectorAll(".thead-row th").forEach(th=>{
     th.classList.remove("sort-asc","sort-desc");
     if(th.dataset.col===SORT_COL)th.classList.add(SORT_DIR===1?"sort-asc":"sort-desc");
   });
@@ -700,7 +728,8 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
   render();
   calRenderM();
   document.getElementById("ld").style.display="none";
-  document.getElementById("tbl").style.display="block";
+  document.getElementById("tbl-proc").style.display="block";
+  document.getElementById("tbl-conc").style.display="block";
 });
 // Inicializa calendário assim que página carrega
 calInitM();
@@ -886,11 +915,14 @@ window.render=()=>{
   document.getElementById("s6").textContent=partes.length?durStr(partes.reduce((a,b)=>a+b,0)):"—";
 
   const list=getFiltered();
-  document.getElementById("cnt").textContent=list.length+" "+(list.length===1?"veículo":"veículos");
+  const listProc=list.filter(c=>c.setorAtual!=="concluido");
+  const listConc=list.filter(c=>c.setorAtual==="concluido");
+  document.getElementById("cnt-proc").textContent=listProc.length+" "+(listProc.length===1?"veículo":"veículos");
+  document.getElementById("cnt-conc").textContent=listConc.length+" "+(listConc.length===1?"veículo":"veículos");
 
-  const tb=document.getElementById("tbody"),em=document.getElementById("emp"),cards=document.getElementById("cards");
-  if(!list.length){tb.innerHTML="";em.style.display="block";cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";return;}
-  em.style.display="none";
+  const tbP=document.getElementById("tbody-proc"),emP=document.getElementById("emp-proc");
+  const tbC=document.getElementById("tbody-conc"),emC=document.getElementById("emp-conc");
+  const cards=document.getElementById("cards");
 
   function cell(d,d2){
     if(!d)return`<span class="w">aguardando</span>`;
@@ -899,7 +931,7 @@ window.render=()=>{
     return str;
   }
 
-  tb.innerHTML=list.map((c,idx)=>{
+  function buildRow(c,idx){
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
@@ -928,7 +960,15 @@ window.render=()=>{
       <td style="text-align:center;font-size:10px;color:var(--t2)">${c.notaFiscal||'<span style="color:var(--t3)">—</span>'}</td>
       <td style="text-align:center;font-size:16px">${statusFinal(c)}</td>
     </tr>`;
-  }).join("");
+  }
+
+  if(!listProc.length){tbP.innerHTML="";emP.style.display="block";document.getElementById("tbl-proc").style.display="none";}
+  else{emP.style.display="none";document.getElementById("tbl-proc").style.display="block";tbP.innerHTML=listProc.map((c,idx)=>buildRow(c,idx)).join("");}
+
+  if(!listConc.length){tbC.innerHTML="";emC.style.display="block";document.getElementById("tbl-conc").style.display="none";}
+  else{emC.style.display="none";document.getElementById("tbl-conc").style.display="block";tbC.innerHTML=listConc.map((c,idx)=>buildRow(c,idx)).join("");}
+
+  if(!list.length){cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";return;}
 
   cards.innerHTML=list.map(c=>{
     const en=getTS(c,"entrada","ts");
