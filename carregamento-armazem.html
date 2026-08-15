@@ -202,7 +202,7 @@ tr.alerta .turno{opacity:.7}
 </head>
 <body>
 <div class="top">
-  <div class="logo">🏗️ ARMAZÉM - PAINEL DOS CONFERENTES</div>
+  <div class="logo">🏗️ CARREGAMENTO ARMAZÉM</div>
   <a href="/master" style="padding:6px 14px;border:1px solid var(--bl);border-radius:20px;background:rgba(0,212,255,.08);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.15)'" onmouseout="this.style.background='rgba(0,212,255,.08)'">← Master</a>
   <a href="/analise" style="padding:6px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.08);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.08)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
@@ -326,14 +326,23 @@ tr.alerta .turno{opacity:.7}
     <button class="fb" onclick="setF('c',this)">Concluídos (<span id="cnt-f-c">0</span>)</button>
   </div>
 
-  <!-- Card: Aguardando Triagem -->
-  <div id="card-aguardando" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-left:3px solid var(--bl);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;align-items:center;justify-content:space-between">
+  <!-- Card: Aguardando Processo -->
+  <div id="card-aguardando" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-left:3px solid var(--bl);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;align-items:center;gap:16px;flex-wrap:wrap">
     <div style="display:flex;align-items:center;gap:12px">
       <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);letter-spacing:.5px">🏁 AGUARDANDO PROCESSO</div>
       <div style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:800;color:var(--bl)" id="cnt-aguardando">0</div>
       <div style="font-size:11px;color:var(--t2)" id="txt-aguardando"></div>
     </div>
-    <a href="/patio" style="padding:7px 16px;border:1px solid var(--bl);border-radius:20px;background:rgba(0,212,255,.08);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.18)'" onmouseout="this.style.background='rgba(0,212,255,.08)'">Ver Pátio →</a>
+    <div style="width:1px;height:26px;background:var(--bd)"></div>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid rgba(255,159,67,.3);border-radius:8px;padding:6px 12px">
+      <span style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.3px">Fila no Faturamento</span>
+      <span id="cnt-fila-fatur" style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:var(--tm)">0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid rgba(56,189,248,.3);border-radius:8px;padding:6px 12px">
+      <span style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.3px">TMF · Tempo Médio Fila</span>
+      <span id="val-tmf" style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:#38bdf8">—</span>
+    </div>
+    <a href="/patio" style="margin-left:auto;padding:7px 16px;border:1px solid var(--bl);border-radius:20px;background:rgba(0,212,255,.08);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.18)'" onmouseout="this.style.background='rgba(0,212,255,.08)'">Ver Pátio →</a>
   </div>
 
   <div class="tcard">
@@ -354,7 +363,9 @@ tr.alerta .turno{opacity:.7}
           <th data-col="caF" style="min-width:52px">🏗️<br>Carga Fim</th>
           <th data-col="enI" style="min-width:52px">🪢<br>Enl.Ini</th>
           <th data-col="enF" style="min-width:52px">🪢<br>Enl.Fim</th>
+          <th data-col="fatur" style="min-width:60px">🧾<br>Fatur</th>
           <th data-col="tma" style="min-width:48px">⏱️<br>TMA</th>
+          <th data-col="nf" style="min-width:70px">Nota<br>Fiscal</th>
           <th data-col="status" style="min-width:60px">Status</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
@@ -458,6 +469,7 @@ function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
 function calcTMTI(c){const i=getTS(c,"triagem","inicio"),f=getTS(c,"triagem","fim");return(i&&f)?f-i:null;}
 function calcTMCI(c){const i=getTS(c,"carregamento","inicio"),f=getTS(c,"carregamento","fim");return(i&&f)?f-i:null;}
 function calcTMEI(c){const i=getTS(c,"enlonamento","inicio"),f=getTS(c,"enlonamento","fim");return(i&&f)?f-i:null;}
+function calcTMF(c){const i=getTS(c,"enlonamento","fim"),f=getTS(c,"faturamento","ts");return(i&&f)?f-i:null;}
 function calcTMA(c){
   const p=[calcTMTI(c),calcTMCI(c),calcTMEI(c)].filter(v=>v!=null);
   return p.length?p.reduce((a,b)=>a+b,0):null;
@@ -506,7 +518,9 @@ function getSortVal(c,col){
     case"trI":return tsVal(c,"triagem","inicio");case"trF":return tsVal(c,"triagem","fim");
     case"caI":return tsVal(c,"carregamento","inicio");case"caF":return tsVal(c,"carregamento","fim");
     case"enI":return tsVal(c,"enlonamento","inicio");case"enF":return tsVal(c,"enlonamento","fim");
+    case"fatur":return tsVal(c,"faturamento","ts");
     case"tma":return calcTMA(c)??-1;
+    case"nf":return c.notaFiscal||"";
     default:return 0;
   }
 }
@@ -833,18 +847,24 @@ window.render=()=>{
   document.getElementById("cnt-f-a").textContent=cntProcesso;
   document.getElementById("cnt-f-c").textContent=cntConcluidos;
 
-  // Card: Aguardando Triagem — resumo simples
+  // Card: Aguardando Processo — resumo simples
   const aguardando=ALL.filter(c=>{
     return noperiodo(c,s,e,mdata,mdataFim)&&c.setorAtual==="posto1";
   });
+  const filaFatur=period.filter(c=>c.setorAtual==="faturamento_aguardando");
   const cardAg=document.getElementById("card-aguardando");
-  if(aguardando.length>0){
+  if(aguardando.length>0||filaFatur.length>0){
     cardAg.style.display="flex";
     document.getElementById("cnt-aguardando").textContent=aguardando.length;
     document.getElementById("txt-aguardando").textContent="veículo"+(aguardando.length!==1?"s":"")+" na fila";
   } else {
     cardAg.style.display="none";
   }
+
+  document.getElementById("cnt-fila-fatur").textContent=filaFatur.length;
+  const tmfVals=period.map(calcTMF).filter(v=>v!=null);
+  const avgTMF=tmfVals.length?tmfVals.reduce((a,b)=>a+b,0)/tmfVals.length:null;
+  document.getElementById("val-tmf").textContent=avgTMF!=null?durStr(avgTMF):"—";
 
   const tmtiVals=period.map(calcTMTI).filter(v=>v!=null);
   const avgTMTI=tmtiVals.length?tmtiVals.reduce((a,b)=>a+b,0)/tmtiVals.length:null;
@@ -880,6 +900,8 @@ window.render=()=>{
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
+    const sa=getTS(c,"faturamento","ts");
+    const tmf=calcTMF(c);
     const tma=calcTMA(c);
     const alerta=isAlerta(c);
     const hoje2=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
@@ -897,7 +919,9 @@ window.render=()=>{
       <td class="ec">${cell(caF,caI)}</td>
       <td class="ec">${cell(enI,null)}</td>
       <td class="ec">${cell(enF,enI)}</td>
+      <td class="ec">${sa?`<span class="d">${fmtT(sa)}</span>${tmf!=null?`<span style="color:var(--gr);font-size:10px;margin-left:3px;font-weight:700">${durStr(tmf)}</span>`:''}`:`<span class="w">aguardando</span>`}</td>
       <td>${tma!=null?`<span class="tmac-cell" style="color:var(--gr)">${durStr(tma)}</span>`:`<span class="tmac-cell w">${incompleto?"não concluído":"em processo"}</span>`}</td>
+      <td style="text-align:center;font-size:10px;color:var(--t2)">${c.notaFiscal||'<span style="color:var(--t3)">—</span>'}</td>
       <td style="text-align:center;font-size:16px">${statusFinal(c)}</td>
     </tr>`;
   }).join("");
