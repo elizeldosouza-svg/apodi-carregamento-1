@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Faturamento — TMF · Tempo Médio de Fila</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--r:12px;--rs:8px}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
+.top{background:var(--bg2);border-bottom:2px solid var(--gr);min-height:56px;display:flex;align-items:center;padding:10px 20px;position:sticky;top:0;z-index:200;gap:12px;flex-wrap:wrap}
+.logo{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:800;color:var(--gr);letter-spacing:.5px}
+.logo .sub{display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:var(--t2);letter-spacing:.3px;margin-top:1px}
+.wrap{max-width:1240px;margin:0 auto;padding:18px 16px 40px}
+
+/* filtros */
+.filtros{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filtros label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-right:5px}
+.filtros input[type=date]{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif}
+.turno-btn{padding:7px 14px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.turno-btn.on{border-color:var(--gr);color:var(--gr);background:rgba(0,232,150,.1)}
+.turno-btn:hover{border-color:var(--gr)}
+.turno-btn .cnt{opacity:.65;margin-left:3px}
+.exp-btn{padding:8px 16px;border:1px solid rgba(0,232,150,.4);border-radius:var(--rs);background:rgba(0,232,150,.08);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.exp-btn:hover{background:rgba(0,232,150,.15)}
+.exp-wrap{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gr)}
+.card.fila::before{background:var(--ye)}
+.card .lbl{font-size:9.5px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:700;display:flex;align-items:center;gap:6px}
+.card .val{font-family:'Rajdhani',sans-serif;font-size:30px;font-weight:800;color:var(--gr);line-height:1}
+.card .val.alert{color:var(--rd)}
+.card.fila .val{color:var(--ye)}
+.card .sub2{font-size:9.5px;color:var(--t3);margin-top:5px}
+
+.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ye);animation:p 1.4s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* secoes */
+.sec-title{font-size:11px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.7px;margin:22px 0 8px;display:flex;align-items:center;gap:8px}
+.sec-title .line{flex:1;height:1px;background:var(--bd)}
+.tbl-wrap{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{background:var(--bg3);color:var(--tx);font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;padding:10px 8px;text-align:center;border-bottom:1px solid var(--bd);white-space:nowrap;position:sticky;top:56px}
+td{padding:9px 8px;font-size:12.5px;text-align:center;border-bottom:1px solid var(--bd);color:var(--tx)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,232,150,.04)}
+.placa{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gr);letter-spacing:1px}
+.tmf-ok{color:var(--gr);font-weight:700}
+.tmf-warn{color:var(--ye);font-weight:700}
+.tmf-bad{color:var(--rd);font-weight:700}
+.row-fila td{background:rgba(255,208,0,.045)}
+.badge-fila{background:rgba(255,208,0,.15);color:var(--ye);font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.4px;white-space:nowrap}
+.empty-row td{padding:20px;color:var(--t3);font-size:12px}
+
+/* modal preview */
+.modal-prev{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);padding:16px;overflow-y:auto}
+.modal-prev.show{display:flex}
+.modal-box{background:#0f1a2e;border:1px solid #1e3558;border-radius:14px;width:100%;max-width:960px;margin:auto;overflow:hidden}
+.modal-head{padding:14px 18px;border-bottom:1px solid #1e3558;display:flex;align-items:center;gap:10px}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:#dff0ff;flex:1;letter-spacing:1px}
+.modal-close-btn{width:30px;height:30px;border:1px solid #1e3558;border-radius:6px;background:transparent;color:#7aafcc;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.modal-close-btn:hover{border-color:#ff4466;color:#ff4466}
+.modal-body{padding:16px 18px;overflow-x:auto}
+.prev-info{font-size:11px;color:#7aafcc;margin-bottom:10px}
+.prev-table{width:100%;border-collapse:collapse;font-size:11px}
+.prev-table th{text-align:center;padding:8px 10px;font-size:9px;font-weight:700;color:#fff;background:#003366;text-transform:uppercase;letter-spacing:.5px;border:1px solid #1e3558;white-space:nowrap}
+.prev-table td{padding:7px 10px;border:1px solid #1e3558;vertical-align:middle;color:#dff0ff;text-align:center}
+.prev-table tr:nth-child(even) td{background:rgba(0,232,150,.04)}
+.modal-foot{padding:12px 18px;border-top:1px solid #1e3558;display:flex;gap:8px;justify-content:flex-end}
+.pdf-btn{padding:10px 22px;border:none;border-radius:10px;background:#00e896;color:#000;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px}
+.pdf-btn:hover{opacity:.88}
+@media(max-width:700px){.filtros{flex-direction:column;align-items:stretch}.exp-wrap{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">🧾 FATURAMENTO — TMF<span class="sub">Tempo Médio de Fila · consulta em tempo real</span></div>
+</div>
+
+<div class="wrap">
+
+  <div class="filtros">
+    <label>Período</label>
+    <input type="date" id="f-data-ini"/>
+    <span style="color:var(--t3);font-size:11px">até</span>
+    <input type="date" id="f-data-fim"/>
+    <button class="turno-btn on" id="tb-geral" onclick="setTurno('geral',this)">Geral <span class="cnt" id="cnt-geral"></span></button>
+    <button class="turno-btn" id="tb-A" onclick="setTurno('A',this)">Turno A <span class="cnt" id="cnt-A"></span></button>
+    <button class="turno-btn" id="tb-B" onclick="setTurno('B',this)">Turno B <span class="cnt" id="cnt-B"></span></button>
+    <button class="turno-btn" id="tb-C" onclick="setTurno('C',this)">Turno C <span class="cnt" id="cnt-C"></span></button>
+    <div class="exp-wrap">
+      <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
+      <button class="exp-btn" onclick="gerarPDF()">📄 PDF</button>
+      <button class="exp-btn" onclick="exportExcel()">📊 Excel</button>
+    </div>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="sec-title"><span class="line"></span>🟡 AGUARDANDO NOTA FISCAL — NA FILA<span class="line"></span></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th>
+        <th>Enlonamento Fim</th><th>Tempo em Fila</th><th>Status</th>
+      </tr></thead>
+      <tbody id="tb-fila"></tbody>
+    </table>
+  </div>
+
+  <div class="sec-title"><span class="line"></span>✅ FATURADOS<span class="line"></span></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th>
+        <th>Enlonamento Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+      </tr></thead>
+      <tbody id="tb-fat"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- MODAL PREVIEW -->
+<div class="modal-prev" id="modal-prev">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">🧾 FATURAMENTO — TMF</div>
+      <button class="modal-close-btn" onclick="document.getElementById('modal-prev').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="prev-info" id="prev-info"></div>
+      <div id="prev-body"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-close-btn" style="padding:8px 16px;width:auto" onclick="document.getElementById('modal-prev').classList.remove('show')">Fechar</button>
+      <button class="pdf-btn" onclick="gerarPDF()">📄 Exportar PDF</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import{getFirestore,collection,onSnapshot}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
+const db=getFirestore(app);
+
+const TIPO_CARGA_LABELS={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
+const TURNO_LABELS={geral:"Geral",A:"Turno A (23h–07h)",B:"Turno B (07h–15h)",C:"Turno C (15h–23h)"};
+
+const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+const fmtDT=ts=>{
+  if(!ts)return"—";
+  const d=ts.toDate?ts.toDate():new Date(ts);
+  return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
+};
+const fmtHora=ts=>{
+  if(!ts)return"—";
+  const d=ts.toDate?ts.toDate():new Date(ts);
+  return d.toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
+};
+const fmtEx=d=>d?d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"";
+function getTurno(d){
+  if(!d)return null;
+  const h=d.getHours();
+  if(h>=23||h<7)return"A";
+  if(h>=7&&h<15)return"B";
+  return"C";
+}
+function fmtMin(mins){
+  if(mins==null)return"—";
+  if(mins<60)return Math.round(mins)+"min";
+  const h=Math.floor(mins/60),m=Math.round(mins%60);
+  return h+"h"+String(m).padStart(2,"0")+"min";
+}
+function tmfClass(mins){
+  if(mins==null)return"";
+  if(mins<=8)return"tmf-ok";
+  if(mins<=10)return"tmf-warn";
+  return"tmf-bad";
+}
+
+// ── dados ao vivo ──────────────────────────────────────────────────
+let TODOS=[];
+onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
+  TODOS=snap.docs.map(d=>({id:d.id,...d.data()}));
+  render();
+});
+
+// ── filtros ────────────────────────────────────────────────────────
+let MT="geral";
+(()=>{
+  const hj=hoje();
+  document.getElementById("f-data-ini").value=hj;
+  document.getElementById("f-data-fim").value=hj;
+})();
+window.setTurno=(t,el)=>{
+  MT=t;
+  document.querySelectorAll(".turno-btn").forEach(b=>b.classList.remove("on"));
+  el.classList.add("on");
+  render();
+};
+document.getElementById("f-data-ini").addEventListener("change",render);
+document.getElementById("f-data-fim").addEventListener("change",render);
+
+function getFiltros(){
+  const dataIniVal=document.getElementById("f-data-ini").value||hoje();
+  const dataFimVal=document.getElementById("f-data-fim").value||dataIniVal;
+  return{dataIniVal,dataFimVal};
+}
+
+// TMF desta tela = faturamento.ts - enlonamento.fim (fila para emissão da NF)
+// Para quem ainda não foi faturado (sem notaFiscal), usa agora - enlonamento.fim como cronômetro ao vivo
+function calcTMF(c,agora){
+  const enF=c.enlonamento?.fim?.toDate?.();
+  if(!enF)return null;
+  const ftTs=c.faturamento?.ts?.toDate?.();
+  const ref=ftTs||agora;
+  return(ref-enF)/60000;
+}
+
+function buildBase(){
+  const{dataIniVal,dataFimVal}=getFiltros();
+  // considera registros cujo enlonamento.fim caiu no período (referência de entrada na fila do faturamento)
+  return TODOS.filter(c=>{
+    const enF=c.enlonamento?.fim?.toDate?.();
+    if(!enF)return false;
+    const dia=enF.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+    if(dia<dataIniVal||dia>dataFimVal)return false;
+    if(MT==="geral")return true;
+    // fila ainda sem NF -> classifica pelo turno do enlonamento.fim (não tem faturamento.ts ainda)
+    const ft=c.faturamento?.ts?.toDate?.();
+    const refTurno=ft||enF;
+    return getTurno(refTurno)===MT;
+  });
+}
+
+function render(){
+  const agora=new Date();
+  const base=buildBase();
+  const fila=base.filter(c=>!c.notaFiscal).sort((a,b)=>{
+    const ea=a.enlonamento?.fim?.toDate?.()?.getTime()||0;
+    const eb=b.enlonamento?.fim?.toDate?.()?.getTime()||0;
+    return ea-eb;
+  });
+  const faturados=base.filter(c=>c.notaFiscal).sort((a,b)=>{
+    const fa=a.faturamento?.ts?.toDate?.()?.getTime()||0;
+    const fb=b.faturamento?.ts?.toDate?.()?.getTime()||0;
+    return fa-fb;
+  });
+
+  // contadores por turno (geral usa base completa do dia sem filtro de turno)
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const todosPeriodo=TODOS.filter(c=>{
+    const enF=c.enlonamento?.fim?.toDate?.();
+    if(!enF)return false;
+    const dia=enF.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+    return dia>=dataIniVal&&dia<=dataFimVal;
+  });
+  document.getElementById("cnt-geral").textContent="("+todosPeriodo.length+")";
+  ["A","B","C"].forEach(t=>{
+    const n=todosPeriodo.filter(c=>{
+      const ft=c.faturamento?.ts?.toDate?.();
+      const enF=c.enlonamento?.fim?.toDate?.();
+      return getTurno(ft||enF)===t;
+    }).length;
+    document.getElementById("cnt-"+t).textContent="("+n+")";
+  });
+
+  // cards
+  function tmfMedio(lista){
+    const vals=lista.map(c=>calcTMF(c,agora)).filter(v=>v!=null);
+    if(!vals.length)return null;
+    return vals.reduce((a,b)=>a+b,0)/vals.length;
+  }
+  const tmfGeral=tmfMedio(faturados.length?faturados:base);
+  const cardsHtml=[
+    {lbl:"TMF Geral",val:tmfGeral,sub:"Enlonamento.fim → Faturamento.ts"},
+    ...["A","B","C"].map(t=>{
+      const lista=(faturados.length?faturados:base).filter(c=>{
+        const ft=c.faturamento?.ts?.toDate?.();
+        const enF=c.enlonamento?.fim?.toDate?.();
+        return getTurno(ft||enF)===t;
+      });
+      return{lbl:"TMF Turno "+t,val:tmfMedio(lista),sub:TURNO_LABELS[t]};
+    })
+  ].map(c=>{
+    const alert=c.val!=null&&c.val>10?"alert":"";
+    return`<div class="card"><div class="lbl">${c.lbl}</div><div class="val ${alert}">${fmtMin(c.val)}</div><div class="sub2">${c.sub}</div></div>`;
+  }).join("");
+  const filaCard=`<div class="card fila"><div class="lbl"><span class="pulse"></span>Fila no Faturamento</div><div class="val">${fila.length}</div><div class="sub2">Aguardando Nota Fiscal</div></div>`;
+  document.getElementById("cards").innerHTML=cardsHtml+filaCard;
+
+  // tabela fila
+  document.getElementById("tb-fila").innerHTML=fila.length?fila.map(c=>{
+    const enF=c.enlonamento?.fim?.toDate?.();
+    const mins=calcTMF(c,agora);
+    return`<tr class="row-fila">
+      <td class="placa">${c.placa||"-"}</td>
+      <td>${c.ac||"-"}</td>
+      <td>—</td>
+      <td>${TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-"}</td>
+      <td>${c.tipoCimento||c.tipoCimentoLabel||"-"}</td>
+      <td>${enF?(getTurno(enF)||"-"):"-"}</td>
+      <td>${fmtHora(c.enlonamento?.fim)}</td>
+      <td class="${tmfClass(mins)}">${fmtMin(mins)}</td>
+      <td><span class="badge-fila">NA FILA</span></td>
+    </tr>`;
+  }).join(""):`<tr class="empty-row"><td colspan="9">Nenhum caminhão na fila do faturamento.</td></tr>`;
+
+  // tabela faturados
+  document.getElementById("tb-fat").innerHTML=faturados.length?faturados.map((c,i)=>{
+    const mins=calcTMF(c,agora);
+    const ft=c.faturamento?.ts?.toDate?.();
+    return`<tr>
+      <td>${i+1}</td>
+      <td class="placa">${c.placa||"-"}</td>
+      <td>${c.ac||"-"}</td>
+      <td>${c.notaFiscal||"-"}</td>
+      <td>${TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-"}</td>
+      <td>${c.tipoCimento||c.tipoCimentoLabel||"-"}</td>
+      <td>${ft?(getTurno(ft)||"-"):"-"}</td>
+      <td>${fmtHora(c.enlonamento?.fim)}</td>
+      <td>${fmtHora(c.faturamento?.ts)}</td>
+      <td class="${tmfClass(mins)}">${fmtMin(mins)}</td>
+      <td>${c.faturamento?.operador||"-"}</td>
+    </tr>`;
+  }).join(""):`<tr class="empty-row"><td colspan="11">Nenhum registro faturado no período/turno selecionado.</td></tr>`;
+
+  window.__FILA_ATUAL=fila;
+  window.__FAT_ATUAL=faturados;
+}
+
+// ── relatório: visualizar / PDF / Excel (usa lista de FATURADOS) ────
+function fmtDia(v){const [a,m,d]=v.split("-");return`${d}/${m}/${a}`;}
+function buildLinhasRel(registros,forPrint=false){
+  const tdStyle=forPrint?"border:1px solid #ccc;padding:6px 10px":"border:1px solid #1e3558;padding:7px 10px;text-align:center";
+  return registros.map((c,i)=>{
+    const mins=calcTMF(c,new Date());
+    const carga=TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-";
+    const cimento=c.tipoCimento||c.tipoCimentoLabel||"-";
+    const ft=c.faturamento?.ts?.toDate?.();
+    const turno=ft?(getTurno(ft)||"-"):"-";
+    return`<tr>
+      <td style="${tdStyle};text-align:center">${i+1}</td>
+      <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#00e896"}">${c.placa||"-"}</td>
+      <td style="${tdStyle}">${c.ac||"-"}</td>
+      <td style="${tdStyle}">${c.notaFiscal||"-"}</td>
+      <td style="${tdStyle}">${carga}</td>
+      <td style="${tdStyle}">${cimento}</td>
+      <td style="${tdStyle}">${turno}</td>
+      <td style="${tdStyle}">${fmtDT(c.enlonamento?.fim)}</td>
+      <td style="${tdStyle}">${fmtDT(c.faturamento?.ts)}</td>
+      <td style="${tdStyle}">${fmtMin(mins)}</td>
+      <td style="${tdStyle}">${c.faturamento?.operador||"-"}</td>
+    </tr>`;
+  }).join("");
+}
+window.verRelatorio=()=>{
+  const registros=window.__FAT_ATUAL||[];
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const periodoTxt=dataIniVal===dataFimVal?fmtDia(dataIniVal):`${fmtDia(dataIniVal)} a ${fmtDia(dataFimVal)}`;
+  document.getElementById("prev-info").textContent=`Período: ${periodoTxt} · Turno: ${TURNO_LABELS[MT]} · ${registros.length} veículo${registros.length!==1?"s":""} faturado(s)`;
+  document.getElementById("prev-body").innerHTML=`
+    <table class="prev-table">
+      <thead><tr>
+        <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+      </tr></thead>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="11" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+    </table>`;
+  document.getElementById("modal-prev").classList.add("show");
+};
+window.gerarPDF=()=>{
+  const registros=window.__FAT_ATUAL||[];
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const periodoTxt=dataIniVal===dataFimVal?fmtDia(dataIniVal):`${fmtDia(dataIniVal)} a ${fmtDia(dataFimVal)}`;
+  const linhas=buildLinhasRel(registros,true);
+  const janela=window.open("","_blank","width=900,height=700");
+  janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"/>
+<title>Faturamento TMF — ${periodoTxt}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;font-size:11pt;padding:24px;color:#000}
+  h2{font-size:14pt;font-weight:bold;text-align:center;margin-bottom:14pt;text-transform:uppercase;letter-spacing:1px}
+  .hinfo{margin-bottom:16pt;border-bottom:2px solid #000;padding-bottom:10pt;font-size:11pt}
+  table.reg{border-collapse:collapse;width:100%}
+  table.reg th{background:#003366;color:#fff;padding:7px 10px;font-size:10pt;text-align:center;border:1px solid #ccc}
+  table.reg td{padding:7px 10px;font-size:10pt;border:1px solid #ccc;text-align:center}
+  table.reg tr:nth-child(even) td{background:#f0f4fb}
+  .footer{margin-top:20pt;font-size:8pt;color:#888;text-align:center;border-top:1pt solid #ccc;padding-top:6pt}
+  @media print{@page{margin:1.5cm;size:A4 landscape}}
+</style>
+</head><body>
+<h2>Faturamento — TMF (Tempo Médio de Fila)</h2>
+<div class="hinfo">Período: ${periodoTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
+<table class="reg">
+  <thead><tr>
+    <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+  </tr></thead>
+  <tbody>${linhas||'<tr><td colspan="11" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+</table>
+<div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
+</body></html>`);
+  janela.document.close();janela.focus();
+  setTimeout(()=>janela.print(),600);
+};
+window.exportExcel=()=>{
+  const registros=window.__FAT_ATUAL||[];
+  if(!registros.length){alert("Nenhum dado faturado para exportar no filtro selecionado.");return;}
+  const rows=registros.map(c=>{
+    const mins=calcTMF(c,new Date());
+    const ft=c.faturamento?.ts?.toDate?.();
+    return{
+      "Placa":c.placa||"",
+      "AC":c.ac||"",
+      "Nota Fiscal":c.notaFiscal||"",
+      "Carga":TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"",
+      "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
+      "Turno":ft?(getTurno(ft)||""):"",
+      "Enlonamento Fim":fmtEx(c.enlonamento?.fim?.toDate?.()),
+      "Faturamento":fmtEx(ft),
+      "TMF (min)":mins!=null?Math.round(mins):"",
+      "Operador":c.faturamento?.operador||"",
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!cols"]=[{wch:10},{wch:10},{wch:14},{wch:12},{wch:12},{wch:8},{wch:18},{wch:18},{wch:10},{wch:20}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Faturamento TMF");
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const turnoSuffix=MT!=="geral"?`_turno${MT}`:"";
+  const fname=dataIniVal===dataFimVal?`faturamento_tmf_${dataIniVal}${turnoSuffix}.xlsx`:`faturamento_tmf_${dataIniVal}_a_${dataFimVal}${turnoSuffix}.xlsx`;
+  XLSX.writeFile(wb,fname);
+};
+</script>
+</body></html>
