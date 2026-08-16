@@ -836,7 +836,11 @@ window.confirmarExclusao=async()=>{
       const cfSnap=await getDocs(q(collection(db,"chamadas_fila"),where("veiculoId","==",id)));
       await Promise.all(cfSnap.docs.map(d=>updateDoc(doc(db,"chamadas_fila",d.id),{status:"excluida"})));
     }catch(e){}
-  }catch(e){showMsg("er","Erro ao excluir: "+e.message);return;}
+  }catch(e){
+    showMsg("er","Erro ao excluir: "+e.message);
+    fecharModalExcluir();
+    return;
+  }
   if(CHAMADO_ATUAL&&CHAMADO_ATUAL.id===v.id){
     limparChamadoAtual();
   }
