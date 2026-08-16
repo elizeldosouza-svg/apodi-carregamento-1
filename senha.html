@@ -254,7 +254,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           <div class="placa-box placa-size" id="placa-box"></div>
         </div>
         <div class="call-ac" id="call-ac"></div>
-        <div class="call-num" id="call-num"></div>
+        <div class="call-info-row" id="call-info-row" style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:6px">
+          <div class="call-num" id="call-num"></div>
+          <span class="sep-dot-tv" id="call-sep" style="display:none;width:4px;height:4px;border-radius:50%;background:var(--t2,#4a7a9a);opacity:.6"></span>
+          <div class="call-tempo" id="call-tempo" style="display:none;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1px;color:#fb923c"></div>
+        </div>
+        <div class="badge-recall-tv" id="badge-recall-tv" style="display:none;margin-top:12px;background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);color:#fb923c;font-size:11px;font-weight:800;letter-spacing:1px;padding:4px 14px;border-radius:20px;text-transform:uppercase">🔁 chamado novamente</div>
       </div>
     </div>
 
@@ -369,6 +374,42 @@ const durStr=ms=>{if(!ms||ms<0)return"";const m=Math.round(ms/60000);return m<60
 
 let filas={granel:[],ensacado:[],bigbag:[]};
 let lastId=null,lastPlaca=null,lastChamada=null;
+let callTempoInterval=null;
+
+function pararCallTempo(){
+  if(callTempoInterval){clearInterval(callTempoInterval);callTempoInterval=null;}
+}
+function iniciarCallTempo(tsPrimeiraMs){
+  pararCallTempo();
+  const tick=()=>{
+    const diff=Math.max(0,Math.floor((Date.now()-tsPrimeiraMs)/1000));
+    const mm=String(Math.floor(diff/60)).padStart(2,"0");
+    const ss=String(diff%60).padStart(2,"0");
+    document.getElementById("call-tempo").textContent=`⏱ ${mm}:${ss} desde a 1ª chamada`;
+  };
+  tick();
+  callTempoInterval=setInterval(tick,1000);
+}
+function atualizarInfoChamada(qtd,tsPrimeiraMs){
+  const qtdN=qtd||1;
+  document.getElementById("call-num").textContent="CHAMADA Nº "+String(qtdN).padStart(2,"0");
+  document.getElementById("badge-recall-tv").style.display=qtdN>1?"inline-block":"none";
+  if(tsPrimeiraMs){
+    document.getElementById("call-sep").style.display="inline-block";
+    document.getElementById("call-tempo").style.display="block";
+    iniciarCallTempo(tsPrimeiraMs);
+  }else{
+    document.getElementById("call-sep").style.display="none";
+    document.getElementById("call-tempo").style.display="none";
+    pararCallTempo();
+  }
+}
+function limparEExibirIdle(){
+  lastChamada=null;lastId=null;lastPlaca=null;
+  pararCallTempo();
+  document.getElementById("badge-recall-tv").style.display="none";
+  showIdle();
+}
 
 // ── ausência ticker: lista de ausentes do dia (últimas 2h) ──
 let ausentes=[]; // [{placa, ac, motivo, ts}]
@@ -393,13 +434,20 @@ BC.onmessage=(ev)=>{
     showIdle();
     return;
   }
+  if(msg.tipo==="excluir"){
+    // Posto1 excluiu a AC: se for a placa exibida (ativa ou fantasma), limpa de vez
+    if(lastChamada&&lastChamada.placa===msg.placa){
+      limparEExibirIdle();
+    }
+    return;
+  }
   // Nova chamada via canal — executa imediatamente (som + voz + visual)
   const tp=msg.tipoCarga||"ensacado";
   // Evita reprocessar se Firebase já chegou com o mesmo id
   if(msg.firebaseId&&msg.firebaseId===lastId)return;
   lastId=msg.firebaseId||null;
   lastPlaca=msg.placa||null;
-  lastChamada={placa:msg.placa||"—",ac:msg.ac||"—",tp,num:msg.numero||null};
+  lastChamada={placa:msg.placa||"—",ac:msg.ac||"—",tp,num:msg.numero||null,qtd:msg.qtdChamadas||1,tsPrimeira:msg.tsPrimeiraChamada||null};
   document.getElementById("idle").style.display="none";
   const ca=document.getElementById("call-active");
   ca.style.display="flex";
@@ -412,7 +460,7 @@ BC.onmessage=(ev)=>{
   const acEl=document.getElementById("call-ac");
   acEl.textContent="AC: "+(msg.ac||"—");
   acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
-  document.getElementById("call-num").textContent=msg.numero?"Chamada Nº "+String(msg.numero).padStart(3,"0"):"";
+  atualizarInfoChamada(msg.qtdChamadas||1,msg.tsPrimeiraChamada||null);
   doFlash();doSound();falarPlaca(msg.placa||"");
 };
 
@@ -434,6 +482,7 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
   const hj=hoje();
   const docs=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>{
+      if(c.status==="excluida")return false;
       // Aceita se data bate com hoje OU se criadoEm é de hoje (fallback)
       if(c.data===hj)return true;
       const ts=c.criadoEm?.toDate?.();
@@ -442,7 +491,7 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
       return dataTs===hj;
     })
     .sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0));
-  if(!docs.length){showIdle();return;}
+  if(!docs.length){limparEExibirIdle();return;}
   const last=docs[0];
   if(last.id!==lastId){
     // BroadcastChannel ainda não processou (TV externa / rede diferente): executa tudo
@@ -450,7 +499,8 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
     lastId=last.id;
     lastPlaca=last.placa||null;
     const tp=last.tipoCarga||"ensacado";
-    lastChamada={placa:last.placa||"—",ac:last.ac||"—",tp,num:last.numero||null};
+    const tsPrimeiraMs=last.tsPrimeiraChamada?.toDate?.()?.getTime()||null;
+    lastChamada={placa:last.placa||"—",ac:last.ac||"—",tp,num:last.numero||null,qtd:last.qtdChamadas||1,tsPrimeira:tsPrimeiraMs};
     document.getElementById("idle").style.display="none";
     const ca=document.getElementById("call-active");
     ca.style.display="flex";
@@ -463,12 +513,13 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
     const acEl=document.getElementById("call-ac");
     acEl.textContent="AC: "+(last.ac||"—");
     acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
-    document.getElementById("call-num").textContent=last.numero?"Chamada Nº "+String(last.numero).padStart(3,"0"):"";
+    atualizarInfoChamada(last.qtdChamadas||1,tsPrimeiraMs);
     // Só dispara som/voz se o BroadcastChannel NÃO processou esta chamada (TV externa)
     if(!jaProcessadoBC){doFlash();doSound();falarPlaca(last.placa||"");}
     else{doFlash();}
   }
 });
+
 
 // ── Justificativas (não comparecimento) ──
 onSnapshot(collection(db,"justificativas"),snap=>{
@@ -522,7 +573,7 @@ const TLABEL={granel:"🚛 GRANEL",ensacado:"📦 ENSACADO",bigbag:"🛍️ BIG 
 function showCall(c){
   const tp=c.tipoCarga||"ensacado";
   lastPlaca=c.placa||null;
-  lastChamada={placa:c.placa||"—",ac:c.ac||"—",tp:tp,num:c.numero||null};
+  lastChamada={placa:c.placa||"—",ac:c.ac||"—",tp:tp,num:c.numero||null,qtd:c.qtdChamadas||1,tsPrimeira:c.tsPrimeiraChamada||null};
   // Inicia timer de ausência de 5min
   iniciarTimerAusencia(c.placa,c.ac,tp,c.numero);
   document.getElementById("idle").style.display="none";
@@ -537,7 +588,7 @@ function showCall(c){
   const ac=document.getElementById("call-ac");
   ac.textContent="AC: "+(c.ac||"—");
   ac.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
-  document.getElementById("call-num").textContent=c.numero?`Chamada Nº ${String(c.numero).padStart(3,"0")}`:"";
+  atualizarInfoChamada(c.qtdChamadas||1,c.tsPrimeiraChamada||null);
 }
 function showIdle(){
   if(ausenciaTimer){clearTimeout(ausenciaTimer);ausenciaTimer=null;}
@@ -554,12 +605,14 @@ function showIdle(){
     const acEl=document.getElementById("call-ac");
     acEl.textContent="AC: "+lastChamada.ac;
     acEl.style.color=lastChamada.tp==="granel"?"rgba(251,146,60,.75)":lastChamada.tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
-    document.getElementById("call-num").textContent=lastChamada.num?`Chamada Nº ${String(lastChamada.num).padStart(3,"0")}`:"";
+    atualizarInfoChamada(lastChamada.qtd||1,lastChamada.tsPrimeira||null);
   } else {
     // Sem nenhuma chamada ainda: mostra o idle original
     document.getElementById("idle").style.display="flex";
     document.getElementById("call-active").style.display="none";
     document.getElementById("ticker").style.display="none";
+    document.getElementById("badge-recall-tv").style.display="none";
+    pararCallTempo();
   }
 }
 
