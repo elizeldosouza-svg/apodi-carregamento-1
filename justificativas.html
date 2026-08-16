@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Justificativas — Atrasos</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -131,22 +130,100 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .exp-btn:hover{opacity:.88}
 /* Print PDF */
 @media print{
-  .top,.filter-row,.filter-block-j,.modal-rel,.rel-btn{display:none!important}
+  .top,.filter-row,.filter-block-j,.modal-rel,.rel-btn,.mode-row,.login-wrap,.op-top{display:none!important}
   .wrap{max-width:100%!important;padding:0!important}
   .card{break-inside:avoid}
 }
+/* Login */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{width:100%;max-width:360px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:32px}
+.login-ic{font-size:44px;text-align:center;display:block;margin-bottom:10px}
+.login-title{font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--rd);text-align:center;margin-bottom:4px;font-family:'Rajdhani',sans-serif}
+.login-sub{font-size:11px;color:var(--t3);text-align:center;margin-bottom:20px}
+.login-fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.login-fg label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.login-fg input{background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:12px 14px;font-size:15px;outline:none;transition:border-color .2s;width:100%}
+.login-fg input:focus{border-color:var(--rd)}
+.login-btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-size:14px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;background:var(--rd);color:#fff;transition:all .2s;margin-top:4px}
+.login-btn:active{transform:scale(.97)}
+.login-err{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:#ff4466;padding:10px 14px;border-radius:var(--rs);font-size:12px;text-align:center;margin-bottom:14px;display:none}
+.login-err.on{display:block}
+.login-hint{text-align:center;font-size:10px;color:var(--t3);margin-top:16px}
+.op-top{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:8px 20px;background:var(--bg2);border-bottom:1px solid var(--bd)}
+.op-nome-w{font-size:11px;color:var(--t2)}
+.op-nome-w b{color:var(--tx)}
+.sair-btn{padding:5px 12px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer}
+.sair-btn:hover{border-color:#ff4466;color:#ff4466}
+/* Busca */
+.search-in{background:var(--bg3);border:1px solid var(--bd);border-radius:20px;color:var(--tx);padding:7px 14px;font-size:11px;min-width:130px;flex:1;outline:none;transition:border-color .2s}
+.search-in::placeholder{color:var(--t3)}
+.search-in:focus{border-color:var(--bl)}
+/* Toggle de modo */
+.mode-row{display:flex;gap:6px;margin-bottom:14px;align-items:center}
+.mode-btn{padding:8px 18px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.mode-btn:hover:not(.on){border-color:var(--t2);color:var(--tx)}
+.mode-btn.on{border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.1)}
+/* Colunas Setor Responsável */
+.setores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.setor-col{background:var(--bg3);border-radius:var(--rs);padding:10px 12px}
+.setor-title{font-size:10px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.setor-title.armazem{color:var(--bl)}
+.setor-title.faturamento{color:var(--ye)}
+.metric-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:4px 0;border-bottom:1px dashed var(--bd)}
+.metric-row:last-child{border-bottom:none}
+.metric-lbl{color:var(--t2)}
+.metric-val{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px}
+.metric-val.ok{color:var(--gr)}
+.metric-val.bad{color:var(--rd)}
+.setor-ok-tag{font-size:10px;color:var(--gr);font-weight:700;margin-top:6px}
+.badge-need{display:inline-block;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;background:rgba(255,68,102,.15);color:var(--rd);border:1px solid rgba(255,68,102,.3);margin-left:6px}
+.grupo-motivos-label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin:10px 0 6px}
+.rel-op{color:var(--pu);font-weight:600}
 </style>
 </head>
 <body>
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <span class="login-ic">🔒</span>
+    <div class="login-title">Justificativas</div>
+    <div class="login-sub">Apodi Cimentos</div>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-fg"><label>Usuário</label><input id="l-user" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="login-fg"><label>Senha</label><input id="l-pwd" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-hint">Esqueceu a senha? Solicite ao Admin a redefinição.</div>
+  </div>
+</div>
+<div id="troca-senha-screen" class="login-wrap" style="display:none">
+  <div class="login-box">
+    <span class="login-ic">🔑</span>
+    <div class="login-title">Nova senha</div>
+    <div class="login-sub">Primeiro acesso — defina sua senha</div>
+    <div class="login-err" id="troca-err"></div>
+    <div class="login-fg"><label>Nova senha</label><input id="np1" type="password" autocomplete="new-password"/></div>
+    <div class="login-fg"><label>Confirmar nova senha</label><input id="np2" type="password" autocomplete="new-password"/></div>
+    <button class="login-btn" onclick="doSalvarSenha()">Salvar</button>
+  </div>
+</div>
+<div id="app-screen" style="display:none">
+<div class="op-top">
+  <span class="op-nome-w">👤 <b id="op-nome"></b></span>
+  <button class="sair-btn" onclick="doLogout()">Sair</button>
+</div>
 <div class="top">
   <div class="logo">⚠️ JUSTIFICATIVAS DE ATRASO</div>
   <a href="/analise" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
   <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,232,150,.15)'" onmouseout="this.style.background='rgba(0,232,150,.07)'">🏭 Pátio</a>
   <a href="/master" style="padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.07)';this.style.color='var(--bl)'" onmouseout="this.style.background='transparent';this.style.color='var(--t2)'">← Master</a>
-  <button class="rel-btn" onclick="abrirRelatorio()">📋 Relatório TMAC &gt; 2h10</button>
+  <button class="rel-btn" id="btn-rel" onclick="abrirRelatorio()">📋 Relatório TMAC &gt; 2h10</button>
 </div>
 <div class="wrap">
+  <div class="mode-row">
+    <span class="row-label" style="min-width:auto">📐 Critério:</span>
+    <button class="mode-btn on" id="mode-tmac" onclick="setModo('tmac')">TMAC Geral (&gt; 2h10)</button>
+    <button class="mode-btn" id="mode-etapas" onclick="setModo('etapas')">Metas por Etapa (TMTI/TMCI/TMEI/TMF)</button>
+  </div>
   <!-- Bloco principal: filtros + calendário lado a lado -->
   <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px" class="filter-block-j">
     <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:8px">
@@ -197,6 +274,13 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
       <button class="cal-clear-j" id="cal-clear-j" onclick="calClearJ()" style="display:none">✕ Limpar data</button>
     </div>
   </div>
+  <div class="filter-row" style="margin-bottom:16px">
+    <span class="row-label">🔎 Buscar:</span>
+    <input class="search-in" id="sb-placa" placeholder="Placa" oninput="setBusca()"/>
+    <input class="search-in" id="sb-ac" placeholder="AC" oninput="setBusca()"/>
+    <input class="search-in" id="sb-nf" placeholder="Nota Fiscal" oninput="setBusca()"/>
+    <input class="search-in" id="sb-op" placeholder="Operador que justificou" oninput="setBusca()"/>
+  </div>
   <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando...</div></div>
   <div id="lista"></div>
 </div>
@@ -205,7 +289,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 <div class="modal-rel" id="modal-rel">
   <div class="modal-box">
     <div class="modal-head">
-      <div class="modal-title">📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS</div>
+      <div class="modal-title" id="rel-titulo">📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS</div>
       <button class="modal-close" onclick="document.getElementById('modal-rel').classList.remove('show')">✕</button>
     </div>
     <div class="modal-body">
@@ -215,18 +299,56 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
     <div class="modal-foot">
       <span id="rel-total" style="font-size:11px;color:var(--t2);margin-right:auto"></span>
       <button class="modal-close" style="padding:8px 18px;width:auto" onclick="document.getElementById('modal-rel').classList.remove('show')">Fechar</button>
-      <button class="exp-btn" style="background:var(--gr)" onclick="exportarExcel()">📊 Exportar Excel</button>
       <button class="exp-btn" onclick="exportarPdf()">📄 Exportar PDF</button>
     </div>
   </div>
+</div>
 </div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import{getFirestore,collection,onSnapshot,query,orderBy,updateDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{verificarSessao,fazerLogin,salvarNovaSenha,fazerLogout}from"./auth-tela.js";
 
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
+// -- auth ---------------------------------------------------------------
+const TELA="justificativas";
+let SESSAO=verificarSessao(TELA);
+let PENDENTE=null;
+function mostrarApp(){
+  document.getElementById("login-screen").style.display="none";
+  document.getElementById("troca-senha-screen").style.display="none";
+  document.getElementById("app-screen").style.display="block";
+  document.getElementById("op-nome").textContent=SESSAO.nome;
+}
+window.doLogin=async()=>{
+  const u=document.getElementById("l-user").value;
+  const p=document.getElementById("l-pwd").value;
+  const errEl=document.getElementById("login-err");
+  errEl.className="login-err";
+  const r=await fazerLogin(db,TELA,u,p);
+  if(!r.ok){errEl.textContent=r.erro||"Usuário ou senha incorretos.";errEl.className="login-err on";return;}
+  if(r.primeiroAcesso){
+    PENDENTE=r;
+    document.getElementById("login-screen").style.display="none";
+    document.getElementById("troca-senha-screen").style.display="flex";
+    return;
+  }
+  SESSAO=r;mostrarApp();
+};
+window.doSalvarSenha=async()=>{
+  const p1=document.getElementById("np1").value;
+  const p2=document.getElementById("np2").value;
+  const errEl=document.getElementById("troca-err");
+  errEl.className="login-err";
+  if(p1.length<4){errEl.textContent="A senha deve ter ao menos 4 caracteres.";errEl.className="login-err on";return;}
+  if(p1!==p2){errEl.textContent="As senhas não coincidem.";errEl.className="login-err on";return;}
+  SESSAO=await salvarNovaSenha(db,TELA,PENDENTE.docId,PENDENTE.usuario,PENDENTE.nome,p1);
+  mostrarApp();
+};
+window.doLogout=()=>{fazerLogout(TELA);location.reload();};
+if(SESSAO.logado){mostrarApp();}else{document.getElementById("login-screen").style.display="flex";}
 const TIPO_SVG={
   "Ensacado":`<img src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjYwIiB2aWV3Qm94PSIwIDAgMjAwIDI2MCIgcm9sZT0iaW1nIj4KPHRpdGxlPlNhY28gZGUgY2ltZW50byBlbnNhY2FkbzwvdGl0bGU+CjxkZXNjPklsdXN0cmHDp8OjbyBkZSB1bSBzYWNvIGRlIGNpbWVudG8gY2luemEgY29tIGxvZ28gQXBvZGk8L2Rlc2M+CjwhLS0gU2FjbyBwcmluY2lwYWwgLS0+CjxyZWN0IHg9IjI1IiB5PSIzMCIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIyMDAiIHJ4PSI4IiBmaWxsPSIjYzhjMGIwIi8+CjwhLS0gRmFpeGEgbGF0ZXJhbCBlc3F1ZXJkYSAtLT4KPHJlY3QgeD0iMjUiIHk9IjMwIiB3aWR0aD0iMTgiIGhlaWdodD0iMjAwIiByeD0iOCIgZmlsbD0iI2EwOTg4OCIvPgo8IS0tIEZhaXhhIGxhdGVyYWwgZGlyZWl0YSAtLT4KPHJlY3QgeD0iMTU3IiB5PSIzMCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjIwMCIgcng9IjgiIGZpbGw9IiNhMDk4ODgiLz4KPCEtLSBEb2JyYSB0b3BvIC0tPgo8ZWxsaXBzZSBjeD0iMTAwIiBjeT0iMzAiIHJ4PSI3NSIgcnk9IjEwIiBmaWxsPSIjYjhiMGEwIi8+CjwhLS0gRG9icmEgYmFzZSAtLT4KPGVsbGlwc2UgY3g9IjEwMCIgY3k9IjIzMCIgcng9Ijc1IiByeT0iMTAiIGZpbGw9IiNhMDk4ODgiLz4KPCEtLSBDb3N0dXJhIHRvcG8gLS0+CjxsaW5lIHgxPSI0MyIgeTE9IjI4IiB4Mj0iMTU3IiB5Mj0iMjgiIHN0cm9rZT0iIzg4ODA3MCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI2LDQiLz4KPCEtLSBDb3N0dXJhIGJhc2UgLS0+CjxsaW5lIHgxPSI0MyIgeTE9IjIzMiIgeDI9IjE1NyIgeTI9IjIzMiIgc3Ryb2tlPSIjODg4MDcwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjYsNCIvPgo8IS0tIMOBcmVhIGNlbnRyYWwgZG8gcsOzdHVsbyAtLT4KPHJlY3QgeD0iNDMiIHk9IjU1IiB3aWR0aD0iMTE0IiBoZWlnaHQ9IjE0NSIgcng9IjQiIGZpbGw9IiNkOGQwYzAiLz4KPCEtLSBGYWl4YSBhenVsIGVzY3VybyB0b3BvIHLDs3R1bG8gLS0+CjxyZWN0IHg9IjQzIiB5PSI1NSIgd2lkdGg9IjExNCIgaGVpZ2h0PSIzOCIgcng9IjQiIGZpbGw9IiMxYTJhNGEiLz4KPCEtLSBUZXh0byBDSU1FTlRPIC0tPgo8dGV4dCB4PSIxMDAiIHk9IjcyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXNpemU9IjkiIGZpbGw9IiNjOGEwMjAiIGxldHRlci1zcGFjaW5nPSIyIj5DSU1FTlRPPC90ZXh0Pgo8IS0tIExvZ28gQSAtLT4KPHBvbHlnb24gcG9pbnRzPSIxMDAsNjIgOTMsNzggMTA3LDc4IiBmaWxsPSIjYzhhMDIwIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iODgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IndoaXRlIiBsZXR0ZXItc3BhY2luZz0iMSI+QVBPREk8L3RleHQ+CjwhLS0gVGlwbyAtLT4KPHJlY3QgeD0iNDMiIHk9IjkzIiB3aWR0aD0iMTE0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjMmE0YThhIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTA1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXNpemU9IjkiIGZpbGw9IndoaXRlIj5DUCBJSS0zMjwvdGV4dD4KPCEtLSBGYWl4YSBsYXJhbmphIFVTTyBHRVJBTCAtLT4KPHJlY3QgeD0iNDMiIHk9IjE1NSIgd2lkdGg9IjExNCIgaGVpZ2h0PSIyNiIgcng9IjAiIGZpbGw9IiNkMDQwMTAiLz4KPHRleHQgeD0iMTAwIiB5PSIxNzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IndoaXRlIj5VU08gR0VSQUw8L3RleHQ+CjwhLS0gTGluaGFzIGRlIGluZm8gLS0+CjxyZWN0IHg9IjQzIiB5PSIxODEiIHdpZHRoPSIxMTQiIGhlaWdodD0iMTkiIGZpbGw9IiMxYTJhNGEiLz4KPHRleHQgeD0iMTAwIiB5PSIxOTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI3IiBmaWxsPSIjYWFiYmRkIj5TRUNBR0VNICDCtyAgUkVTSVNUw4pOQ0lBPC90ZXh0Pgo8IS0tIEVzdHJlbGFzIHNlY2FnZW0gLS0+Cjx0ZXh0IHg9IjYyIiB5PSIyMDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI5IiBmaWxsPSIjYzhhMDIwIj7imIXimIXimIXimIXimIU8L3RleHQ+CjwhLS0gRXN0cmVsYXMgcmVzaXN0w6puY2lhIC0tPgo8dGV4dCB4PSIxMzgiIHk9IjIwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjkiIGZpbGw9IiNjOGEwMjAiPuKYheKYheKYheKYheKYhTwvdGV4dD4KPCEtLSBUZXh0byBwZXNvIC0tPgo8dGV4dCB4PSIxMDAiIHk9IjIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zaXplPSI4IiBmaWxsPSIjNjY2Ij41MCBrZzwvdGV4dD4KPC9zdmc+Cg==' style='width:12px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px'> Ensacado`,
   "Granel":`<img src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2ODAiIGhlaWdodD0iMzIwIiB2aWV3Qm94PSIwIDAgNjgwIDMyMCIgcm9sZT0iaW1nIj4KPHRpdGxlPkNhbWluaMOjbyBiZXRvbmVpcmE8L3RpdGxlPgo8ZGVzYz5JbHVzdHJhw6fDo28gZGUgdW0gY2FtaW5ow6NvIGJldG9uZWlyYSBhbWFyZWxvIGNvbSB0YW1ib3IgZ2lyYXTDs3JpbyBjaW56YTwvZGVzYz4KCjwhLS0gQ2FiaW5lIC0tPgo8cmVjdCB4PSI2MCIgeT0iMTQwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjExMCIgcng9IjEyIiBmaWxsPSIjNWE2Mzc4Ii8+CjxyZWN0IHg9Ijc1IiB5PSIxMTUiIHdpZHRoPSIxMzAiIGhlaWdodD0iOTAiIHJ4PSIxMCIgZmlsbD0iIzVhNjM3OCIvPgo8IS0tIEphbmVsYSBjYWJpbmUgLS0+CjxyZWN0IHg9Ijg1IiB5PSIxMjUiIHdpZHRoPSIxMTAiIGhlaWdodD0iNjIiIHJ4PSI3IiBmaWxsPSIjYThjOGU4Ii8+CjxyZWN0IHg9Ijg1IiB5PSIxMjUiIHdpZHRoPSI1MiIgaGVpZ2h0PSI2MiIgcng9IjciIGZpbGw9IiM5MGI4ZDgiLz4KPCEtLSBEZXRhbGhlIGNhYmluZSAtLT4KPHJlY3QgeD0iNjAiIHk9IjE5NSIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxMCIgcng9IjAiIGZpbGw9IiM0YTUzNjgiLz4KPCEtLSBHcmFkZSBmcm9udGFsIC0tPgo8cmVjdCB4PSI2MCIgeT0iMTY1IiB3aWR0aD0iMjUiIGhlaWdodD0iNjAiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+CjxyZWN0IHg9IjYzIiB5PSIxNzAiIHdpZHRoPSIxOSIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iI2Y1Yzg0MiIvPgo8cmVjdCB4PSI2MyIgeT0iMTgzIiB3aWR0aD0iMTkiIGhlaWdodD0iOCIgcng9IjIiIGZpbGw9IiNmNWM4NDIiLz4KPHJlY3QgeD0iNjMiIHk9IjE5NiIgd2lkdGg9IjE5IiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjZDBkNGRjIi8+CjwhLS0gRmFyb2wgLS0+CjxyZWN0IHg9IjYyIiB5PSIxNTMiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgcng9IjMiIGZpbGw9IiNmZmZkZTAiLz4KPGVsbGlwc2UgY3g9IjcyIiBjeT0iMTU4IiByeD0iNyIgcnk9IjQiIGZpbGw9IiNmZmUwNjYiLz4KCjwhLS0gQ2hhc3NpIC8gcGxhdGFmb3JtYSAtLT4KPHJlY3QgeD0iNTUiIHk9IjI0OCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSIyMiIgcng9IjQiIGZpbGw9IiM0YTUzNjgiLz4KPHJlY3QgeD0iNTUiIHk9IjI0OCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSI2IiByeD0iNCIgZmlsbD0iIzVhNjM3OCIvPgoKPCEtLSBUYW1ib3IgYmV0b25laXJhIC0tPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMTU1IiByeT0iMTE4IiBmaWxsPSIjZThiODAwIi8+CjxlbGxpcHNlIGN4PSI0MzAiIGN5PSIxODAiIHJ4PSIxNDAiIHJ5PSIxMDUiIGZpbGw9IiNmNWM4NDIiLz4KPCEtLSBMaXN0cmFzIGRvIHRhbWJvciAtLT4KPHBhdGggZD0iTTMwMCAxMzAgUTQzMCAxMDAgNTYwIDEzMCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTI5MCAxNzAgUTQzMCAxNDAgNTcwIDE3MCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTI5NSAyMTAgUTQzMCAxODUgNTY1IDIxMCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTMxMCAyNDAgUTQzMCAyMjUgNTUwIDI0MCIgc3Ryb2tlPSIjYzg5YTAwIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz4KPCEtLSBDZW50cm8gdGFtYm9yIC0tPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMjIiIHJ5PSIyMiIgZmlsbD0iI2Q0YTUwMCIvPgo8ZWxsaXBzZSBjeD0iNDMwIiBjeT0iMTgwIiByeD0iMTIiIHJ5PSIxMiIgZmlsbD0iI2M4OWEwMCIvPgo8IS0tIEJvY2EgZG8gdGFtYm9yIGVzcXVlcmRhIC0tPgo8ZWxsaXBzZSBjeD0iMjg1IiBjeT0iMTc4IiByeD0iMjgiIHJ5PSIzOCIgZmlsbD0iI2Q0YTUwMCIvPgo8ZWxsaXBzZSBjeD0iMjg1IiBjeT0iMTc4IiByeD0iMTgiIHJ5PSIyNiIgZmlsbD0iI2I4ODgwMCIvPgo8IS0tIFNhw61kYSBkbyB0YW1ib3IgZGlyZWl0YSAtLT4KPGVsbGlwc2UgY3g9IjU3NSIgY3k9IjE3OCIgcng9IjIwIiByeT0iMjgiIGZpbGw9IiNkNGE1MDAiLz4KCjwhLS0gU3Vwb3J0ZSB0YW1ib3IgLS0+CjxyZWN0IHg9IjIwMCIgeT0iMjE4IiB3aWR0aD0iMzAiIGhlaWdodD0iMzUiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+CjxyZWN0IHg9IjU3MCIgeT0iMjI4IiB3aWR0aD0iMjUiIGhlaWdodD0iMjUiIHJ4PSI0IiBmaWxsPSIjNGE1MzY4Ii8+Cgo8IS0tIFJvZGEgZGlhbnRlaXJhIC0tPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyNzIiIHI9IjM4IiBmaWxsPSIjMmQzMTQyIi8+CjxjaXJjbGUgY3g9IjEzMCIgY3k9IjI3MiIgcj0iMjgiIGZpbGw9IiM0YTUzNjgiLz4KPGNpcmNsZSBjeD0iMTMwIiBjeT0iMjcyIiByPSIxNCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyNzIiIHI9IjciIGZpbGw9IiM2YTczODgiLz4KPGNpcmNsZSBjeD0iMTMwIiBjeT0iMjU4IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIyODYiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iMTE2IiBjeT0iMjcyIiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+Cgo8IS0tIFJvZGFzIHRyYXNlaXJhcyAtLT4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjcyIiByPSIzOCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSI0OTAiIGN5PSIyNzIiIHI9IjI4IiBmaWxsPSIjNGE1MzY4Ii8+CjxjaXJjbGUgY3g9IjQ5MCIgY3k9IjI3MiIgcj0iMTQiIGZpbGw9IiMyZDMxNDIiLz4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjcyIiByPSI3IiBmaWxsPSIjNmE3Mzg4Ii8+CjxjaXJjbGUgY3g9IjQ5MCIgY3k9IjI1OCIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSI1MDQiIGN5PSIyNzIiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iNDkwIiBjeT0iMjg2IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjQ3NiIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgoKPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjcyIiByPSIzOCIgZmlsbD0iIzJkMzE0MiIvPgo8Y2lyY2xlIGN4PSI1NTAiIGN5PSIyNzIiIHI9IjI4IiBmaWxsPSIjNGE1MzY4Ii8+CjxjaXJjbGUgY3g9IjU1MCIgY3k9IjI3MiIgcj0iMTQiIGZpbGw9IiMyZDMxNDIiLz4KPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjcyIiByPSI3IiBmaWxsPSIjNmE3Mzg4Ii8+CjxjaXJjbGUgY3g9IjU1MCIgY3k9IjI1OCIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgo8Y2lyY2xlIGN4PSI1NjQiIGN5PSIyNzIiIHI9IjMiIGZpbGw9IiM4YTkzOTgiLz4KPGNpcmNsZSBjeD0iNTUwIiBjeT0iMjg2IiByPSIzIiBmaWxsPSIjOGE5Mzk4Ii8+CjxjaXJjbGUgY3g9IjUzNiIgY3k9IjI3MiIgcj0iMyIgZmlsbD0iIzhhOTM5OCIvPgoKPCEtLSBQYXJhbGFtYXMgLS0+CjxlbGxpcHNlIGN4PSIxMzAiIGN5PSIyNDUiIHJ4PSI0OCIgcnk9IjEyIiBmaWxsPSIjNGE1MzY4Ii8+CjxlbGxpcHNlIGN4PSI1MjAiIGN5PSIyNDUiIHJ4PSI2OCIgcnk9IjEyIiBmaWxsPSIjNGE1MzY4Ii8+Cgo8IS0tIENhbGhhIGRlIHNhw61kYSAtLT4KPHBhdGggZD0iTTU4MCAyMzAgTDYzMCAyODAgTDYyMCAyODQgTDU3MCAyMzggWiIgZmlsbD0iIzhhOTM5OCIvPgo8cmVjdCB4PSI2MTgiIHk9IjI3MiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjgiIHJ4PSIzIiBmaWxsPSIjNmE3Mzg4Ii8+Cgo8IS0tIEVzcGVsaG8gcmV0cm92aXNvciAtLT4KPHJlY3QgeD0iNTAiIHk9IjEzOCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEwIiByeD0iMiIgZmlsbD0iIzRhNTM2OCIvPgoKPCEtLSBMYXRlcmFsIGNhYmluZSAtLT4KPHJlY3QgeD0iMTkwIiB5PSIyMDUiIHdpZHRoPSIyOCIgaGVpZ2h0PSI0NSIgcng9IjMiIGZpbGw9IiM2YTczODgiLz4KCjwvc3ZnPgo=' style='width:18px;height:10px;object-fit:contain;vertical-align:middle;margin-right:3px'> Granel`,
@@ -234,28 +356,15 @@ const TIPO_SVG={
 };
 
 const MOTIVOS=[
-  "Absenteísmo Logístico",
-  "Absenteísmo Produção",
-  "Acúmulo de Veículos",
-  "Ausência de Estoque",
-  "DDS",
-  "Extração de Cimento",
-  "Falha de Processo Infraestrutura",
-  "Falha nos Periféricos da Balança Rodoviária",
-  "Falha Operacional do Assistente",
-  "Falha, Lentidão ou Queda de Processo Sistemas",
-  "Faturamento Parado pelo Setor Fiscal",
-  "Lentidão em Período Chuvoso",
-  "Manutenção Corretiva",
-  "Manutenção Preventiva",
-  "Plataforma de Grades",
-  "Queda de Energia",
-  "Transferência Acima do Plano",
-  "Troca de Turno",
-  "Veículo com Problema Mecânico",
-  "Venda Acima do Plano"
+  "DataSul","Falta de cimento","Concentração de veículos","Dificuldade de extração",
+  "Falha do equipamento","Falha de processo","Falta de mão obra","TMAC online teste"
 ];
 const LIMITE_MS=130*60*1000; // 2h10
+// Metas por etapa (Setor Responsável)
+const TMTI_LIM=5*60*1000;   // Triagem
+const TMCI_LIM=20*60*1000;  // Carregamento
+const TMEI_LIM=15*60*1000;  // Enlonamento
+const TMF_LIM=8*60*1000;    // Fila Faturamento
 
 function periodDates(p){
   const now=new Date();
@@ -303,6 +412,20 @@ function gargalo(c){
   });
   return worst;
 }
+function stageMetrics(c){
+  const en=getTS(c,"entrada","ts");
+  const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
+  const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
+  const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
+  const sa=getTS(c,"faturamento","ts");
+  const tmti=(trI&&trF)?trF-trI:null;
+  const tmci=(caI&&caF)?caF-caI:null;
+  const tmei=(enI&&enF)?enF-enI:null;
+  const tmf=(enF&&sa)?sa-enF:((caF&&sa&&!enI)?sa-caF:null);
+  const armazemExc=(tmti!=null&&tmti>TMTI_LIM)||(tmci!=null&&tmci>TMCI_LIM)||(tmei!=null&&tmei>TMEI_LIM);
+  const fatExc=(tmf!=null&&tmf>TMF_LIM);
+  return{en,tmti,tmci,tmei,tmf,armazemExc,fatExc};
+}
 function barColor(ms,avg){
   const ratio=ms/avg;
   if(ratio>1.5)return"#ff4466";
@@ -312,6 +435,37 @@ function barColor(ms,avg){
 
 let ALL=[],MP="hoje",MF="pend",MT_J="t",MTC_J="t",MTCIM_J="t",MDATA_J=null;
 let CAL_Y_J=0,CAL_M_J=0;
+let MMODE="tmac"; // 'tmac' | 'etapas'
+let SBUSCA={placa:"",ac:"",nf:"",op:""};
+
+window.setModo=(m)=>{
+  MMODE=m;
+  document.getElementById("mode-tmac").classList.toggle("on",m==="tmac");
+  document.getElementById("mode-etapas").classList.toggle("on",m==="etapas");
+  document.getElementById("btn-rel").textContent=m==="tmac"?"📋 Relatório TMAC > 2h10":"📋 Relatório Metas por Etapa";
+  render();
+};
+window.setBusca=()=>{
+  SBUSCA={
+    placa:document.getElementById("sb-placa").value.trim().toUpperCase(),
+    ac:document.getElementById("sb-ac").value.trim().toUpperCase(),
+    nf:document.getElementById("sb-nf").value.trim().toUpperCase(),
+    op:document.getElementById("sb-op").value.trim().toUpperCase()
+  };
+  render();
+};
+function passaBusca(c){
+  if(SBUSCA.placa&&!(c.placa||"").toUpperCase().includes(SBUSCA.placa))return false;
+  if(SBUSCA.ac&&!(c.ac||"").toUpperCase().includes(SBUSCA.ac))return false;
+  if(SBUSCA.nf&&!(c.notaFiscal||"").toUpperCase().includes(SBUSCA.nf))return false;
+  if(SBUSCA.op){
+    const opArm=(c.justificativa?.armazem?.operador||"").toUpperCase();
+    const opFat=(c.justificativa?.faturamento?.operador||"").toUpperCase();
+    const opLeg=(c.justificativa?.operador||"").toUpperCase();
+    if(!opArm.includes(SBUSCA.op)&&!opFat.includes(SBUSCA.op)&&!opLeg.includes(SBUSCA.op))return false;
+  }
+  return true;
+}
 
 window.setTurnoJ=(t,el)=>{MT_J=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCargaJ=(t,el)=>{MTC_J=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
@@ -401,10 +555,32 @@ function getAtrasados(){
   })
   .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
   .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
-  .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J);
+  .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J)
+  .filter(passaBusca);
+}
+
+// ── Modo Metas por Etapa: veículo entra se Armazém (TMTI/TMCI/TMEI) e/ou Faturamento (TMF) excedeu a meta
+function getAtrasadosEtapas(){
+  const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
+  return ALL.filter(c=>{
+    if(!c.data||c.data<s||c.data>e)return false;
+    if(c.setorAtual==="posto1")return false;
+    const m=stageMetrics(c);
+    return m.armazemExc||m.fatExc;
+  })
+  .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
+  .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
+  .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J)
+  .filter(passaBusca);
+}
+function grupoPendente(c,m){
+  const jArm=c.justificativa?.armazem?.motivo;
+  const jFat=c.justificativa?.faturamento?.motivo;
+  return(m.armazemExc&&!jArm)||(m.fatExc&&!jFat);
 }
 
 function render(){
+  if(MMODE==="etapas"){renderEtapas();return;}
   const atList=getAtrasados();
   const pend=atList.filter(c=>!(c.justificativa&&c.justificativa.motivo));
   const ok=atList.filter(c=>!!(c.justificativa&&c.justificativa.motivo));
@@ -506,6 +682,126 @@ function render(){
   }).join("");
 }
 
+// ── RENDER — Modo Metas por Etapa ──
+function renderEtapas(){
+  const atList=getAtrasadosEtapas();
+  const metricsMap=new Map(atList.map(c=>[c.id,stageMetrics(c)]));
+  const pend=atList.filter(c=>grupoPendente(c,metricsMap.get(c.id)));
+  const ok=atList.filter(c=>!grupoPendente(c,metricsMap.get(c.id)));
+  document.getElementById("cnt-pend").textContent=pend.length;
+  document.getElementById("cnt-ok").textContent=ok.length;
+  document.getElementById("cnt-all").textContent=atList.length;
+
+  let filtered=atList;
+  if(MF==="pend")filtered=pend;
+  if(MF==="ok")filtered=ok;
+
+  const el=document.getElementById("lista");
+  if(!filtered.length){el.innerHTML=`<div class="empty">Nenhum registro no período.</div>`;return;}
+
+  el.innerHTML=filtered.map(c=>{
+    const m=metricsMap.get(c.id);
+    const en=m.en;
+    const turno=getTurno(en);
+    const tipoLabel=TIPO_SVG[c.tipoCargaLabel]||c.tipoCargaLabel||c.tipoCarga||"—";
+    const grupoPend=grupoPendente(c,m);
+    const nExcedidos=(m.armazemExc?1:0)+(m.fatExc?1:0);
+
+    const mv=(ms,lim)=>ms==null?`<span class="metric-val" style="color:var(--t3)">—</span>`:`<span class="metric-val ${ms>lim?"bad":"ok"}">${durStr(ms)}</span>`;
+
+    const armazemBox=`
+      <div class="setor-col">
+        <div class="setor-title armazem">🏬 Armazém</div>
+        <div class="metric-row"><span class="metric-lbl">TMTI (Triagem)</span>${mv(m.tmti,TMTI_LIM)}</div>
+        <div class="metric-row"><span class="metric-lbl">TMCI (Carregamento)</span>${mv(m.tmci,TMCI_LIM)}</div>
+        <div class="metric-row"><span class="metric-lbl">TMEI (Enlonamento)</span>${mv(m.tmei,TMEI_LIM)}</div>
+        ${grupoArea(c,"armazem",m.armazemExc)}
+      </div>`;
+    const faturamentoBox=`
+      <div class="setor-col">
+        <div class="setor-title faturamento">💰 Faturamento</div>
+        <div class="metric-row"><span class="metric-lbl">TMF (Fila Faturamento)</span>${mv(m.tmf,TMF_LIM)}</div>
+        ${grupoArea(c,"faturamento",m.fatExc)}
+      </div>`;
+
+    return`<div class="card ${grupoPend?"pend":"done"}" id="card-${c.id}">
+      <div class="card-head" onclick="toggleCard('${c.id}')">
+        <span class="ptag">${c.placa}</span>
+        <span class="info-txt">AC: ${c.ac} · Turno ${turno} · ${tipoLabel}</span>
+        <span class="info-txt">${c.data||""}</span>
+        <div class="${grupoPend?"status-pend":"status-ok"}">
+          ${grupoPend?`⏳ Pendente<span class="badge-need">${nExcedidos} setor${nExcedidos>1?"es":""} fora da meta</span>`:"✅ Justificado"}
+        </div>
+        <span class="chevron" id="chev-${c.id}">▼</span>
+      </div>
+      <div class="card-body" id="body-${c.id}">
+        <div class="setores">${armazemBox}${faturamentoBox}</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function grupoArea(c,grupo,excedeu){
+  if(!excedeu)return`<div class="setor-ok-tag">✔ Dentro da meta</div>`;
+  const j=c.justificativa?.[grupo];
+  if(j&&j.motivo){
+    return`
+      <div class="saved-box" style="margin-top:8px">
+        <div class="saved-motivo">✅ ${j.motivo}</div>
+        ${j.descricao?`<div class="saved-desc">"${j.descricao}"</div>`:""}
+        <div class="saved-by">${j.operador?"Por "+j.operador+" · ":""}${fmtDT(j.dataRegistro?.toDate?.())}</div>
+      </div>
+      <button class="edit-btn" onclick="editJustGrupo('${c.id}','${grupo}')">✏️ Editar</button>`;
+  }
+  const optsHtml=`<option value="">— Selecione o motivo —</option>`+MOTIVOS.map(mo=>`<option value="${mo}">${mo}</option>`).join("");
+  return`
+    <div class="grupo-motivos-label">Motivo do atraso — ${grupo==="armazem"?"Armazém":"Faturamento"}:</div>
+    <select class="motivo-select" id="mot-${grupo}-${c.id}" onchange="selMotivoGrupo('${c.id}','${grupo}')">${optsHtml}</select>
+    <textarea class="just-input" id="desc-${grupo}-${c.id}" placeholder="Complemento (opcional)..." style="margin-top:8px"></textarea>
+    <button class="save-btn" id="savebtn-${grupo}-${c.id}" onclick="salvarGrupo('${c.id}','${grupo}')" disabled style="margin-top:8px">💾 Salvar Justificativa</button>`;
+}
+
+window.selMotivoGrupo=(id,grupo)=>{
+  const sel=document.getElementById(`mot-${grupo}-${id}`);
+  const btn=document.getElementById(`savebtn-${grupo}-${id}`);
+  if(btn)btn.disabled=!sel||!sel.value;
+};
+
+window.salvarGrupo=async(id,grupo)=>{
+  const btn=document.getElementById(`savebtn-${grupo}-${id}`);
+  const sel=document.getElementById(`mot-${grupo}-${id}`);
+  const desc=document.getElementById(`desc-${grupo}-${id}`)?.value.trim()||"";
+  if(!sel||!sel.value)return;
+  const motivo=sel.value;
+  btn.disabled=true;btn.textContent="Salvando...";
+  try{
+    await updateDoc(doc(db,"caminhoes_rastreio",id),{
+      [`justificativa.${grupo}`]:{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
+    });
+  }catch(e){btn.disabled=false;btn.textContent="💾 Salvar Justificativa";alert("Erro: "+e.message);}
+};
+
+window.editJustGrupo=(id,grupo)=>{
+  const c=ALL.find(x=>x.id===id);if(!c)return;
+  const m=stageMetrics(c);
+  const excedeu=grupo==="armazem"?m.armazemExc:m.fatExc;
+  const motivoAtual=c.justificativa?.[grupo]?.motivo||"";
+  const optsHtml=`<option value="">— Selecione o motivo —</option>`+
+    MOTIVOS.map(mo=>`<option value="${mo}"${mo===motivoAtual?" selected":""}>${mo}</option>`).join("");
+  const box=grupo==="armazem"?document.querySelector(`#card-${id} .setor-title.armazem`).closest(".setor-col"):document.querySelector(`#card-${id} .setor-title.faturamento`).closest(".setor-col");
+  const anchor=box.querySelector(".saved-box")||box.querySelector(".setor-ok-tag");
+  const after=box.querySelector(".edit-btn");
+  const container=document.createElement("div");
+  container.innerHTML=`
+    <div class="grupo-motivos-label">Motivo do atraso — ${grupo==="armazem"?"Armazém":"Faturamento"}:</div>
+    <select class="motivo-select" id="mot-${grupo}-${id}" onchange="selMotivoGrupo('${id}','${grupo}')">${optsHtml}</select>
+    <textarea class="just-input" id="desc-${grupo}-${id}" placeholder="Complemento (opcional)..." style="margin-top:8px">${c.justificativa?.[grupo]?.descricao||""}</textarea>
+    <button class="save-btn" id="savebtn-${grupo}-${id}" onclick="salvarGrupo('${id}','${grupo}')"${motivoAtual?"":"disabled"} style="margin-top:8px">💾 Salvar Justificativa</button>`;
+  if(anchor)anchor.remove();
+  if(after)after.remove();
+  box.appendChild(container);
+};
+
 window.toggleCard=id=>{
   const body=document.getElementById("body-"+id);
   const chev=document.getElementById("chev-"+id);
@@ -528,7 +824,7 @@ window.salvar=async(id)=>{
   btn.disabled=true;btn.textContent="Salvando...";
   try{
     await updateDoc(doc(db,"caminhoes_rastreio",id),{
-      justificativa:{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date())}
+      justificativa:{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
     });
   }catch(e){btn.disabled=false;btn.textContent="💾 Salvar Justificativa";alert("Erro: "+e.message);}
 };
@@ -546,6 +842,7 @@ window.editJust=id=>{
     <button class="save-btn" id="savebtn-${id}" onclick="salvar('${id}')"${motivoAtual?"":"disabled"}>💾 Salvar Justificativa</button>`;
 };
 window.abrirRelatorio=()=>{
+  if(MMODE==="etapas"){abrirRelatorioEtapas();return;}
   const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
   const atrasados=ALL.filter(c=>{
     if(!c.data||c.data<s||c.data>e)return false;
@@ -558,8 +855,10 @@ window.abrirRelatorio=()=>{
   .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
   .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
   .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J)
+  .filter(passaBusca)
   .sort((a,b)=>(a.data>b.data?-1:1));
 
+  document.getElementById("rel-titulo").textContent="📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS";
   const per=s===e?s:`${s} a ${e}`;
   document.getElementById("rel-info").textContent=`Período: ${per} · Veículos com TMAC > 2h10: ${atrasados.length}`;
   document.getElementById("rel-total").textContent=`${atrasados.length} veículo${atrasados.length!==1?"s":""}`;
@@ -590,6 +889,7 @@ window.abrirRelatorio=()=>{
       <td style="color:var(--t2)">${g?durStr(g.ms):"—"}</td>
       <td>${temJust?`<span class="rel-just-ok">✅ Justificado</span>`:`<span class="rel-just-pend">⏳ Pendente</span>`}</td>
       <td style="color:var(--t2);font-size:10px;max-width:220px">${c.justificativa?.motivo||"—"}${c.justificativa?.descricao?" — "+c.justificativa.descricao:""}</td>
+      <td class="rel-op">${c.justificativa?.operador||"—"}</td>
     </tr>`;
   }).join("");
 
@@ -599,7 +899,7 @@ window.abrirRelatorio=()=>{
         <th>Placa</th><th>AC</th><th>Turno</th><th>Tipo</th>
         <th>Entrada</th><th>Saída</th><th>TMAC</th>
         <th>Gargalo Principal</th><th>Tempo Gargalo</th>
-        <th>Status</th><th>Justificativa</th>
+        <th>Status</th><th>Justificativa</th><th>Operador Resp.</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
@@ -607,56 +907,60 @@ window.abrirRelatorio=()=>{
   document.getElementById("modal-rel").classList.add("show");
 };
 
-window.exportarExcel=()=>{
+window.abrirRelatorioEtapas=()=>{
   const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
-  const atrasados=ALL.filter(c=>{
-    if(!c.data||c.data<s||c.data>e)return false;
-    if(c.setorAtual==="posto1")return false;
-    const en=getTS(c,"entrada","ts");if(!en)return false;
-    const sa=getTS(c,"faturamento","ts");
-    const agora=sa||new Date();
-    return(agora-en)>LIMITE_MS;
-  })
-  .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
-  .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
-  .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J)
-  .sort((a,b)=>(a.data>b.data?-1:1));
+  const atrasados=getAtrasadosEtapas().sort((a,b)=>(a.data>b.data?-1:1));
 
-  if(!atrasados.length){alert("Nenhum dado para exportar no filtro selecionado.");return;}
+  document.getElementById("rel-titulo").textContent="📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS — Metas por Etapa";
+  const per=s===e?s:`${s} a ${e}`;
+  document.getElementById("rel-info").textContent=`Período: ${per} · Veículos fora da meta (TMTI/TMCI/TMEI/TMF): ${atrasados.length}`;
+  document.getElementById("rel-total").textContent=`${atrasados.length} veículo${atrasados.length!==1?"s":""}`;
+
+  if(!atrasados.length){
+    document.getElementById("rel-body").innerHTML=`<div style="text-align:center;padding:32px;color:var(--t3)">✅ Nenhum veículo fora das metas por etapa no período selecionado.</div>`;
+    document.getElementById("modal-rel").classList.add("show");
+    return;
+  }
 
   const rows=atrasados.map(c=>{
-    const en=getTS(c,"entrada","ts");
-    const sa=getTS(c,"faturamento","ts");
-    const agora=sa||new Date();
-    const tmacMs=agora-en;
-    const g=gargalo(c);
-    const temJust=!!(c.justificativa?.motivo);
-    const tipoLabel=(c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"—");
-    return{
-      "Placa":c.placa||"",
-      "AC":c.ac||"",
-      "Turno":getTurno(en)||"",
-      "Tipo":tipoLabel,
-      "Entrada":fmtT(en),
-      "Saída":sa?fmtT(sa):"Em processo",
-      "TMAC":durStr(tmacMs),
-      "Gargalo Principal":g?g.lb:"",
-      "Tempo Gargalo":g?durStr(g.ms):"",
-      "Status":temJust?"Justificado":"Pendente",
-      "Justificativa":(c.justificativa?.motivo||"")+(c.justificativa?.descricao?" — "+c.justificativa.descricao:""),
-    };
-  });
-  const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[{wch:10},{wch:10},{wch:8},{wch:22},{wch:10},{wch:12},{wch:10},{wch:18},{wch:14},{wch:12},{wch:40}];
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,"Justificativas");
-  const turnoSuffix=MT_J!=="t"?`_turno${MT_J}`:"";
-  const fname=s===e?`justificativas_${s}${turnoSuffix}.xlsx`:`justificativas_${s}_a_${e}${turnoSuffix}.xlsx`;
-  XLSX.writeFile(wb,fname);
+    const m=stageMetrics(c);
+    const en=m.en;
+    const setores=[m.armazemExc?"Armazém":null,m.fatExc?"Faturamento":null].filter(Boolean).join(" + ");
+    const jArm=c.justificativa?.armazem,jFat=c.justificativa?.faturamento;
+    const statusArm=!m.armazemExc?"—":(jArm?.motivo?`<span class="rel-just-ok">✅ ${jArm.motivo}</span>`:`<span class="rel-just-pend">⏳ Pendente</span>`);
+    const statusFat=!m.fatExc?"—":(jFat?.motivo?`<span class="rel-just-ok">✅ ${jFat.motivo}</span>`:`<span class="rel-just-pend">⏳ Pendente</span>`);
+    const operadores=[m.armazemExc&&jArm?.operador?`Armazém: ${jArm.operador}`:null,m.fatExc&&jFat?.operador?`Faturamento: ${jFat.operador}`:null].filter(Boolean).join(" · ")||"—";
+    return`<tr>
+      <td><span class="rel-placa">${c.placa}</span></td>
+      <td style="color:var(--t2)">${c.ac||"—"}</td>
+      <td style="color:var(--t2)">${getTurno(en)||"—"}</td>
+      <td style="color:var(--t2)">${c.notaFiscal||"—"}</td>
+      <td style="color:var(--t2)">${setores||"—"}</td>
+      <td style="color:var(--t2)">${m.tmti!=null?durStr(m.tmti):"—"}</td>
+      <td style="color:var(--t2)">${m.tmci!=null?durStr(m.tmci):"—"}</td>
+      <td style="color:var(--t2)">${m.tmei!=null?durStr(m.tmei):"—"}</td>
+      <td style="color:var(--t2)">${m.tmf!=null?durStr(m.tmf):"—"}</td>
+      <td>${statusArm}</td>
+      <td>${statusFat}</td>
+      <td class="rel-op">${operadores}</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("rel-body").innerHTML=`
+    <table class="rel-table">
+      <thead><tr>
+        <th>Placa</th><th>AC</th><th>Turno</th><th>Nota Fiscal</th>
+        <th>Setor c/ atraso</th>
+        <th>TMTI</th><th>TMCI</th><th>TMEI</th><th>TMF</th>
+        <th>Just. Armazém</th><th>Just. Faturamento</th><th>Operador Resp.</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  document.getElementById("modal-rel").classList.add("show");
 };
 
 window.exportarPdf=()=>{
-
   const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
   const hoje=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
   const hora=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"});
@@ -684,9 +988,9 @@ window.exportarPdf=()=>{
   @media print{@page{margin:1.5cm;size:A4 landscape}}
 </style>
 </head><body>
-<h1>CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS</h1>
+<h1>${document.getElementById("rel-titulo").textContent.replace(/^📋\s*/,"")}</h1>
 <div class="sub">Apodi Cimentos · Período: ${per} · Gerado em: ${hoje} às ${hora}</div>
-<div class="sub alert">Veículos com TMAC superior a 2h10</div>
+<div class="sub alert">${MMODE==="etapas"?"Veículos fora das metas por etapa (TMTI/TMCI/TMEI/TMF)":"Veículos com TMAC superior a 2h10"}</div>
 ${tabela}
 <div class="footer">Documento gerado pelo Sistema de Rastreio de Carregamento — Apodi Cimentos</div>
 </body></html>`);
