@@ -788,8 +788,8 @@ window.confirmarExclusao=async()=>{
     await aD(collection(db,"caminhoes_excluidos"),{
       ...dados,
       idOriginal:id,
-      motivoExclusao:motivo,
-      operadorExclusao:(SESSAO&&SESSAO.nome)||"desconhecido",
+      excluidoMotivo:motivo,
+      excluidoPor:(SESSAO&&SESSAO.nome)||"desconhecido",
       telaExclusao:"posto1",
       excluidoEm:new Date().toISOString(),
       qtdChamadas:foiChamado?CHAMADO_ATUAL._qtdChamadas:0,
