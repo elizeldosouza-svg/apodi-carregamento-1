@@ -80,6 +80,10 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .hi-meta{font-size:10px;color:rgba(255,68,102,.6);margin-top:1px}
 .hi-obs{font-size:10px;color:rgba(255,68,102,.45);font-style:italic;margin-top:2px}
 .hi-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;background:rgba(255,68,102,.15);color:#ff4466;border:1px solid rgba(255,68,102,.3);white-space:nowrap;flex-shrink:0;margin-left:auto}
+.hist-item-ex{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--rs);border:1.5px solid var(--bd);background:rgba(122,175,204,.05);margin-bottom:5px}
+.hi-placa-ex{font-family:monospace;font-size:15px;font-weight:700;color:var(--tx);letter-spacing:1.5px}
+.hi-meta-ex{font-size:10px;color:var(--t2);margin-top:1px}
+.hi-obs-ex{font-size:10px;color:var(--t3);font-style:italic;margin-top:2px}
 .filtro-rel{background:var(--c1);border:1px solid var(--bd);border-radius:var(--rs);padding:14px;margin-top:16px;display:flex;flex-direction:column;gap:10px}
 .filtro-titulo{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
 .filtro-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -287,6 +291,13 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
         <span style="font-size:10px;color:rgba(255,68,102,.5)" id="hist-count">0 ocorrências</span>
       </div>
       <div id="hist-list"></div>
+    </div>
+    <div id="hist-ex-wrap" style="display:none;margin-top:14px;border-top:1px solid rgba(122,175,204,.15);padding-top:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <div class="rodape-label" style="margin:0;color:var(--t2)">🗑 ACs excluídas hoje</div>
+        <span style="font-size:10px;color:rgba(122,175,204,.5)" id="hist-ex-count">0 ocorrências</span>
+      </div>
+      <div id="hist-ex-list"></div>
     </div>
   </div>
 
@@ -778,6 +789,20 @@ window.confirmarExclusao=async()=>{
     BC.postMessage({tipo:"cancelar"});
   }
   fecharModalExcluir();
+  const cimEx=v.tipoCimento||v.tipoCimentoLabel||"";
+  const tpLEx={granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[v.tipoCarga]||v.tipoCarga||"";
+  const horaEx=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("hist-ex-list").insertAdjacentHTML("afterbegin",`
+    <div class="hist-item-ex">
+      <div style="flex:1">
+        <div class="hi-placa-ex">${v.placa}</div>
+        <div class="hi-meta-ex">${cimEx?cimEx+" · ":""}${tpLEx} · ${v.ac} · ${horaEx} · por ${(SESSAO&&SESSAO.nome)||"—"}</div>
+        <div class="hi-obs-ex">${motivo}</div>
+      </div>
+    </div>`);
+  const nEx=document.getElementById("hist-ex-list").children.length;
+  document.getElementById("hist-ex-count").textContent=nEx+" ocorrência"+(nEx!==1?"s":"");
+  document.getElementById("hist-ex-wrap").style.display="block";
   showMsg("wn","🗑 AC de "+v.placa+" excluída e movida para o histórico");
   renderFila();
 };
