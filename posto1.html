@@ -845,7 +845,7 @@ window.confirmarExclusao=async()=>{
     limparChamadoAtual();
   }
   // Sinaliza a TV para limpar de vez (sem manter a placa fantasma), diferente do "cancelar"
-  BC.postMessage({tipo:"excluir",placa:v.placa,veiculoId:id});
+  BC.postMessage({tipo:"excluir",placa:v.placa,veiculoId:v.id});
   fecharModalExcluir();
   const cimEx=v.tipoCimento||v.tipoCimentoLabel||"";
   const tpLEx={granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[v.tipoCarga]||v.tipoCarga||"";
