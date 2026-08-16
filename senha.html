@@ -475,11 +475,15 @@ BC.onmessage=(ev)=>{
 };
 
 // ── Fila: veículos aguardando no posto1 ──
+let idsAtivosPosto1=new Set(); // ids de caminhoes_rastreio ainda válidos para chamada agora (fonte de verdade em tempo real)
+let rastreioCarregado=false;
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const hj=hoje();
   const all=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>c.data===hj&&c.setorAtual==="posto1"&&!c.posto1Confirmado)
     .sort((a,b)=>(a.criadoEm?.toDate?.()?.getTime()||0)-(b.criadoEm?.toDate?.()?.getTime()||0));
+  idsAtivosPosto1=new Set(all.map(c=>c.id));
+  rastreioCarregado=true;
   filas.granel=all.filter(c=>c.tipoCarga==="granel");
   filas.ensacado=all.filter(c=>c.tipoCarga==="ensacado");
   filas.bigbag=all.filter(c=>c.tipoCarga==="bigbag");
@@ -493,6 +497,10 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
   const docs=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>{
       if(c.status!=="chamado")return false; // só considera chamadas ainda em aberto (ignora resolvidas/excluídas)
+      // Segunda camada de segurança, permanente: só é válida se o veículo ainda está
+      // mesmo esperando no Posto 1 agora — auto-corrige qualquer resíduo sozinho,
+      // sem depender do campo "status" ter sido atualizado corretamente.
+      if(rastreioCarregado&&c.veiculoId&&!idsAtivosPosto1.has(c.veiculoId))return false;
       // Aceita se data bate com hoje OU se criadoEm é de hoje (fallback)
       if(c.data===hj)return true;
       const ts=c.criadoEm?.toDate?.();
