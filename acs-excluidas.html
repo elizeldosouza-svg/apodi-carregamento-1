@@ -272,7 +272,7 @@ window.restaurar=async(id)=>{
   const c=ALL.find(x=>x.id===id);if(!c)return;
   if(!confirm("Restaurar o registro da placa "+c.placa+" para o fluxo normal?"))return;
   try{
-    const{id:_id,idOriginal,excluidoEm,excluidoPor,excluidoMotivo,...dados}=c;
+    const{id:_id,idOriginal,excluidoEm,excluidoPor,excluidoMotivo,telaExclusao,qtdChamadas,tsPrimeiraChamada,tempoAteExclusaoSegundos,...dados}=c;
     await addDoc(collection(db,"caminhoes_rastreio"),dados);
     await deleteDoc(doc(db,"caminhoes_excluidos",id));
     showToast("ok","✅ "+c.placa+" restaurado com sucesso.");
