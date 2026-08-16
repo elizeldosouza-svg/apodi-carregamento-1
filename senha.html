@@ -492,7 +492,7 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
   const hj=hoje();
   const docs=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>{
-      if(c.status==="excluida")return false;
+      if(c.status!=="chamado")return false; // só considera chamadas ainda em aberto (ignora resolvidas/excluídas)
       // Aceita se data bate com hoje OU se criadoEm é de hoje (fallback)
       if(c.data===hj)return true;
       const ts=c.criadoEm?.toDate?.();
