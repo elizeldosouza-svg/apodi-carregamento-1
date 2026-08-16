@@ -657,6 +657,8 @@ function atualizarBadgeRecall(){
 
 async function dispararChamada(v){
   CONTADOR_CHAMADA++;
+  const qtd=v._qtdChamadas||1;
+  const tsPrimeira=v._tsPrimeiraChamada||Date.now();
   try{
     const{addDoc:aD,doc,setDoc,Timestamp:TS}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
     const ts=new Date();
@@ -664,11 +666,12 @@ async function dispararChamada(v){
       numero:CONTADOR_CHAMADA,placa:v.placa,ac:v.ac,
       tipoCarga:v.tipoCarga||null,tipoCimento:v.tipoCimento||null,
       veiculoId:v.id,data:hoje(),
+      qtdChamadas:qtd,tsPrimeiraChamada:TS.fromDate(new Date(tsPrimeira)),
       criadoEm:TS.fromDate(ts),status:"chamado"
     });
     await setDoc(doc(db,"config","chamadas_contador_"+hoje()),{n:CONTADOR_CHAMADA});
     // Publica no BroadcastChannel para senha.html reagir imediatamente (mesmo computador)
-    BC.postMessage({placa:v.placa,ac:v.ac,tipoCarga:v.tipoCarga||"ensacado",numero:CONTADOR_CHAMADA,firebaseId:ref.id});
+    BC.postMessage({placa:v.placa,ac:v.ac,tipoCarga:v.tipoCarga||"ensacado",numero:CONTADOR_CHAMADA,qtdChamadas:qtd,tsPrimeiraChamada:tsPrimeira,veiculoId:v.id,firebaseId:ref.id});
   }catch(e){showMsg("er","Erro: "+e.message);}
 }
 
@@ -768,7 +771,7 @@ window.confirmarExclusao=async()=>{
   const v=EX_ALVO;if(!v)return;
   const foiChamado=!!(CHAMADO_ATUAL&&CHAMADO_ATUAL.id===v.id&&CHAMADO_ATUAL._tsPrimeiraChamada);
   try{
-    const{addDoc:aD,doc,deleteDoc}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
+    const{addDoc:aD,doc,deleteDoc,getDocs,query:q,where,updateDoc}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
     const{id,...dados}=v;
     const agora=Date.now();
     await aD(collection(db,"caminhoes_excluidos"),{
@@ -783,11 +786,18 @@ window.confirmarExclusao=async()=>{
       tempoAteExclusaoSegundos:foiChamado?Math.round((agora-CHAMADO_ATUAL._tsPrimeiraChamada)/1000):null
     });
     await deleteDoc(doc(db,"caminhoes_rastreio",id));
+    // Marca como excluída todas as chamadas feitas para esse veículo hoje,
+    // para a TV (senha.html) parar de considerá-las como "última chamada"
+    try{
+      const cfSnap=await getDocs(q(collection(db,"chamadas_fila"),where("veiculoId","==",id)));
+      await Promise.all(cfSnap.docs.map(d=>updateDoc(doc(db,"chamadas_fila",d.id),{status:"excluida"})));
+    }catch(e){}
   }catch(e){showMsg("er","Erro ao excluir: "+e.message);return;}
   if(CHAMADO_ATUAL&&CHAMADO_ATUAL.id===v.id){
     limparChamadoAtual();
-    BC.postMessage({tipo:"cancelar"});
   }
+  // Sinaliza a TV para limpar de vez (sem manter a placa fantasma), diferente do "cancelar"
+  BC.postMessage({tipo:"excluir",placa:v.placa,veiculoId:id});
   fecharModalExcluir();
   const cimEx=v.tipoCimento||v.tipoCimentoLabel||"";
   const tpLEx={granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[v.tipoCarga]||v.tipoCarga||"";
