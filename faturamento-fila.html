@@ -13,6 +13,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .top{background:var(--bg2);border-bottom:2px solid var(--gr);min-height:56px;display:flex;align-items:center;padding:10px 20px;position:sticky;top:0;z-index:200;gap:12px;flex-wrap:wrap}
 .logo{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:800;color:var(--gr);letter-spacing:.5px}
 .logo .sub{display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:var(--t2);letter-spacing:.3px;margin-top:1px}
+.live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--gr);margin-left:auto}
+.dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 .wrap{max-width:1240px;margin:0 auto;padding:18px 16px 40px}
 
 /* filtros */
@@ -81,6 +84,7 @@ tr:hover td{background:rgba(0,232,150,.04)}
 <body>
 <div class="top">
   <div class="logo">🧾 FATURAMENTO — TMF<span class="sub">Tempo Médio de Fila · consulta em tempo real</span></div>
+  <div class="live"><div class="dot"></div>AO VIVO</div>
 </div>
 
 <div class="wrap">
