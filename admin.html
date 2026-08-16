@@ -361,7 +361,9 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
       </div>
       <div id="bulk-bar" style="display:none;background:rgba(255,68,102,.08);border-bottom:1px solid var(--rd);padding:10px 18px;align-items:center;gap:12px">
         <span id="bulk-count" style="font-size:12px;font-weight:700;color:var(--rd)">0 selecionados</span>
+        <span id="bulk-sub" style="font-size:10px;color:var(--t3)"></span>
         <button onclick="bulkExcluir()" style="border:1px solid var(--rd);background:rgba(255,68,102,.1);color:var(--rd);font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer">🗑️ Excluir selecionados</button>
+        <button id="bulk-select-all-filtered" onclick="selectAllFiltered()" style="border:1px solid var(--bd);background:transparent;color:var(--t2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer;display:none"></button>
         <span onclick="clearSelection()" style="color:var(--t2);font-size:11px;text-decoration:underline;cursor:pointer;margin-left:auto">Limpar seleção</span>
       </div>
       <div id="ld"><div class="spin"></div></div>
@@ -566,6 +568,10 @@ let logado=isAdminLogado();
 let ALL=[],MP="hoje",MDIA="t",MT="t",MTC="t",MSTATUS="t",SELECTED_ID=null,MDATA=null,MDATA_FIM=null;
 let SELECTED_IDS=new Set();
 let SORT_COL=null,SORT_DIR=-1;
+const PAGE_SIZE=100;
+let PAGE=1;
+// Item 09: preserva estado de filtros/página só durante a sessão da aba (memória JS)
+let FILTER_STATE_SNAPSHOT=null;
 let CAL_SHIFT_START=null;
 // calendário
 let CAL_Y=0,CAL_M=0,CAL_SEL_SEMANA=null,CAL_SEL_MES=null;
@@ -709,7 +715,13 @@ document.addEventListener("click",e=>{
   const btn=document.getElementById("cal-toggle-btn");
   if(pop&&btn&&!pop.contains(e.target)&&!btn.contains(e.target))calClose();
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape")calClose();});
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+  calClose();
+  // Item 07: Esc fecha o drawer de edição se estiver aberto
+  const drawerEl=document.getElementById("drawer");
+  if(drawerEl&&drawerEl.classList.contains("open"))closeDrawer();
+});
 function updateCalBtnLabel(){
   const el=document.getElementById("cal-btn-label");if(!el)return;
   const pad=n=>String(n).padStart(2,"0");
@@ -859,6 +871,29 @@ function getFiltered(){
   return list;
 }
 
+function paginationBarHtml(totalItems,totalPages){
+  if(totalPages<=1)return"";
+  let html="<div class='pag-bar' style=\"display:flex;align-items:center;gap:6px;justify-content:center;padding:12px\">";
+  html+=`<button class="pag-btn" ${PAGE<=1?"disabled":""} onclick="gotoPage(${PAGE-1})" style="width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);font-size:11px;cursor:${PAGE<=1?"default":"pointer"};opacity:${PAGE<=1?".35":"1"}">‹</button>`;
+  // janela de páginas: mostra até 5 números + reticências
+  const win=2;
+  const pages=[];
+  for(let p=1;p<=totalPages;p++){
+    if(p===1||p===totalPages||(p>=PAGE-win&&p<=PAGE+win))pages.push(p);
+    else if(pages[pages.length-1]!=="…")pages.push("…");
+  }
+  pages.forEach(p=>{
+    if(p==="…"){html+=`<span style="color:var(--t3);font-size:11px;padding:0 4px">…</span>`;return;}
+    const on=p===PAGE;
+    html+=`<button class="pag-btn" onclick="gotoPage(${p})" style="width:28px;height:28px;border:1px solid ${on?"var(--rd)":"var(--bd)"};border-radius:6px;background:${on?"var(--rd)":"transparent"};color:${on?"#fff":"var(--t2)"};font-size:11px;font-weight:${on?"700":"400"};cursor:pointer">${p}</button>`;
+  });
+  html+=`<button class="pag-btn" ${PAGE>=totalPages?"disabled":""} onclick="gotoPage(${PAGE+1})" style="width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);font-size:11px;cursor:${PAGE>=totalPages?"default":"pointer"};opacity:${PAGE>=totalPages?".35":"1"}">›</button>`;
+  const ini=(PAGE-1)*PAGE_SIZE+1,fim=Math.min(PAGE*PAGE_SIZE,totalItems);
+  html+=`<span style="color:var(--t3);font-size:10px;margin-left:8px">Exibindo ${ini}–${fim} de ${totalItems}</span>`;
+  html+="</div>";
+  return html;
+}
+window.gotoPage=p=>{PAGE=p;render();document.querySelector(".tcard").scrollIntoView({behavior:"smooth",block:"start"});};
 window.render=()=>{
   let list=getFiltered();
   // Aplicar sort
@@ -869,7 +904,7 @@ window.render=()=>{
     });
   }
   const tb=document.getElementById("tbody"),em=document.getElementById("emp");
-  // Totais
+  // Totais (sobre a lista filtrada inteira, não só a página)
   const total=list.length;
   const proc=list.filter(c=>c.setorAtual!=="concluido").length;
   const conc=list.filter(c=>c.setorAtual==="concluido").length;
@@ -879,9 +914,14 @@ window.render=()=>{
   if(totTodos)totTodos.textContent="Todos ("+total+")";
   if(totProc)totProc.textContent="Em processo ("+proc+")";
   if(totConc)totConc.textContent="Concluídos ("+conc+")";
-  if(!list.length){tb.innerHTML="";em.style.display="block";return;}
+  if(!list.length){tb.innerHTML="";em.style.display="block";document.getElementById("pag-wrap")?.remove();updateBulkBar(list);return;}
   em.style.display="none";
-  tb.innerHTML=list.map(c=>{
+  // Paginação
+  const totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(PAGE>totalPages)PAGE=totalPages;
+  if(PAGE<1)PAGE=1;
+  const pageList=list.slice((PAGE-1)*PAGE_SIZE,PAGE*PAGE_SIZE);
+  tb.innerHTML=pageList.map(c=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
@@ -912,45 +952,127 @@ window.render=()=>{
       <td style="text-align:center"><button onclick="event.stopPropagation();openDrawer('${c.id}')" style="padding:3px 10px;border:1px solid var(--rd);border-radius:6px;background:rgba(255,68,102,.08);color:var(--rd);font-size:10px;font-weight:700;cursor:pointer">✏️</button></td>
     </tr>`;
   }).join("");
-  updateBulkBar();
+  // Barra de paginação (após a tabela)
+  let pagWrap=document.getElementById("pag-wrap");
+  if(!pagWrap){
+    pagWrap=document.createElement("div");
+    pagWrap.id="pag-wrap";
+    document.getElementById("tbl").after(pagWrap);
+  }
+  pagWrap.innerHTML=paginationBarHtml(total,totalPages);
+  // sincroniza checkbox "marcar todos" (da página atual)
+  const chkAll=document.getElementById("chk-all");
+  if(chkAll){
+    const idsPagina=pageList.map(c=>c.id);
+    chkAll.checked=idsPagina.length>0&&idsPagina.every(i=>SELECTED_IDS.has(i));
+  }
+  updateBulkBar(list);
 };
 
-// -- seleção múltipla / exclusão em massa ------------------------------------
+// -- seleção múltipla / exclusão em massa (Item 02, 04, 05) ------------------
 window.toggleSelect=(id,checked)=>{
   if(checked)SELECTED_IDS.add(id);else SELECTED_IDS.delete(id);
-  updateBulkBar();
-  const chkAll=document.getElementById("chk-all");
-  const visIds=getFiltered().map(c=>c.id);
-  if(chkAll)chkAll.checked=visIds.length>0&&visIds.every(i=>SELECTED_IDS.has(i));
+  render();
 };
 window.toggleSelectAll=(checked)=>{
-  const visIds=getFiltered().map(c=>c.id);
-  if(checked)visIds.forEach(id=>SELECTED_IDS.add(id));
-  else visIds.forEach(id=>SELECTED_IDS.delete(id));
+  // Marca/desmarca apenas os itens da PÁGINA ATUAL (comportamento do checkbox do cabeçalho)
+  const list=getFiltered();
+  const totalPages=Math.max(1,Math.ceil(list.length/PAGE_SIZE));
+  const p=Math.min(Math.max(PAGE,1),totalPages);
+  const pageIds=list.slice((p-1)*PAGE_SIZE,p*PAGE_SIZE).map(c=>c.id);
+  if(checked)pageIds.forEach(id=>SELECTED_IDS.add(id));
+  else pageIds.forEach(id=>SELECTED_IDS.delete(id));
+  render();
+};
+window.selectAllFiltered=()=>{
+  getFiltered().forEach(c=>SELECTED_IDS.add(c.id));
   render();
 };
 window.clearSelection=()=>{SELECTED_IDS.clear();render();};
-function updateBulkBar(){
+function updateBulkBar(filteredList){
   const bar=document.getElementById("bulk-bar");
-  const n=SELECTED_IDS.size;
   if(!bar)return;
+  const n=SELECTED_IDS.size;
+  const totalFiltrado=(filteredList||getFiltered()).length;
+  const btnAll=document.getElementById("bulk-select-all-filtered");
   if(n>0){
     bar.style.display="flex";
     document.getElementById("bulk-count").textContent=n+" selecionado"+(n!==1?"s":"");
+    // Item 02: mostra "de quantos filtrados" só quando a seleção não cobre tudo o que está filtrado
+    const sub=document.getElementById("bulk-sub");
+    sub.textContent=n<totalFiltrado?`de ${totalFiltrado} registros filtrados`:"(todos os filtrados)";
+    if(btnAll){
+      if(n<totalFiltrado){btnAll.style.display="inline-flex";btnAll.textContent=`Selecionar todos os ${totalFiltrado}`;}
+      else btnAll.style.display="none";
+    }
   }else{
     bar.style.display="none";
-    const chkAll=document.getElementById("chk-all");
-    if(chkAll)chkAll.checked=false;
+    if(btnAll)btnAll.style.display="none";
   }
+}
+
+// -- Item 04: modal de motivo de exclusão (obrigatório) ----------------------
+function pedirMotivoExclusao(titulo){
+  return new Promise(resolve=>{
+    const overlay=document.createElement("div");
+    overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px";
+    overlay.innerHTML=`
+      <div style="background:var(--bg2);border:1px solid var(--rd);border-radius:12px;padding:20px;max-width:400px;width:100%">
+        <h4 style="font-family:'Rajdhani',sans-serif;color:var(--rd);font-size:15px;margin-bottom:12px;letter-spacing:.5px">🗑️ ${titulo}</h4>
+        <textarea id="motivo-exclusao-txt" placeholder="Descreva o motivo da exclusão..." style="width:100%;background:var(--bg3);border:1px solid var(--rd);border-radius:6px;color:var(--tx);padding:8px 10px;font-size:12px;min-height:70px;font-family:inherit;outline:none"></textarea>
+        <div id="motivo-exclusao-err" style="color:var(--rd);font-size:10px;margin-top:4px;display:none">Informe o motivo antes de continuar.</div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button id="motivo-cancelar" style="flex:1;padding:9px;border-radius:6px;border:1px solid var(--bd);background:var(--bg4);color:var(--t2);font-size:11px;font-weight:800;text-transform:uppercase;cursor:pointer">Cancelar</button>
+          <button id="motivo-confirmar" style="flex:1;padding:9px;border-radius:6px;border:none;background:var(--rd);color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;cursor:pointer">Confirmar exclusão</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const txt=overlay.querySelector("#motivo-exclusao-txt");
+    txt.focus();
+    function fechar(v){document.body.removeChild(overlay);resolve(v);}
+    overlay.querySelector("#motivo-cancelar").onclick=()=>fechar(null);
+    overlay.querySelector("#motivo-confirmar").onclick=()=>{
+      const v=txt.value.trim();
+      if(!v){overlay.querySelector("#motivo-exclusao-err").style.display="block";return;}
+      fechar(v);
+    };
+  });
+}
+
+// -- Item 05: exclusão em massa com barra de progresso ------------------------
+function mostrarProgressoExclusao(){
+  const overlay=document.createElement("div");
+  overlay.id="progresso-exclusao-overlay";
+  overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px";
+  overlay.innerHTML=`
+    <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:18px;max-width:360px;width:100%">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2)">
+        <span>Excluindo registros...</span><span id="progresso-exclusao-label">0 / 0</span>
+      </div>
+      <div style="height:8px;background:var(--bg4);border-radius:20px;overflow:hidden;margin-top:8px">
+        <div id="progresso-exclusao-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--rd),#ff8899);border-radius:20px;transition:width .15s"></div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  return{
+    update(done,totalN){
+      overlay.querySelector("#progresso-exclusao-label").textContent=done+" / "+totalN;
+      overlay.querySelector("#progresso-exclusao-fill").style.width=Math.round(done/totalN*100)+"%";
+    },
+    close(){if(overlay.parentNode)document.body.removeChild(overlay);}
+  };
 }
 window.bulkExcluir=async()=>{
   const ids=[...SELECTED_IDS];
   if(!ids.length)return;
   const lista=ALL.filter(c=>ids.includes(c.id));
   if(!confirm(`Excluir ${ids.length} registro(s) selecionado(s)?\nOs registros serão movidos para "ACs Excluídas" e poderão ser restaurados depois.`))return;
-  const motivo=prompt("Motivo da exclusão (opcional, aplicado a todos os selecionados):")||"";
+  const motivo=await pedirMotivoExclusao(`Motivo da exclusão (${ids.length} registro${ids.length!==1?"s":""})`);
+  if(motivo===null)return;
+  const prog=mostrarProgressoExclusao();
   let ok=0,falhas=0;
-  for(const c of lista){
+  for(let i=0;i<lista.length;i++){
+    const c=lista[i];
     try{
       const{id,...dados}=c;
       await addDoc(collection(db,"caminhoes_excluidos"),{
@@ -958,12 +1080,14 @@ window.bulkExcluir=async()=>{
         idOriginal:id,
         excluidoEm:Timestamp.fromDate(new Date()),
         excluidoPor:CREDS.user,
-        excluidoMotivo:motivo.trim()
+        excluidoMotivo:motivo
       });
       await deleteDoc(doc(db,"caminhoes_rastreio",id));
       ok++;
     }catch(e){falhas++;}
+    prog.update(i+1,lista.length);
   }
+  prog.close();
   SELECTED_IDS.clear();
   closeDrawer();
   showMsg(falhas?"er":"ok",falhas?`⚠️ ${ok} excluído(s), ${falhas} falharam.`:`✅ ${ok} registro(s) excluído(s).`);
@@ -1013,8 +1137,49 @@ function showMsg(type,txt){
 }
 
 // -- a--es ------------------------------------------------------------------
+// -- Item 06: valida consistência setorAtual x timestamp de saída ------------
+// Retorna "cancel" | "fill" (preencher saída com agora) | "asis" (salvar do jeito que está)
+function confirmarInconsistenciaSetor(){
+  return new Promise(resolve=>{
+    const overlay=document.createElement("div");
+    overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px";
+    overlay.innerHTML=`
+      <div style="background:var(--bg2);border:1px solid var(--ye);border-radius:12px;padding:18px;max-width:380px;width:100%">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="font-size:18px">⚠️</span>
+          <div>
+            <b style="color:var(--ye);font-size:12px">Inconsistência detectada</b>
+            <p style="color:var(--t2);font-size:11px;margin-top:3px;line-height:1.5">Você marcou "Concluído" mas o campo "Saída (Faturamento)" está vazio. Deseja preencher com a data/hora atual ou salvar mesmo assim?</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button id="inc-cancel" style="flex:1;min-width:90px;padding:9px;border-radius:6px;border:1px solid var(--bd);background:var(--bg4);color:var(--t2);font-size:10px;font-weight:800;text-transform:uppercase;cursor:pointer">Cancelar</button>
+          <button id="inc-asis" style="flex:1;min-width:90px;padding:9px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--t2);font-size:10px;font-weight:800;text-transform:uppercase;cursor:pointer">Salvar assim mesmo</button>
+          <button id="inc-fill" style="flex:1;min-width:90px;padding:9px;border-radius:6px;border:none;background:var(--ye);color:#1a1500;font-size:10px;font-weight:800;text-transform:uppercase;cursor:pointer">Preencher agora</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    function fechar(v){document.body.removeChild(overlay);resolve(v);}
+    overlay.querySelector("#inc-cancel").onclick=()=>fechar("cancel");
+    overlay.querySelector("#inc-asis").onclick=()=>fechar("asis");
+    overlay.querySelector("#inc-fill").onclick=()=>fechar("fill");
+  });
+}
 window.salvar=async()=>{
   if(!SELECTED_ID)return;
+  // Item 06: checa inconsistência antes de gravar
+  const setorSelecionado=document.getElementById("d-setor").value;
+  const saInput=document.getElementById("d-sa");
+  if(setorSelecionado==="concluido"&&!saInput.value){
+    const decisao=await confirmarInconsistenciaSetor();
+    if(decisao==="cancel")return;
+    if(decisao==="fill"){
+      const pad=n=>String(n).padStart(2,"0");
+      const d=new Date();
+      saInput.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    // "asis" segue sem alterar nada
+  }
   const btn=document.getElementById("btn-save");btn.disabled=true;btn.textContent="Salvando...";
   try{
     const tipoMap={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
@@ -1078,7 +1243,8 @@ window.excluir=async()=>{
   if(!SELECTED_ID)return;
   const c=ALL.find(x=>x.id===SELECTED_ID);if(!c)return;
   if(!confirm(`Excluir o registro da placa ${c.placa}?\nO registro será movido para "ACs Excluídas" e poderá ser restaurado depois.`))return;
-  const motivo=prompt("Motivo da exclusão (opcional):")||"";
+  const motivo=await pedirMotivoExclusao(`Motivo da exclusão — ${c.placa}`);
+  if(motivo===null)return;
   try{
     const{id,...dados}=c;
     await addDoc(collection(db,"caminhoes_excluidos"),{
@@ -1086,14 +1252,64 @@ window.excluir=async()=>{
       idOriginal:id,
       excluidoEm:Timestamp.fromDate(new Date()),
       excluidoPor:CREDS.user,
-      excluidoMotivo:motivo.trim()
+      excluidoMotivo:motivo
     });
     await deleteDoc(doc(db,"caminhoes_rastreio",SELECTED_ID));
     closeDrawer();
   }catch(e){showMsg("er","Erro ao excluir: "+e.message);}
 };
-window.exportExcel=()=>{
+// -- Item 08: seleção de colunas para exportação Excel ------------------------
+const EXPORT_COLS=[
+  {key:"placa",label:"Placa",def:true},
+  {key:"ac",label:"AC",def:true},
+  {key:"notaFiscal",label:"Nota Fiscal",def:false},
+  {key:"data",label:"Data",def:true},
+  {key:"dia",label:"Dia",def:true},
+  {key:"turno",label:"Turno",def:true},
+  {key:"tipoCarga",label:"Tipo Carga",def:true},
+  {key:"setorAtual",label:"Setor Atual",def:true},
+  {key:"entrada",label:"Posto1 (Entrada)",def:true},
+  {key:"ptI",label:"Portaria Ini",def:false},
+  {key:"ptF",label:"Portaria Fim",def:false},
+  {key:"trI",label:"Triagem Ini",def:true},
+  {key:"trF",label:"Triagem Fim",def:true},
+  {key:"caI",label:"Carga Ini",def:true},
+  {key:"caF",label:"Carga Fim",def:true},
+  {key:"enI",label:"Enlone Ini",def:true},
+  {key:"enF",label:"Enlone Fim",def:true},
+  {key:"saida",label:"Saída (Fatur.)",def:true},
+];
+function abrirModalColunasExport(){
+  return new Promise(resolve=>{
+    const overlay=document.createElement("div");
+    overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px";
+    const chips=EXPORT_COLS.map(c=>`
+      <label style="display:flex;align-items:center;gap:6px;background:var(--bg4);border:1px solid var(--bd);border-radius:6px;padding:6px 9px;font-size:10px;color:var(--t2);cursor:pointer">
+        <input type="checkbox" data-key="${c.key}" ${c.def?"checked":""} style="accent-color:var(--rd)"/> ${c.label}
+      </label>`).join("");
+    overlay.innerHTML=`
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:18px;max-width:460px;width:100%">
+        <h4 style="font-family:'Rajdhani',sans-serif;color:var(--tx);font-size:15px;margin-bottom:4px;letter-spacing:.5px">📊 Colunas da exportação</h4>
+        <p style="color:var(--t3);font-size:10px;margin-bottom:12px">Selecione as colunas que deseja incluir no Excel.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${chips}</div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button id="cols-cancel" style="flex:1;padding:9px;border-radius:6px;border:1px solid var(--bd);background:var(--bg4);color:var(--t2);font-size:10px;font-weight:800;text-transform:uppercase;cursor:pointer">Cancelar</button>
+          <button id="cols-confirm" style="flex:1;padding:9px;border-radius:6px;border:none;background:var(--gr);color:#04150e;font-size:10px;font-weight:800;text-transform:uppercase;cursor:pointer">📊 Exportar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    function fechar(v){document.body.removeChild(overlay);resolve(v);}
+    overlay.querySelector("#cols-cancel").onclick=()=>fechar(null);
+    overlay.querySelector("#cols-confirm").onclick=()=>{
+      const selecionadas=[...overlay.querySelectorAll("input[type=checkbox]")].filter(i=>i.checked).map(i=>i.dataset.key);
+      fechar(selecionadas);
+    };
+  });
+}
+window.exportExcel=async()=>{
   const list=getFiltered();if(!list.length){alert("Nenhum dado para exportar.");return;}
+  const colunasSelecionadas=await abrirModalColunasExport();
+  if(!colunasSelecionadas||!colunasSelecionadas.length)return;
   const DIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
   const rows=list.map(c=>{
     const en=getTS(c,"entrada","ts");
@@ -1103,10 +1319,16 @@ window.exportExcel=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const dia=getDiaSemana(c);
-    return{"Placa":c.placa,"AC":c.ac,"Data":c.data||"","Dia":dia!=null?DIAS[dia]:"","Turno":getTurno(en)||"","Tipo Carga":c.tipoCargaLabel||"","Setor Atual":c.setorAtual||"",
-      "Entrada":fmtEx(en),"Triagem Ini":fmtEx(trI),"Triagem Fim":fmtEx(trF),
-      "Carga Ini":fmtEx(caI),"Carga Fim":fmtEx(caF),
-      "Enlone Ini":fmtEx(enI),"Enlone Fim":fmtEx(enF),"Saída":fmtEx(sa)};
+    const valores={
+      placa:c.placa,ac:c.ac,notaFiscal:c.notaFiscal||"",data:c.data||"",
+      dia:dia!=null?DIAS[dia]:"",turno:getTurno(en)||"",tipoCarga:c.tipoCargaLabel||"",
+      setorAtual:c.setorAtual||"",entrada:fmtEx(en),ptI:fmtEx(ptI),ptF:fmtEx(ptF),
+      trI:fmtEx(trI),trF:fmtEx(trF),caI:fmtEx(caI),caF:fmtEx(caF),
+      enI:fmtEx(enI),enF:fmtEx(enF),saida:fmtEx(sa)
+    };
+    const linha={};
+    EXPORT_COLS.forEach(col=>{if(colunasSelecionadas.includes(col.key))linha[col.label]=valores[col.key];});
+    return linha;
   });
   const ws=XLSX.utils.json_to_sheet(rows);
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Admin");
@@ -1278,6 +1500,12 @@ function slugSenha(nome){
   return primeiro.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")+"123";
 }
 window.abrirOperadores=()=>{
+  // Item 09: guarda snapshot do estado de filtros/página (só memória da aba)
+  FILTER_STATE_SNAPSHOT={MP,MDIA,MT,MTC,MSTATUS,MDATA,MDATA_FIM,PAGE,SORT_COL,SORT_DIR,
+    qGlobal:document.getElementById("q-global")?.value||"",
+    setorFiltro:document.getElementById("f-setor-filter")?.value||"",
+    hIni:document.getElementById("cal-h-ini")?.value,
+    hFim:document.getElementById("cal-h-fim")?.value};
   document.querySelector(".wrap").style.display="none";
   document.getElementById("operadores-screen").style.display="block";
   carregarOperadores();
@@ -1285,6 +1513,18 @@ window.abrirOperadores=()=>{
 window.voltarTabela=()=>{
   document.getElementById("operadores-screen").style.display="none";
   document.querySelector(".wrap").style.display="block";
+  // Item 09: restaura o snapshot, se existir
+  if(FILTER_STATE_SNAPSHOT){
+    const s=FILTER_STATE_SNAPSHOT;
+    MP=s.MP;MDIA=s.MDIA;MT=s.MT;MTC=s.MTC;MSTATUS=s.MSTATUS;MDATA=s.MDATA;MDATA_FIM=s.MDATA_FIM;
+    PAGE=s.PAGE;SORT_COL=s.SORT_COL;SORT_DIR=s.SORT_DIR;
+    const qEl=document.getElementById("q-global");if(qEl)qEl.value=s.qGlobal;
+    const setorEl=document.getElementById("f-setor-filter");if(setorEl)setorEl.value=s.setorFiltro;
+    const hIniEl=document.getElementById("cal-h-ini");if(hIniEl&&s.hIni)hIniEl.value=s.hIni;
+    const hFimEl=document.getElementById("cal-h-fim");if(hFimEl&&s.hFim)hFimEl.value=s.hFim;
+    updateCalBtnLabel();calRender();calRenderExtras();
+    render();
+  }
 };
 window.abrirNovoOperador=()=>{
   document.getElementById("op-form").classList.add("show");
