@@ -278,6 +278,15 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
         <button class="btn-cancel-r" onclick="fecharModalExcluir()">Cancelar</button>
       </div>
     </div>
+    <div class="modal-r" id="modal-pergunta-ex">
+      <div class="modal-r-box" style="border-color:rgba(255,208,0,.5);text-align:center">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,208,0,.1);border:2px solid rgba(255,208,0,.4);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px">❓</div>
+        <div style="font-size:15px;font-weight:800;color:#ffd000;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Deseja excluir esta AC?</div>
+        <div style="font-size:13px;color:var(--tx);line-height:1.5;margin-bottom:18px" id="pergunta-ex-texto"></div>
+        <button class="btn-conf" style="background:#ff4466" onclick="perguntaExcluirSim()">Sim, excluir a AC</button>
+        <button class="btn-conf" style="background:transparent;border:1.5px solid var(--bd);color:var(--tx);margin-top:8px" onclick="perguntaExcluirNao()">Não, manter na fila</button>
+      </div>
+    </div>
     <div class="modal-r" id="modal-sucesso-ex">
       <div class="modal-r-box" style="border-color:rgba(0,232,150,.5);text-align:center;box-shadow:0 0 60px rgba(0,232,150,.08)">
         <div style="width:60px;height:60px;border-radius:50%;background:rgba(0,232,150,.12);border:2px solid rgba(0,232,150,.4);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px">✅</div>
@@ -613,6 +622,7 @@ window.exportExcel=()=>{
 };
 
 let FILA=[],CHAMADO_ATUAL=null,MOT_SEL=null,CH_SECS=0,CH_INTERVAL=null,CONTADOR_CHAMADA=0;
+let SUPRIMIDOS=new Set(); // ids temporariamente ocultos da fila enquanto aguardam decisão (ex.: pós "não veio")
 
 // ── BroadcastChannel: publica chamadas para senha.html (mesmo computador) ──
 const BC=new BroadcastChannel("tmac_chamada");
@@ -626,21 +636,22 @@ const BC=new BroadcastChannel("tmac_chamada");
 })();
 
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","asc")),snap=>{
-  FILA=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.data===hoje()&&c.setorAtual==="posto1");
+  FILA=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.data===hoje()&&c.setorAtual==="posto1"&&!c.posto1Confirmado);
   renderFila();
 });
 
 function renderFila(){
   const el=document.getElementById("fila-list-r");
   const cnt=document.getElementById("fila-count-r");
-  if(!FILA.length){
+  const visiveis=FILA.filter(c=>!SUPRIMIDOS.has(c.id));
+  if(!visiveis.length){
     el.innerHTML='<div style="text-align:center;padding:16px;color:var(--t3);font-size:12px;font-style:italic">Fila vazia</div>';
     cnt.textContent="";return;
   }
-  cnt.textContent=FILA.length+" veículo"+(FILA.length!==1?"s":"");
+  cnt.textContent=visiveis.length+" veículo"+(visiveis.length!==1?"s":"");
   const bc={granel:"pb-gr",ensacado:"pb-en",bigbag:"pb-bb"};
   const bl={granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"};
-  el.innerHTML=FILA.map((c,i)=>{
+  el.innerHTML=visiveis.map((c,i)=>{
     const cim=c.tipoCimento||c.tipoCimentoLabel||"";
     const tp=c.tipoCarga||"";
     const ativo=CHAMADO_ATUAL&&CHAMADO_ATUAL.id===c.id?" ativo":"";
@@ -738,8 +749,15 @@ function limparChamadoAtual(){
   document.getElementById("ch-counter").textContent="00:00";
 }
 
-window.confirmarChegada=()=>{
+window.confirmarChegada=async()=>{
+  const v=CHAMADO_ATUAL;
   limparChamadoAtual();
+  if(v){
+    try{
+      const{doc,updateDoc,Timestamp:TS}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
+      await updateDoc(doc(db,"caminhoes_rastreio",v.id),{posto1Confirmado:true,posto1ConfirmadoEm:TS.fromDate(new Date())});
+    }catch(e){showMsg("er","Erro ao confirmar chegada: "+e.message);}
+  }
   renderFila();
 };
 
@@ -882,10 +900,29 @@ window.confirmarJustR=async()=>{
   document.getElementById("hist-count").textContent=n+" ocorrência"+(n!==1?"s":"");
   document.getElementById("hist-wrap").style.display="block";
   fecharModalJust();
-  showMsg("wn","⚠️ Justificativa registrada para "+v.placa);
   BC.postMessage({tipo:"cancelar"});
   limparChamadoAtual();
+  // Some da fila (supressão local) e pergunta se deseja excluir a AC de vez
+  SUPRIMIDOS.add(v.id);
   renderFila();
+  PERGUNTA_ALVO=v;
+  document.getElementById("pergunta-ex-texto").innerHTML="Placa <b style=\"color:var(--tx);font-family:monospace\">"+v.placa+"</b> · AC "+v.ac+" — o motorista não compareceu. Deseja excluir esta AC ou manter na fila para chamar novamente mais tarde?";
+  document.getElementById("modal-pergunta-ex").classList.add("show");
+};
+
+let PERGUNTA_ALVO=null;
+window.perguntaExcluirSim=()=>{
+  const v=PERGUNTA_ALVO;if(!v)return;
+  document.getElementById("modal-pergunta-ex").classList.remove("show");
+  SUPRIMIDOS.delete(v.id); // o modal de exclusão cuidará da remoção definitiva
+  abrirModalExcluir(v.id);
+};
+window.perguntaExcluirNao=()=>{
+  const v=PERGUNTA_ALVO;if(!v)return;
+  document.getElementById("modal-pergunta-ex").classList.remove("show");
+  SUPRIMIDOS.delete(v.id);
+  renderFila();
+  showMsg("ok",v.placa+" disponível novamente na fila para chamar.");
 };
 
 </script>
