@@ -749,6 +749,18 @@ function limparChamadoAtual(){
   document.getElementById("ch-counter").textContent="00:00";
 }
 
+// Marca como "resolvida" toda chamada em aberto (status:"chamado") desse veículo,
+// para a TV parar de considerá-la "a última chamada" assim que o ciclo terminar
+// (Chegou, Não veio ou Cancelar) — evita reaparecer sozinha ao recarregar a tela senha.
+async function finalizarChamadasFila(veiculoId){
+  if(!veiculoId)return;
+  try{
+    const{doc,getDocs,query:q,where,updateDoc}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
+    const cfSnap=await getDocs(q(collection(db,"chamadas_fila"),where("veiculoId","==",veiculoId),where("status","==","chamado")));
+    await Promise.all(cfSnap.docs.map(d=>updateDoc(doc(db,"chamadas_fila",d.id),{status:"resolvida"})));
+  }catch(e){}
+}
+
 window.confirmarChegada=async()=>{
   const v=CHAMADO_ATUAL;
   limparChamadoAtual();
@@ -757,15 +769,18 @@ window.confirmarChegada=async()=>{
       const{doc,updateDoc,Timestamp:TS}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
       await updateDoc(doc(db,"caminhoes_rastreio",v.id),{posto1Confirmado:true,posto1ConfirmadoEm:TS.fromDate(new Date())});
     }catch(e){showMsg("er","Erro ao confirmar chegada: "+e.message);}
+    await finalizarChamadasFila(v.id);
   }
   renderFila();
 };
 
-window.cancelarChamada=()=>{
+window.cancelarChamada=async()=>{
+  const v=CHAMADO_ATUAL;
   limparChamadoAtual();
   // Notifica senha.html para voltar ao idle
   BC.postMessage({tipo:"cancelar"});
   showMsg("wn","⏹ Chamada cancelada");
+  if(v)await finalizarChamadasFila(v.id);
   renderFila();
 };
 
@@ -902,6 +917,7 @@ window.confirmarJustR=async()=>{
   fecharModalJust();
   BC.postMessage({tipo:"cancelar"});
   limparChamadoAtual();
+  await finalizarChamadasFila(v.id);
   // Some da fila (supressão local) e pergunta se deseja excluir a AC de vez
   SUPRIMIDOS.add(v.id);
   renderFila();
