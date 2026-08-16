@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--pu:#a78bfa;--or:#fb923c;--tm:#ff9f43;--r:12px;--rs:8px}
 body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
-.top{background:var(--bg2);border-bottom:2px solid var(--bl);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:12px}
+.top{background:var(--bg2);border-bottom:2px solid var(--bl);min-height:56px;display:flex;align-items:center;padding:8px 20px;position:sticky;top:0;z-index:200;gap:12px;flex-wrap:wrap}
 .logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--bl);flex:1;letter-spacing:1px}
 .live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--gr)}
 .dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
@@ -26,6 +26,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .s3 .sv{color:var(--pu)}.s4 .sv{color:var(--or)}.s5 .sv{color:var(--gr)}.s6 .sv{color:var(--tm)}
 .s7 .sv{color:#38bdf8}.s8 .sv{color:#34d399}.s9 .sv{color:#c084fc}.s10 .sv{color:#f472b6}
 .sl{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.slegend{font-size:9px;color:var(--t3);margin-top:6px;border-top:1px dashed var(--bd);padding-top:6px;line-height:1.5}
+.slegend b{color:var(--tx)}
 .filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
 .row-label{font-size:10px;color:var(--t3);font-weight:600;padding:0 4px;white-space:nowrap;min-width:60px}
 .fi{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:8px 13px;font-size:12px;font-family:'Inter',sans-serif;outline:none;flex:1;min-width:160px}
@@ -123,6 +125,8 @@ tr.incompleto .ptag{color:var(--t2);border-color:var(--bd)}
 .ec{font-size:11px;color:var(--t2);line-height:1.9}
 .ec .d{color:var(--tx)}.ec .w{color:var(--t3);font-style:italic}
 .dr{background:rgba(0,212,255,.1);color:var(--bl);border-radius:4px;padding:0 4px;font-size:10px;margin-left:3px}
+.dr-g{background:rgba(0,232,150,.12);color:var(--gr);border-radius:4px;padding:0 4px;font-size:10px;margin-left:3px;font-weight:700}
+.dr-r{background:rgba(255,68,102,.12);color:var(--rd);border-radius:4px;padding:0 4px;font-size:10px;margin-left:3px;font-weight:700}
 .tmac-cell{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--tm)}
 .tmac-cell.w{color:var(--t3);font-style:italic;font-size:11px;font-family:'Inter',sans-serif;font-weight:400}
 .empty{text-align:center;padding:48px;color:var(--t3)}
@@ -202,7 +206,7 @@ tr.alerta .turno{opacity:.7}
 </head>
 <body>
 <div class="top">
-  <div class="logo">🏗️ CARREGAMENTO ARMAZÉM</div>
+  <div class="logo">🏗️ ARMAZÉM — TMA<span style="display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:var(--t2);letter-spacing:0;text-transform:none">Tempo Médio do Armazém · consulta em tempo real</span></div>
   <a href="/master" style="padding:6px 14px;border:1px solid var(--bl);border-radius:20px;background:rgba(0,212,255,.08);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.15)'" onmouseout="this.style.background='rgba(0,212,255,.08)'">← Master</a>
   <a href="/analise" style="padding:6px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.08);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.08)'">📊 Análise</a>
   <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
@@ -219,10 +223,10 @@ tr.alerta .turno{opacity:.7}
     <div class="st s2"><div class="sv" id="s2">—</div><div class="sl">Carga</div></div>
     <div class="st s3"><div class="sv" id="s3">—</div><div class="sl">Enlone</div></div>
     <div class="st s5"><div class="sv" id="s5">—</div><div class="sl">Concluído</div></div>
-    <div class="st s6"><div class="sv" id="s6">—</div><div class="sl">TMA Geral</div></div>
-    <div class="st s7"><div class="sv" id="s7">—</div><div class="sl">TMTI · Triagem</div></div>
-    <div class="st s8"><div class="sv" id="s8">—</div><div class="sl">TMCI · Carga</div></div>
-    <div class="st s9"><div class="sv" id="s9">—</div><div class="sl">TMEI · Enlone</div></div>
+    <div class="st s6"><div class="sv" id="s6">—</div><div class="sl">TMA Geral</div><div class="slegend"><b>TMA</b> = Tempo Médio do Armazém<br>Meta: ≤ 40 min</div></div>
+    <div class="st s7"><div class="sv" id="s7">—</div><div class="sl">TMTI · Triagem</div><div class="slegend"><b>TMTI</b> = Tempo Médio de Triagem Interna<br>Meta: ≤ 05 min</div></div>
+    <div class="st s8"><div class="sv" id="s8">—</div><div class="sl">TMCI · Carga</div><div class="slegend"><b>TMCI</b> = Tempo Médio de Carregamento Interno<br>Meta: ≤ 20 min</div></div>
+    <div class="st s9"><div class="sv" id="s9">—</div><div class="sl">TMEI · Enlone</div><div class="slegend"><b>TMEI</b> = Tempo Médio de Enlonamento Interno<br>Meta: ≤ 15 min</div></div>
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
@@ -950,10 +954,14 @@ window.render=()=>{
   const tbC=document.getElementById("tbody-conc"),emC=document.getElementById("emp-conc");
   const cards=document.getElementById("cards");
 
-  function cell(d,d2){
+  function cell(d,d2,metaMs){
     if(!d)return`<span class="w">aguardando</span>`;
     let str=`<span class="d">${fmtT(d)}</span>`;
-    if(d2)str+=`<span class="dr">${durStr(d-d2)}</span>`;
+    if(d2){
+      const dur=d-d2;
+      const cls=metaMs!=null?(dur<=metaMs?"dr-g":"dr-r"):"dr";
+      str+=`<span class="${cls}">${durStr(dur)}</span>`;
+    }
     return str;
   }
 
@@ -968,6 +976,7 @@ window.render=()=>{
     const alerta=isAlerta(c);
     const hoje2=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     const incompleto=c.data&&c.data<hoje2&&c.setorAtual!=="concluido";
+    const METATMTI=5*60*1000,METATMCI=20*60*1000,METATMEI=15*60*1000,METATMF=8*60*1000,METATMA=40*60*1000;
     return`<tr${alerta?' class="alerta"':incompleto?' class="incompleto"':''}>
       <td style="text-align:center;color:var(--t3);font-size:11px">${idx+1}</td>
       <td><span class="ptag">${c.placa}</span>${turnoPill(turnoTS(c))}${tipoPill(c)}${alerta?`<span class="alerta-badge">${alertaLabel(c)}</span>`:''}</td>
@@ -976,13 +985,13 @@ window.render=()=>{
       <td style="color:var(--t2);font-size:10px">${c.data||"—"}</td>
       <td>${pill(c.setorAtual)}</td>
       <td class="ec">${cell(trI,null)}</td>
-      <td class="ec">${cell(trF,trI)}</td>
+      <td class="ec">${cell(trF,trI,METATMTI)}</td>
       <td class="ec">${cell(caI,null)}</td>
-      <td class="ec">${cell(caF,caI)}</td>
+      <td class="ec">${cell(caF,caI,METATMCI)}</td>
       <td class="ec">${cell(enI,null)}</td>
-      <td class="ec">${cell(enF,enI)}</td>
-      <td class="ec">${sa?`<span class="d">${fmtT(sa)}</span>${tmf!=null?`<span style="color:var(--gr);font-size:10px;margin-left:3px;font-weight:700">${durStr(tmf)}</span>`:''}`:`<span class="w">aguardando</span>`}</td>
-      <td>${tma!=null?`<span class="tmac-cell" style="color:var(--gr)">${durStr(tma)}</span>`:`<span class="tmac-cell w">${incompleto?"não concluído":"em processo"}</span>`}</td>
+      <td class="ec">${cell(enF,enI,METATMEI)}</td>
+      <td class="ec">${sa?`<span class="d">${fmtT(sa)}</span>${tmf!=null?`<span class="${tmf<=METATMF?"dr-g":"dr-r"}">${durStr(tmf)}</span>`:''}`:`<span class="w">aguardando</span>`}</td>
+      <td>${tma!=null?`<span class="tmac-cell" style="color:${tma<=METATMA?"var(--gr)":"var(--rd)"}">${durStr(tma)}</span>`:`<span class="tmac-cell w">${incompleto?"não concluído":"em processo"}</span>`}</td>
       <td style="text-align:center;font-size:10px;color:var(--t2)">${c.notaFiscal||'<span style="color:var(--t3)">—</span>'}</td>
       <td style="text-align:center;font-size:16px">${statusFinal(c)}</td>
     </tr>`;
@@ -1000,6 +1009,7 @@ window.render=()=>{
     const en=getTS(c,"entrada","ts");
     const tma=calcTMA(c);
     const alerta=isAlerta(c);
+    const METATMA=40*60*1000;
     const etapas=[["📦 Triagem","triagem"],["🏗️ Carga","carregamento"],["🪢 Enlone","enlonamento"]].map(([lb,sn])=>{
       const ini=getTS(c,sn,"inicio"),fim=getTS(c,sn,"fim");
       const d=ini&&fim?durStr(fim-ini):"";
@@ -1014,7 +1024,7 @@ window.render=()=>{
       <div class="crd-sub">AC: ${c.ac} · ${c.tipoCimento||""} ${turnoPill(turnoTS(c))} ${tipoPill(c)}</div>
       <div class="crd-grid">${etapas}</div>
       <div class="crd-tmac">
-        <div><div class="el">⏱️ TMA</div><div class="ei ${tma!=null?"":"w"}" style="${tma!=null?`color:var(--gr)`:''}"> ${tma!=null?durStr(tma):"em processo"}</div></div>
+        <div><div class="el">⏱️ TMA</div><div class="ei ${tma!=null?"":"w"}" style="${tma!=null?`color:${tma<=METATMA?"var(--gr)":"var(--rd)"}`:''}"> ${tma!=null?durStr(tma):"em processo"}</div></div>
       </div>
     </div>`;
   }).join("");
