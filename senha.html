@@ -374,6 +374,7 @@ const durStr=ms=>{if(!ms||ms<0)return"";const m=Math.round(ms/60000);return m<60
 
 let filas={granel:[],ensacado:[],bigbag:[]};
 let lastId=null,lastPlaca=null,lastChamada=null;
+let ultimoAnuncioTs=0; // timestamp (ms) do último anúncio sonoro real — evita re-anunciar registros antigos "ressurgidos" após uma exclusão
 let callTempoInterval=null;
 
 function pararCallTempo(){
@@ -461,6 +462,7 @@ BC.onmessage=(ev)=>{
   acEl.textContent="AC: "+(msg.ac||"—");
   acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
   atualizarInfoChamada(msg.qtdChamadas||1,msg.tsPrimeiraChamada||null);
+  ultimoAnuncioTs=Date.now();
   doFlash();doSound();falarPlaca(msg.placa||"");
 };
 
@@ -494,6 +496,10 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
   if(!docs.length){limparEExibirIdle();return;}
   const last=docs[0];
   if(last.id!==lastId){
+    const lastTs=last.criadoEm?.seconds?last.criadoEm.seconds*1000:0;
+    // Só é uma chamada "de verdade" (nova) se for mais recente que o último anúncio sonoro já feito.
+    // Isso evita re-anunciar um caminhão antigo que "ressurgiu" no topo após outro ser excluído.
+    const ehChamadaNova=lastTs>ultimoAnuncioTs;
     // BroadcastChannel ainda não processou (TV externa / rede diferente): executa tudo
     const jaProcessadoBC=(lastId===null&&lastChamada&&lastChamada.placa===last.placa);
     lastId=last.id;
@@ -514,11 +520,18 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
     acEl.textContent="AC: "+(last.ac||"—");
     acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
     atualizarInfoChamada(last.qtdChamadas||1,tsPrimeiraMs);
-    // Só dispara som/voz se o BroadcastChannel NÃO processou esta chamada (TV externa)
-    if(!jaProcessadoBC){doFlash();doSound();falarPlaca(last.placa||"");}
-    else{doFlash();}
+    if(ehChamadaNova){
+      ultimoAnuncioTs=lastTs;
+      // Só dispara som/voz se o BroadcastChannel NÃO processou esta chamada (TV externa)
+      if(!jaProcessadoBC){doFlash();doSound();falarPlaca(last.placa||"");}
+      else{doFlash();}
+    }else{
+      // Registro mais antigo que ressurgiu no topo (ex.: após exclusão do mais recente) — só atualiza visual, sem som
+      doFlash();
+    }
   }
 });
+
 
 
 // ── Justificativas (não comparecimento) ──
