@@ -408,7 +408,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
                 <option value="carregamento">Carregamento — Ambipar</option>
                 <option value="enlonamento">Enlonamento — Sousa Clean</option>
                 <option value="faturamento">Faturamento — Apodi</option>
-                <option value="justificativas">Justificativas — Supervisão</option>
+                <option value="justificativas">Justificativas — Responsável pela Justificativa</option>
               </select>
             </div>
             <div class="fg2"><label>Nome completo</label><input id="op-nome-in" type="text" placeholder="Ex: João Silva"/></div>
@@ -1196,7 +1196,7 @@ window.exportarPDFAdmin=()=>{
 };
 
 // ── Gestão de Operadores das Telas ──────────────────────────────────
-const TELA_LABEL={posto1:"Posto 1 — Apodi",portaria:"Portaria — Seguro Segurança",triagem:"Triagem — Reforme Paletes",carregamento:"Carregamento — Ambipar",enlonamento:"Enlonamento — Sousa Clean",faturamento:"Faturamento — Apodi",justificativas:"Justificativas — Supervisão"};
+const TELA_LABEL={posto1:"Posto 1 — Apodi",portaria:"Portaria — Seguro Segurança",triagem:"Triagem — Reforme Paletes",carregamento:"Carregamento — Ambipar",enlonamento:"Enlonamento — Sousa Clean",faturamento:"Faturamento — Apodi",justificativas:"Justificativas — Responsável pela Justificativa"};
 const TELA_ORDEM=["posto1","portaria","triagem","carregamento","enlonamento","faturamento"];
 function slugSenha(nome){
   const primeiro=(nome||"").trim().split(/\s+/)[0]||"operador";
