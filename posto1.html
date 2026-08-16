@@ -396,9 +396,9 @@ window.registrar=async()=>{
   const pl=document.getElementById("pl").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
   if(!ac||pl.length<7){showMsg("er","Preencha a AC e a placa.");return;}
   if(!TIPO){showMsg("er","Selecione o tipo de carga.");return;}
-  // Verifica duplicidade: mesma placa+AC já em processo (qualquer dia)
-  const dupPlacaAC=HD.find(c=>c.placa===pl&&c.ac===ac&&c.setorAtual!=="concluido");
-  if(dupPlacaAC){showMsg("er","⚠️ Placa "+pl+" com AC "+ac+" já está em processo. Verifique os dados.");return;}
+  // Verifica duplicidade: a AC não pode se repetir em hipótese alguma enquanto o processo anterior não for concluído/excluído
+  const dupAC=HD.find(c=>c.ac===ac&&c.setorAtual!=="concluido");
+  if(dupAC){showMsg("er","⚠️ Já existe a placa "+dupAC.placa+" cadastrada para a AC "+ac+". Exclua a AC anterior para poder cadastrar uma nova.");return;}
   // Verifica se placa já está em processo hoje com AC diferente
   const dupPlaca=HD.find(c=>c.placa===pl&&c.setorAtual!=="concluido"&&c.data===hoje());
   if(dupPlaca){showMsg("er","⚠️ Placa "+pl+" já está em processo hoje com AC "+dupPlaca.ac+".");return;}
@@ -866,13 +866,8 @@ window.confirmarJustR=async()=>{
   document.getElementById("hist-wrap").style.display="block";
   fecharModalJust();
   showMsg("wn","⚠️ Justificativa registrada para "+v.placa);
-  if(CH_INTERVAL)clearInterval(CH_INTERVAL);
-  CHAMADO_ATUAL=null;CH_SECS=0;
-  document.getElementById("ch-placa").textContent="—";
-  document.getElementById("ch-meta").textContent="Nenhum veículo chamado";
-  document.getElementById("strip").className="chamado-strip vazio";
-  document.getElementById("ch-actions").style.display="none";
-  document.getElementById("ch-counter").textContent="00:00";
+  BC.postMessage({tipo:"cancelar"});
+  limparChamadoAtual();
   renderFila();
 };
 
