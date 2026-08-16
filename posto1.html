@@ -278,6 +278,17 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
         <button class="btn-cancel-r" onclick="fecharModalExcluir()">Cancelar</button>
       </div>
     </div>
+    <div class="modal-r" id="modal-sucesso-ex">
+      <div class="modal-r-box" style="border-color:rgba(0,232,150,.5);text-align:center;box-shadow:0 0 60px rgba(0,232,150,.08)">
+        <div style="width:60px;height:60px;border-radius:50%;background:rgba(0,232,150,.12);border:2px solid rgba(0,232,150,.4);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px">✅</div>
+        <div style="font-size:16px;font-weight:800;color:#00e896;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">AC excluída com sucesso</div>
+        <div style="font-size:13px;color:var(--tx);line-height:1.5;margin-bottom:4px" id="sucesso-ex-texto"></div>
+        <div style="font-size:11px;color:var(--t3);margin-top:14px">Voltando para a tela principal...</div>
+        <div style="height:3px;background:rgba(0,232,150,.15);border-radius:2px;margin-top:18px;overflow:hidden">
+          <div id="sucesso-ex-bar" style="height:100%;width:100%;background:#00e896;border-radius:2px"></div>
+        </div>
+      </div>
+    </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
       <div class="rodape-label" style="margin:0">Fila · toque para chamar</div>
       <span style="font-size:10px;color:var(--t3)" id="fila-count-r"></span>
@@ -813,8 +824,14 @@ window.confirmarExclusao=async()=>{
   const nEx=document.getElementById("hist-ex-list").children.length;
   document.getElementById("hist-ex-count").textContent=nEx+" ocorrência"+(nEx!==1?"s":"");
   document.getElementById("hist-ex-wrap").style.display="block";
-  showMsg("wn","🗑 AC de "+v.placa+" excluída e movida para o histórico");
   renderFila();
+  // Aviso central de sucesso — fecha sozinho em 2s e volta para a tela principal
+  document.getElementById("sucesso-ex-texto").innerHTML="A Autorização de Carregamento <b style=\"color:#00e896;font-family:monospace\">"+v.ac+"</b> (placa "+v.placa+") foi excluída e movida para o histórico.";
+  const bar=document.getElementById("sucesso-ex-bar");
+  bar.style.transition="none";bar.style.width="100%";
+  document.getElementById("modal-sucesso-ex").classList.add("show");
+  requestAnimationFrame(()=>{requestAnimationFrame(()=>{bar.style.transition="width 2s linear";bar.style.width="0%";});});
+  setTimeout(()=>{document.getElementById("modal-sucesso-ex").classList.remove("show");},2000);
 };
 
 window.abrirModalJust=()=>{
