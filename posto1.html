@@ -47,6 +47,11 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .ch-actions{display:flex;gap:6px;margin-bottom:8px}
 .btn-nao{flex:1;padding:10px;border:1.5px solid rgba(255,68,102,.4);border-radius:var(--rs);background:rgba(255,68,102,.07);color:#ff4466;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px}
 .btn-chegou{flex:1;padding:10px;border:1.5px solid rgba(0,232,150,.4);border-radius:var(--rs);background:rgba(0,232,150,.07);color:#00e896;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px}
+.btn-nao,.btn-chegou,.btn-recall{padding:10px 4px;font-size:11px}
+.btn-recall{flex:1;border:1.5px solid rgba(0,212,255,.4);border-radius:var(--rs);background:rgba(0,212,255,.07);color:var(--ac);font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px}
+.badge-recall{display:inline-block;margin-left:6px;font-size:9px;font-weight:800;padding:1px 6px;border-radius:8px;background:rgba(255,208,0,.12);border:1px solid rgba(255,208,0,.35);color:#ffd000;vertical-align:middle}
+.p-del{width:26px;height:26px;flex-shrink:0;border-radius:7px;border:1px solid var(--bd);background:transparent;color:var(--t3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;margin-left:6px}
+.p-del:hover{border-color:#ff4466;color:#ff4466;background:rgba(255,68,102,.07)}
 .fila-list-r{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding-right:2px}
 .fila-list-r::-webkit-scrollbar{width:4px}
 .fila-list-r::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
@@ -208,12 +213,6 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <button class="turno-btn" id="tb-b" onclick="setTurno('B',this)">B · 07h–15h</button>
       <button class="turno-btn" id="tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
     </div>
-    <div class="filtro-row">
-      <span class="filtro-label">Usuário:</span>
-      <select class="filtro-input" id="f-operador" style="cursor:pointer">
-        <option value="">— Todos os usuários —</option>
-      </select>
-    </div>
   </div>
   <div class="btn-row">
     <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
@@ -226,7 +225,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     <div class="rodape-label">Veículo chamado</div>
     <div class="chamado-strip vazio" id="strip">
       <div style="flex:1">
-        <div class="ch-placa" id="ch-placa">—</div>
+        <div class="ch-placa" id="ch-placa">—<span class="badge-recall" id="ch-recall-badge" style="display:none"></span></div>
         <div class="ch-meta" id="ch-meta">Nenhum veículo chamado</div>
       </div>
       <div class="ch-timer">
@@ -235,8 +234,12 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       </div>
     </div>
     <div class="ch-actions" id="ch-actions" style="display:none">
-      <button class="btn-nao" onclick="abrirModalJust()">✕ Não compareceu</button>
+      <button class="btn-nao" onclick="abrirModalJust()">✕ Não veio</button>
+      <button class="btn-recall" onclick="chamarNovamente()">🔁 Chamar de novo</button>
       <button class="btn-chegou" onclick="confirmarChegada()">✓ Chegou</button>
+    </div>
+    <div style="display:none;margin-bottom:6px" id="btn-excluir-atual-wrap">
+      <button onclick="abrirModalExcluir(CHAMADO_ATUAL&&CHAMADO_ATUAL.id)" style="width:100%;padding:8px;border:1.5px dashed rgba(122,175,204,.3);border-radius:10px;background:transparent;color:var(--t3);font-size:10.5px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px">🗑 Excluir esta AC</button>
     </div>
     <div style="display:none;margin-bottom:6px" id="btn-cancelar-wrap">
       <button onclick="cancelarChamada()" style="width:100%;padding:9px;border:1.5px solid rgba(255,208,0,.35);border-radius:10px;background:rgba(255,208,0,.06);color:#ffd000;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px">⏹ Cancelar Chamada</button>
@@ -253,6 +256,22 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
         <input id="outro-r" type="text" placeholder="Descreva o motivo..." style="display:none;width:100%;background:var(--bg);border:1.5px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:10px 14px;font-size:13px;outline:none;margin-bottom:6px;font-family:inherit"/>
         <button class="btn-conf" onclick="confirmarJustR()">Confirmar e tirar da fila</button>
         <button class="btn-cancel-r" onclick="fecharModalJust()">Cancelar</button>
+      </div>
+    </div>
+    <div class="modal-r" id="modal-excluir">
+      <div class="modal-r-box" style="border-color:#ff4466">
+        <div class="mr-title" style="color:#ff4466">⚠️ Excluir Autorização de Carregamento</div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:12px">O registro não será apagado — vai para o histórico de ACs excluídas e pode ser restaurado no Admin.</div>
+        <div class="mr-placa" id="ex-placa">—</div>
+        <button class="mr-motivo" onclick="selMotEx(this,'Cadastro duplicado')">📝 Cadastro duplicado</button>
+        <button class="mr-motivo" onclick="selMotEx(this,'Erro de digitação (placa/AC)')">⌨️ Erro de digitação (placa/AC)</button>
+        <button class="mr-motivo" onclick="selMotEx(this,'Cliente cancelou o carregamento')">🚫 Cliente cancelou o carregamento</button>
+        <button class="mr-motivo" onclick="selMotEx(this,'Veículo será recadastrado')">🔁 Veículo será recadastrado</button>
+        <button class="mr-motivo" onclick="selMotEx(this,'Outro')">📋 Outro motivo</button>
+        <input id="outro-ex" type="text" placeholder="Descreva o motivo..." style="display:none;width:100%;background:var(--bg);border:1.5px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:10px 14px;font-size:13px;outline:none;margin-bottom:6px;font-family:inherit"/>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(122,175,204,.06);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 12px;margin:10px 0 4px;font-size:11px;color:var(--t2)">👤 Operador responsável: <b style="color:var(--tx)" id="ex-operador">—</b></div>
+        <button class="btn-conf" onclick="confirmarExclusao()">Confirmar exclusão</button>
+        <button class="btn-cancel-r" onclick="fecharModalExcluir()">Cancelar</button>
       </div>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
@@ -292,7 +311,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,addDoc,onSnapshot,orderBy,query,Timestamp,getDocs}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,addDoc,onSnapshot,orderBy,query,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import{verificarSessao,fazerLogin,salvarNovaSenha,fazerLogout}from"./auth-tela.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
@@ -334,17 +353,7 @@ window.doSalvarSenha=async()=>{
 window.doLogout=()=>{fazerLogout(TELA);location.reload();};
 if(SESSAO.logado){mostrarApp();}else{document.getElementById("login-screen").style.display="flex";}
 const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-const ftDateStr=d=>d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
-(async()=>{
-  const sel=document.getElementById("f-operador");
-  if(!sel)return;
-  try{
-    const snap=await getDocs(collection(db,"operadores_acesso"));
-    const nomes=[...new Set(snap.docs.map(d=>d.data()).filter(o=>o.tela==="posto1").map(o=>o.nome).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-    nomes.forEach(n=>{const opt=document.createElement("option");opt.value=n;opt.textContent=n;sel.appendChild(opt);});
-  }catch(e){console.error("Erro ao carregar operadores:",e);}
-})();
 let HD=[],HD_REL=[],TIPO=null,TIPO_CIMENTO=null,TIPO_CIMENTO_LABEL=null;
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
   const hj=hoje();
@@ -460,14 +469,10 @@ function buildRegistrosRel(){
   const [hiH,hiM]=hIni.split(":").map(Number);
   const [hfH,hfM]=hFim.split(":").map(Number);
   const iniMin=hiH*60+hiM,fimMin=hfH*60+hfM;
-  const opFiltro=document.getElementById("f-operador")?.value||"";
-  // Data, horário e turno filtram sempre pela data/hora de ENTRADA (entrada.ts)
   let r=HD_REL.filter(c=>{
+    if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
     const en=c.entrada?.ts?.toDate?.();
-    if(!en)return false;
-    const enData=ftDateStr(en);
-    if(enData<dataIniVal||enData>dataFimVal)return false;
-    if(opFiltro&&(c.entrada?.operador||"")!==opFiltro)return false;
+    if(!en)return true;
     if(MT==="geral"){
       const min=en.getHours()*60+en.getMinutes();
       return min>=iniMin&&min<=fimMin;
@@ -510,9 +515,7 @@ window.verRelatorio=()=>{
   const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
   const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
   const horarioTxt=MT==="geral"?` · ${hIni}h às ${hFim}h`:"";
-  const opSel=document.getElementById("f-operador")?.value||"";
-  const opTxt=opSel?` · Usuário: ${opSel}`:"";
-  document.getElementById("prev-info").textContent=`Período: ${periodoTxt}${horarioTxt} · Turno: ${TURNO_LABELS[MT]}${opTxt} · ${registros.length} veículo${registros.length!==1?"s":""}`;
+  document.getElementById("prev-info").textContent=`Período: ${periodoTxt}${horarioTxt} · Turno: ${TURNO_LABELS[MT]} · ${registros.length} veículo${registros.length!==1?"s":""}`;
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
@@ -529,8 +532,6 @@ window.gerarPDF=()=>{
   const hIni=document.getElementById("f-hora-ini")?.value||"00:00";
   const hFim=document.getElementById("f-hora-fim")?.value||"23:59";
   const horarioTxt=MT==="geral"?` &nbsp;·&nbsp; Horário: ${hIni}h às ${hFim}h`:"";
-  const opSel=document.getElementById("f-operador")?.value||"";
-  const opTxt=opSel?` &nbsp;·&nbsp; Usuário: ${opSel}`:"";
   const linhas=buildLinhasRel(registros,true);
   const janela=window.open("","_blank","width=900,height=700");
   janela.document.write(`<!DOCTYPE html>
@@ -551,7 +552,7 @@ window.gerarPDF=()=>{
 </style>
 </head><body>
 <h2>Controle de Atendimento — Posto 1</h2>
-<div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}${opTxt}</div>
+<div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
     <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Operador</th><th>Hora Entrada</th>
@@ -585,9 +586,7 @@ window.exportExcel=()=>{
   XLSX.utils.book_append_sheet(wb,ws,"Posto1");
   const{dataIniVal,dataFimVal}=getFiltros();
   const turnoSuffix=MT!=="geral"?`_turno${MT}`:"";
-  const opSel=document.getElementById("f-operador")?.value||"";
-  const opSuffix=opSel?`_${opSel.split(" ")[0]}`:"";
-  const fname=dataIniVal===dataFimVal?`posto1_${dataIniVal}${turnoSuffix}${opSuffix}.xlsx`:`posto1_${dataIniVal}_a_${dataFimVal}${turnoSuffix}${opSuffix}.xlsx`;
+  const fname=dataIniVal===dataFimVal?`posto1_${dataIniVal}${turnoSuffix}.xlsx`:`posto1_${dataIniVal}_a_${dataFimVal}${turnoSuffix}.xlsx`;
   XLSX.writeFile(wb,fname);
 };
 
@@ -630,27 +629,22 @@ function renderFila(){
         <div class="p-sub">${cim?`<span class="p-cim">${cim}</span> · `:""}${bl[tp]||tp} · ${c.ac}</div>
       </div>
       <span class="p-badge ${bc[tp]||"pb-en"}">${bl[tp]||tp}</span>
+      <button class="p-del" title="Excluir AC" onclick="event.stopPropagation();abrirModalExcluir('${c.id}')">🗑</button>
     </div>`;
   }).join("");
 }
 
-window.chamarPlaca=async(id)=>{
-  const v=FILA.find(c=>c.id===id);if(!v)return;
-  CHAMADO_ATUAL=v;
-  CH_SECS=0;if(CH_INTERVAL)clearInterval(CH_INTERVAL);
-  CH_INTERVAL=setInterval(()=>{
-    CH_SECS++;
-    document.getElementById("ch-counter").textContent=String(Math.floor(CH_SECS/60)).padStart(2,"0")+":"+String(CH_SECS%60).padStart(2,"0");
-  },1000);
-  const cim=v.tipoCimento||v.tipoCimentoLabel||"";
-  const tpL={granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[v.tipoCarga]||v.tipoCarga||"";
-  const hora=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-  document.getElementById("ch-placa").textContent=v.placa;
-  document.getElementById("ch-meta").textContent=(cim?cim+" · ":"")+tpL+" · "+v.ac+" · chamado "+hora;
-  document.getElementById("strip").className="chamado-strip";
-  document.getElementById("ch-actions").style.display="flex";
-  document.getElementById("btn-cancelar-wrap").style.display="block";
-  renderFila();
+function atualizarBadgeRecall(){
+  const b=document.getElementById("ch-recall-badge");
+  if(CHAMADO_ATUAL&&CHAMADO_ATUAL._qtdChamadas>1){
+    b.textContent=CHAMADO_ATUAL._qtdChamadas+"ª chamada";
+    b.style.display="inline-block";
+  }else{
+    b.style.display="none";
+  }
+}
+
+async function dispararChamada(v){
   CONTADOR_CHAMADA++;
   try{
     const{addDoc:aD,doc,setDoc,Timestamp:TS}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
@@ -665,33 +659,126 @@ window.chamarPlaca=async(id)=>{
     // Publica no BroadcastChannel para senha.html reagir imediatamente (mesmo computador)
     BC.postMessage({placa:v.placa,ac:v.ac,tipoCarga:v.tipoCarga||"ensacado",numero:CONTADOR_CHAMADA,firebaseId:ref.id});
   }catch(e){showMsg("er","Erro: "+e.message);}
+}
+
+window.chamarPlaca=async(id)=>{
+  const v=FILA.find(c=>c.id===id);if(!v)return;
+  CHAMADO_ATUAL=v;
+  CHAMADO_ATUAL._tsPrimeiraChamada=Date.now();
+  CHAMADO_ATUAL._qtdChamadas=1;
+  CH_SECS=0;if(CH_INTERVAL)clearInterval(CH_INTERVAL);
+  CH_INTERVAL=setInterval(()=>{
+    CH_SECS++;
+    document.getElementById("ch-counter").textContent=String(Math.floor(CH_SECS/60)).padStart(2,"0")+":"+String(CH_SECS%60).padStart(2,"0");
+  },1000);
+  const cim=v.tipoCimento||v.tipoCimentoLabel||"";
+  const tpL={granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[v.tipoCarga]||v.tipoCarga||"";
+  const hora=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("ch-placa").childNodes[0].textContent=v.placa;
+  document.getElementById("ch-meta").textContent=(cim?cim+" · ":"")+tpL+" · "+v.ac+" · chamado "+hora;
+  document.getElementById("strip").className="chamado-strip";
+  document.getElementById("ch-actions").style.display="flex";
+  document.getElementById("btn-cancelar-wrap").style.display="block";
+  document.getElementById("btn-excluir-atual-wrap").style.display="block";
+  atualizarBadgeRecall();
+  renderFila();
+  await dispararChamada(v);
   showMsg("ok","📢 "+v.placa+" chamado — Nº "+String(CONTADOR_CHAMADA).padStart(3,"0"));
 };
 
-window.confirmarChegada=()=>{
+window.chamarNovamente=async()=>{
+  const v=CHAMADO_ATUAL;if(!v)return;
+  v._qtdChamadas=(v._qtdChamadas||1)+1;
+  CH_SECS=0;
+  document.getElementById("ch-counter").textContent="00:00";
+  const hora=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  const cim=v.tipoCimento||v.tipoCimentoLabel||"";
+  const tpL={granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[v.tipoCarga]||v.tipoCarga||"";
+  document.getElementById("ch-meta").textContent=(cim?cim+" · ":"")+tpL+" · "+v.ac+" · chamado "+hora;
+  atualizarBadgeRecall();
+  await dispararChamada(v);
+  showMsg("ok","🔁 "+v.placa+" chamado novamente ("+v._qtdChamadas+"ª vez) — Nº "+String(CONTADOR_CHAMADA).padStart(3,"0"));
+};
+
+function limparChamadoAtual(){
   if(CH_INTERVAL)clearInterval(CH_INTERVAL);
   CHAMADO_ATUAL=null;CH_SECS=0;
-  document.getElementById("ch-placa").textContent="—";
+  document.getElementById("ch-placa").childNodes[0].textContent="—";
+  document.getElementById("ch-recall-badge").style.display="none";
   document.getElementById("ch-meta").textContent="Nenhum veículo chamado";
   document.getElementById("strip").className="chamado-strip vazio";
   document.getElementById("ch-actions").style.display="none";
   document.getElementById("btn-cancelar-wrap").style.display="none";
+  document.getElementById("btn-excluir-atual-wrap").style.display="none";
   document.getElementById("ch-counter").textContent="00:00";
+}
+
+window.confirmarChegada=()=>{
+  limparChamadoAtual();
   renderFila();
 };
 
 window.cancelarChamada=()=>{
-  if(CH_INTERVAL)clearInterval(CH_INTERVAL);
-  CHAMADO_ATUAL=null;CH_SECS=0;
-  document.getElementById("ch-placa").textContent="—";
-  document.getElementById("ch-meta").textContent="Nenhum veículo chamado";
-  document.getElementById("strip").className="chamado-strip vazio";
-  document.getElementById("ch-actions").style.display="none";
-  document.getElementById("btn-cancelar-wrap").style.display="none";
-  document.getElementById("ch-counter").textContent="00:00";
+  limparChamadoAtual();
   // Notifica senha.html para voltar ao idle
   BC.postMessage({tipo:"cancelar"});
   showMsg("wn","⏹ Chamada cancelada");
+  renderFila();
+};
+
+// ── Exclusão de AC (soft-delete) ──
+let EX_ALVO=null,EX_MOT_SEL=null;
+window.abrirModalExcluir=(id)=>{
+  const alvo=(CHAMADO_ATUAL&&CHAMADO_ATUAL.id===id)?CHAMADO_ATUAL:FILA.find(c=>c.id===id);
+  if(!alvo)return;
+  EX_ALVO=alvo;EX_MOT_SEL=null;
+  document.getElementById("ex-placa").textContent=alvo.placa+" · AC "+alvo.ac;
+  document.getElementById("ex-operador").textContent=(SESSAO&&SESSAO.nome)||"—";
+  document.querySelectorAll("#modal-excluir .mr-motivo").forEach(b=>b.classList.remove("on"));
+  document.getElementById("outro-ex").style.display="none";
+  document.getElementById("outro-ex").value="";
+  document.getElementById("modal-excluir").classList.add("show");
+};
+window.fecharModalExcluir=()=>{document.getElementById("modal-excluir").classList.remove("show");};
+window.selMotEx=(el,m)=>{
+  EX_MOT_SEL=m;
+  document.querySelectorAll("#modal-excluir .mr-motivo").forEach(b=>b.classList.remove("on"));
+  el.classList.add("on");
+  document.getElementById("outro-ex").style.display=m==="Outro"?"block":"none";
+};
+window.confirmarExclusao=async()=>{
+  if(!EX_MOT_SEL){showMsg("er","Selecione o motivo da exclusão.");return;}
+  let motivo=EX_MOT_SEL;
+  if(motivo==="Outro"){
+    const t=document.getElementById("outro-ex").value.trim();
+    if(!t){showMsg("er","Descreva o motivo.");return;}
+    motivo=t;
+  }
+  const v=EX_ALVO;if(!v)return;
+  const foiChamado=!!(CHAMADO_ATUAL&&CHAMADO_ATUAL.id===v.id&&CHAMADO_ATUAL._tsPrimeiraChamada);
+  try{
+    const{addDoc:aD,doc,deleteDoc}=await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
+    const{id,...dados}=v;
+    const agora=Date.now();
+    await aD(collection(db,"caminhoes_excluidos"),{
+      ...dados,
+      idOriginal:id,
+      motivoExclusao:motivo,
+      operadorExclusao:(SESSAO&&SESSAO.nome)||"desconhecido",
+      telaExclusao:"posto1",
+      excluidoEm:new Date().toISOString(),
+      qtdChamadas:foiChamado?CHAMADO_ATUAL._qtdChamadas:0,
+      tsPrimeiraChamada:foiChamado?new Date(CHAMADO_ATUAL._tsPrimeiraChamada).toISOString():null,
+      tempoAteExclusaoSegundos:foiChamado?Math.round((agora-CHAMADO_ATUAL._tsPrimeiraChamada)/1000):null
+    });
+    await deleteDoc(doc(db,"caminhoes_rastreio",id));
+  }catch(e){showMsg("er","Erro ao excluir: "+e.message);return;}
+  if(CHAMADO_ATUAL&&CHAMADO_ATUAL.id===v.id){
+    limparChamadoAtual();
+    BC.postMessage({tipo:"cancelar"});
+  }
+  fecharModalExcluir();
+  showMsg("wn","🗑 AC de "+v.placa+" excluída e movida para o histórico");
   renderFila();
 };
 
