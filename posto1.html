@@ -472,12 +472,8 @@ const fmtDT=ts=>{
 const fmtEx=d=>d?d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"";
 function fmtTML(seg){
   if(seg==null||seg<0)return"—";
-  if(seg<3600){
-    const m=Math.floor(seg/60),s=Math.round(seg%60);
-    return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
-  }
-  const h=Math.floor(seg/3600),m=Math.round((seg%3600)/60);
-  return h+"h"+m+"m";
+  const m=Math.round(seg/60);
+  return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?m%60+"m":"");
 }
 function getTurno(d){
   if(!d)return null;
