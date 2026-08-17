@@ -636,7 +636,7 @@ const BC=new BroadcastChannel("tmac_chamada");
 })();
 
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","asc")),snap=>{
-  FILA=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.data===hoje()&&c.setorAtual==="posto1"&&!c.posto1Confirmado);
+  FILA=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.data<=hoje()&&c.setorAtual==="posto1"&&!c.posto1Confirmado);
   renderFila();
 });
 
