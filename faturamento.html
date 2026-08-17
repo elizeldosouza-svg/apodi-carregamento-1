@@ -364,6 +364,22 @@ function buildRegistrosRel(){
   return r;
 }
 const TIPO_CARGA_LABELS={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
+const TMF_LIM=8*60*1000;
+function durStr(ms){
+  if(ms==null||ms<0)return"-";
+  const m=Math.round(ms/60000);
+  if(m===0)return"<1min";
+  return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?m%60+"m":"");
+}
+function calcTMF(c){
+  const enF=c.enlonamento?.fim?.toDate?.();
+  const caF=c.carregamento?.fim?.toDate?.();
+  const sa=c.faturamento?.ts?.toDate?.();
+  if(!sa)return{enlFim:null,ms:null};
+  if(enF)return{enlFim:enF,ms:sa-enF};
+  if(caF)return{enlFim:null,ms:sa-caF};
+  return{enlFim:null,ms:null};
+}
 function buildLinhasRel(registros,forPrint=false){
   const tdStyle=forPrint?"border:1px solid #ccc;padding:6px 10px":"border:1px solid #1e3558;padding:7px 10px;text-align:center";
   return registros.map((c,i)=>{
@@ -371,16 +387,20 @@ function buildLinhasRel(registros,forPrint=false){
     const carga=TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-";
     const cimento=c.tipoCimento||c.tipoCimentoLabel||"-";
     const turno=ft?(getTurno(ft)||"-"):"-";
+    const{enlFim,ms:tmfMs}=calcTMF(c);
+    const tmfCor=forPrint?"":(tmfMs==null?"":(tmfMs>TMF_LIM?" ;color:#ff4466;font-weight:bold":" ;color:#00e896;font-weight:bold"));
     return`<tr>
       <td style="${tdStyle};text-align:center">${i+1}</td>
       <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#00e896"}">${c.placa||"-"}</td>
       <td style="${tdStyle}">${c.ac||"-"}</td>
+      <td style="${tdStyle}">${c.notaFiscal||"-"}</td>
       <td style="${tdStyle}">${carga}</td>
       <td style="${tdStyle}">${cimento}</td>
       <td style="${tdStyle}">${turno}</td>
-      <td style="${tdStyle}">${c.notaFiscal||"-"}</td>
       <td style="${tdStyle}">${c.faturamento?.operador||"-"}</td>
+      <td style="${tdStyle}">${enlFim?fmtDT(c.enlonamento.fim):"-"}</td>
       <td style="${tdStyle}">${ft?fmtDT(c.faturamento.ts):"-"}</td>
+      <td style="${tdStyle}${tmfCor}">${durStr(tmfMs)}</td>
     </tr>`;
   }).join("");
 }
@@ -397,9 +417,9 @@ window.verRelatorio=()=>{
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
-        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Nota Fiscal</th><th>Operador</th><th>Hora Saída</th>
+        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Operador</th><th>Enlonamento Fim</th><th>Hora Saída</th><th>TMF</th>
       </tr></thead>
-      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="9" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="11" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
@@ -433,9 +453,9 @@ window.gerarPDF=()=>{
 <div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
-    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Nota Fiscal</th><th>Operador</th><th>Hora Saída</th>
+    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Operador</th><th>Enlonamento Fim</th><th>Hora Saída</th><th>TMF</th>
   </tr></thead>
-  <tbody>${linhas||'<tr><td colspan="9" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+  <tbody>${linhas||'<tr><td colspan="11" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
 <div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
 </body></html>`);
@@ -448,19 +468,22 @@ window.exportExcel=()=>{
   if(!registros.length){alert("Nenhum dado para exportar no filtro selecionado.");return;}
   const rows=registros.map(c=>{
     const ft=c.faturamento?.ts?.toDate?.();
+    const{enlFim,ms:tmfMs}=calcTMF(c);
     return{
       "Placa":c.placa||"",
       "AC":c.ac||"",
+      "Nota Fiscal":c.notaFiscal||"",
       "Carga":TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"",
       "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
       "Turno":ft?(getTurno(ft)||""):"",
-      "Nota Fiscal":c.notaFiscal||"",
       "Operador":c.faturamento?.operador||"",
+      "Enlonamento Fim":fmtEx(enlFim),
       "Hora Saída":fmtEx(ft),
+      "TMF":durStr(tmfMs),
     };
   });
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:12},{wch:8},{wch:14},{wch:18},{wch:20}];
+  ws["!cols"]=[{wch:10},{wch:10},{wch:14},{wch:12},{wch:12},{wch:8},{wch:18},{wch:20},{wch:20},{wch:10}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Faturamento");
   const{dataIniVal,dataFimVal}=getFiltros();
