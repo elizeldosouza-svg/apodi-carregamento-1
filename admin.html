@@ -219,6 +219,8 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 <div id="app-screen" style="display:none">
   <div class="top">
     <div class="logo">🔧 ADMIN — GESTÃO DE PROCESSOS</div>
+    <button class="nav-btn" onclick="abrirRelatorioAdmin()" style="cursor:pointer">📋 Visualizar PDF</button>
+    <button class="nav-btn" onclick="exportExcel()" style="cursor:pointer">📊 Exportar Excel</button>
     <a class="nav-btn" href="/posto1" target="_blank">🏁 Posto 1</a>
     <a class="nav-btn" href="/portaria" target="_blank">🏛️ Portaria</a>
     <a class="nav-btn" href="/triagem" target="_blank">📦 Triagem</a>
@@ -288,8 +290,6 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
               <span style="color:var(--t3)">–</span>
               <input type="time" id="cal-h-fim" value="23:59" onchange="render()" style="background:var(--bg3);border:1px solid var(--b2);border-radius:5px;color:var(--tx);padding:3px 6px;font-size:10px;font-family:'Inter',sans-serif;outline:none;width:76px"/>
             </div>
-            <button class="rel-btn-m" style="margin-left:auto" onclick="abrirRelatorioAdmin()">📋 Visualizar PDF</button>
-            <button class="export-btn" onclick="exportExcel()">📊 Exportar Excel</button>
           </div>
 
           <!-- Linha 2: Dias da semana -->
@@ -343,6 +343,19 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
               <option value="faturamento_aguardando">Ag. Faturamento</option>
               <option value="concluido">Concluído</option>
             </select>
+            <select class="dselect-filter" id="f-empresa-filter" onchange="onEmpresaFiltroChange()">
+              <option value="">— Empresa —</option>
+              <option value="justificativas">Justificativas — Apodi</option>
+              <option value="posto1">Posto 1 — Apodi</option>
+              <option value="portaria">Portaria — Seguro Segurança</option>
+              <option value="triagem">Triagem — Reforme Paletes</option>
+              <option value="carregamento">Carregamento — Ambipar</option>
+              <option value="enlonamento">Enlonamento — Sousa Clean</option>
+              <option value="faturamento">Faturamento — Apodi</option>
+            </select>
+            <select class="dselect-filter" id="f-operador-filter" onchange="render()">
+              <option value="">— Operador —</option>
+            </select>
             <input class="fi" id="q-global" type="text" placeholder="🔍 Placa ou AC..." oninput="render()" style="min-width:140px;flex:1"/>
           </div>
 
@@ -371,8 +384,10 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
         <table>
           <thead><tr>
             <th style="text-align:center;width:34px"><input type="checkbox" id="chk-all" onclick="toggleSelectAll(this.checked)"/></th>
+            <th style="text-align:center;width:38px"><div class="th-plain">Nº</div></th>
             <th data-col="placa" onclick="sortBy('placa')"><div class="th-plain">Placa</div></th>
             <th data-col="ac" onclick="sortBy('ac')"><div class="th-plain">AC</div></th>
+            <th data-col="notaFiscal" onclick="sortBy('notaFiscal')"><div class="th-plain">Nota Fiscal</div></th>
             <th data-col="data" onclick="sortBy('data')"><div class="th-plain">Data</div></th>
             <th data-col="turno" onclick="sortBy('turno')"><div class="th-plain">Turno</div></th>
             <th data-col="tipoCarga" onclick="sortBy('tipoCarga')"><div class="th-plain">Tipo Carga</div></th>
@@ -387,6 +402,9 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <th data-col="enI" onclick="sortBy('enI')"><div class="th-plain">🪢 Enlone Ini</div></th>
             <th data-col="enF" onclick="sortBy('enF')"><div class="th-plain">🪢 Enlone Fim</div></th>
             <th data-col="sa" onclick="sortBy('sa')"><div class="th-plain">🧾 Fatur</div></th>
+            <th data-col="opPosto1" onclick="sortBy('opPosto1')"><div class="th-plain">Operador Posto1</div></th>
+            <th data-col="opFatur" onclick="sortBy('opFatur')"><div class="th-plain">Operador Faturamento</div></th>
+            <th data-col="tmac" onclick="sortBy('tmac')"><div class="th-plain" style="text-align:center">Status</div></th>
             <th><div class="th-plain" style="text-align:center">Editar</div></th>
           </tr></thead>
           <tbody id="tbody"></tbody>
@@ -417,6 +435,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
                 <option value="carregamento">Carregamento — Ambipar</option>
                 <option value="enlonamento">Enlonamento — Sousa Clean</option>
                 <option value="faturamento">Faturamento — Apodi</option>
+                <option value="justificativas">Justificativas — Supervisão</option>
               </select>
             </div>
             <div class="fg2"><label>Nome completo</label><input id="op-nome-in" type="text" placeholder="Ex: João Silva"/></div>
@@ -762,7 +781,33 @@ function getSortVal(c,col){
   if(col==="enI")return(getTS(c,"enlonamento","inicio")||new Date(0)).getTime();
   if(col==="enF")return(getTS(c,"enlonamento","fim")||new Date(0)).getTime();
   if(col==="sa")return(getTS(c,"faturamento","ts")||new Date(0)).getTime();
+  if(col==="notaFiscal")return c.notaFiscal||"";
+  if(col==="opPosto1")return c.entrada?.operador||"";
+  if(col==="opFatur")return c.faturamento?.operador||"";
+  if(col==="tmac")return calcTMAC(c)??-1;
   return"";
+}
+function calcTMAC(c){
+  const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
+  if(!en||!sa)return null;
+  return sa-en;
+}
+const TMAC_LIMITE_MS=130*60*1000; // 2:10
+function durStrAdmin(ms){
+  if(ms==null||ms<0)return"";
+  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
+  return h>0?h+":"+String(m).padStart(2,"0"):m+"min";
+}
+function statusTmacCell(c){
+  const tmac=calcTMAC(c);
+  if(tmac==null)return`<span style="color:var(--t3);font-size:10px;font-style:italic">em processo</span>`;
+  const ok=tmac<=TMAC_LIMITE_MS;
+  return`<span style="font-weight:700;color:${ok?"#00e896":"#ff4466"}">${durStrAdmin(tmac)} ${ok?"✅":"❌"}</span>`;
+}
+function fmtDataBR(iso){
+  if(!iso)return"—";
+  const p=iso.split("-");
+  return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:iso;
 }
 
 // -- helpers ----------------------------------------------------------------
@@ -865,6 +910,14 @@ function getFiltered(){
   // Setor específico
   const setor=document.getElementById("f-setor-filter")?.value||"";
   if(setor)list=list.filter(c=>c.setorAtual===setor);
+  // Empresa (detecção por presença de timestamp da etapa)
+  const empresa=document.getElementById("f-empresa-filter")?.value||"";
+  if(empresa)list=list.filter(c=>empresaTocaEtapa(c,empresa));
+  // Operador (só filtra onde há campo de operador gravado para a empresa selecionada)
+  const operador=document.getElementById("f-operador-filter")?.value||"";
+  if(operador&&EMPRESA_OPERADOR_GETTER[empresa]){
+    list=list.filter(c=>(EMPRESA_OPERADOR_GETTER[empresa](c)||"")===operador);
+  }
   // Busca global
   const q=(document.getElementById("q-global")?.value||"").toUpperCase();
   if(q)list=list.filter(c=>c.placa?.includes(q)||c.ac?.includes(q)||c.notaFiscal?.toUpperCase().includes(q));
@@ -921,7 +974,7 @@ window.render=()=>{
   if(PAGE>totalPages)PAGE=totalPages;
   if(PAGE<1)PAGE=1;
   const pageList=list.slice((PAGE-1)*PAGE_SIZE,PAGE*PAGE_SIZE);
-  tb.innerHTML=pageList.map(c=>{
+  tb.innerHTML=pageList.map((c,idx)=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
@@ -931,11 +984,14 @@ window.render=()=>{
     const t=getTurno(en);
     const sel=SELECTED_ID===c.id;
     const chk=SELECTED_IDS.has(c.id);
+    const numSeq=(PAGE-1)*PAGE_SIZE+idx+1;
     return`<tr class="data-row${sel?" selected":""}" onclick="openDrawer('${c.id}')">
       <td style="text-align:center" onclick="event.stopPropagation()"><input type="checkbox" ${chk?"checked":""} onclick="toggleSelect('${c.id}',this.checked)"/></td>
+      <td style="text-align:center;color:var(--t3);font-size:10px">${numSeq}</td>
       <td><span class="ptag">${c.placa}</span></td>
       <td style="color:var(--t2)">${c.ac}</td>
-      <td style="color:var(--t2);font-size:10px">${c.data||"—"}</td>
+      <td style="color:var(--t2);font-size:10px">${c.notaFiscal||"—"}</td>
+      <td style="color:var(--t2);font-size:10px">${fmtDataBR(c.data)}</td>
       <td>${t?`<span class="turno t-${t.toLowerCase()}">${t}</span>`:"—"}</td>
       <td>${tipoPill(c)||`<span style="color:var(--t3);font-size:10px">—</span>`}</td>
       <td class="ec">${cellT(en)}</td>
@@ -949,6 +1005,9 @@ window.render=()=>{
       <td class="ec">${cellT(enI)}</td>
       <td class="ec">${cellT(enF)}</td>
       <td class="ec">${cellT(sa)}</td>
+      <td style="color:var(--t2);font-size:10px">${c.entrada?.operador||"—"}</td>
+      <td style="color:var(--t2);font-size:10px">${c.faturamento?.operador||"—"}</td>
+      <td style="text-align:center;font-size:10px">${statusTmacCell(c)}</td>
       <td style="text-align:center"><button onclick="event.stopPropagation();openDrawer('${c.id}')" style="padding:3px 10px;border:1px solid var(--rd);border-radius:6px;background:rgba(255,68,102,.08);color:var(--rd);font-size:10px;font-weight:700;cursor:pointer">✏️</button></td>
     </tr>`;
   }).join("");
@@ -1260,6 +1319,7 @@ window.excluir=async()=>{
 };
 // -- Item 08: seleção de colunas para exportação Excel ------------------------
 const EXPORT_COLS=[
+  {key:"num",label:"Nº",def:true},
   {key:"placa",label:"Placa",def:true},
   {key:"ac",label:"AC",def:true},
   {key:"notaFiscal",label:"Nota Fiscal",def:false},
@@ -1278,6 +1338,9 @@ const EXPORT_COLS=[
   {key:"enI",label:"Enlone Ini",def:true},
   {key:"enF",label:"Enlone Fim",def:true},
   {key:"saida",label:"Saída (Fatur.)",def:true},
+  {key:"opPosto1",label:"Operador Posto1",def:true},
+  {key:"opFatur",label:"Operador Faturamento",def:true},
+  {key:"status",label:"Status (TMAC)",def:true},
 ];
 function abrirModalColunasExport(){
   return new Promise(resolve=>{
@@ -1311,7 +1374,7 @@ window.exportExcel=async()=>{
   const colunasSelecionadas=await abrirModalColunasExport();
   if(!colunasSelecionadas||!colunasSelecionadas.length)return;
   const DIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
-  const rows=list.map(c=>{
+  const rows=list.map((c,idx)=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
@@ -1319,12 +1382,15 @@ window.exportExcel=async()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const dia=getDiaSemana(c);
+    const tmac=calcTMAC(c);
+    const statusTxt=tmac==null?"em processo":(tmac<=TMAC_LIMITE_MS?"✅ ":"❌ ")+durStrAdmin(tmac);
     const valores={
-      placa:c.placa,ac:c.ac,notaFiscal:c.notaFiscal||"",data:c.data||"",
+      num:idx+1,placa:c.placa,ac:c.ac,notaFiscal:c.notaFiscal||"",data:fmtDataBR(c.data),
       dia:dia!=null?DIAS[dia]:"",turno:getTurno(en)||"",tipoCarga:c.tipoCargaLabel||"",
       setorAtual:c.setorAtual||"",entrada:fmtEx(en),ptI:fmtEx(ptI),ptF:fmtEx(ptF),
       trI:fmtEx(trI),trF:fmtEx(trF),caI:fmtEx(caI),caF:fmtEx(caF),
-      enI:fmtEx(enI),enF:fmtEx(enF),saida:fmtEx(sa)
+      enI:fmtEx(enI),enF:fmtEx(enF),saida:fmtEx(sa),
+      opPosto1:c.entrada?.operador||"",opFatur:c.faturamento?.operador||"",status:statusTxt
     };
     const linha={};
     EXPORT_COLS.forEach(col=>{if(colunasSelecionadas.includes(col.key))linha[col.label]=valores[col.key];});
@@ -1404,18 +1470,21 @@ window.abrirRelatorioAdmin=()=>{
     document.getElementById("mrel-body").innerHTML="<div style='text-align:center;padding:32px;color:var(--t3)'>Nenhum registro com os filtros selecionados.</div>";
   }else{
     let rows="";
-    list.forEach(c=>{
+    list.forEach((c,idx)=>{
       const en=getTS(c,"entrada","ts");
       const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
       const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
       const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
       const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
       const sa=getTS(c,"faturamento","ts");
+      const tmac=calcTMAC(c);
+      const tmacTxt=tmac==null?"—":(tmac<=TMAC_LIMITE_MS?"✅ ":"❌ ")+durStrAdmin(tmac);
       rows+="<tr>";
+      rows+="<td>"+(idx+1)+"</td>";
       rows+="<td style='text-align:left;font-weight:bold;color:var(--bl);font-family:monospace'>"+( c.placa||"")+"</td>";
       rows+="<td>"+(c.ac||"")+"</td>";
       rows+="<td>"+(c.notaFiscal||"")+"</td>";
-      rows+="<td>"+(c.data||"")+"</td>";
+      rows+="<td>"+fmtDataBR(c.data)+"</td>";
       rows+="<td>"+(c.tipoCarga||"")+"</td>";
       rows+="<td>"+cellT(en)+"</td>";
       rows+="<td>"+cellT(ptI)+"</td><td>"+cellT(ptF)+"</td>";
@@ -1423,15 +1492,18 @@ window.abrirRelatorioAdmin=()=>{
       rows+="<td>"+cellT(caI)+"</td><td>"+cellT(caF)+"</td>";
       rows+="<td>"+cellT(enI)+"</td><td>"+cellT(enF)+"</td>";
       rows+="<td>"+cellT(sa)+"</td>";
+      rows+="<td>"+(c.entrada?.operador||"")+"</td>";
+      rows+="<td>"+(c.faturamento?.operador||"")+"</td>";
+      rows+="<td>"+tmacTxt+"</td>";
       rows+="<td>"+pill(c.setorAtual)+"</td>";
       rows+="</tr>";
     });
     document.getElementById("mrel-body").innerHTML=
       "<table class='mrel-table'><thead><tr>"+
-      "<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>"+
+      "<th>Nº</th><th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>"+
       "<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>"+
       "<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>"+
-      "<th>Fatur.</th><th>Setor</th>"+
+      "<th>Fatur.</th><th>Op.Posto1</th><th>Op.Fatur.</th><th>Status (TMAC)</th><th>Setor</th>"+
       "</tr></thead><tbody>"+rows+"</tbody></table>";
   }
   document.getElementById("mrel-overlay").classList.add("show");
@@ -1451,15 +1523,22 @@ window.exportarPDFAdmin=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const bg=i%2===1?"#f5f8ff":"#fff";
+    const tmac=calcTMAC(c);
+    const tmacTxt=tmac==null?"—":(tmac<=TMAC_LIMITE_MS?"✔ ":"✘ ")+durStrAdmin(tmac);
+    const tmacCor=tmac==null?"#888":(tmac<=TMAC_LIMITE_MS?"#0a8a3f":"#c81e2f");
     return "<tr style='background:"+bg+"'>"+
+      td(i+1)+
       td(c.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")+
-      td(c.ac)+td(c.notaFiscal||"")+td(c.data)+
+      td(c.ac)+td(c.notaFiscal||"")+td(fmtDataBR(c.data))+
       td(({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||""),"font-size:7pt")+
       td(fmtRel(en))+td(fmtRel(ptI))+td(fmtRel(ptF))+
       td(fmtRel(trI))+td(fmtRel(trF))+
       td(fmtRel(caI))+td(fmtRel(caF))+
       td(fmtRel(enI))+td(fmtRel(enF))+
       td(fmtRel(sa))+
+      td(c.entrada?.operador||"","font-size:6.5pt")+
+      td(c.faturamento?.operador||"","font-size:6.5pt")+
+      td(tmacTxt,"font-weight:bold;color:"+tmacCor)+
       td((c.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")+
       "</tr>";
   }).join("");
@@ -1475,11 +1554,12 @@ window.exportarPDFAdmin=()=>{
   partes.push("<h2>Relatório Admin — Apodi Cimentos</h2>");
   partes.push("<div class='info'>Período: <b>"+per+"</b> &nbsp;· Total: <b>"+list.length+" veículo"+(list.length!==1?"s":"")+"</b> &nbsp;· Gerado em: <b>"+dtNow+" às "+hora+"</b></div>");
   partes.push("<table><thead><tr>");
-  partes.push("<th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>");
+  partes.push("<th>Nº</th><th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>");
   partes.push("<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
-  partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th><th>Fatur.</th><th>Setor</th>");
+  partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th><th>Fatur.</th>");
+  partes.push("<th>Op.Posto1</th><th>Op.Fatur.</th><th>Status (TMAC)</th><th>Setor</th>");
   partes.push("</tr></thead><tbody>");
-  partes.push(linhas||"<tr><td colspan='16' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes.push(linhas||"<tr><td colspan='20' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
   partes.push("</tbody></table>");
   partes.push("<div class='footer'>Sistema Admin — Apodi Cimentos — "+dtNow+"</div>");
   partes.push("<scr"+"ipt>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
@@ -1493,7 +1573,46 @@ window.exportarPDFAdmin=()=>{
 };
 
 // ── Gestão de Operadores das Telas ──────────────────────────────────
-const TELA_LABEL={posto1:"Posto 1 — Apodi",portaria:"Portaria — Seguro Segurança",triagem:"Triagem — Reforme Paletes",carregamento:"Carregamento — Ambipar",enlonamento:"Enlonamento — Sousa Clean",faturamento:"Faturamento — Apodi"};
+const TELA_LABEL={posto1:"Posto 1 — Apodi",portaria:"Portaria — Seguro Segurança",triagem:"Triagem — Reforme Paletes",carregamento:"Carregamento — Ambipar",enlonamento:"Enlonamento — Sousa Clean",faturamento:"Faturamento — Apodi",justificativas:"Justificativas — Supervisão"};
+
+// Empresa -> se o registro "tocou" aquela etapa (detecção por presença de timestamp, não por operador)
+function empresaTocaEtapa(c,empresa){
+  if(empresa==="posto1")return!!getTS(c,"entrada","ts");
+  if(empresa==="portaria")return!!(getTS(c,"portaria","inicio")||getTS(c,"portaria","fim"));
+  if(empresa==="triagem")return!!(getTS(c,"triagem","inicio")||getTS(c,"triagem","fim"));
+  if(empresa==="carregamento")return!!(getTS(c,"carregamento","inicio")||getTS(c,"carregamento","fim"));
+  if(empresa==="enlonamento")return!!(getTS(c,"enlonamento","inicio")||getTS(c,"enlonamento","fim"));
+  if(empresa==="faturamento")return!!getTS(c,"faturamento","ts");
+  if(empresa==="justificativas")return!!(c.justificativa&&(c.justificativa.motivo||c.justificativa.armazem?.motivo||c.justificativa.faturamento?.motivo));
+  return true;
+}
+// Empresa -> função que extrai o nome do operador do registro (só existe para quem grava operador hoje)
+const EMPRESA_OPERADOR_GETTER={
+  posto1:c=>c.entrada?.operador||null,
+  faturamento:c=>c.faturamento?.operador||null,
+  justificativas:c=>c.justificativa?.operador||c.justificativa?.armazem?.operador||c.justificativa?.faturamento?.operador||null
+  // portaria, triagem, carregamento, enlonamento: sem campo de operador gravado hoje (limitação conhecida)
+};
+window.onEmpresaFiltroChange=async function(){
+  const empresa=document.getElementById("f-empresa-filter").value;
+  const selOp=document.getElementById("f-operador-filter");
+  selOp.innerHTML=`<option value="">— Operador —</option>`;
+  if(empresa&&EMPRESA_OPERADOR_GETTER[empresa]){
+    try{
+      const snap=await getDocs(query(collection(db,"operadores_acesso"),where("tela","==",empresa)));
+      const nomes=[...new Set(snap.docs.map(d=>d.data().nome).filter(Boolean))].sort();
+      nomes.forEach(n=>{
+        const opt=document.createElement("option");
+        opt.value=n;opt.textContent=n;
+        selOp.appendChild(opt);
+      });
+      selOp.disabled=nomes.length===0;
+    }catch(e){selOp.disabled=true;}
+  }else{
+    selOp.disabled=!empresa?false:true; // sem empresa: dropdown vazio e habilitado (sem efeito); empresa sem operador: desabilitado
+  }
+  render();
+};
 const TELA_ORDEM=["posto1","portaria","triagem","carregamento","enlonamento","faturamento"];
 function slugSenha(nome){
   const primeiro=(nome||"").trim().split(/\s+/)[0]||"operador";
