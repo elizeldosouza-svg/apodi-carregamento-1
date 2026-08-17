@@ -480,7 +480,7 @@ let rastreioCarregado=false;
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const hj=hoje();
   const all=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>c.data===hj&&c.setorAtual==="posto1"&&!c.posto1Confirmado)
+    .filter(c=>c.data<=hj&&c.setorAtual==="posto1"&&!c.posto1Confirmado)
     .sort((a,b)=>(a.criadoEm?.toDate?.()?.getTime()||0)-(b.criadoEm?.toDate?.()?.getTime()||0));
   idsAtivosPosto1=new Set(all.map(c=>c.id));
   rastreioCarregado=true;
@@ -501,8 +501,8 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
       // mesmo esperando no Posto 1 agora — auto-corrige qualquer resíduo sozinho,
       // sem depender do campo "status" ter sido atualizado corretamente.
       if(rastreioCarregado&&c.veiculoId&&!idsAtivosPosto1.has(c.veiculoId))return false;
-      // Aceita se data bate com hoje OU se criadoEm é de hoje (fallback)
-      if(c.data===hj)return true;
+      // Aceita se data bate com hoje ou é de dia anterior ainda não resolvido, OU se criadoEm é de hoje (fallback)
+      if(c.data<=hj)return true;
       const ts=c.criadoEm?.toDate?.();
       if(!ts)return false;
       const dataTs=ts.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
