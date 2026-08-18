@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Relatórios — TMAC Online</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--pu:#a78bfa;--or:#fb923c;--tm:#ff9f43;--r:12px;--rs:8px}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
+.top{background:var(--bg2);border-bottom:2px solid var(--tm);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:12px}
+.logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--tm);flex:1;letter-spacing:1px}
+.live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--gr)}
+.dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+.wrap{max-width:1700px;margin:0 auto;padding:18px 16px 60px}
+
+.filters{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.ff{display:flex;flex-direction:column;gap:4px}
+.ff label{font-size:10px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.ff input,.ff select{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none;min-width:130px}
+.ff input:focus,.ff select:focus{border-color:var(--tm)}
+.btn{border:none;border-radius:var(--rs);padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-tm{background:var(--tm);color:#2a1400}
+.btn-out{background:transparent;border:1px solid var(--b2);color:var(--t2)}
+.btn-out:hover{border-color:var(--t2);color:var(--tx)}
+
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px}
+.kpi .lb{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi .vl{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800}
+.kpi.ok .vl{color:var(--gr)}.kpi.warn .vl{color:var(--ye)}.kpi.bad .vl{color:var(--rd)}
+
+.tcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.thead-bar{padding:12px 18px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:6px}
+.thead-bar small{color:var(--t2);font-weight:400;font-size:11px;font-family:'Inter',sans-serif}
+.tscroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
+table{border-collapse:collapse;width:100%;min-width:2300px}
+th{background:var(--bg3);color:var(--t2);font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:3}
+td{padding:7px 10px;font-size:12px;text-align:center;white-space:nowrap;border-top:1px solid var(--bd)}
+tbody tr:hover{background:var(--bg3);cursor:pointer}
+.placa{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--bl)}
+.okv{color:var(--gr);font-weight:700}
+.badv{color:var(--rd);font-weight:700}
+.tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block}
+.tag.gr{background:rgba(0,232,150,.12);color:var(--gr)}
+.tag.ye{background:rgba(255,208,0,.12);color:var(--ye)}
+.tag.rd{background:rgba(255,68,102,.12);color:var(--rd)}
+.col-fixed{position:sticky;left:0;background:var(--bg2);z-index:2}
+th.col-fixed{z-index:4}
+.empty{padding:40px;text-align:center;color:var(--t2);font-size:13px}
+
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none}
+.drawer-overlay.show{display:block}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:460px;max-width:100vw;background:var(--bg2);border-left:2px solid var(--tm);z-index:501;overflow-y:auto;transform:translateX(100%);transition:transform .2s ease}
+.drawer.show{transform:translateX(0)}
+.drawer-head{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg2);z-index:5}
+.drawer-head .dpl{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--tm);letter-spacing:1px}
+.dclose{width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:13px;margin-left:auto}
+.dclose:hover{border-color:var(--rd);color:var(--rd)}
+.dsec{margin:14px 18px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 14px}
+.dsec h4{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.drow{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--bd)}
+.drow:last-child{border-bottom:none}
+.drow span:first-child{color:var(--t2)}
+.drow span:last-child{text-align:right}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">📊 RELATÓRIOS — VISÃO COMPLETA</div>
+  <div class="live"><span class="dot"></span>AO VIVO</div>
+</div>
+
+<div class="wrap">
+  <div class="filters">
+    <div class="ff"><label>Empresa</label>
+      <select id="f-empresa" onchange="render()">
+        <option value="">Todas</option>
+        <option value="Apodi">Apodi</option>
+        <option value="Seguro Segurança">Seguro Segurança</option>
+        <option value="Reforme Paletes">Reforme Paletes</option>
+        <option value="Ambipar">Ambipar</option>
+        <option value="Sousa Clean">Sousa Clean</option>
+      </select>
+    </div>
+    <div class="ff"><label>Data início</label><input type="date" id="f-ini" onchange="render()"></div>
+    <div class="ff"><label>Data fim</label><input type="date" id="f-fim" onchange="render()"></div>
+    <div class="ff"><label>Placa</label><input id="f-placa" placeholder="ABC1234" oninput="render()"></div>
+    <div class="ff"><label>AC</label><input id="f-ac" placeholder="AC-001" oninput="render()"></div>
+    <div class="ff"><label>Status</label>
+      <select id="f-status" onchange="render()">
+        <option value="">Todos</option>
+        <option value="andamento">Em andamento</option>
+        <option value="concluido">Concluído</option>
+        <option value="fora">Fora da meta (TMAC)</option>
+      </select>
+    </div>
+    <button class="btn btn-out" onclick="limparFiltros()">Limpar</button>
+    <button class="btn btn-tm" onclick="exportarPDF()">📄 PDF</button>
+    <button class="btn btn-out" onclick="exportarExcel()">📊 Excel</button>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="lb">Total registros</div><div class="vl" id="k-total">0</div></div>
+    <div class="kpi ok"><div class="lb">Concluídos</div><div class="vl" id="k-conc">0</div></div>
+    <div class="kpi warn"><div class="lb">Em andamento</div><div class="vl" id="k-and">0</div></div>
+    <div class="kpi ok"><div class="lb">TMAC médio</div><div class="vl" id="k-tmac">—</div></div>
+    <div class="kpi bad"><div class="lb">Fora da meta</div><div class="vl" id="k-fora">0</div></div>
+    <div class="kpi"><div class="lb">SLA cumprido</div><div class="vl" id="k-sla">—</div></div>
+  </div>
+
+  <div class="tcard">
+    <div class="thead-bar">Registros <small id="rescount">carregando…</small></div>
+    <div class="tscroll">
+      <table>
+        <thead><tr>
+          <th class="col-fixed">Nº</th><th class="col-fixed">Placa</th>
+          <th>AC</th><th>Empresa Atual</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Data</th><th>Setor Atual</th>
+          <th>Entrada</th><th>Portaria Ini</th><th>Portaria Fim</th>
+          <th>Triagem Ini</th><th>Triagem Fim</th>
+          <th>Carreg. Ini</th><th>Carreg. Fim</th>
+          <th>Enlon. Ini</th><th>Enlon. Fim</th>
+          <th>Faturamento</th><th>Nota Fiscal</th>
+          <th>TMAC</th><th>TME</th><th>TMC</th><th>TMF</th><th>TMTI</th><th>TMCI</th><th>TMEI</th>
+          <th>Status</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" style="display:none">🔍 Nenhum registro encontrado com os filtros atuais.</div>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="ov" onclick="fecharDrawer()"></div>
+<div class="drawer" id="drw"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import{getFirestore,collection,onSnapshot,query,orderBy}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
+const db=getFirestore(app);
+
+const LIMITE_TMAC_MS=130*60*1000;
+let HD=[];
+let selecionado=null;
+
+const fmtT=ts=>{
+  if(!ts)return"—";
+  const d=ts.toDate?ts.toDate():ts;
+  return d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+};
+const fmtData=s=>{
+  if(!s)return"—";
+  const p=s.split("-");
+  return p.length===3?p[2]+"/"+p[1]:s;
+};
+const fmtDur=ms=>{
+  if(ms===null||ms===undefined||ms<0)return"—";
+  const m=Math.round(ms/60000);
+  return m<60?"0h"+String(m).padStart(2,"0"):Math.floor(m/60)+"h"+String(m%60).padStart(2,"0");
+};
+const diffMs=(a,b)=>{
+  if(!a||!b)return null;
+  const da=a.toDate?a.toDate():a;
+  const dbb=b.toDate?b.toDate():b;
+  return dbb-da;
+};
+
+function empresaAtual(c){
+  if(c.setorAtual==="concluido")return"Apodi";
+  if(c.setorAtual&&c.setorAtual.startsWith("enlonamento"))return"Sousa Clean";
+  if(c.setorAtual&&c.setorAtual.startsWith("carregamento"))return"Ambipar";
+  if(c.setorAtual&&c.setorAtual.startsWith("triagem"))return"Reforme Paletes";
+  if(c.setorAtual&&c.setorAtual.startsWith("portaria"))return"Seguro Segurança";
+  return"Apodi";
+}
+
+function metrics(c){
+  const tEntrada=c.entrada&&c.entrada.ts;
+  const tPortI=c.portaria&&c.portaria.inicio, tPortF=c.portaria&&c.portaria.fim;
+  const tTriI=c.triagem&&c.triagem.inicio, tTriF=c.triagem&&c.triagem.fim;
+  const tCarI=c.carregamento&&c.carregamento.inicio, tCarF=c.carregamento&&c.carregamento.fim;
+  const tEnlI=c.enlonamento&&c.enlonamento.inicio, tEnlF=c.enlonamento&&c.enlonamento.fim;
+  const tFat=c.faturamento&&c.faturamento.ts;
+  return{
+    tEntrada,tPortI,tPortF,tTriI,tTriF,tCarI,tCarF,tEnlI,tEnlF,tFat,
+    TMAC:diffMs(tEntrada,tFat),
+    TME:diffMs(tEntrada,tPortI),
+    TMC:diffMs(tCarI,tCarF),
+    TMF:diffMs(tEnlF,tFat),
+    TMTI:diffMs(tTriI,tTriF),
+    TMCI:diffMs(tCarI,tCarF),
+    TMEI:diffMs(tEnlI,tEnlF)
+  };
+}
+
+function statusInfo(c,m){
+  if(c.setorAtual!=="concluido")return{key:"andamento",label:"Em andamento",cls:"ye"};
+  if(m.TMAC!==null&&m.TMAC>LIMITE_TMAC_MS)return{key:"fora",label:"Fora da meta",cls:"rd"};
+  return{key:"concluido",label:"Concluído",cls:"gr"};
+}
+
+function passaFiltros(c,m,st){
+  const fe=document.getElementById("f-empresa").value;
+  const fi=document.getElementById("f-ini").value;
+  const ff=document.getElementById("f-fim").value;
+  const fp=document.getElementById("f-placa").value.trim().toUpperCase();
+  const fac=document.getElementById("f-ac").value.trim().toUpperCase();
+  const fs=document.getElementById("f-status").value;
+  if(fe&&empresaAtual(c)!==fe)return false;
+  if(fi&&c.data<fi)return false;
+  if(ff&&c.data>ff)return false;
+  if(fp&&(c.placa||"").toUpperCase().indexOf(fp)===-1)return false;
+  if(fac&&(c.ac||"").toUpperCase().indexOf(fac)===-1)return false;
+  if(fs&&st.key!==fs)return false;
+  return true;
+}
+
+window.limparFiltros=()=>{
+  document.getElementById("f-empresa").value="";
+  document.getElementById("f-ini").value="";
+  document.getElementById("f-fim").value="";
+  document.getElementById("f-placa").value="";
+  document.getElementById("f-ac").value="";
+  document.getElementById("f-status").value="";
+  render();
+};
+
+window.render=()=>{
+  const tbody=document.getElementById("tbody");
+  const filtrados=[];
+  let conc=0,and=0,fora=0,slaOk=0,tmacSum=0,tmacCount=0;
+  const rows=[];
+  HD.forEach((c,idx)=>{
+    const m=metrics(c);
+    const st=statusInfo(c,m);
+    if(!passaFiltros(c,m,st))return;
+    filtrados.push({c,m,st,n:HD.length-idx});
+  });
+  filtrados.forEach(r=>{
+    if(r.st.key==="andamento")and++;
+    if(r.st.key==="concluido"){conc++;slaOk++;}
+    if(r.st.key==="fora"){conc++;fora++;}
+    if(r.c.setorAtual==="concluido"&&r.m.TMAC!==null){tmacSum+=r.m.TMAC;tmacCount++;}
+  });
+  document.getElementById("k-total").textContent=filtrados.length;
+  document.getElementById("k-conc").textContent=conc;
+  document.getElementById("k-and").textContent=and;
+  document.getElementById("k-tmac").textContent=tmacCount?fmtDur(tmacSum/tmacCount):"—";
+  document.getElementById("k-fora").textContent=fora;
+  document.getElementById("k-sla").textContent=conc?Math.round(slaOk/conc*100)+"%":"—";
+  document.getElementById("rescount").textContent=filtrados.length+" encontrados";
+  document.getElementById("empty").style.display=filtrados.length?"none":"block";
+
+  filtrados.forEach(r=>{
+    const c=r.c,m=r.m,st=r.st;
+    rows.push(
+      "<tr onclick='abrirDrawer("+idxOf(c)+")'>"+
+      "<td class='col-fixed'>"+r.n+"</td>"+
+      "<td class='col-fixed placa'>"+(c.placa||"—")+"</td>"+
+      "<td>"+(c.ac||"—")+"</td>"+
+      "<td>"+empresaAtual(c)+"</td>"+
+      "<td>"+(c.tipoCargaLabel||"—")+"</td>"+
+      "<td>"+(c.tipoCimentoLabel||"—")+"</td>"+
+      "<td>"+fmtData(c.data)+"</td>"+
+      "<td>"+(c.setorAtual||"—").replace(/_/g," ")+"</td>"+
+      "<td>"+fmtT(m.tEntrada)+"</td>"+
+      "<td>"+fmtT(m.tPortI)+"</td>"+
+      "<td>"+fmtT(m.tPortF)+"</td>"+
+      "<td>"+fmtT(m.tTriI)+"</td>"+
+      "<td>"+fmtT(m.tTriF)+"</td>"+
+      "<td>"+fmtT(m.tCarI)+"</td>"+
+      "<td>"+fmtT(m.tCarF)+"</td>"+
+      "<td>"+fmtT(m.tEnlI)+"</td>"+
+      "<td>"+fmtT(m.tEnlF)+"</td>"+
+      "<td>"+fmtT(m.tFat)+"</td>"+
+      "<td>"+(c.notaFiscal||"—")+"</td>"+
+      "<td class='"+(st.key==="fora"?"badv":(m.TMAC!==null?"okv":""))+"'>"+fmtDur(m.TMAC)+"</td>"+
+      "<td>"+fmtDur(m.TME)+"</td>"+
+      "<td>"+fmtDur(m.TMC)+"</td>"+
+      "<td>"+fmtDur(m.TMF)+"</td>"+
+      "<td>"+fmtDur(m.TMTI)+"</td>"+
+      "<td>"+fmtDur(m.TMCI)+"</td>"+
+      "<td>"+fmtDur(m.TMEI)+"</td>"+
+      "<td><span class='tag "+st.cls+"'>"+st.label+"</span></td>"+
+      "</tr>"
+    );
+  });
+  tbody.innerHTML=rows.join("");
+};
+
+function idxOf(c){return HD.indexOf(c);}
+
+window.abrirDrawer=(idx)=>{
+  const c=HD[idx];
+  if(!c)return;
+  const m=metrics(c);
+  const st=statusInfo(c,m);
+  const drw=document.getElementById("drw");
+  drw.innerHTML=
+    "<div class='drawer-head'>"+
+      "<div><div class='dpl'>"+(c.placa||"—")+"</div>"+
+      "<div style='font-size:11px;color:var(--t2)'>"+(c.ac||"—")+" · "+(c.tipoCargaLabel||"—")+" · "+(c.tipoCimentoLabel||"—")+"</div></div>"+
+      "<button class='dclose' onclick='fecharDrawer()'>✕</button>"+
+    "</div>"+
+    "<div class='dsec'><h4>Identificação</h4>"+
+      "<div class='drow'><span>Placa</span><span>"+(c.placa||"—")+"</span></div>"+
+      "<div class='drow'><span>AC</span><span>"+(c.ac||"—")+"</span></div>"+
+      "<div class='drow'><span>Data</span><span>"+fmtData(c.data)+"</span></div>"+
+      "<div class='drow'><span>Setor atual</span><span>"+(c.setorAtual||"—").replace(/_/g," ")+"</span></div>"+
+      "<div class='drow'><span>Empresa responsável</span><span>"+empresaAtual(c)+"</span></div>"+
+      "<div class='drow'><span>Nota fiscal</span><span>"+(c.notaFiscal||"—")+"</span></div>"+
+      "<div class='drow'><span>Status</span><span class='tag "+st.cls+"'>"+st.label+"</span></div>"+
+    "</div>"+
+    "<div class='dsec'><h4>Linha do tempo por etapa</h4>"+
+      "<div class='drow'><span>Entrada (Posto 1)</span><span>"+fmtT(m.tEntrada)+(c.entrada&&c.entrada.operador?" · "+c.entrada.operador:"")+"</span></div>"+
+      "<div class='drow'><span>Portaria início / fim</span><span>"+fmtT(m.tPortI)+" → "+fmtT(m.tPortF)+"</span></div>"+
+      "<div class='drow'><span>Triagem início / fim</span><span>"+fmtT(m.tTriI)+" → "+fmtT(m.tTriF)+"</span></div>"+
+      "<div class='drow'><span>Carregamento início / fim</span><span>"+fmtT(m.tCarI)+" → "+fmtT(m.tCarF)+"</span></div>"+
+      "<div class='drow'><span>Enlonamento início / fim</span><span>"+fmtT(m.tEnlI)+" → "+fmtT(m.tEnlF)+"</span></div>"+
+      "<div class='drow'><span>Faturamento</span><span>"+fmtT(m.tFat)+"</span></div>"+
+    "</div>"+
+    "<div class='dsec'><h4>Métricas calculadas</h4>"+
+      "<div class='drow'><span>TMAC (meta ≤2h10)</span><span class='"+(st.key==="fora"?"badv":"okv")+"'>"+fmtDur(m.TMAC)+"</span></div>"+
+      "<div class='drow'><span>TME</span><span>"+fmtDur(m.TME)+"</span></div>"+
+      "<div class='drow'><span>TMC</span><span>"+fmtDur(m.TMC)+"</span></div>"+
+      "<div class='drow'><span>TMF (meta ≤8min)</span><span>"+fmtDur(m.TMF)+"</span></div>"+
+      "<div class='drow'><span>TMTI (meta ≤5min)</span><span>"+fmtDur(m.TMTI)+"</span></div>"+
+      "<div class='drow'><span>TMCI (meta ≤20min)</span><span>"+fmtDur(m.TMCI)+"</span></div>"+
+      "<div class='drow'><span>TMEI (meta ≤15min)</span><span>"+fmtDur(m.TMEI)+"</span></div>"+
+    "</div>"+
+    "<div class='dsec'><h4>Observações / justificativa</h4>"+
+      "<div class='drow'><span>Observação</span><span>"+(c.observacao||"—")+"</span></div>"+
+      "<div class='drow'><span>Justificativa</span><span>"+(c.justificativa&&c.justificativa.motivo?c.justificativa.motivo:"Nenhuma")+"</span></div>"+
+    "</div>";
+  document.getElementById("ov").classList.add("show");
+  drw.classList.add("show");
+};
+window.fecharDrawer=()=>{
+  document.getElementById("ov").classList.remove("show");
+  document.getElementById("drw").classList.remove("show");
+};
+
+window.exportarExcel=()=>{
+  const linhas=[["Nº","Placa","AC","Empresa Atual","Tipo Carga","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","Nota Fiscal","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Status"]];
+  document.querySelectorAll("#tbody tr").forEach(tr=>{
+    const cols=[];
+    tr.querySelectorAll("td").forEach(td=>cols.push(td.textContent.trim()));
+    linhas.push(cols);
+  });
+  const ws=XLSX.utils.aoa_to_sheet(linhas);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Relatorio");
+  XLSX.writeFile(wb,"relatorio_tmac_"+new Date().toISOString().slice(0,10)+".xlsx");
+};
+
+window.exportarPDF=()=>{
+  const w=window.open("","_blank");
+  const tabela=document.querySelector(".tscroll table").outerHTML;
+  w.document.write("<html><head><title>Relatório TMAC</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:8pt;padding:14px;color:#000}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:4px 6px;text-align:center;white-space:nowrap}th{background:#eee}</style></head><body><h3>Relatório TMAC Online — "+new Date().toLocaleString("pt-BR")+"</h3><br>"+tabela+"</body></html>");
+  w.document.close();
+  setTimeout(()=>w.print(),300);
+};
+
+onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
+  HD=snap.docs.map(d=>({id:d.id,...d.data()}));
+  render();
+});
+</script>
+</body>
+</html>
