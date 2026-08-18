@@ -21,10 +21,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .s0::before{background:var(--bl)}.s1::before{background:var(--ye)}.s2::before{background:var(--rd)}
 .s3::before{background:var(--pu)}.s4::before{background:var(--or)}.s5::before{background:var(--gr)}.s6::before{background:var(--tm)}
 .s7::before{background:#38bdf8}.s8::before{background:#34d399}.s9::before{background:#c084fc}.s10::before{background:#f472b6}
+.s11::before{background:#38bdf8}.s12::before{background:var(--tm)}.s13::before{background:#c084fc}
 .sv{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:800}
 .s0 .sv{color:var(--bl)}.s1 .sv{color:var(--ye)}.s2 .sv{color:var(--rd)}
 .s3 .sv{color:var(--pu)}.s4 .sv{color:var(--or)}.s5 .sv{color:var(--gr)}.s6 .sv{color:var(--tm)}
 .s7 .sv{color:#38bdf8}.s8 .sv{color:#34d399}.s9 .sv{color:#c084fc}.s10 .sv{color:#f472b6}
+.s11 .sv{color:#38bdf8}.s12 .sv{color:var(--tm)}.s13 .sv{color:#c084fc}
 .sl{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 .filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
 .row-label{font-size:10px;color:var(--t3);font-weight:600;padding:0 4px;white-space:nowrap;min-width:60px}
@@ -156,6 +158,22 @@ tr.alerta .turno{opacity:.7}
 .crd-tmac .ei{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--tm)}
 .crd-tmac .ei.w{color:var(--t3);font-style:italic;font-size:11px;font-family:'Inter',sans-serif;font-weight:400}
 @media(max-width:768px){.tcard{display:none}.cards{display:flex}.stats{grid-template-columns:repeat(4,1fr)}.export-btn span{display:none}}
+/* ══ Toggle de filtros ══ */
+.filters-toggle-row{display:flex;justify-content:flex-end;margin-bottom:6px}
+.filters-toggle-btn{padding:6px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.filters-toggle-btn:hover{border-color:var(--bl);color:var(--bl)}
+.filters-block{overflow:hidden}
+.filters-block.hidden{display:none}
+/* ══ Stats secundárias (TML/TMA/TMF) com legenda ══ */
+.stats-sec{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:20px}
+.slegend{font-size:9px;color:var(--t3);margin-top:6px;border-top:1px dashed var(--bd);padding-top:6px;line-height:1.5}
+.slegend b{color:var(--tx)}
+/* ══ Paginação ══ */
+.pag-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;border-top:1px solid var(--bd)}
+.pag-btn{padding:5px 12px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.pag-btn:hover:not(:disabled){border-color:var(--bl);color:var(--bl)}
+.pag-btn:disabled{opacity:.35;cursor:default}
+.pag-info{font-size:11px;color:var(--t2)}
 
 /* ══ CALENDÁRIO MASTER ══ */
 .cal-popup{position:absolute;left:0;top:100%;margin-top:6px;z-index:500;display:none}
@@ -203,13 +221,10 @@ tr.alerta .turno{opacity:.7}
 <body>
 <div class="top">
   <div class="logo">👁️ MASTER — TMAC ONLINE</div>
-  <a href="/carregamento-armazem" style="padding:6px 14px;border:1px solid var(--tm);border-radius:20px;background:rgba(255,159,67,.08);color:var(--tm);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,159,67,.15)'" onmouseout="this.style.background='rgba(255,159,67,.08)'">🏗️ Armazém</a>
-  <a href="/analise" style="padding:6px 14px;border:1px solid var(--pu);border-radius:20px;background:rgba(167,139,250,.08);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.08)'">📊 Análise</a>
-  <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
-  <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
-  <a href="/portaria" style="padding:6px 14px;border:1px solid rgba(0,212,255,.4);border-radius:20px;background:rgba(0,212,255,.07);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.15)'" onmouseout="this.style.background='rgba(0,212,255,.07)'">🏛️ Portaria</a>
   <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,232,150,.15)'" onmouseout="this.style.background='rgba(0,232,150,.07)'">🏭 Pátio</a>
-  <a href="/admin" style="padding:6px 14px;border:1px solid rgba(255,68,102,.5);border-radius:20px;background:rgba(255,68,102,.1);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.2)'" onmouseout="this.style.background='rgba(255,68,102,.1)'">🔧 Admin</a>
+  <a href="/carregamento-armazem" style="padding:6px 14px;border:1px solid var(--tm);border-radius:20px;background:rgba(255,159,67,.08);color:var(--tm);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,159,67,.15)'" onmouseout="this.style.background='rgba(255,159,67,.08)'">🏗️ Armazém</a>
+  <a href="/faturamento-fila" style="padding:6px 14px;border:1px solid rgba(0,212,255,.4);border-radius:20px;background:rgba(0,212,255,.07);color:var(--bl);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.15)'" onmouseout="this.style.background='rgba(0,212,255,.07)'">🧾 Faturamento Fila</a>
+  <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.4px;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
   <div class="live"><div class="dot"></div>AO VIVO</div>
 </div>
 <div class="wrap">
@@ -223,10 +238,19 @@ tr.alerta .turno{opacity:.7}
     <div class="st s6"><div class="sv" id="s6">—</div><div class="sl">TMAC Geral</div></div>
     <div class="st s7"><div class="sv" id="s7">—</div><div class="sl">TME · Espera</div></div>
     <div class="st s8"><div class="sv" id="s8">—</div><div class="sl">TMC · Carga</div></div>
-    <div class="st s9"><div class="sv" id="s9">—</div><div class="sl">TMF · Fila</div></div>
     <div class="st s10"><div class="sv" id="s10">—</div><div class="sl">TMP · Portaria</div></div>
   </div>
 
+  <div class="stats-sec">
+    <div class="st s11"><div class="sv" id="s11">—</div><div class="sl">TML · Liberação</div><div class="slegend"><b>TML</b> = Tempo Médio de Liberação (Posto1)</div></div>
+    <div class="st s12"><div class="sv" id="s12">—</div><div class="sl">TMA · Armazém</div><div class="slegend"><b>TMA</b> = Tempo Médio do Armazém (Triagem+Carga+Enlone)</div></div>
+    <div class="st s13"><div class="sv" id="s13">—</div><div class="sl">TMF · Fila</div><div class="slegend"><b>TMF</b> = Tempo Médio de Fila (Enlone → Faturamento)</div></div>
+  </div>
+
+  <div class="filters-toggle-row">
+    <button class="filters-toggle-btn" id="filters-toggle-btn" onclick="toggleFiltersBlock()">▲ Ocultar filtros</button>
+  </div>
+  <div class="filters-block" id="filters-block">
   <div class="filter-row">
     <span class="row-label">📅 Período:</span>
     <button class="pb on" onclick="setPeriod('hoje',this)">Hoje</button>
@@ -262,10 +286,10 @@ tr.alerta .turno{opacity:.7}
     </div>
     <div class="deate-wrap">
       <span class="deate-label">⏰ De</span>
-      <input class="deate-input" type="time" id="hora-de" value="" onchange="render()">
+      <input class="deate-input" type="time" id="hora-de" value="" onchange="MPAGE=1;render()">
       <span class="deate-sep">→</span>
       <span class="deate-label">Até</span>
-      <input class="deate-input" type="time" id="hora-ate" value="" onchange="render()">
+      <input class="deate-input" type="time" id="hora-ate" value="" onchange="MPAGE=1;render()">
     </div>
     <div style="display:flex;flex-direction:column;gap:4px">
       <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
@@ -275,10 +299,10 @@ tr.alerta .turno{opacity:.7}
 
   <div class="filter-row">
     <span class="row-label">🕐 Turno:</span>
-    <button class="tb tb-todos on" onclick="setTurno('t',this)">Todos</button>
-    <button class="tb tb-a" onclick="setTurno('A',this)">A · 23h–07h</button>
-    <button class="tb tb-b" onclick="setTurno('B',this)">B · 07h–15h</button>
-    <button class="tb tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
+    <button class="tb tb-todos on" onclick="setTurno('t',this)">Todos (<span id="cnt-turno-t">0</span>)</button>
+    <button class="tb tb-a" onclick="setTurno('A',this)">A · 23h–07h (<span id="cnt-turno-a">0</span>)</button>
+    <button class="tb tb-b" onclick="setTurno('B',this)">B · 07h–15h (<span id="cnt-turno-b">0</span>)</button>
+    <button class="tb tb-c" onclick="setTurno('C',this)">C · 15h–23h (<span id="cnt-turno-c">0</span>)</button>
   </div>
 
   <div class="filter-row">
@@ -307,11 +331,12 @@ tr.alerta .turno{opacity:.7}
   </div>
 
   <div class="filter-row" style="margin-bottom:16px">
-    <input class="fi" id="q" type="text" placeholder="🔍 Placa ou AC..." oninput="render()"/>
+    <input class="fi" id="q" type="text" placeholder="🔍 Placa ou AC..." oninput="MPAGE=1;render()"/>
     <button class="fb on" onclick="setF('t',this)">Todos (<span id="cnt-f-t">0</span>)</button>
     <button class="fb" onclick="setF('a',this)">Em processo (<span id="cnt-f-a">0</span>)</button>
     <button class="fb" onclick="setF('c',this)">Concluídos (<span id="cnt-f-c">0</span>)</button>
   </div>
+  </div><!-- /filters-block -->
 
   <!-- Card: Aguardando Triagem -->
   <div id="card-aguardando" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-left:3px solid var(--bl);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;align-items:center;justify-content:space-between">
@@ -329,6 +354,7 @@ tr.alerta .turno{opacity:.7}
     <div class="tscroll" id="tbl" style="display:none">
       <table>
         <thead><tr id="thead-row">
+          <th data-col="num" style="min-width:36px">Nº</th>
           <th data-col="placa" style="text-align:left;min-width:80px">Placa</th>
           <th data-col="cimento" style="min-width:52px">Cim.</th>
           <th data-col="ac" style="min-width:54px">AC</th>
@@ -344,14 +370,24 @@ tr.alerta .turno{opacity:.7}
           <th data-col="enI" style="min-width:52px">🪢<br>Enl.Ini</th>
           <th data-col="enF" style="min-width:52px">🪢<br>Enl.Fim</th>
           <th data-col="saida" style="min-width:52px">🧾<br>Fatur</th>
-          <th data-col="tmac" style="min-width:48px">⏱️<br>TMAC</th>
           <th data-col="nf" style="min-width:70px">Nota<br>Fiscal</th>
+          <th data-col="opPosto1" style="min-width:70px">Operador<br>Posto1</th>
+          <th data-col="opFat" style="min-width:70px">Operador<br>Fat</th>
+          <th data-col="tml" style="min-width:48px">⏱️<br>TML</th>
+          <th data-col="tma" style="min-width:48px">⏱️<br>TMA</th>
+          <th data-col="tmf" style="min-width:48px">⏱️<br>TMF</th>
+          <th data-col="tmac" style="min-width:48px">⏱️<br>TMAC</th>
           <th data-col="status" style="min-width:60px">Status</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
     <div class="empty" id="emp" style="display:none">🔍 Nenhum resultado.</div>
+    <div class="pag-bar" id="pag-bar" style="display:none">
+      <button class="pag-btn" id="pag-prev" onclick="pagMove(-1)">‹ Anterior</button>
+      <span class="pag-info" id="pag-info"></span>
+      <button class="pag-btn" id="pag-next" onclick="pagMove(1)">Próxima ›</button>
+    </div>
   </div>
   <div class="cards" id="cards"></div>
 </div>
@@ -452,6 +488,25 @@ function calcTMAC(c){
   if(!en||!sa)return null;
   return sa-en;
 }
+// TML = Tempo Médio de Liberação (mesma fórmula do posto1.html)
+function calcTML(c){
+  const en=getTS(c,"entrada","ts");
+  const lib=c.posto1ConfirmadoEm?.toDate?c.posto1ConfirmadoEm.toDate():null;
+  return(en&&lib)?lib-en:null;
+}
+// TMA = Tempo Médio do Armazém = TMTI+TMCI+TMEI (mesma fórmula do carregamento-armazem.html)
+function calcTMTI(c){const i=getTS(c,"triagem","inicio"),f=getTS(c,"triagem","fim");return(i&&f)?f-i:null;}
+function calcTMCI(c){const i=getTS(c,"carregamento","inicio"),f=getTS(c,"carregamento","fim");return(i&&f)?f-i:null;}
+function calcTMEI(c){const i=getTS(c,"enlonamento","inicio"),f=getTS(c,"enlonamento","fim");return(i&&f)?f-i:null;}
+function calcTMA(c){
+  const p=[calcTMTI(c),calcTMCI(c),calcTMEI(c)].filter(v=>v!=null);
+  return p.length?p.reduce((a,b)=>a+b,0):null;
+}
+// TMF = Tempo Médio de Fila = Enlone Fim → Faturamento (mesma fórmula usada no card s9 anterior)
+function calcTMF(c){
+  const enF=getTS(c,"enlonamento","fim"),sa=getTS(c,"faturamento","ts");
+  return(enF&&sa)?sa-enF:null;
+}
 function isAlerta(c){
   // So nao pulsa se concluido ou com saída registrada
   if(!c.setorAtual||c.setorAtual==="concluido"||c.faturamento?.ts)return false;
@@ -478,6 +533,12 @@ function getSortVal(c,col){
     case"caI":return tsVal(c,"carregamento","inicio");case"caF":return tsVal(c,"carregamento","fim");
     case"enI":return tsVal(c,"enlonamento","inicio");case"enF":return tsVal(c,"enlonamento","fim");
     case"saida":return tsVal(c,"faturamento","ts");case"tmac":return calcTMAC(c)??-1;
+    case"nf":return c.notaFiscal||"";
+    case"opPosto1":return c.entrada?.operador||"";
+    case"opFat":return c.faturamento?.operador||"";
+    case"tml":return calcTML(c)??-1;
+    case"tma":return calcTMA(c)??-1;
+    case"tmf":return calcTMF(c)??-1;
     default:return 0;
   }
 }
@@ -491,11 +552,24 @@ document.addEventListener("click",e=>{
   const th=e.target.closest("th[data-col]");if(!th)return;
   const col=th.dataset.col;
   if(SORT_COL===col){SORT_DIR*=-1;}else{SORT_COL=col;SORT_DIR=1;}
-  updateSortHeaders();render();
+  MPAGE=1;updateSortHeaders();render();
 });
 
 let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t",MDATA=null,MDATA_FIM=null,CAL_AGUARD_INI=false,MTEMPO="t";
 let CAL_Y_M=0,CAL_M_M=0;
+// Cache de período (evita recalcular ALL.filter(noperiodo) múltiplas vezes por render)
+let CACHE_BASE=[],CACHE_PERIOD=[];
+// Paginação da tabela principal
+const PAGE_SIZE=100;
+let MPAGE=1;
+window.pagMove=dir=>{MPAGE+=dir;render();};
+// Toggle de exibição do bloco de filtros
+window.toggleFiltersBlock=()=>{
+  const bl=document.getElementById("filters-block");
+  const btn=document.getElementById("filters-toggle-btn");
+  const hidden=bl.classList.toggle("hidden");
+  btn.textContent=hidden?"▼ Mostrar filtros":"▲ Ocultar filtros";
+};
 
 function calInitM(){
   const tz=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
@@ -525,14 +599,14 @@ window.calTodayM=()=>{
   CAL_Y_M=tz.getFullYear();CAL_M_M=tz.getMonth();
   const pad=n=>String(n).padStart(2,"0");
   MDATA=tz.getFullYear()+"-"+pad(tz.getMonth()+1)+"-"+pad(tz.getDate());
-  MDATA_FIM=null;CAL_AGUARD_INI=false;
+  MDATA_FIM=null;CAL_AGUARD_INI=false;MPAGE=1;
   calUpdateBtn();calRenderM();
   document.getElementById("cal-popup").classList.remove("show");
   MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
   render();
 };
 window.calClearM=()=>{
-  MDATA=null;MDATA_FIM=null;CAL_AGUARD_INI=false;
+  MDATA=null;MDATA_FIM=null;CAL_AGUARD_INI=false;MPAGE=1;
   document.getElementById("cal-clear-m").style.display="none";
   document.getElementById("cal-btn").classList.remove("has-date");
   document.getElementById("cal-btn-txt").textContent="Data";
@@ -584,7 +658,7 @@ function calBuildSide(){
   }).join("");
 }
 window.calSetRange=(ini,fim)=>{
-  MDATA=ini;MDATA_FIM=fim;CAL_AGUARD_INI=false;
+  MDATA=ini;MDATA_FIM=fim;CAL_AGUARD_INI=false;MPAGE=1;
   MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
   calUpdateBtn();calBuildSide();calRenderM();
   document.getElementById("cal-popup").classList.remove("show");
@@ -635,6 +709,7 @@ window.calSelectM=(d,evt)=>{
   } else {
     MDATA=dateStr;MDATA_FIM=null;CAL_AGUARD_INI=false;
   }
+  MPAGE=1;
   MP="ano";document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));
   calUpdateBtn();calBuildSide();calRenderM();
   if(!evt||!evt.shiftKey)document.getElementById("cal-popup").classList.remove("show");
@@ -658,12 +733,12 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
 // Inicializa calendário assim que página carrega
 calInitM();
 
-window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_AGUARD_INI=false;document.getElementById("cal-btn").classList.remove("has-date");document.getElementById("cal-btn-txt").textContent="Data";document.getElementById("cal-clear-m").style.display="none";calRenderM();document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
-window.setF=(f,el)=>{MF=f;document.querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
-window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
-window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
-window.setTipoCimento=(t,el)=>{MTCIM=t;document.querySelectorAll(".ttb-cim-todos,.ttb-cp2f,.ttb-cp3,.ttb-cp5").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
-window.setTempo=(t,el)=>{MTEMPO=t;document.querySelectorAll(".tmpo-btn").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setPeriod=(p,el)=>{MP=p;MDATA=null;MDATA_FIM=null;CAL_AGUARD_INI=false;MPAGE=1;document.getElementById("cal-btn").classList.remove("has-date");document.getElementById("cal-btn-txt").textContent="Data";document.getElementById("cal-clear-m").style.display="none";calRenderM();document.querySelectorAll(".pb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setF=(f,el)=>{MF=f;MPAGE=1;document.querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTurno=(t,el)=>{MT=t;MPAGE=1;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTipoCarga=(t,el)=>{MTC=t;MPAGE=1;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTipoCimento=(t,el)=>{MTCIM=t;MPAGE=1;document.querySelectorAll(".ttb-cim-todos,.ttb-cp2f,.ttb-cp3,.ttb-cp5").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTempo=(t,el)=>{MTEMPO=t;MPAGE=1;document.querySelectorAll(".tmpo-btn").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 
 // ── Helper: retorna o timestamp de referência do veículo para filtros ──
@@ -708,18 +783,11 @@ function tempoDisp(c,tipo){
 }
 
 function getFiltered(){
-  const{s,e}=periodDates(MP);
-  const mdata=MDATA||null;
-  const mdataFim=MDATA_FIM||null;
   const horaDE=document.getElementById("hora-de")?.value||"";
   const horaATE=document.getElementById("hora-ate")?.value||"";
 
-  let list=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
-  const seen=new Set();
-  list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
-  if(MT!=="t")list=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
-  if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
-  if(MTCIM!=="t")list=list.filter(c=>c.tipoCimento===MTCIM);
+  // Reaproveita o período já filtrado (data + turno + carga + cimento) calculado em computeBaseAndPeriod()
+  let list=CACHE_PERIOD;
   if(MF==="a")list=list.filter(c=>c.setorAtual!=="concluido");
   if(MF==="c")list=list.filter(c=>c.setorAtual==="concluido");
   if(horaDE||horaATE){
@@ -744,21 +812,26 @@ function getFiltered(){
   return list;
 }
 
-window.render=()=>{
+// Calcula uma única vez por render(): base = período (data), period = base + turno/carga/cimento
+function computeBaseAndPeriod(){
   const{s,e}=periodDates(MP);
   const mdata=MDATA||null;
   const mdataFim=MDATA_FIM||null;
-
-  let period=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
-  const seenSt=new Set();
-  period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
+  let base=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
+  const seen=new Set();
+  base=base.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
+  CACHE_BASE=base;
+  let period=base;
   if(MT!=="t")period=period.filter(c=>getTurno(getTS(c,"entrada","ts"))===MT);
   if(MTC!=="t")period=period.filter(c=>c.tipoCarga===MTC);
   if(MTCIM!=="t")period=period.filter(c=>c.tipoCimento===MTCIM);
+  CACHE_PERIOD=period;
+}
 
-  const allPeriod=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
-  const allSeen=new Set();
-  const allP=allPeriod.filter(c=>{if(allSeen.has(c.id))return false;allSeen.add(c.id);return true;});
+window.render=()=>{
+  computeBaseAndPeriod();
+  const period=CACHE_PERIOD;
+  const allP=CACHE_BASE;
   document.getElementById("cnt-carga-t").textContent=allP.length;
   document.getElementById("cnt-ensacado").textContent=allP.filter(c=>c.tipoCarga==="ensacado").length;
   document.getElementById("cnt-granel").textContent=allP.filter(c=>c.tipoCarga==="granel").length;
@@ -774,6 +847,12 @@ window.render=()=>{
   document.getElementById("cnt-tmpo-tmc").textContent=period.filter(c=>tempoDisp(c,"tmc")).length;
   document.getElementById("cnt-tmpo-tmp").textContent=period.filter(c=>tempoDisp(c,"tmp")).length;
   document.getElementById("cnt-tmpo-tmf").textContent=period.filter(c=>tempoDisp(c,"tmf")).length;
+
+  // Contadores do filtro de Turno (sobre allP = período por data, ignorando o próprio filtro de turno)
+  document.getElementById("cnt-turno-t").textContent=allP.length;
+  document.getElementById("cnt-turno-a").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="A").length;
+  document.getElementById("cnt-turno-b").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="B").length;
+  document.getElementById("cnt-turno-c").textContent=allP.filter(c=>getTurno(getTS(c,"entrada","ts"))==="C").length;
 
   document.getElementById("s0").textContent=period.length;
   document.getElementById("s1").textContent=period.filter(c=>c.setorAtual?.startsWith("triagem")).length;
@@ -791,9 +870,7 @@ window.render=()=>{
   document.getElementById("cnt-f-c").textContent=cntConcluidos;
 
   // Card: Aguardando Triagem — resumo simples
-  const aguardando=ALL.filter(c=>{
-    return noperiodo(c,s,e,mdata,mdataFim)&&c.setorAtual==="posto1";
-  });
+  const aguardando=CACHE_BASE.filter(c=>c.setorAtual==="posto1");
   const cardAg=document.getElementById("card-aguardando");
   if(aguardando.length>0){
     cardAg.style.display="flex";
@@ -821,11 +898,17 @@ window.render=()=>{
   }).filter(v=>v!=null);
   document.getElementById("s8").textContent=tmcVals.length?durStr(tmcVals.reduce((a,b)=>a+b,0)/tmcVals.length):"—";
 
-  const tmfVals=concluidos.map(c=>{
-    const enF=getTS(c,"enlonamento","fim"),sa=getTS(c,"faturamento","ts");
-    return(enF&&sa)?sa-enF:null;
-  }).filter(v=>v!=null);
-  document.getElementById("s9").textContent=tmfVals.length?durStr(tmfVals.reduce((a,b)=>a+b,0)/tmfVals.length):"—";
+  // TML — Tempo Médio de Liberação (Posto1), sobre o período completo
+  const tmlVals=period.map(c=>calcTML(c)).filter(v=>v!=null);
+  document.getElementById("s11").textContent=tmlVals.length?durStr(tmlVals.reduce((a,b)=>a+b,0)/tmlVals.length):"—";
+
+  // TMA — Tempo Médio do Armazém, sobre o período completo
+  const tmaVals=period.map(c=>calcTMA(c)).filter(v=>v!=null);
+  document.getElementById("s12").textContent=tmaVals.length?durStr(tmaVals.reduce((a,b)=>a+b,0)/tmaVals.length):"—";
+
+  // TMF — Tempo Médio de Fila (mesma fórmula/escopo do antigo card s9: apenas concluídos)
+  const tmfVals=concluidos.map(c=>calcTMF(c)).filter(v=>v!=null);
+  document.getElementById("s13").textContent=tmfVals.length?durStr(tmfVals.reduce((a,b)=>a+b,0)/tmfVals.length):"—";
 
   const tmpVals=period.map(c=>{
     const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
@@ -837,8 +920,29 @@ window.render=()=>{
   document.getElementById("cnt").textContent=list.length+" "+(list.length===1?"veículo":"veículos");
 
   const tb=document.getElementById("tbody"),em=document.getElementById("emp"),cards=document.getElementById("cards");
-  if(!list.length){tb.innerHTML="";em.style.display="block";cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";return;}
+  const pagBar=document.getElementById("pag-bar");
+  if(!list.length){
+    tb.innerHTML="";em.style.display="block";
+    cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";
+    pagBar.style.display="none";
+    return;
+  }
   em.style.display="none";
+
+  // ── Paginação (100 linhas/página) ──
+  const totalPages=Math.max(1,Math.ceil(list.length/PAGE_SIZE));
+  if(MPAGE>totalPages)MPAGE=totalPages;
+  if(MPAGE<1)MPAGE=1;
+  const pageStart=(MPAGE-1)*PAGE_SIZE;
+  const pageList=list.slice(pageStart,pageStart+PAGE_SIZE);
+  if(list.length>PAGE_SIZE){
+    pagBar.style.display="flex";
+    document.getElementById("pag-info").textContent=`Página ${MPAGE} de ${totalPages} · ${pageStart+1}–${Math.min(pageStart+PAGE_SIZE,list.length)} de ${list.length}`;
+    document.getElementById("pag-prev").disabled=MPAGE<=1;
+    document.getElementById("pag-next").disabled=MPAGE>=totalPages;
+  } else {
+    pagBar.style.display="none";
+  }
 
   function cell(d,d2){
     if(!d)return`<span class="w">aguardando</span>`;
@@ -847,7 +951,7 @@ window.render=()=>{
     return str;
   }
 
-  tb.innerHTML=list.map(c=>{
+  tb.innerHTML=pageList.map((c,i)=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
@@ -855,10 +959,12 @@ window.render=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const tmac=calcTMAC(c);
+    const tml=calcTML(c),tma=calcTMA(c),tmf=calcTMF(c);
     const alerta=isAlerta(c);
     const hoje2=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     const incompleto=c.data&&c.data<hoje2&&c.setorAtual!=="concluido";
     return`<tr${alerta?' class="alerta"':incompleto?' class="incompleto"':''}>
+      <td style="color:var(--t3);font-size:10px;text-align:center">${pageStart+i+1}</td>
       <td><span class="ptag">${c.placa}</span>${turnoPill(en)}${tipoPill(c)}${alerta?'<span class="alerta-badge">+1h30</span>':''}</td>
       <td style="font-size:11px;font-family:monospace;font-weight:700;color:var(--ye);letter-spacing:.3px">${c.tipoCimento||'<span style="color:var(--t3)">—</span>'}</td>
       <td style="color:var(--t2)">${c.ac}</td>
@@ -874,13 +980,21 @@ window.render=()=>{
       <td class="ec">${cell(enI,null)}</td>
       <td class="ec">${cell(enF,enI)}</td>
       <td class="ec">${sa?`<span class="d">${fmtT(sa)}</span>`:`<span class="w">aguardando</span>`}</td>
-      <td>${tmac!=null?`<span class="tmac-cell" style="color:${tmac>130*60*1000?'var(--rd)':'var(--gr)'}">${durStr(tmac)}</span>`:`<span class="tmac-cell w">${incompleto?"não concluído":"em processo"}</span>`}</td>
       <td style="font-size:10px;color:var(--t2);text-align:center">${c.notaFiscal||""}</td>
+      <td style="font-size:10px;color:var(--t2);text-align:center">${c.entrada?.operador||'<span style="color:var(--t3)">—</span>'}</td>
+      <td style="font-size:10px;color:var(--t2);text-align:center">${c.faturamento?.operador||'<span style="color:var(--t3)">—</span>'}</td>
+      <td>${tml!=null?`<span class="tmac-cell" style="color:#38bdf8">${durStr(tml)}</span>`:`<span class="tmac-cell w">—</span>`}</td>
+      <td>${tma!=null?`<span class="tmac-cell" style="color:var(--tm)">${durStr(tma)}</span>`:`<span class="tmac-cell w">—</span>`}</td>
+      <td>${tmf!=null?`<span class="tmac-cell" style="color:#c084fc">${durStr(tmf)}</span>`:`<span class="tmac-cell w">—</span>`}</td>
+      <td>${tmac!=null?`<span class="tmac-cell" style="color:${tmac>130*60*1000?'var(--rd)':'var(--gr)'}">${durStr(tmac)}</span>`:`<span class="tmac-cell w">${incompleto?"não concluído":"em processo"}</span>`}</td>
       <td style="text-align:center;font-size:16px">${statusFinal(c)}</td>
     </tr>`;
   }).join("");
 
-  cards.innerHTML=list.map(c=>{
+  // Cards (visão mobile) só são construídos quando a viewport é mobile — evita trabalho duplicado no desktop
+  const isMobile=window.matchMedia("(max-width:768px)").matches;
+  if(!isMobile){cards.innerHTML="";}
+  else cards.innerHTML=pageList.map(c=>{
     const en=getTS(c,"entrada","ts");
     const sa=getTS(c,"faturamento","ts");
     const tmac=calcTMAC(c);
@@ -941,6 +1055,13 @@ window.exportExcel=()=>{
 
 // Re-render a cada 60s para atualizar alertas de tempo
 setInterval(()=>{if(typeof render==="function")render();},60000);
+
+// Re-render ao cruzar o breakpoint mobile/desktop (liga/desliga construção dos cards)
+let RESIZE_TO=null;
+window.addEventListener("resize",()=>{
+  clearTimeout(RESIZE_TO);
+  RESIZE_TO=setTimeout(()=>{if(typeof render==="function")render();},250);
+});
 
 // ── RELATÓRIO MASTER ──────────────────────────────────────────────────────
 const fmtRel=ts=>{if(!ts)return"";const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});};
