@@ -75,6 +75,10 @@
     {
       "source": "/editor",
       "destination": "/editor_visual.html"
+    },
+    {
+      "source": "/relatorios",
+      "destination": "/relatorios.html"
     }
   ]
 }
