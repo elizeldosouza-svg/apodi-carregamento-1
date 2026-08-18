@@ -404,7 +404,6 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <th data-col="sa" onclick="sortBy('sa')"><div class="th-plain">🧾 Fatur</div></th>
             <th data-col="opPosto1" onclick="sortBy('opPosto1')"><div class="th-plain">Operador Posto1</div></th>
             <th data-col="opFatur" onclick="sortBy('opFatur')"><div class="th-plain">Operador Faturamento</div></th>
-            <th data-col="tmac" onclick="sortBy('tmac')"><div class="th-plain" style="text-align:center">Status</div></th>
             <th><div class="th-plain" style="text-align:center">Editar</div></th>
           </tr></thead>
           <tbody id="tbody"></tbody>
@@ -1007,7 +1006,6 @@ window.render=()=>{
       <td class="ec">${cellT(sa)}</td>
       <td style="color:var(--t2);font-size:10px">${c.entrada?.operador||"—"}</td>
       <td style="color:var(--t2);font-size:10px">${c.faturamento?.operador||"—"}</td>
-      <td style="text-align:center;font-size:10px">${statusTmacCell(c)}</td>
       <td style="text-align:center"><button onclick="event.stopPropagation();openDrawer('${c.id}')" style="padding:3px 10px;border:1px solid var(--rd);border-radius:6px;background:rgba(255,68,102,.08);color:var(--rd);font-size:10px;font-weight:700;cursor:pointer">✏️</button></td>
     </tr>`;
   }).join("");
@@ -1340,7 +1338,6 @@ const EXPORT_COLS=[
   {key:"saida",label:"Saída (Fatur.)",def:true},
   {key:"opPosto1",label:"Operador Posto1",def:true},
   {key:"opFatur",label:"Operador Faturamento",def:true},
-  {key:"status",label:"Status (TMAC)",def:true},
 ];
 function abrirModalColunasExport(){
   return new Promise(resolve=>{
@@ -1477,8 +1474,6 @@ window.abrirRelatorioAdmin=()=>{
       const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
       const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
       const sa=getTS(c,"faturamento","ts");
-      const tmac=calcTMAC(c);
-      const tmacTxt=tmac==null?"—":(tmac<=TMAC_LIMITE_MS?"✅ ":"❌ ")+durStrAdmin(tmac);
       rows+="<tr>";
       rows+="<td>"+(idx+1)+"</td>";
       rows+="<td style='text-align:left;font-weight:bold;color:var(--bl);font-family:monospace'>"+( c.placa||"")+"</td>";
@@ -1494,7 +1489,6 @@ window.abrirRelatorioAdmin=()=>{
       rows+="<td>"+cellT(sa)+"</td>";
       rows+="<td>"+(c.entrada?.operador||"")+"</td>";
       rows+="<td>"+(c.faturamento?.operador||"")+"</td>";
-      rows+="<td>"+tmacTxt+"</td>";
       rows+="<td>"+pill(c.setorAtual)+"</td>";
       rows+="</tr>";
     });
@@ -1503,7 +1497,7 @@ window.abrirRelatorioAdmin=()=>{
       "<th>Nº</th><th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>"+
       "<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>"+
       "<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>"+
-      "<th>Fatur.</th><th>Op.Posto1</th><th>Op.Fatur.</th><th>Status (TMAC)</th><th>Setor</th>"+
+      "<th>Fatur.</th><th>Op.Posto1</th><th>Op.Fatur.</th><th>Setor</th>"+
       "</tr></thead><tbody>"+rows+"</tbody></table>";
   }
   document.getElementById("mrel-overlay").classList.add("show");
@@ -1523,9 +1517,6 @@ window.exportarPDFAdmin=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const bg=i%2===1?"#f5f8ff":"#fff";
-    const tmac=calcTMAC(c);
-    const tmacTxt=tmac==null?"—":(tmac<=TMAC_LIMITE_MS?"✔ ":"✘ ")+durStrAdmin(tmac);
-    const tmacCor=tmac==null?"#888":(tmac<=TMAC_LIMITE_MS?"#0a8a3f":"#c81e2f");
     return "<tr style='background:"+bg+"'>"+
       td(i+1)+
       td(c.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")+
@@ -1538,7 +1529,6 @@ window.exportarPDFAdmin=()=>{
       td(fmtRel(sa))+
       td(c.entrada?.operador||"","font-size:6.5pt")+
       td(c.faturamento?.operador||"","font-size:6.5pt")+
-      td(tmacTxt,"font-weight:bold;color:"+tmacCor)+
       td((c.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")+
       "</tr>";
   }).join("");
@@ -1557,9 +1547,9 @@ window.exportarPDFAdmin=()=>{
   partes.push("<th>Nº</th><th style='text-align:left'>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Data</th><th>Tipo</th>");
   partes.push("<th>Posto1</th><th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>");
   partes.push("<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th><th>Fatur.</th>");
-  partes.push("<th>Op.Posto1</th><th>Op.Fatur.</th><th>Status (TMAC)</th><th>Setor</th>");
+  partes.push("<th>Op.Posto1</th><th>Op.Fatur.</th><th>Setor</th>");
   partes.push("</tr></thead><tbody>");
-  partes.push(linhas||"<tr><td colspan='20' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
+  partes.push(linhas||"<tr><td colspan='19' style='text-align:center;padding:16px'>Nenhum registro</td></tr>");
   partes.push("</tbody></table>");
   partes.push("<div class='footer'>Sistema Admin — Apodi Cimentos — "+dtNow+"</div>");
   partes.push("<scr"+"ipt>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
@@ -1613,7 +1603,7 @@ window.onEmpresaFiltroChange=async function(){
   }
   render();
 };
-const TELA_ORDEM=["posto1","portaria","triagem","carregamento","enlonamento","faturamento"];
+const TELA_ORDEM=["posto1","portaria","triagem","carregamento","enlonamento","faturamento","justificativas"];
 function slugSenha(nome){
   const primeiro=(nome||"").trim().split(/\s+/)[0]||"operador";
   return primeiro.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")+"123";
