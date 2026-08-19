@@ -102,6 +102,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .dots i{flex:1;height:3px;border-radius:3px;background:var(--bd)}
 .dots i.on{background:var(--accent)}
 
+.btn-limpar-etapa{width:100%;margin-top:8px;padding:7px 8px;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.4);border-radius:8px;color:var(--rd);font-size:10px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.2px}
+.btn-limpar-etapa:hover{background:rgba(255,68,102,.2)}
+
+.tl-skip{color:var(--rd)!important;font-weight:700}
+.tl-dot.skip{background:var(--rd);border-color:var(--rd)}
+.tl-wait{color:#ffd000!important}
+.tl-dot.wait{background:#ffd000;border-color:#ffd000}
+
 .legend{max-width:1600px;margin:0 auto;padding:0 16px 24px;display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--t2)}
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
@@ -223,7 +231,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,doc,updateDoc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
@@ -255,6 +263,24 @@ const LIMITE_TMTI_MS=5*60000;              // 5min
 const LIMITE_TMCI_MS=20*60000;             // 20min
 const LIMITE_TMEI_MS=15*60000;             // 15min
 const LIMITE_TMF_MS=8*60000;               // 8min
+const LIMITE_PORTARIA_FIM_MS=24*3600000;   // 24h — prazo p/ registrar saída (Portaria Fim)
+
+// Peso de cada etapa na sequência real de operação (Portaria Fim fica fora — é a saída, registrada
+// a qualquer momento e não bloqueia o avanço do caminhão pelas demais etapas)
+const PESO_ETAPA={posto1:0,portaria:1,triagem:2,carregamento:3,enlonamento:4,faturamento:5};
+
+// Determina em qual coluna o card deve estar, com base nos dados REALMENTE registrados —
+// independentemente do que setorAtual diz e independentemente de etapas puladas.
+function estagioEfetivo(c){
+  if(c.faturamento?.ts)return"faturamento";
+  if(c.enlonamento?.fim||c.setorAtual==="faturamento_aguardando")return"faturamento";
+  if(c.enlonamento?.inicio)return"enlonamento";
+  if(c.carregamento?.inicio)return"carregamento";
+  if(c.triagem?.inicio)return"triagem";
+  if(c.portaria?.inicio)return"portaria";
+  if(c.entrada?.ts)return"posto1";
+  return null;
+}
 
 let DADOS=[];
 let CHIPS={TMTI:false,TMCI:false,TMEI:false,TMF:false,TMAC:false};
@@ -273,27 +299,21 @@ setInterval(()=>render(),30000); // atualiza os tempos decorridos mesmo sem novo
 // Cada coluna agrupa "inicio"+"fim" do setorAtual correspondente (decisão confirmada).
 const COLUNAS=[
   {id:"posto1",label:"🚦 POSTO 1",accent:"var(--c-posto1)",empresa:"Apodi",
-    match:c=>c.setorAtual==="posto1",
     inicio:c=>c.entrada?.ts, subStatus:()=>"Aguardando chamada",
     limiteMs:null,metaLabel:null},
   {id:"portaria",label:"🛡️ PORTARIA",accent:"var(--c-portaria)",empresa:"Seguro Segurança",
-    match:c=>c.setorAtual==="portaria_inicio"||c.setorAtual==="portaria_fim",
-    inicio:c=>c.portaria?.inicio, subStatus:c=>c.setorAtual==="portaria_fim"?"Liberado":"Na portaria",
+    inicio:c=>c.portaria?.inicio, subStatus:()=>"Na portaria",
     limiteMs:null,metaLabel:null},
   {id:"triagem",label:"🔎 TRIAGEM",accent:"var(--c-triagem)",empresa:"Reforme Paletes",
-    match:c=>c.setorAtual==="triagem_inicio"||c.setorAtual==="triagem_fim",
-    inicio:c=>c.triagem?.inicio, subStatus:c=>c.setorAtual==="triagem_fim"?"Triagem concluída":"Em triagem",
+    inicio:c=>c.triagem?.inicio, subStatus:c=>c.triagem?.fim?"Triagem concluída":"Em triagem",
     limiteMs:LIMITE_TMTI_MS,metaLabel:"Meta TMTI ≤5min"},
   {id:"carregamento",label:"⚙️ CARREGAMENTO",accent:"var(--c-carreg)",empresa:"Ambipar",
-    match:c=>c.setorAtual==="carregamento_inicio"||c.setorAtual==="carregamento_fim",
-    inicio:c=>c.carregamento?.inicio, subStatus:c=>c.setorAtual==="carregamento_fim"?"Carregamento concluído":"Carregando",
+    inicio:c=>c.carregamento?.inicio, subStatus:c=>c.carregamento?.fim?"Carregamento concluído":"Carregando",
     limiteMs:LIMITE_TMCI_MS,metaLabel:"Meta TMCI ≤20min"},
   {id:"enlonamento",label:"🪢 ENLONAMENTO",accent:"var(--c-enlon)",empresa:"Sousa Clean",
-    match:c=>c.setorAtual==="enlonamento_inicio",
     inicio:c=>c.enlonamento?.inicio, subStatus:()=>"Enlonando",
     limiteMs:LIMITE_TMEI_MS,metaLabel:"Meta TMEI ≤15min"},
   {id:"faturamento",label:"🧾 FATURAMENTO",accent:"var(--c-fat)",empresa:"Apodi",
-    match:c=>c.setorAtual==="faturamento_aguardando",
     inicio:c=>c.enlonamento?.fim, subStatus:()=>"Na fila",
     limiteMs:LIMITE_TMF_MS,metaLabel:"Meta TMF ≤8min"}
 ];
@@ -370,7 +390,12 @@ function passaFiltros(c,colId){
 
 function cardHtml(c,col,idx){
   const ent=col.inicio(c);
-  const ms=ent?Date.now()-toDate(ent).getTime():null;
+  // Faturamento tem 2 sub-estados: "aguardando faturar" (fila) e "já faturado, aguardando saída/Portaria Fim".
+  const aguardandoSaida=col.id==="faturamento"&&!!c.faturamento?.ts;
+  const tempoBase=aguardandoSaida?c.faturamento.ts:ent;
+  const limiteMsEff=aguardandoSaida?LIMITE_PORTARIA_FIM_MS:col.limiteMs;
+  const subStatusTxt=aguardandoSaida?"Faturado · aguardando saída (Portaria)":col.subStatus(c);
+  const ms=tempoBase?Date.now()-toDate(tempoBase).getTime():null;
   const turno=getTurno(ent);
   const turnoCls=turno==="A"?"t-a":turno==="B"?"t-b":"t-c";
   const tipoIcon=TIPO_CARGA_ICON[c.tipoCarga]||"📦";
@@ -379,13 +404,15 @@ function cardHtml(c,col,idx){
   const cimento=c.tipoCimento||c.tipoCimentoLabel||"—";
   let tempoCls="";
   let alerta=false;
-  if(col.limiteMs&&ms!==null){
-    if(ms>col.limiteMs){tempoCls="over";alerta=true;}
-    else if(ms>col.limiteMs*0.8){tempoCls="warn";}
+  if(limiteMsEff&&ms!==null){
+    if(ms>limiteMsEff){tempoCls="over";alerta=true;}
+    else if(ms>limiteMsEff*0.8){tempoCls="warn";}
   }
   const tmacParcial=c.entrada?.ts?Date.now()-toDate(c.entrada.ts).getTime():null;
   const tmacHtml=col.id==="faturamento"&&tmacParcial!==null
     ?`<div class="tmac-strip"><span>TMAC até aqui</span><b>${durStr(tmacParcial)}</b></div>`:"";
+  const btnLimparHtml=(aguardandoSaida&&ms!==null&&ms>LIMITE_PORTARIA_FIM_MS)
+    ?`<button class="btn-limpar-etapa" onclick="event.stopPropagation();limparEtapaPortaria('${c.id}','${(c.placa||"").replace(/'/g,"")}')">🧹 Limpar etapa · Portaria Fim +24h</button>`:"";
   const dotsIdx=COLUNAS.findIndex(x=>x.id===col.id);
   let dots="";
   for(let i=0;i<6;i++)dots+=`<i class="${i<=dotsIdx?"on":""}"></i>`;
@@ -394,22 +421,30 @@ function cardHtml(c,col,idx){
     <div class="card-ac">AC: ${c.ac||"—"}</div>
     <div class="card-tags"><span class="tag ${tipoTag}">${tipoIcon} ${tipoLabel}</span><span class="tag tp-cim">${cimento}</span></div>
     <div class="card-row2">
-      <div class="tempo-box ${tempoCls}"><div class="tempo">${durStr(ms)}</div><div class="tempo-lbl">${col.subStatus(c)}</div></div>
-      <div class="card-entrada">Entrada ${fmtT(ent)}</div>
+      <div class="tempo-box ${tempoCls}"><div class="tempo">${durStr(ms)}</div><div class="tempo-lbl">${subStatusTxt}</div></div>
+      <div class="card-entrada">${aguardandoSaida?"Faturado "+fmtT(tempoBase):"Entrada "+fmtT(ent)}</div>
     </div>
     ${tmacHtml}
+    ${btnLimparHtml}
     <div class="dots">${dots}</div>
   </div>`;
 }
 
 window.render=function(){
   const hj=hoje();
-  const ativos=DADOS.filter(c=>c.setorAtual&&c.setorAtual!=="concluido"&&(c.data<=hj));
+  // Um veículo permanece visível no Kanban se: ainda está em andamento (setorAtual!==concluido),
+  // OU já foi faturado mas a Portaria Fim (saída) ainda não foi registrada e ninguém "limpou" manualmente.
+  const ativos=DADOS.filter(c=>{
+    if(!c.data||c.data>hj)return false;
+    if(c.kanbanLimpezaPortaria)return false;
+    if(c.setorAtual==="concluido")return!c.portaria?.fim;
+    return!!c.setorAtual;
+  });
 
   // Resumo
   let resumoHtml="";
   COLUNAS.forEach(col=>{
-    const n=ativos.filter(c=>col.match(c)&&passaFiltros(c,col.id)).length;
+    const n=ativos.filter(c=>estagioEfetivo(c)===col.id&&passaFiltros(c,col.id)).length;
     resumoHtml+=`<div class="res-card" style="--accent:${col.accent}" onclick="scrollToCol('${col.id}')">
       <div class="res-val" style="color:${col.accent}">${n}</div>
       <div class="res-lbl">${col.label.replace(/^\S+\s/,"")}</div>
@@ -420,7 +455,7 @@ window.render=function(){
   // Board
   let boardHtml="";
   COLUNAS.forEach(col=>{
-    const lista=ativos.filter(c=>col.match(c)&&passaFiltros(c,col.id))
+    const lista=ativos.filter(c=>estagioEfetivo(c)===col.id&&passaFiltros(c,col.id))
       .sort((a,b)=>{
         const ea=toDate(col.inicio(a)),eb=toDate(col.inicio(b));
         if(!ea)return 1;if(!eb)return -1;
@@ -473,6 +508,21 @@ function atualizaContadorFiltros(){
   });
 });
 
+// Limpa manualmente um veículo do Kanban quando a Portaria Fim não foi registrada em 24h.
+// Não inventa/preenche portaria.fim (o histórico real fica intacto) — apenas marca o card
+// para não aparecer mais no board, com registro de quando e por quê.
+window.limparEtapaPortaria=async function(id,placa){
+  if(!confirm(`Confirma limpar a etapa do Kanban para o veículo ${placa||id}?\n\nIsso NÃO registra a Portaria Fim — apenas remove o card deste painel.`))return;
+  try{
+    await updateDoc(doc(db,"caminhoes_rastreio",id),{
+      kanbanLimpezaPortaria:{ts:Timestamp.fromDate(new Date()),motivo:"Portaria Fim não registrada em 24h — limpo manualmente via Kanban"}
+    });
+  }catch(err){
+    console.error("Erro ao limpar etapa:",err);
+    alert("Não foi possível limpar a etapa. Tente novamente.");
+  }
+};
+
 window.limparFiltros=function(){
   document.getElementById("f-empresa").value="";
   document.getElementById("f-tipo").value="";
@@ -494,28 +544,55 @@ window.abrirDetalhe=function(id){
   const cimento=c.tipoCimento||c.tipoCimentoLabel||"—";
   document.getElementById("md-sub").textContent=`${tipoLabel} · ${cimento}${c.notaFiscal?" · NF "+c.notaFiscal:""}`;
 
+  // Sequência real de operação: Portaria Fim é a saída do pátio — acontece a qualquer momento
+  // (normalmente antes da Triagem) e por isso fica marcada à parte, no fim da lista, sem travar
+  // o avanço das demais etapas nem ser tratada como "pulada".
   const etapas=[
-    {label:"Entrada (Posto 1)",ts:c.entrada?.ts,op:c.entrada?.operador},
-    {label:"Portaria — Início",ts:c.portaria?.inicio,op:c.portaria?.operadorInicio},
-    {label:"Portaria — Fim",ts:c.portaria?.fim,op:c.portaria?.operadorFim},
-    {label:"Triagem — Início",ts:c.triagem?.inicio,op:c.triagem?.operadorInicio},
-    {label:"Triagem — Fim",ts:c.triagem?.fim,op:c.triagem?.operadorFim},
-    {label:"Carregamento — Início",ts:c.carregamento?.inicio,op:c.carregamento?.operadorInicio},
-    {label:"Carregamento — Fim",ts:c.carregamento?.fim,op:c.carregamento?.operadorFim},
-    {label:"Enlonamento — Início",ts:c.enlonamento?.inicio,op:c.enlonamento?.operadorInicio},
-    {label:"Enlonamento — Fim",ts:c.enlonamento?.fim,op:c.enlonamento?.operadorFim},
-    {label:"Faturamento",ts:c.faturamento?.ts,op:c.faturamento?.operador}
+    {label:"Entrada (Posto 1)",ts:c.entrada?.ts,op:c.entrada?.operador,peso:PESO_ETAPA.posto1},
+    {label:"Portaria — Início",ts:c.portaria?.inicio,op:c.portaria?.operadorInicio,peso:PESO_ETAPA.portaria},
+    {label:"Triagem — Início",ts:c.triagem?.inicio,op:c.triagem?.operadorInicio,peso:PESO_ETAPA.triagem},
+    {label:"Triagem — Fim",ts:c.triagem?.fim,op:c.triagem?.operadorFim,peso:PESO_ETAPA.triagem},
+    {label:"Carregamento — Início",ts:c.carregamento?.inicio,op:c.carregamento?.operadorInicio,peso:PESO_ETAPA.carregamento},
+    {label:"Carregamento — Fim",ts:c.carregamento?.fim,op:c.carregamento?.operadorFim,peso:PESO_ETAPA.carregamento},
+    {label:"Enlonamento — Início",ts:c.enlonamento?.inicio,op:c.enlonamento?.operadorInicio,peso:PESO_ETAPA.enlonamento},
+    {label:"Enlonamento — Fim",ts:c.enlonamento?.fim,op:c.enlonamento?.operadorFim,peso:PESO_ETAPA.enlonamento},
+    {label:"Faturamento",ts:c.faturamento?.ts,op:c.faturamento?.operador,peso:PESO_ETAPA.faturamento},
+    {label:"Portaria — Fim (saída)",ts:c.portaria?.fim,op:c.portaria?.operadorFim,portariaFim:true}
   ];
+
+  const pesoAtual=PESO_ETAPA[estagioEfetivo(c)]??-1;
 
   let tlHtml="";
   for(let i=0;i<etapas.length;i++){
     const e=etapas[i];
     const done=!!e.ts;
-    const proxima=!done&&(i===0||etapas[i-1].ts);
-    const dotCls=done?"done":(proxima?"active":"");
+    let dotCls="",horaTxt="— pendente —",horaCls="";
+
+    if(e.portariaFim){
+      // Estado especial: não entra na lógica de "pulada", tem prazo próprio de 24h.
+      if(done){
+        dotCls="done";
+        const dur=diffMs(c.portaria?.inicio,e.ts);
+        horaTxt=fmtT(e.ts)+(dur!==null?` <span class="tl-dur" style="display:inline">(${durStr(dur)} na portaria)</span>`:"");
+      }else if(c.faturamento?.ts){
+        const esperando=Date.now()-toDate(c.faturamento.ts).getTime();
+        if(esperando>LIMITE_PORTARIA_FIM_MS){dotCls="skip";horaCls="tl-skip";horaTxt=`⚠ Não registrado — ${durStr(esperando)} aguardando saída`;}
+        else{dotCls="wait";horaCls="tl-wait";horaTxt=`⏳ Aguardando registro de saída (${durStr(esperando)})`;}
+      }else{
+        dotCls="";horaTxt="— pendente —";
+      }
+    }else{
+      const proxima=!done&&(i===0||etapas[i-1].ts);
+      const pulada=!done&&e.peso<pesoAtual;
+      if(done)dotCls="done";
+      else if(pulada){dotCls="skip";horaCls="tl-skip";horaTxt="⚠ Não registrado nesta etapa";}
+      else if(proxima)dotCls="active";
+      if(done)horaTxt=fmtT(e.ts);
+    }
+
     let durTexto="";
-    if(done&&i>0){
-      const prevComTs=[...etapas.slice(0,i)].reverse().find(x=>x.ts);
+    if(done&&!e.portariaFim&&i>0){
+      const prevComTs=[...etapas.slice(0,i)].reverse().find(x=>x.ts&&!x.portariaFim);
       if(prevComTs){
         const dur=diffMs(prevComTs.ts,e.ts);
         if(dur!==null)durTexto=`<div class="tl-dur">+${durStr(dur)} desde a etapa anterior</div>`;
@@ -525,7 +602,7 @@ window.abrirDetalhe=function(id){
       <div class="tl-dot-wrap"><div class="tl-dot ${dotCls}"></div>${i<etapas.length-1?'<div class="tl-line"></div>':""}</div>
       <div class="tl-content">
         <div class="tl-etapa">${e.label}</div>
-        <div class="tl-hora">${done?fmtT(e.ts):"— pendente —"}</div>
+        <div class="tl-hora ${horaCls}">${horaTxt}</div>
         ${durTexto}
         ${e.op?`<div class="tl-op">Operador: ${e.op}</div>`:""}
       </div>
@@ -539,13 +616,18 @@ window.abrirDetalhe=function(id){
   const TMCI=diffMs(c.carregamento?.inicio,c.carregamento?.fim);
   const TMEI=diffMs(c.enlonamento?.inicio,c.enlonamento?.fim);
   const TMF=diffMs(c.enlonamento?.fim,c.faturamento?.ts);
+  const TML=diffMs(c.entrada?.ts,c.posto1ConfirmadoEm);
+  const partesTMA=[TMTI,TMCI,TMEI].filter(v=>v!=null);
+  const TMA=partesTMA.length?partesTMA.reduce((a,b)=>a+b,0):null;
   const metricas=[
     {l:"TMAC"+(c.faturamento?.ts?"":" (parcial)"),v:durStr(TMAC)},
     {l:"TME",v:durStr(TME)},
     {l:"TMTI",v:durStr(TMTI)},
     {l:"TMCI",v:durStr(TMCI)},
     {l:"TMEI",v:durStr(TMEI)},
-    {l:"TMF",v:durStr(TMF)}
+    {l:"TMF",v:durStr(TMF)},
+    {l:"TML",v:durStr(TML)},
+    {l:"TMA",v:durStr(TMA)}
   ];
   document.getElementById("md-grid").innerHTML=metricas.map(m=>
     `<div class="mg-item"><div class="mg-lbl">${m.l}</div><div class="mg-val">${m.v}</div></div>`).join("");
