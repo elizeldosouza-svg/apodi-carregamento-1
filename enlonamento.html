@@ -610,6 +610,8 @@ window.doS=async(t)=>{
   const pl=document.getElementById("pl-"+cid).value.toUpperCase().replace(/[^A-Z0-9]/g,"");
   if(pl.length<5){showMsg("er","Placa inválida.");return;}
   const c=find(pl);if(!c){showMsg("er","Caminhão "+pl+" não encontrado hoje.");return;}
+  const jaConcluido=c.setorAtual==="concluido"||!!c.faturamento?.ts;
+  if(jaConcluido){showMsg("er","⚠️ AC "+c.ac+" já concluiu o processo e a nota fiscal já foi faturada. Operação bloqueada.");return;}
   document.getElementById("go-"+t).disabled=true;
   try{
     const ts=TS[t]||new Date();
