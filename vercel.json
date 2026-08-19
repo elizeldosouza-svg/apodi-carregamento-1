@@ -79,6 +79,10 @@
     {
       "source": "/relatorios",
       "destination": "/relatorios.html"
+    },
+    {
+      "source": "/kanban",
+      "destination": "/kanban-status-atual.html"
     }
   ]
 }
