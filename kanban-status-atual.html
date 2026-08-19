@@ -2,287 +2,1127 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kanban · Modo Administrador — MOCKUP</title>
+<title>Kanban · Status Atual</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bd:#162840;--b2:#1e3a58;
+  --bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;
   --tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;
   --c-posto1:#00d4ff;--c-portaria:#3b82f6;--c-triagem:#ffd000;--c-carreg:#fb923c;--c-enlon:#a78bfa;--c-fat:#00e896;--c-pfim:#ff8fb3;
-  --rd:#ff4466;--r:12px;
+  --rd:#ff4466;--r:12px;--rs:8px;
 }
 body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
-.top{background:var(--bg2);border-bottom:2px solid var(--c-posto1);height:56px;display:flex;align-items:center;padding:0 20px;gap:12px}
-.logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--c-posto1);letter-spacing:1px;white-space:nowrap}
-.badge-mockup{background:rgba(255,208,0,.15);border:1px solid rgba(255,208,0,.4);color:#ffd000;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px}
-.spacer{flex:1}
-.clock{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t2);white-space:nowrap}
-.btn-filtros{padding:6px 13px;border:1px solid var(--b2);border-radius:20px;background:var(--bg3);color:var(--t2);font-size:11px;font-weight:700;cursor:pointer}
 
+/* ── Top bar ── */
+.top{background:var(--bg2);border-bottom:2px solid var(--c-posto1);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:14px}
+.logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--c-posto1);letter-spacing:1px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.spacer{flex:1}
+.live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--c-fat)}
+.dot{width:8px;height:8px;background:var(--c-fat);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+.clock{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t2);white-space:nowrap}
+.btn-filtros{display:flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid var(--b2);border-radius:20px;background:var(--bg3);color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.btn-filtros:hover,.btn-filtros.active{border-color:var(--c-posto1);color:var(--c-posto1);background:rgba(0,212,255,.07)}
+.btn-filtros .n{background:var(--c-posto1);color:#000;border-radius:10px;padding:0 6px;font-size:9px;display:none}
+.btn-filtros.hasf .n{display:inline-block}
+
+/* ── Mostrar/ocultar colunas ── */
+.cols-wrap{position:relative}
+.btn-cols{display:flex;align-items:center;gap:6px;padding:6px 13px;border:1px solid var(--b2);border-radius:20px;background:var(--bg3);color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-cols:hover,.btn-cols.active{border-color:var(--c-posto1);color:var(--c-posto1);background:rgba(0,212,255,.07)}
+.btn-cols .n{background:var(--rd);color:#fff;border-radius:10px;padding:0 6px;font-size:9px;display:none}
+.btn-cols.hidden-some .n{display:inline-block}
+.cols-panel{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:10px;width:260px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:300;display:none}
+.cols-panel.show{display:block}
+.cols-panel-title{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;padding:4px 8px 8px}
+.col-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 8px;border-radius:8px;transition:background .15s}
+.col-toggle-row:hover{background:rgba(255,255,255,.03)}
+.col-toggle-label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx)}
+.col-toggle-label i.dot-accent{width:8px;height:8px;border-radius:50%;display:inline-block}
+.switch{position:relative;width:36px;height:20px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-track{position:absolute;inset:0;background:var(--bd);border-radius:20px;cursor:pointer;transition:background .2s}
+.switch-track:before{content:"";position:absolute;width:14px;height:14px;left:3px;top:3px;background:var(--t3);border-radius:50%;transition:transform .2s,background .2s}
+.switch input:checked + .switch-track{background:rgba(0,232,150,.25)}
+.switch input:checked + .switch-track:before{transform:translateX(16px);background:var(--c-fat)}
+.cols-panel-warn{margin-top:8px;padding:8px 10px;background:rgba(255,208,0,.08);border:1px solid rgba(255,208,0,.25);border-radius:8px;font-size:9.5px;color:#ffd000;line-height:1.5}
+.cols-panel-foot{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.cols-panel-foot button{background:none;border:none;color:var(--c-posto1);font-size:10.5px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+
+/* ── Modo Administrador (remover qualquer card) ── */
 .btn-admin{display:flex;align-items:center;gap:7px;padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:var(--bg3);color:var(--t2);font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
 .btn-admin.on{border-color:var(--rd);color:var(--rd);background:rgba(255,68,102,.12)}
-.btn-admin .dot-off{width:6px;height:6px;border-radius:50%;background:var(--t3)}
+.btn-admin .dot-off{width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0}
 .btn-admin.on .dot-off{background:var(--rd);box-shadow:0 0 0 3px rgba(255,68,102,.2)}
-
-.admin-banner{display:none;max-width:1700px;margin:14px auto 0;padding:0 16px}
+.admin-banner{display:none;max-width:1600px;margin:14px auto 0;padding:0 16px}
 .admin-banner.show{display:block}
-.admin-banner-box{background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:10px;padding:10px 16px;font-size:11.5px;color:var(--rd);display:flex;align-items:center;gap:10px}
+.admin-banner-box{background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:10px;padding:10px 16px;font-size:11.5px;color:var(--rd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .admin-banner-box b{color:var(--tx)}
-
-.board-wrap{max-width:1700px;margin:0 auto;padding:16px}
-.board{display:grid;grid-template-columns:repeat(5,minmax(230px,1fr));gap:10px}
-
-.col{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;min-height:60vh}
-.col-head{padding:12px 14px 10px;border-bottom:2px solid var(--accent);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
-.col-head-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
-.col-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:800;letter-spacing:.5px;color:var(--accent);display:flex;align-items:center;gap:6px}
-.col-count{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--accent);background:rgba(255,255,255,.06);border-radius:8px;padding:1px 10px;min-width:30px;text-align:center}
-.col-empresa{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
-.col-meta{font-size:9px;color:var(--t2);margin-top:4px}
-.col-meta b{color:var(--accent);font-family:'JetBrains Mono',monospace}
-.col-body{flex:1;padding:10px;display:flex;flex-direction:column;gap:8px}
-.col-empty{text-align:center;padding:26px 8px;color:var(--t3);font-size:11px;border:1px dashed var(--bd);border-radius:8px}
-
-.card{background:var(--bg3);border:1px solid var(--bd);border-left:3px solid var(--accent);border-radius:10px;padding:11px 12px;position:relative;transition:opacity .25s,transform .25s}
-.card.saindo{opacity:0;transform:scale(.9)}
-.card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.card-placa{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:800;color:var(--accent);letter-spacing:.8px}
-.card.alerta .card-placa{color:var(--rd)}
-.card.alerta{border-left-color:var(--rd);animation:cardAlert 1.3s ease-in-out infinite}
-@keyframes cardAlert{0%,100%{background:rgba(255,68,102,.05)}50%{background:rgba(255,68,102,.12)}}
-.turno{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px}
-.card-ac{font-size:10px;color:var(--t2);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
-.card-nf{font-size:9px;color:var(--t3);margin-bottom:7px;font-family:'JetBrains Mono',monospace}
-.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
-.tag{font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:4px}
-.tp-ensacado{background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.25)}
-.tp-granel{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
-.tp-cim{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid var(--bd)}
-.card-row2{display:flex;align-items:flex-end;justify-content:space-between}
-.tempo-box .tempo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--c-fat);line-height:1}
-.tempo-box.over .tempo{color:var(--rd)}
-.tempo-lbl{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
-.card-entrada{font-size:9px;color:var(--t3);text-align:right}
-
-/* botão X de remoção (só aparece em modo admin) */
+.admin-banner-box .sair{margin-left:auto;cursor:pointer;text-decoration:underline}
 .card-remove{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:var(--rd);border:2px solid var(--bg2);color:#fff;font-size:12px;font-weight:800;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(255,68,102,.4);z-index:5}
 body.admin-mode .card-remove{display:flex}
 body.admin-mode .card{outline:1px dashed rgba(255,68,102,.25);outline-offset:2px}
 .card-remove:hover{background:#ff5c7a;transform:scale(1.1)}
 
-/* ── modal login ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.show{display:flex}
-.modal-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);width:100%;max-width:400px;overflow:hidden}
-.modal-head{padding:18px 20px 0}
-.modal-title{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:8px}
-.modal-sub{font-size:11.5px;color:var(--t2);margin-top:4px;margin-bottom:14px;line-height:1.5}
-.modal-body{padding:0 20px 20px}
-.modal-foot{padding:14px 20px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;gap:10px}
-.lock-icon{width:52px;height:52px;border-radius:50%;background:rgba(255,68,102,.12);border:1px solid rgba(255,68,102,.3);display:flex;align-items:center;justify-content:center;font-size:24px;margin:6px auto 14px}
-.field-grp{margin-bottom:12px}
-.field-grp label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px}
-.field-grp input{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:8px;color:var(--tx);padding:10px 12px;font-size:13px}
-.field-grp input:focus{outline:none;border-color:var(--rd)}
-.btn{padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2)}
-.btn:hover{border-color:var(--tx);color:var(--tx)}
-.btn-primary{background:var(--rd);border-color:var(--rd);color:#fff}
-.btn-primary:hover{background:#ff5c7a;border-color:#ff5c7a;color:#fff}
+/* ── Barra de filtros ── */
+.filtros{max-width:1600px;margin:0 auto;padding:0 16px;display:none;flex-wrap:wrap;gap:8px;padding-top:14px}
+.filtros.show{display:flex}
+.filtros select,.filtros input{background:var(--bg2);border:1px solid var(--b2);border-radius:8px;color:var(--tx);padding:7px 10px;font-size:11px;font-family:'Inter',sans-serif;outline:none;min-width:120px}
+.filtros select:focus,.filtros input:focus{border-color:var(--c-posto1)}
+.filtros .grp{display:flex;flex-direction:column;gap:3px}
+.filtros label{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.btn-limpar{align-self:flex-end;padding:7px 14px;background:transparent;color:var(--t2);border:1px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer}
+.btn-limpar:hover{border-color:var(--rd);color:var(--rd)}
+.chip-metric{display:flex;gap:5px;flex-wrap:wrap;align-self:flex-end}
+.chip{padding:6px 11px;border-radius:16px;border:1px solid var(--b2);background:var(--bg2);color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;user-select:none}
+.chip.on{border-color:var(--rd);color:var(--rd);background:rgba(255,68,102,.1)}
 
-/* ── modal remover card ── */
-.rm-resumo{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--t2);margin-bottom:14px}
-.rm-resumo b{color:var(--tx)}
-.rm-placa-big{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--rd)}
-textarea{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:8px;color:var(--tx);padding:10px 12px;font-size:12.5px;font-family:'Inter',sans-serif;resize:vertical;min-height:80px}
-textarea:focus{outline:none;border-color:var(--rd)}
-.char-count{font-size:9px;color:var(--t3);text-align:right;margin-top:3px}
+/* ── Resumo geral ── */
+.resumo{max-width:1700px;margin:0 auto;padding:16px 16px 0;display:grid;grid-template-columns:repeat(var(--ncols,7),1fr);gap:10px}
+@media(max-width:1000px){.resumo{grid-template-columns:repeat(4,1fr)}}
+.res-card{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;text-align:center;cursor:pointer;transition:border-color .15s}
+.res-card:hover{border-color:var(--accent)}
+.res-val{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:800}
+.res-lbl{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* ── Board ── */
+.board-wrap{max-width:1700px;margin:0 auto;padding:16px}
+.board{display:grid;grid-template-columns:repeat(var(--ncols,7),minmax(210px,1fr));gap:10px;overflow-x:auto;padding-bottom:10px}
+@media(max-width:1300px){.board{grid-template-columns:repeat(var(--ncols,7),250px)}}
+
+.col{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;min-height:60vh}
+.col-head{padding:12px 14px 10px;border-bottom:2px solid var(--accent);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.col-head-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.col-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;letter-spacing:.6px;color:var(--accent);display:flex;align-items:center;gap:6px}
+.col-count{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--accent);background:rgba(255,255,255,.06);border-radius:8px;padding:1px 10px;min-width:30px;text-align:center}
+.col-empresa{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.col-meta{font-size:9px;color:var(--t2);margin-top:4px;display:flex;justify-content:space-between}
+.col-meta b{color:var(--accent);font-family:'JetBrains Mono',monospace}
+
+.col-body{flex:1;padding:10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.col-empty{text-align:center;padding:26px 8px;color:var(--t3);font-size:11px;border:1px dashed var(--bd);border-radius:var(--rs)}
+
+/* ── Card ── */
+.card{background:var(--bg3);border:1px solid var(--bd);border-left:3px solid var(--accent);border-radius:10px;padding:11px 12px;position:relative;transition:transform .15s,border-color .15s;cursor:pointer}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card.alerta{border-left-color:var(--rd);animation:cardAlert 1.3s ease-in-out infinite}
+@keyframes cardAlert{0%,100%{background:rgba(255,68,102,.05)}50%{background:rgba(255,68,102,.12)}}
+
+.card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.card-placa{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:800;color:var(--accent);letter-spacing:.8px}
+.card.alerta .card-placa{color:var(--rd)}
+.turno{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;font-family:'Rajdhani',sans-serif}
+.t-a{background:rgba(0,212,255,.15);color:#00d4ff;border:1px solid rgba(0,212,255,.3)}
+.t-b{background:rgba(255,208,0,.15);color:#ffd000;border:1px solid rgba(255,208,0,.3)}
+.t-c{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+
+.card-ac{font-size:10px;color:var(--t2);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
+.card-nf{font-size:9px;color:var(--t3);margin-bottom:7px;font-family:'JetBrains Mono',monospace}
+.card-nf b{color:var(--t2);font-weight:700}
+
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.tag{font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.2px}
+.tp-ensacado{background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.25)}
+.tp-granel{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
+.tp-bigbag{background:rgba(0,232,150,.12);color:#00e896;border:1px solid rgba(0,232,150,.25)}
+.tp-cim{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid var(--bd)}
+
+.card-row2{display:flex;align-items:flex-end;justify-content:space-between}
+.tempo-box .tempo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--c-fat);line-height:1}
+.tempo-box.warn .tempo{color:#ffd000}
+.tempo-box.over .tempo{color:var(--rd)}
+.tempo-lbl{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.card-entrada{font-size:9px;color:var(--t3);text-align:right}
+
+.tmac-strip{margin-top:8px;padding-top:7px;border-top:1px dashed var(--bd);display:flex;justify-content:space-between;font-size:9px;color:var(--t3)}
+.tmac-strip b{color:var(--t2);font-family:'JetBrains Mono',monospace}
+
+.dots{display:flex;gap:3px;margin-top:8px}
+.dots i{flex:1;height:3px;border-radius:3px;background:var(--bd)}
+.dots i.on{background:var(--accent)}
+
+.btn-limpar-global{display:flex;align-items:center;gap:7px;padding:6px 15px;background:rgba(255,68,102,.12);border:1px solid rgba(255,68,102,.45);border-radius:20px;color:var(--rd);font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-limpar-global:hover{background:rgba(255,68,102,.22)}
+.btn-limpar-global .n{background:var(--rd);color:#0b0b0f;border-radius:10px;padding:0 7px;font-size:10px}
+.btn-limpar-global[disabled]{opacity:.35;cursor:not-allowed}
+
+.tl-skip{color:var(--rd)!important;font-weight:700}
+.tl-dot.skip{background:var(--rd);border-color:var(--rd)}
+.tl-wait{color:#ffd000!important}
+.tl-dot.wait{background:#ffd000;border-color:#ffd000}
+
+.legend{max-width:1600px;margin:0 auto;padding:0 16px 24px;display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--t2)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+/* ── Modal detalhe ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--tx);letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.modal-close{background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;line-height:1;padding:2px 6px}
+.modal-close:hover{color:var(--rd)}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.modal-sub{font-size:11px;color:var(--t2);margin-bottom:14px}
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:12px;position:relative;padding-bottom:18px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot-wrap{display:flex;flex-direction:column;align-items:center}
+.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--bd);border:2px solid var(--t3);flex-shrink:0;margin-top:2px}
+.tl-dot.done{background:var(--gr,#00e896);border-color:#00e896}
+.tl-dot.active{background:var(--ye,#ffd000);border-color:#ffd000;box-shadow:0 0 0 3px rgba(255,208,0,.2)}
+.tl-line{width:2px;flex:1;background:var(--bd);margin-top:2px}
+.tl-content{flex:1;padding-bottom:2px}
+.tl-etapa{font-size:12px;font-weight:700;color:var(--tx)}
+.tl-hora{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t2);margin-top:1px}
+.tl-dur{font-size:10px;color:var(--t3);margin-top:1px}
+.tl-op{font-size:10px;color:var(--t3);margin-top:1px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--bd)}
+.mg-item{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:8px 10px}
+.mg-lbl{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.mg-val{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:var(--tx);margin-top:2px}
+
+/* ── Modal de exclusão administrativa (Limpar etapa) ── */
+.mx-box{max-width:520px}
+.mx-steps{display:flex;gap:6px;margin:0 20px 14px}
+.mx-steps i{flex:1;height:3px;border-radius:3px;background:var(--bd)}
+.mx-steps i.on{background:var(--rd)}
+.mx-head{padding:18px 20px 0;position:relative}
+.mx-title{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:8px}
+.mx-sub{font-size:11.5px;color:var(--t2);margin-top:4px;margin-bottom:14px;line-height:1.5}
+.mx-body{padding:0 20px 20px;overflow-y:auto}
+.mx-foot{padding:14px 20px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;gap:10px}
+.mx-selall{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:11px;color:var(--t2)}
+.mx-selall-btn{background:none;border:none;color:var(--c-posto1);font-size:11px;font-weight:700;cursor:pointer}
+.mx-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto}
+.mx-row{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;cursor:pointer;transition:border-color .15s}
+.mx-row:hover{border-color:var(--rd)}
+.mx-row.checked{border-color:var(--rd);background:rgba(255,68,102,.06)}
+.mx-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--b2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent}
+.mx-row.checked .mx-check{background:var(--rd);border-color:var(--rd);color:#0b0b0f}
+.mx-info{flex:1;min-width:0}
+.mx-placa{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--tx)}
+.mx-meta{font-size:10px;color:var(--t2);margin-top:1px}
+.mx-tempo{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--rd);text-align:right;white-space:nowrap}
+.mx-tempo small{display:block;font-size:8px;color:var(--t3);font-weight:600;text-transform:uppercase}
+.mx-field{margin-bottom:12px}
+.mx-field label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px}
+.mx-field input{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:8px;color:var(--tx);padding:10px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none}
+.mx-field input:focus{border-color:var(--rd)}
+.mx-lock{width:52px;height:52px;border-radius:50%;background:rgba(255,68,102,.12);border:1px solid rgba(255,68,102,.3);display:flex;align-items:center;justify-content:center;font-size:24px;margin:6px auto 14px}
+.mx-loginerr{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.35);border-radius:8px;padding:8px 12px;font-size:10.5px;color:var(--rd);margin-top:10px;display:none}
+.mx-resumo{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--t2);margin-bottom:14px}
+.mx-resumo b{color:var(--tx)}
+.mx-motivo{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:8px;color:var(--tx);padding:10px 12px;font-size:12.5px;font-family:'Inter',sans-serif;resize:vertical;min-height:90px;outline:none}
+.mx-motivo:focus{border-color:var(--rd)}
+.mx-charcount{font-size:9px;color:var(--t3);text-align:right;margin-top:3px}
+.mx-sucesso{text-align:center;padding:20px 0}
+.mx-sucesso-icon{width:64px;height:64px;border-radius:50%;background:rgba(0,232,150,.12);border:1px solid rgba(0,232,150,.3);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px}
+.mx-sucesso h3{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--c-fat);margin-bottom:6px}
+.mx-sucesso p{font-size:12px;color:var(--t2);line-height:1.6;max-width:360px;margin:0 auto}
+.mx-audit{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:10px;color:var(--t3);text-align:left;margin-top:16px;font-family:'JetBrains Mono',monospace;line-height:1.7}
+.mx-audit b{color:var(--t2);font-family:'Inter',sans-serif}
+.mx-btn{padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2);font-family:'Inter',sans-serif}
+.mx-btn:hover{border-color:var(--tx);color:var(--tx)}
+.mx-btn-primary{background:var(--rd);border-color:var(--rd);color:#fff}
+.mx-btn-primary:hover{background:#ff5c7a;border-color:#ff5c7a;color:#fff}
+.mx-btn-primary:disabled{opacity:.4;cursor:not-allowed}
 </style>
 </head>
 <body>
 
 <div class="top">
   <div class="logo">🧭 KANBAN · STATUS ATUAL</div>
-  <span class="badge-mockup">MOCKUP — clique em "Modo Administrador"</span>
   <div class="spacer"></div>
-  <button class="btn-admin" id="btn-admin" onclick="toggleAdmin()"><span class="dot-off"></span>Modo Administrador</button>
-  <button class="btn-filtros">🔍 Filtros</button>
-  <div class="clock">19/08/2026 · 19:02:10</div>
+  <button class="btn-limpar-global" id="btn-limpar-global" onclick="abrirLimpeza()" disabled>🧹 Limpar etapa · Portaria Fim +24h <span class="n" id="n-limpar-global">0</span></button>
+  <div class="cols-wrap">
+    <button class="btn-cols" id="btn-cols" onclick="toggleColsPanel()">🧩 Colunas <span class="n" id="n-cols">0</span></button>
+    <div class="cols-panel" id="cols-panel">
+      <div class="cols-panel-title">Mostrar / ocultar colunas</div>
+      <div class="col-toggle-row">
+        <div class="col-toggle-label"><i class="dot-accent" style="background:var(--c-portaria)"></i>Portaria</div>
+        <label class="switch"><input type="checkbox" id="sw-col-portaria" checked onchange="colToggle('portaria',this.checked)"><span class="switch-track"></span></label>
+      </div>
+      <div class="col-toggle-row">
+        <div class="col-toggle-label"><i class="dot-accent" style="background:var(--c-pfim)"></i>Portaria Fim</div>
+        <label class="switch"><input type="checkbox" id="sw-col-portaria_fim" checked onchange="colToggle('portaria_fim',this.checked)"><span class="switch-track"></span></label>
+      </div>
+      <div class="cols-panel-warn">⚠ Ocultar uma coluna só esconde ela da tela — os dados continuam sendo salvos normalmente. Útil quando a internet da Portaria está instável.</div>
+      <div class="cols-panel-foot">
+        <button onclick="colsRestaurarTodas()">Mostrar todas</button>
+        <span style="font-size:9px;color:var(--t3)">Preferência salva neste dispositivo</span>
+      </div>
+    </div>
+  </div>
+  <button class="btn-filtros" id="btn-filtros" onclick="toggleFiltros()">🔍 Filtros <span class="n" id="n-filtros">0</span></button>
+  <button class="btn-admin" id="btn-admin" onclick="toggleAdminMode()"><span class="dot-off" id="admin-dot"></span>Modo Administrador</button>
+  <div class="clock" id="rel">—</div>
+  <div class="live"><div class="dot"></div>AO VIVO</div>
 </div>
 
 <div class="admin-banner" id="admin-banner">
   <div class="admin-banner-box">
-    🔴 <b>Modo Administrador ativo</b> — clique no ✕ de qualquer card para removê-lo do Kanban (pede motivo). Isso não altera os dados reais, só limpa a visualização.
-    <span style="margin-left:auto;cursor:pointer;text-decoration:underline" onclick="toggleAdmin()">Desativar</span>
+    🔴 <b>Modo Administrador ativo</b> — clique no ✕ de qualquer card, em qualquer coluna, para removê-lo do Kanban (pede motivo). Isso não altera os dados reais, só limpa a visualização.
+    <span class="sair" onclick="toggleAdminMode()">Desativar</span>
   </div>
 </div>
+
+<div class="filtros" id="filtros">
+  <div class="grp"><label>Empresa</label>
+    <select id="f-empresa" onchange="render()">
+      <option value="">Todas</option>
+      <option value="Apodi">Apodi</option>
+      <option value="Seguro Segurança">Seguro Segurança</option>
+      <option value="Reforme Paletes">Reforme Paletes</option>
+      <option value="Ambipar">Ambipar</option>
+      <option value="Sousa Clean">Sousa Clean</option>
+    </select>
+  </div>
+  <div class="grp"><label>Tipo de carga</label>
+    <select id="f-tipo" onchange="render()">
+      <option value="">Todos</option>
+      <option value="ensacado">Ensacado</option>
+      <option value="granel">Granel</option>
+      <option value="bigbag">Big Bag</option>
+    </select>
+  </div>
+  <div class="grp"><label>Turno</label>
+    <select id="f-turno" onchange="render()">
+      <option value="">Todos</option>
+      <option value="A">A (23h–07h)</option>
+      <option value="B">B (07h–15h)</option>
+      <option value="C">C (15h–23h)</option>
+    </select>
+  </div>
+  <div class="grp"><label>Operador</label>
+    <select id="f-operador" onchange="render()">
+      <option value="">Todos</option>
+    </select>
+  </div>
+  <div class="grp"><label>Placa / AC</label>
+    <input type="text" id="f-busca" placeholder="Buscar placa ou AC" oninput="render()"/>
+  </div>
+  <div class="grp"><label>Nota Fiscal</label>
+    <input type="text" id="f-nf" placeholder="Nº nota fiscal" oninput="render()"/>
+  </div>
+  <div class="chip-metric">
+    <div class="chip" id="chip-TMTI" onclick="toggleChip('TMTI')">TMTI fora da meta</div>
+    <div class="chip" id="chip-TMCI" onclick="toggleChip('TMCI')">TMCI fora da meta</div>
+    <div class="chip" id="chip-TMEI" onclick="toggleChip('TMEI')">TMEI fora da meta</div>
+    <div class="chip" id="chip-TMF" onclick="toggleChip('TMF')">TMF fora da meta</div>
+    <div class="chip" id="chip-TMAC" onclick="toggleChip('TMAC')">TMAC fora da meta</div>
+  </div>
+  <button class="btn-limpar" onclick="limparFiltros()">Limpar filtros</button>
+</div>
+
+<div class="resumo" id="resumo"></div>
 
 <div class="board-wrap">
-  <div class="board">
-
-    <div class="col"><div class="col-head" style="--accent:var(--c-posto1)"><div class="col-head-top"><div class="col-title">🚦 POSTO 1</div><div class="col-count">3</div></div><div class="col-empresa">Apodi</div></div>
-      <div class="col-body">
-        <div class="card">
-          <div class="card-remove" onclick="pedirRemocao('SLM5F12','Posto 1')">✕</div>
-          <div class="card-row1"><span class="card-placa">SLM5F12</span></div>
-          <div class="card-ac">AC: 629044</div>
-          <div class="card-nf" style="opacity:.5">🧾 NF: — ainda não emitida</div>
-          <div class="card-tags"><span class="tag tp-granel">🚛 Granel</span><span class="tag tp-cim">CP V</span></div>
-          <div class="card-row2"><div class="tempo-box"><div class="tempo">37h36</div><div class="tempo-lbl">Aguardando chamada</div></div><div class="card-entrada">Entrada 22:27</div></div>
-        </div>
-        <div class="card">
-          <div class="card-remove" onclick="pedirRemocao('KEV5C74','Posto 1')">✕</div>
-          <div class="card-row1"><span class="card-placa">KEV5C74</span></div>
-          <div class="card-ac">AC: 628966</div>
-          <div class="card-nf" style="opacity:.5">🧾 NF: — ainda não emitida</div>
-          <div class="card-tags"><span class="tag tp-granel">📦 Big Bag</span><span class="tag tp-cim">CP V</span></div>
-          <div class="card-row2"><div class="tempo-box"><div class="tempo">25h23</div><div class="tempo-lbl">Aguardando chamada</div></div><div class="card-entrada">Entrada 10:40</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col"><div class="col-head" style="--accent:var(--c-triagem)"><div class="col-head-top"><div class="col-title">🔎 TRIAGEM</div><div class="col-count">0</div></div><div class="col-empresa">Reforme Paletes</div></div>
-      <div class="col-body"><div class="col-empty">Nenhum veículo</div></div>
-    </div>
-
-    <div class="col"><div class="col-head" style="--accent:var(--c-carreg)"><div class="col-head-top"><div class="col-title">⚙️ CARREGAMENTO</div><div class="col-count">1</div></div><div class="col-empresa">Ambipar</div></div>
-      <div class="col-body">
-        <div class="card alerta">
-          <div class="card-remove" onclick="pedirRemocao('RSP3H67','Carregamento')">✕</div>
-          <div class="card-row1"><span class="card-placa">RSP3H67</span></div>
-          <div class="card-ac">AC: 629007</div>
-          <div class="card-nf" style="opacity:.5">🧾 NF: — ainda não emitida</div>
-          <div class="card-tags"><span class="tag tp-ensacado">🧱 Ensacado</span><span class="tag tp-cim">CP II F</span></div>
-          <div class="card-row2"><div class="tempo-box over"><div class="tempo">22h48</div><div class="tempo-lbl">Carregamento concluído</div></div><div class="card-entrada">Entrada 13:16</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col"><div class="col-head" style="--accent:var(--c-enlon)"><div class="col-head-top"><div class="col-title">🪢 ENLONAMENTO</div><div class="col-count">1</div></div><div class="col-empresa">Sousa Clean</div></div>
-      <div class="col-body">
-        <div class="card">
-          <div class="card-remove" onclick="pedirRemocao('MYL2F96','Enlonamento')">✕</div>
-          <div class="card-row1"><span class="card-placa">MYL2F96</span></div>
-          <div class="card-ac">AC: 629464</div>
-          <div class="card-nf" style="opacity:.5">🧾 NF: — ainda não emitida</div>
-          <div class="card-tags"><span class="tag tp-ensacado">🧱 Ensacado</span><span class="tag tp-cim">CP II F</span></div>
-          <div class="card-row2"><div class="tempo-box"><div class="tempo">7min</div><div class="tempo-lbl">Enlonando</div></div><div class="card-entrada">Entrada 11:57</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col"><div class="col-head" style="--accent:var(--c-fat)"><div class="col-head-top"><div class="col-title">🧾 FATURAMENTO</div><div class="col-count">4</div></div><div class="col-empresa">Apodi</div></div>
-      <div class="col-body" id="col-fat">
-        <div class="card alerta" id="card-PIB9047">
-          <div class="card-remove" onclick="pedirRemocao('PIB9047','Faturamento')">✕</div>
-          <div class="card-row1"><span class="card-placa">PIB9047</span></div>
-          <div class="card-ac">AC: 618277</div>
-          <div class="card-nf" style="opacity:.5">🧾 NF: — ainda não emitida</div>
-          <div class="card-tags"><span class="tag tp-ensacado">🧱 Ensacado</span><span class="tag tp-cim">CP II F</span></div>
-          <div class="card-row2"><div class="tempo-box over"><div class="tempo">1141h59</div><div class="tempo-lbl">Na fila</div></div><div class="card-entrada">Entrada 22:05</div></div>
-        </div>
-        <div class="card alerta">
-          <div class="card-remove" onclick="pedirRemocao('0AV9F36','Faturamento')">✕</div>
-          <div class="card-row1"><span class="card-placa">0AV9F36</span></div>
-          <div class="card-ac">AC: 619075</div>
-          <div class="card-nf">🧾 NF: 553580</div>
-          <div class="card-tags"><span class="tag tp-ensacado">🧱 Ensacado</span><span class="tag tp-cim">CP II F</span></div>
-          <div class="card-row2"><div class="tempo-box over"><div class="tempo">1048h21</div><div class="tempo-lbl">Na fila</div></div><div class="card-entrada">Entrada 19:43</div></div>
-        </div>
-        <div class="card alerta">
-          <div class="card-remove" onclick="pedirRemocao('HWV2506','Faturamento')">✕</div>
-          <div class="card-row1"><span class="card-placa">HWV2506</span></div>
-          <div class="card-ac">AC: 619216</div>
-          <div class="card-nf">🧾 NF: 553640</div>
-          <div class="card-tags"><span class="tag tp-ensacado">🧱 Ensacado</span><span class="tag tp-cim">CP II F</span></div>
-          <div class="card-row2"><div class="tempo-box over"><div class="tempo">1038h10</div><div class="tempo-lbl">Na fila</div></div><div class="card-entrada">Entrada 07:52</div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <div class="board" id="board"></div>
 </div>
 
-<!-- Modal login -->
-<div class="modal-overlay" id="modal-login">
+<div class="legend">
+  <span><i style="background:var(--c-fat)"></i>Dentro da meta</span>
+  <span><i style="background:var(--c-triagem)"></i>Próximo do limite (80%+)</span>
+  <span><i style="background:var(--rd)"></i>Acima da meta (alerta piscando)</span>
+  <span><i style="background:var(--t3)"></i>Clique no card para ver a linha do tempo completa</span>
+</div>
+
+<!-- Modal detalhe -->
+<div class="modal-overlay" id="modal-detalhe" onclick="if(event.target===this)fecharModal()">
   <div class="modal-box">
     <div class="modal-head">
-      <div class="modal-title">🔒 Autenticação necessária</div>
-      <div class="modal-sub">Somente administradores podem ativar este modo.</div>
+      <div class="modal-title" id="md-titulo">—</div>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="lock-icon">🔒</div>
-      <div class="field-grp"><label>Usuário</label><input type="text" placeholder="administrador"/></div>
-      <div class="field-grp"><label>Senha</label><input type="password" placeholder="••••••••"/></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="fecharLogin()">Cancelar</button>
-      <button class="btn btn-primary" onclick="confirmarLogin()">Entrar →</button>
+      <div class="modal-sub" id="md-sub">—</div>
+      <div class="timeline" id="md-timeline"></div>
+      <div class="modal-grid" id="md-grid"></div>
     </div>
   </div>
 </div>
 
-<!-- Modal remover card -->
-<div class="modal-overlay" id="modal-remover">
-  <div class="modal-box">
-    <div class="modal-head">
-      <div class="modal-title">🗑️ Remover card</div>
-      <div class="modal-sub">Motivo obrigatório — fica registrado no histórico.</div>
+<!-- Modal exclusão administrativa: Limpar etapa · Portaria Fim +24h -->
+<div class="modal-overlay" id="modal-limpeza">
+  <div class="modal-box mx-box">
+
+    <!-- Passo 1: seleção -->
+    <div id="mx-step1">
+      <div class="mx-head">
+        <button class="modal-close" style="position:absolute;top:14px;right:16px" onclick="fecharLimpeza()">✕</button>
+        <div class="mx-steps"><i class="on"></i><i></i><i></i></div>
+        <div class="mx-title">🧹 Limpar etapa — Portaria Fim</div>
+        <div class="mx-sub" id="mx-sub1">—</div>
+      </div>
+      <div class="mx-body">
+        <div class="mx-selall">
+          <span id="mx-sel-count">—</span>
+          <button class="mx-selall-btn" onclick="mxToggleTodos()">Desmarcar todos</button>
+        </div>
+        <div class="mx-list" id="mx-lista"></div>
+      </div>
+      <div class="mx-foot">
+        <button class="mx-btn" onclick="fecharLimpeza()">Cancelar</button>
+        <button class="mx-btn mx-btn-primary" id="mx-btn-continuar" onclick="mxIrStep(2)">Continuar →</button>
+      </div>
     </div>
-    <div class="modal-body">
-      <div class="rm-resumo">Removendo <span class="rm-placa-big" id="rm-placa">—</span> da coluna <b id="rm-coluna">—</b>.<br>O caminhão continua no histórico normalmente — só sai da visualização do Kanban.</div>
-      <textarea id="rm-motivo" placeholder="Ex: Card com valor de tempo absurdo (bug de data), removido pra não poluir o painel." oninput="rmContarChars()"></textarea>
-      <div class="char-count" id="rm-charcount">0 caracteres · mínimo 10</div>
+
+    <!-- Passo 2: login administrador -->
+    <div id="mx-step2" style="display:none">
+      <div class="mx-head">
+        <button class="modal-close" style="position:absolute;top:14px;right:16px" onclick="fecharLimpeza()">✕</button>
+        <div class="mx-steps"><i class="on"></i><i class="on"></i><i></i></div>
+        <div class="mx-title">🔒 Autenticação necessária</div>
+        <div class="mx-sub">Somente administradores podem confirmar esta exclusão.</div>
+      </div>
+      <div class="mx-body">
+        <div class="mx-lock">🔒</div>
+        <div class="mx-field"><label>Usuário</label><input type="text" id="mx-user" placeholder="administrador" onkeydown="if(event.key==='Enter')mxTentarLogin()"/></div>
+        <div class="mx-field"><label>Senha</label><input type="password" id="mx-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')mxTentarLogin()"/></div>
+        <div class="mx-loginerr" id="mx-loginerr">Usuário ou senha incorretos.</div>
+      </div>
+      <div class="mx-foot">
+        <button class="mx-btn" onclick="mxIrStep(1)">← Voltar</button>
+        <button class="mx-btn mx-btn-primary" onclick="mxTentarLogin()">Entrar →</button>
+      </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="fecharRemover()">Cancelar</button>
-      <button class="btn btn-primary" id="rm-btn-confirmar" onclick="confirmarRemocao()" disabled>🗑️ Remover</button>
+
+    <!-- Passo 3: motivo -->
+    <div id="mx-step3" style="display:none">
+      <div class="mx-head">
+        <button class="modal-close" style="position:absolute;top:14px;right:16px" onclick="fecharLimpeza()">✕</button>
+        <div class="mx-steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+        <div class="mx-title">📝 Motivo da exclusão</div>
+        <div class="mx-sub">Obrigatório — ficará registrado junto com o card.</div>
+      </div>
+      <div class="mx-body">
+        <div class="mx-resumo" id="mx-resumo">—</div>
+        <textarea class="mx-motivo" id="mx-motivo" placeholder="Ex: Guarita não registrou a saída por falha no leitor de placas." oninput="mxContarChars()"></textarea>
+        <div class="mx-charcount" id="mx-charcount">0 caracteres · mínimo 10</div>
+      </div>
+      <div class="mx-foot">
+        <button class="mx-btn" onclick="mxIrStep(2)">← Voltar</button>
+        <button class="mx-btn mx-btn-primary" id="mx-btn-confirmar" onclick="mxConfirmar()" disabled>🧹 Confirmar exclusão</button>
+      </div>
+    </div>
+
+    <!-- Passo 4: sucesso -->
+    <div id="mx-step4" style="display:none">
+      <div class="mx-body" style="padding-top:24px">
+        <div class="mx-sucesso">
+          <div class="mx-sucesso-icon">✅</div>
+          <h3 id="mx-sucesso-titulo">—</h3>
+          <p>Os cards saíram do Kanban. O histórico completo continua disponível no Admin.</p>
+          <div class="mx-audit" id="mx-audit">—</div>
+        </div>
+      </div>
+      <div class="mx-foot" style="justify-content:center">
+        <button class="mx-btn mx-btn-primary" onclick="fecharLimpeza()">Fechar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal login: ativar Modo Administrador -->
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="modal-box mx-box">
+    <div class="mx-head">
+      <button class="modal-close" style="position:absolute;top:14px;right:16px" onclick="fecharAdminLogin()">✕</button>
+      <div class="mx-title">🔒 Ativar Modo Administrador</div>
+      <div class="mx-sub">Somente administradores podem remover cards do Kanban.</div>
+    </div>
+    <div class="mx-body">
+      <div class="mx-lock">🔒</div>
+      <div class="mx-field"><label>Usuário</label><input type="text" id="admin-user" placeholder="administrador" onkeydown="if(event.key==='Enter')tentarAdminLogin()"/></div>
+      <div class="mx-field"><label>Senha</label><input type="password" id="admin-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')tentarAdminLogin()"/></div>
+      <div class="mx-loginerr" id="admin-loginerr">Usuário ou senha incorretos.</div>
+    </div>
+    <div class="mx-foot">
+      <button class="mx-btn" onclick="fecharAdminLogin()">Cancelar</button>
+      <button class="mx-btn mx-btn-primary" onclick="tentarAdminLogin()">Entrar →</button>
     </div>
   </div>
 </div>
 
-<script>
-let placaAtual=null,colunaAtual=null;
+<!-- Modal remover card individual (Modo Administrador) -->
+<div class="modal-overlay" id="modal-remover-card">
+  <div class="modal-box mx-box">
+    <div class="mx-head">
+      <button class="modal-close" style="position:absolute;top:14px;right:16px" onclick="fecharRemoverCard()">✕</button>
+      <div class="mx-title">🗑️ Remover card</div>
+      <div class="mx-sub">Motivo obrigatório — fica registrado no histórico junto com o card.</div>
+    </div>
+    <div class="mx-body">
+      <div class="mx-resumo" id="rm-resumo">—</div>
+      <textarea class="mx-motivo" id="rm-motivo" placeholder="Ex: Card com valor de tempo absurdo (bug de data), removido pra não poluir o painel." oninput="rmContarChars()"></textarea>
+      <div class="mx-charcount" id="rm-charcount">0 caracteres · mínimo 10</div>
+    </div>
+    <div class="mx-foot">
+      <button class="mx-btn" onclick="fecharRemoverCard()">Cancelar</button>
+      <button class="mx-btn mx-btn-primary" id="rm-btn-confirmar" onclick="confirmarRemocaoCard()" disabled>🗑️ Remover</button>
+    </div>
+  </div>
+</div>
 
-function toggleAdmin(){
-  if(!document.body.classList.contains('admin-mode')){
-    document.getElementById('modal-login').classList.add('show');
-  }else{
-    document.body.classList.remove('admin-mode');
-    document.getElementById('btn-admin').classList.remove('on');
-    document.getElementById('admin-banner').classList.remove('show');
-  }
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import{getFirestore,collection,onSnapshot,doc,updateDoc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
+const db=getFirestore(app);
+
+// ── Reconexão de rede (padrão já usado nas telas operacionais) ──
+let unsub=null,reconectando=false;
+function forceReconnect(){
+  if(reconectando)return;
+  reconectando=true;
+  if(unsub)try{unsub();}catch(ignore){}
+  unsub=onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
+    DADOS=snap.docs.map(d=>({id:d.id,...d.data()}));
+    montarOperadores();
+    render();
+  },err=>console.error("onSnapshot erro:",err));
+  reconectando=false;
 }
-function fecharLogin(){document.getElementById('modal-login').classList.remove('show');}
-function confirmarLogin(){
-  // mockup: qualquer clique "loga" — na versão real valida contra o mesmo usuário/senha do Admin
-  document.getElementById('modal-login').classList.remove('show');
-  document.body.classList.add('admin-mode');
-  document.getElementById('btn-admin').classList.add('on');
-  document.getElementById('admin-banner').classList.add('show');
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")forceReconnect();});
+window.addEventListener("online",forceReconnect);
+window.addEventListener("offline",()=>console.warn("Kanban: rede offline"));
+
+// ── Constantes de negócio ──
+const TIPO_CARGA_LABELS={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
+const TIPO_CARGA_ICON={ensacado:"🧱",granel:"🚛",bigbag:"📦"};
+const TIPO_CARGA_TAG={ensacado:"tp-ensacado",granel:"tp-granel",bigbag:"tp-bigbag"};
+const EMPRESA_TELA={posto1:"Apodi",portaria:"Seguro Segurança",triagem:"Reforme Paletes",carregamento:"Ambipar",enlonamento:"Sousa Clean",faturamento:"Apodi",portaria_fim:"Seguro Segurança"};
+const LIMITE_TMAC_MS=2*3600000+10*60000;   // 2h10
+const LIMITE_TMTI_MS=5*60000;              // 5min
+const LIMITE_TMCI_MS=20*60000;             // 20min
+const LIMITE_TMEI_MS=15*60000;             // 15min
+const LIMITE_TMF_MS=8*60000;               // 8min
+const LIMITE_PORTARIA_FIM_MS=24*3600000;   // 24h — prazo p/ registrar saída (Portaria Fim)
+const ADMIN_CREDS={user:"administrador",pwd:"admin2026"}; // mesmo login/senha do painel Admin
+
+// Peso de cada etapa na sequência real de operação (Portaria Fim fica fora — é a saída, registrada
+// a qualquer momento e não bloqueia o avanço do caminhão pelas demais etapas)
+const PESO_ETAPA={posto1:0,portaria:1,triagem:2,carregamento:3,enlonamento:4,faturamento:5,portaria_fim:5};
+
+// Determina em qual coluna o card deve estar, com base nos dados REALMENTE registrados —
+// independentemente do que setorAtual diz e independentemente de etapas puladas.
+// "portaria_fim" é a 7ª coluna: veículo já faturado, aguardando o registro de saída na portaria.
+function estagioEfetivo(c){
+  if(c.faturamento?.ts)return"portaria_fim";
+  if(c.enlonamento?.fim||c.setorAtual==="faturamento_aguardando")return"faturamento";
+  if(c.enlonamento?.inicio)return"enlonamento";
+  if(c.carregamento?.inicio)return"carregamento";
+  if(c.triagem?.inicio)return"triagem";
+  if(c.portaria?.inicio)return"portaria";
+  if(c.entrada?.ts)return"posto1";
+  return null;
 }
-function pedirRemocao(placa,coluna){
-  placaAtual=placa;colunaAtual=coluna;
-  document.getElementById('rm-placa').textContent=placa;
-  document.getElementById('rm-coluna').textContent=coluna;
-  document.getElementById('rm-motivo').value='';
-  rmContarChars();
-  document.getElementById('modal-remover').classList.add('show');
+
+let DADOS=[];
+let CHIPS={TMTI:false,TMCI:false,TMEI:false,TMF:false,TMAC:false};
+
+// ── Mostrar/ocultar colunas (Portaria / Portaria Fim) ──
+// Preferência salva por dispositivo (localStorage) — útil quando a internet da Portaria
+// está instável e os cards ficam "presos" lá; não afeta os dados nem outros dispositivos.
+const COLS_TOGGLE_KEY="kanban_colunas_ocultas";
+let COLS_OCULTAS=new Set();
+try{COLS_OCULTAS=new Set(JSON.parse(localStorage.getItem(COLS_TOGGLE_KEY)||"[]"));}catch(ignore){}
+
+function colsAtualizarBotao(){
+  const n=COLS_OCULTAS.size;
+  document.getElementById("n-cols").textContent=n;
+  document.getElementById("btn-cols").classList.toggle("hidden-some",n>0);
 }
-function fecharRemover(){document.getElementById('modal-remover').classList.remove('show');}
-function rmContarChars(){
-  const v=document.getElementById('rm-motivo').value;
-  document.getElementById('rm-charcount').textContent=v.length+' caracteres · mínimo 10';
-  document.getElementById('rm-btn-confirmar').disabled=v.trim().length<10;
-}
-function confirmarRemocao(){
-  fecharRemover();
-  const cards=[...document.querySelectorAll('.card-placa')].filter(el=>el.textContent===placaAtual);
-  cards.forEach(el=>{
-    const card=el.closest('.card');
-    card.classList.add('saindo');
-    setTimeout(()=>card.remove(),250);
+window.colToggle=function(id,visivel){
+  if(visivel)COLS_OCULTAS.delete(id);else COLS_OCULTAS.add(id);
+  localStorage.setItem(COLS_TOGGLE_KEY,JSON.stringify([...COLS_OCULTAS]));
+  colsAtualizarBotao();
+  render();
+};
+window.colsRestaurarTodas=function(){
+  COLS_OCULTAS=new Set();
+  localStorage.setItem(COLS_TOGGLE_KEY,JSON.stringify([]));
+  document.getElementById("sw-col-portaria").checked=true;
+  document.getElementById("sw-col-portaria_fim").checked=true;
+  colsAtualizarBotao();
+  render();
+};
+window.toggleColsPanel=function(){
+  document.getElementById("cols-panel").classList.toggle("show");
+  document.getElementById("btn-cols").classList.toggle("active");
+};
+document.addEventListener("click",e=>{
+  const wrap=document.querySelector(".cols-wrap");
+  if(wrap&&!wrap.contains(e.target))document.getElementById("cols-panel").classList.remove("show");
+});
+document.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById("sw-col-portaria").checked=!COLS_OCULTAS.has("portaria");
+  document.getElementById("sw-col-portaria_fim").checked=!COLS_OCULTAS.has("portaria_fim");
+  colsAtualizarBotao();
+});
+
+// ── Helpers ──
+function toDate(v){return v?.toDate?v.toDate():(v instanceof Date?v:null);}
+function diffMs(a,b){const da=toDate(a),db=toDate(b);if(!da||!db)return null;return db-da;}
+function durStr(ms){if(ms===null||ms===undefined||ms<0)return"—";const m=Math.round(ms/60000);return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?(""+(m%60)).padStart(2,"0"):"");}
+function fmtT(d){d=toDate(d);return d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—";}
+function getTurno(d){d=toDate(d);if(!d)return null;const h=d.getHours();if(h>=23||h<7)return"A";if(h>=7&&h<15)return"B";return"C";}
+window.tick=function(){document.getElementById("rel").textContent=new Date().toLocaleString("pt-BR",{timeZone:"America/Fortaleza"});};
+tick();setInterval(tick,1000);
+setInterval(()=>render(),30000); // atualiza os tempos decorridos mesmo sem novo snapshot
+
+// ── Definição das 6 colunas ──
+// Cada coluna agrupa "inicio"+"fim" do setorAtual correspondente (decisão confirmada).
+const COLUNAS=[
+  {id:"posto1",label:"🚦 POSTO 1",accent:"var(--c-posto1)",empresa:"Apodi",
+    inicio:c=>c.entrada?.ts, subStatus:()=>"Aguardando chamada",
+    limiteMs:null,metaLabel:null},
+  {id:"portaria",label:"🛡️ PORTARIA",accent:"var(--c-portaria)",empresa:"Seguro Segurança",
+    inicio:c=>c.portaria?.inicio, subStatus:()=>"Na portaria",
+    limiteMs:null,metaLabel:null},
+  {id:"triagem",label:"🔎 TRIAGEM",accent:"var(--c-triagem)",empresa:"Reforme Paletes",
+    inicio:c=>c.triagem?.inicio, subStatus:c=>c.triagem?.fim?"Triagem concluída":"Em triagem",
+    limiteMs:LIMITE_TMTI_MS,metaLabel:"Meta TMTI ≤5min"},
+  {id:"carregamento",label:"⚙️ CARREGAMENTO",accent:"var(--c-carreg)",empresa:"Ambipar",
+    inicio:c=>c.carregamento?.inicio, subStatus:c=>c.carregamento?.fim?"Carregamento concluído":"Carregando",
+    limiteMs:LIMITE_TMCI_MS,metaLabel:"Meta TMCI ≤20min"},
+  {id:"enlonamento",label:"🪢 ENLONAMENTO",accent:"var(--c-enlon)",empresa:"Sousa Clean",
+    inicio:c=>c.enlonamento?.inicio, subStatus:()=>"Enlonando",
+    limiteMs:LIMITE_TMEI_MS,metaLabel:"Meta TMEI ≤15min"},
+  {id:"faturamento",label:"🧾 FATURAMENTO",accent:"var(--c-fat)",empresa:"Apodi",
+    inicio:c=>c.enlonamento?.fim, subStatus:()=>"Na fila",
+    limiteMs:LIMITE_TMF_MS,metaLabel:"Meta TMF ≤8min"},
+  {id:"portaria_fim",label:"🚪 PORTARIA FIM",accent:"var(--c-pfim)",empresa:"Seguro Segurança",
+    inicio:c=>c.faturamento?.ts, subStatus:()=>"Faturado · aguardando saída",
+    limiteMs:LIMITE_PORTARIA_FIM_MS,metaLabel:"Prazo p/ registrar saída ≤24h"}
+];
+
+function hoje(){return new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");}
+
+function empresaOperadores(){
+  const set=new Set();
+  DADOS.forEach(c=>{
+    [c.entrada?.operador,c.portaria?.operadorInicio,c.portaria?.operadorFim,
+     c.triagem?.operadorInicio,c.triagem?.operadorFim,
+     c.carregamento?.operadorInicio,c.carregamento?.operadorFim,
+     c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim,
+     c.faturamento?.operador].forEach(o=>{if(o)set.add(o);});
   });
+  return[...set].sort();
 }
+
+function montarOperadores(){
+  const sel=document.getElementById("f-operador");
+  const atual=sel.value;
+  const ops=empresaOperadores();
+  sel.innerHTML='<option value="">Todos</option>'+ops.map(o=>`<option value="${o}">${o}</option>`).join("");
+  if(ops.includes(atual))sel.value=atual;
+}
+
+function operadorDaEtapa(c){
+  return c.entrada?.operador||c.portaria?.operadorFim||c.portaria?.operadorInicio||
+    c.triagem?.operadorFim||c.triagem?.operadorInicio||
+    c.carregamento?.operadorFim||c.carregamento?.operadorInicio||
+    c.enlonamento?.operadorFim||c.enlonamento?.operadorInicio||
+    c.faturamento?.operador||null;
+}
+
+function passaFiltros(c,colId){
+  const fe=document.getElementById("f-empresa").value;
+  const ft=document.getElementById("f-tipo").value;
+  const fturno=document.getElementById("f-turno").value;
+  const fop=document.getElementById("f-operador").value;
+  const fb=document.getElementById("f-busca").value.trim().toUpperCase();
+  const fnf=document.getElementById("f-nf").value.trim().toUpperCase();
+  if(fe&&EMPRESA_TELA[colId]!==fe)return false;
+  if(ft&&c.tipoCarga!==ft)return false;
+  if(fb&&(c.placa||"").toUpperCase().indexOf(fb)===-1&&(c.ac||"").toUpperCase().indexOf(fb)===-1)return false;
+  if(fnf&&(c.notaFiscal||"").toUpperCase().indexOf(fnf)===-1)return false;
+  const col=COLUNAS.find(x=>x.id===colId);
+  const ent=col.inicio(c);
+  const turno=getTurno(ent);
+  if(fturno&&turno!==fturno)return false;
+  if(fop&&operadorDaEtapa(c)!==fop)return false;
+  if(CHIPS.TMAC&&(diffMs(c.entrada?.ts,new Date())===null||true)){
+    // TMAC parcial (do início até agora) — só aplica se já saiu do posto1
+    const parcial=c.entrada?.ts?Date.now()-toDate(c.entrada.ts).getTime():null;
+    if(!(parcial!==null&&parcial>LIMITE_TMAC_MS))return false;
+  }
+  if(CHIPS.TMTI&&colId==="triagem"){
+    const dur=Date.now()-toDate(col.inicio(c)).getTime();
+    if(!(dur>LIMITE_TMTI_MS))return false;
+  } else if(CHIPS.TMTI&&colId!=="triagem")return false;
+  if(CHIPS.TMCI&&colId==="carregamento"){
+    const dur=Date.now()-toDate(col.inicio(c)).getTime();
+    if(!(dur>LIMITE_TMCI_MS))return false;
+  } else if(CHIPS.TMCI&&colId!=="carregamento")return false;
+  if(CHIPS.TMEI&&colId==="enlonamento"){
+    const dur=Date.now()-toDate(col.inicio(c)).getTime();
+    if(!(dur>LIMITE_TMEI_MS))return false;
+  } else if(CHIPS.TMEI&&colId!=="enlonamento")return false;
+  if(CHIPS.TMF&&colId==="faturamento"){
+    const dur=Date.now()-toDate(col.inicio(c)).getTime();
+    if(!(dur>LIMITE_TMF_MS))return false;
+  } else if(CHIPS.TMF&&colId!=="faturamento")return false;
+  return true;
+}
+
+function cardHtml(c,col,idx){
+  const ent=col.inicio(c);
+  const ms=ent?Date.now()-toDate(ent).getTime():null;
+  const turno=getTurno(ent);
+  const turnoCls=turno==="A"?"t-a":turno==="B"?"t-b":"t-c";
+  const tipoIcon=TIPO_CARGA_ICON[c.tipoCarga]||"📦";
+  const tipoLabel=TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"—";
+  const tipoTag=TIPO_CARGA_TAG[c.tipoCarga]||"tp-cim";
+  const cimento=c.tipoCimento||c.tipoCimentoLabel||"—";
+  let tempoCls="";
+  let alerta=false;
+  if(col.limiteMs&&ms!==null){
+    if(ms>col.limiteMs){tempoCls="over";alerta=true;}
+    else if(ms>col.limiteMs*0.8){tempoCls="warn";}
+  }
+  const tmacParcial=c.entrada?.ts?Date.now()-toDate(c.entrada.ts).getTime():null;
+  const tmacHtml=col.id==="portaria_fim"&&tmacParcial!==null
+    ?`<div class="tmac-strip"><span>TMAC até aqui</span><b>${durStr(tmacParcial)}</b></div>`:"";
+  const nfHtml=`<div class="card-nf">🧾 NF: <b>${c.notaFiscal?c.notaFiscal:'<span style="opacity:.5">— ainda não emitida</span>'}</b></div>`;
+  const dotsIdx=COLUNAS.findIndex(x=>x.id===col.id);
+  let dots="";
+  for(let i=0;i<COLUNAS.length;i++)dots+=`<i class="${i<=dotsIdx?"on":""}"></i>`;
+  const entradaLabel=col.id==="portaria_fim"?"Faturado "+fmtT(ent):"Entrada "+fmtT(ent);
+  const placaEsc=(c.placa||"").replace(/'/g,"\\'");
+  const colunaEsc=col.label.replace(/^\S+\s/,"").replace(/'/g,"\\'");
+  const removeBtn=`<div class="card-remove" onclick="event.stopPropagation();pedirRemocaoCard('${c.id}','${placaEsc}','${colunaEsc}')" title="Remover card (Modo Administrador)">✕</div>`;
+  return`<div class="card${alerta?" alerta":""}" onclick="abrirDetalhe('${c.id}')">
+    ${removeBtn}
+    <div class="card-row1"><span class="card-placa">${c.placa||"—"}</span>${turno?`<span class="turno ${turnoCls}">${turno}</span>`:""}</div>
+    <div class="card-ac">AC: ${c.ac||"—"}</div>
+    ${nfHtml}
+    <div class="card-tags"><span class="tag ${tipoTag}">${tipoIcon} ${tipoLabel}</span><span class="tag tp-cim">${cimento}</span></div>
+    <div class="card-row2">
+      <div class="tempo-box ${tempoCls}"><div class="tempo">${durStr(ms)}</div><div class="tempo-lbl">${col.subStatus(c)}</div></div>
+      <div class="card-entrada">${entradaLabel}</div>
+    </div>
+    ${tmacHtml}
+    <div class="dots">${dots}</div>
+  </div>`;
+}
+
+window.render=function(){
+  const hj=hoje();
+  // Um veículo permanece visível no Kanban se: ainda está em andamento (setorAtual!==concluido),
+  // OU já foi faturado mas a Portaria Fim (saída) ainda não foi registrada e ninguém "limpou" manualmente.
+  const ativos=DADOS.filter(c=>{
+    if(!c.data||c.data>hj)return false;
+    if(c.kanbanLimpezaPortaria)return false;
+    if(c.kanbanRemovidoAdmin)return false;
+    if(c.setorAtual==="concluido")return!c.portaria?.fim;
+    return!!c.setorAtual;
+  });
+
+  const colunasVisiveis=COLUNAS.filter(col=>!COLS_OCULTAS.has(col.id));
+  document.getElementById("resumo").style.setProperty("--ncols",colunasVisiveis.length);
+  document.getElementById("board").style.setProperty("--ncols",colunasVisiveis.length);
+
+  // Resumo
+  let resumoHtml="";
+  colunasVisiveis.forEach(col=>{
+    const n=ativos.filter(c=>estagioEfetivo(c)===col.id&&passaFiltros(c,col.id)).length;
+    resumoHtml+=`<div class="res-card" style="--accent:${col.accent}" onclick="scrollToCol('${col.id}')">
+      <div class="res-val" style="color:${col.accent}">${n}</div>
+      <div class="res-lbl">${col.label.replace(/^\S+\s/,"")}</div>
+    </div>`;
+  });
+  document.getElementById("resumo").innerHTML=resumoHtml;
+
+  // Board
+  let boardHtml="";
+  colunasVisiveis.forEach(col=>{
+    const lista=ativos.filter(c=>estagioEfetivo(c)===col.id&&passaFiltros(c,col.id))
+      .sort((a,b)=>{
+        const ea=toDate(col.inicio(a)),eb=toDate(col.inicio(b));
+        if(!ea)return 1;if(!eb)return -1;
+        return ea-eb;
+      });
+    const cardsHtml=lista.length
+      ?lista.map((c,i)=>cardHtml(c,col,i)).join("")
+      :'<div class="col-empty">Nenhum veículo</div>';
+    const metaHtml=col.metaLabel?`<div class="col-meta"><span>${col.metaLabel}</span></div>`:"";
+    boardHtml+=`<div class="col" id="col-${col.id}">
+      <div class="col-head" style="--accent:${col.accent}">
+        <div class="col-head-top"><div class="col-title">${col.label}</div><div class="col-count">${lista.length}</div></div>
+        <div class="col-empresa">${col.empresa}</div>
+        ${metaHtml}
+      </div>
+      <div class="col-body">${cardsHtml}</div>
+    </div>`;
+  });
+  document.getElementById("board").innerHTML=boardHtml;
+
+  // Botão global "Limpar etapa" — habilita e mostra quantos veículos já passaram das 24h em Portaria Fim
+  const elegiveis=ativos.filter(c=>estagioEfetivo(c)==="portaria_fim"&&c.faturamento?.ts&&(Date.now()-toDate(c.faturamento.ts).getTime())>LIMITE_PORTARIA_FIM_MS);
+  const btnG=document.getElementById("btn-limpar-global");
+  document.getElementById("n-limpar-global").textContent=elegiveis.length;
+  btnG.disabled=elegiveis.length===0;
+};
+
+window.scrollToCol=function(id){
+  document.getElementById("col-"+id)?.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});
+};
+
+window.toggleFiltros=function(){
+  document.getElementById("filtros").classList.toggle("show");
+};
+
+window.toggleChip=function(k){
+  CHIPS[k]=!CHIPS[k];
+  document.getElementById("chip-"+k).classList.toggle("on",CHIPS[k]);
+  atualizaContadorFiltros();
+  render();
+};
+
+function atualizaContadorFiltros(){
+  let n=0;
+  ["f-empresa","f-tipo","f-turno","f-operador"].forEach(id=>{if(document.getElementById(id).value)n++;});
+  ["f-busca","f-nf"].forEach(id=>{if(document.getElementById(id).value.trim())n++;});
+  Object.values(CHIPS).forEach(v=>{if(v)n++;});
+  const btn=document.getElementById("btn-filtros");
+  document.getElementById("n-filtros").textContent=n;
+  btn.classList.toggle("hasf",n>0);
+}
+["f-empresa","f-tipo","f-turno","f-operador","f-busca","f-nf"].forEach(id=>{
+  document.addEventListener("DOMContentLoaded",()=>{
+    document.getElementById(id).addEventListener("input",atualizaContadorFiltros);
+    document.getElementById(id).addEventListener("change",atualizaContadorFiltros);
+  });
+});
+
+// ── Exclusão administrativa: Limpar etapa · Portaria Fim +24h ──
+// Não inventa/preenche portaria.fim (o histórico real fica intacto) — apenas marca os cards
+// selecionados para não aparecer mais no board, com registro de admin, motivo e data/hora.
+let MX_SELECIONADOS=new Set();
+let MX_LOGADO=false;
+
+window.abrirLimpeza=function(){
+  const hj=hoje();
+  const elegiveis=DADOS.filter(c=>{
+    if(!c.data||c.data>hj)return false;
+    if(c.kanbanLimpezaPortaria)return false;
+    if(c.kanbanRemovidoAdmin)return false;
+    if(estagioEfetivo(c)!=="portaria_fim")return false;
+    if(!c.faturamento?.ts)return false;
+    return(Date.now()-toDate(c.faturamento.ts).getTime())>LIMITE_PORTARIA_FIM_MS;
+  }).sort((a,b)=>toDate(a.faturamento.ts)-toDate(b.faturamento.ts));
+
+  if(!elegiveis.length){alert("Nenhum veículo com mais de 24h aguardando Portaria Fim no momento.");return;}
+
+  MX_SELECIONADOS=new Set(elegiveis.map(c=>c.id));
+  MX_LOGADO=false;
+  document.getElementById("mx-sub1").textContent=`${elegiveis.length} veículo${elegiveis.length!==1?"s":""} aguardando registro de saída há mais de 24h. Selecione quais deseja remover do Kanban.`;
+  document.getElementById("mx-lista").innerHTML=elegiveis.map(c=>{
+    const esperando=Date.now()-toDate(c.faturamento.ts).getTime();
+    return`<div class="mx-row checked" data-id="${c.id}" onclick="mxToggleRow(this)">
+      <div class="mx-check">✓</div>
+      <div class="mx-info">
+        <div class="mx-placa">${c.placa||"—"} <span style="font-size:9px;color:var(--t3);font-weight:600">AC ${c.ac||"—"}</span></div>
+        <div class="mx-meta">NF ${c.notaFiscal||"—"} · Faturado ${fmtT(c.faturamento.ts)}</div>
+      </div>
+      <div class="mx-tempo">${durStr(esperando)}<small>aguardando</small></div>
+    </div>`;
+  }).join("");
+  mxAtualizarContagem();
+  document.getElementById("mx-user").value="";
+  document.getElementById("mx-pwd").value="";
+  document.getElementById("mx-motivo").value="";
+  document.getElementById("mx-loginerr").style.display="none";
+  mxContarChars();
+  mxIrStep(1);
+  document.getElementById("modal-limpeza").classList.add("show");
+};
+
+window.fecharLimpeza=function(){
+  document.getElementById("modal-limpeza").classList.remove("show");
+};
+
+window.mxIrStep=function(n){
+  if(n===2&&MX_SELECIONADOS.size===0)return;
+  if(n===3){
+    const total=MX_SELECIONADOS.size;
+    const placas=[...MX_SELECIONADOS].map(id=>{const c=DADOS.find(x=>x.id===id);return c?.placa||id;}).join(", ");
+    document.getElementById("mx-resumo").innerHTML=`<b>${total} veículo${total!==1?"s":""}</b> ${total!==1?"serão removidos":"será removido"} do Kanban: ${placas}.<br>Isso <b>não</b> preenche a Portaria Fim real — só limpa a visualização.`;
+  }
+  [1,2,3,4].forEach(i=>document.getElementById("mx-step"+i).style.display=(i===n?"block":"none"));
+};
+
+window.mxToggleRow=function(el){
+  const id=el.dataset.id;
+  if(MX_SELECIONADOS.has(id))MX_SELECIONADOS.delete(id);else MX_SELECIONADOS.add(id);
+  el.classList.toggle("checked");
+  el.querySelector(".mx-check").textContent=el.classList.contains("checked")?"✓":"";
+  mxAtualizarContagem();
+};
+
+window.mxToggleTodos=function(){
+  const rows=document.querySelectorAll("#mx-lista .mx-row");
+  const marcarTodos=MX_SELECIONADOS.size<rows.length;
+  MX_SELECIONADOS=new Set();
+  rows.forEach(r=>{
+    r.classList.toggle("checked",marcarTodos);
+    r.querySelector(".mx-check").textContent=marcarTodos?"✓":"";
+    if(marcarTodos)MX_SELECIONADOS.add(r.dataset.id);
+  });
+  mxAtualizarContagem();
+};
+
+function mxAtualizarContagem(){
+  const total=document.querySelectorAll("#mx-lista .mx-row").length;
+  document.getElementById("mx-sel-count").textContent=`${MX_SELECIONADOS.size} de ${total} selecionados`;
+  document.querySelector(".mx-selall-btn").textContent=MX_SELECIONADOS.size<total?"Selecionar todos":"Desmarcar todos";
+  document.getElementById("mx-btn-continuar").disabled=MX_SELECIONADOS.size===0;
+}
+
+// Login usa o mesmo usuário/senha do painel Admin (ADMIN_CREDS) — somente administradores confirmam.
+window.mxTentarLogin=function(){
+  const u=document.getElementById("mx-user").value.trim();
+  const p=document.getElementById("mx-pwd").value;
+  if(u===ADMIN_CREDS.user&&p===ADMIN_CREDS.pwd){
+    MX_LOGADO=true;
+    document.getElementById("mx-loginerr").style.display="none";
+    mxIrStep(3);
+  }else{
+    document.getElementById("mx-loginerr").style.display="block";
+  }
+};
+
+window.mxContarChars=function(){
+  const v=document.getElementById("mx-motivo").value;
+  document.getElementById("mx-charcount").textContent=v.length+" caracteres · mínimo 10";
+  document.getElementById("mx-btn-confirmar").disabled=v.trim().length<10;
+};
+
+window.mxConfirmar=async function(){
+  if(!MX_LOGADO){mxIrStep(2);return;} // proteção extra — nunca confirma sem login válido
+  const motivo=document.getElementById("mx-motivo").value.trim();
+  if(motivo.length<10)return;
+  const ids=[...MX_SELECIONADOS];
+  const placas=ids.map(id=>{const c=DADOS.find(x=>x.id===id);return c?.placa||id;});
+  const agora=new Date();
+  const btn=document.getElementById("mx-btn-confirmar");
+  btn.disabled=true;btn.textContent="Removendo...";
+  try{
+    await Promise.all(ids.map(id=>updateDoc(doc(db,"caminhoes_rastreio",id),{
+      kanbanLimpezaPortaria:{
+        ts:Timestamp.fromDate(agora),
+        admin:ADMIN_CREDS.user,
+        motivo:motivo
+      }
+    })));
+    document.getElementById("mx-sucesso-titulo").textContent=`${ids.length} registro${ids.length!==1?"s":""} limpo${ids.length!==1?"s":""}`;
+    document.getElementById("mx-audit").innerHTML=
+      `<b>Admin:</b> ${ADMIN_CREDS.user}<br><b>Data/hora:</b> ${agora.toLocaleString("pt-BR",{timeZone:"America/Fortaleza"})}<br><b>Motivo:</b> ${motivo}<br><b>Placas:</b> ${placas.join(", ")}`;
+    mxIrStep(4);
+  }catch(err){
+    console.error("Erro ao limpar etapas:",err);
+    alert("Não foi possível concluir a exclusão. Tente novamente.");
+  }finally{
+    btn.disabled=false;btn.textContent="🧹 Confirmar exclusão";
+  }
+};
+
+// ── Modo Administrador: remove QUALQUER card de QUALQUER coluna (não só Portaria Fim) ──
+// Sessão local (não persiste em reload) — evita deixar o botão ✕ ativo sem querer.
+// Usa o mesmo login/senha do painel Admin. Não altera dados reais, só marca o card
+// com kanbanRemovidoAdmin para não aparecer mais no Kanban.
+let ADMIN_MODE=false;
+let RM_ID=null,RM_PLACA=null;
+
+window.toggleAdminMode=function(){
+  if(ADMIN_MODE){
+    ADMIN_MODE=false;
+    document.body.classList.remove("admin-mode");
+    document.getElementById("btn-admin").classList.remove("on");
+    document.getElementById("admin-banner").classList.remove("show");
+  }else{
+    document.getElementById("admin-user").value="";
+    document.getElementById("admin-pwd").value="";
+    document.getElementById("admin-loginerr").style.display="none";
+    document.getElementById("modal-admin-login").classList.add("show");
+  }
+};
+
+window.fecharAdminLogin=function(){
+  document.getElementById("modal-admin-login").classList.remove("show");
+};
+
+window.tentarAdminLogin=function(){
+  const u=document.getElementById("admin-user").value.trim();
+  const p=document.getElementById("admin-pwd").value;
+  if(u===ADMIN_CREDS.user&&p===ADMIN_CREDS.pwd){
+    ADMIN_MODE=true;
+    document.body.classList.add("admin-mode");
+    document.getElementById("btn-admin").classList.add("on");
+    document.getElementById("admin-banner").classList.add("show");
+    fecharAdminLogin();
+  }else{
+    document.getElementById("admin-loginerr").style.display="block";
+  }
+};
+
+window.pedirRemocaoCard=function(id,placa,coluna){
+  if(!ADMIN_MODE)return; // proteção extra — botão só existe visualmente com admin-mode ativo
+  RM_ID=id;RM_PLACA=placa;
+  document.getElementById("rm-resumo").innerHTML=`Removendo <b>${placa}</b> da coluna <b>${coluna}</b>.<br>O caminhão continua no histórico normalmente — só sai da visualização do Kanban.`;
+  document.getElementById("rm-motivo").value="";
+  rmContarChars();
+  document.getElementById("modal-remover-card").classList.add("show");
+};
+
+window.fecharRemoverCard=function(){
+  document.getElementById("modal-remover-card").classList.remove("show");
+};
+
+window.rmContarChars=function(){
+  const v=document.getElementById("rm-motivo").value;
+  document.getElementById("rm-charcount").textContent=v.length+" caracteres · mínimo 10";
+  document.getElementById("rm-btn-confirmar").disabled=v.trim().length<10;
+};
+
+window.confirmarRemocaoCard=async function(){
+  const motivo=document.getElementById("rm-motivo").value.trim();
+  if(motivo.length<10||!RM_ID)return;
+  const btn=document.getElementById("rm-btn-confirmar");
+  btn.disabled=true;btn.textContent="Removendo...";
+  try{
+    await updateDoc(doc(db,"caminhoes_rastreio",RM_ID),{
+      kanbanRemovidoAdmin:{ts:Timestamp.fromDate(new Date()),admin:ADMIN_CREDS.user,motivo:motivo}
+    });
+    fecharRemoverCard();
+  }catch(err){
+    console.error("Erro ao remover card:",err);
+    alert("Não foi possível remover o card. Tente novamente.");
+  }finally{
+    btn.disabled=false;btn.textContent="🗑️ Remover";
+  }
+};
+
+window.limparFiltros=function(){
+  document.getElementById("f-empresa").value="";
+  document.getElementById("f-tipo").value="";
+  document.getElementById("f-turno").value="";
+  document.getElementById("f-operador").value="";
+  document.getElementById("f-busca").value="";
+  document.getElementById("f-nf").value="";
+  Object.keys(CHIPS).forEach(k=>{CHIPS[k]=false;document.getElementById("chip-"+k).classList.remove("on");});
+  atualizaContadorFiltros();
+  render();
+};
+
+// ── Modal de detalhe (linha do tempo completa) ──
+window.abrirDetalhe=function(id){
+  const c=DADOS.find(x=>x.id===id);
+  if(!c)return;
+  document.getElementById("md-titulo").innerHTML=`🚚 ${c.placa||"—"} <span style="font-size:11px;color:var(--t3);font-weight:600">AC ${c.ac||"—"}</span>`;
+  const tipoLabel=TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"—";
+  const cimento=c.tipoCimento||c.tipoCimentoLabel||"—";
+  document.getElementById("md-sub").textContent=`${tipoLabel} · ${cimento}${c.notaFiscal?" · NF "+c.notaFiscal:""}`;
+
+  // Sequência real de operação: Portaria Fim é a saída do pátio — acontece a qualquer momento
+  // (normalmente antes da Triagem) e por isso fica marcada à parte, no fim da lista, sem travar
+  // o avanço das demais etapas nem ser tratada como "pulada".
+  const etapas=[
+    {label:"Entrada (Posto 1)",ts:c.entrada?.ts,op:c.entrada?.operador,peso:PESO_ETAPA.posto1},
+    {label:"Portaria — Início",ts:c.portaria?.inicio,op:c.portaria?.operadorInicio,peso:PESO_ETAPA.portaria},
+    {label:"Triagem — Início",ts:c.triagem?.inicio,op:c.triagem?.operadorInicio,peso:PESO_ETAPA.triagem},
+    {label:"Triagem — Fim",ts:c.triagem?.fim,op:c.triagem?.operadorFim,peso:PESO_ETAPA.triagem},
+    {label:"Carregamento — Início",ts:c.carregamento?.inicio,op:c.carregamento?.operadorInicio,peso:PESO_ETAPA.carregamento},
+    {label:"Carregamento — Fim",ts:c.carregamento?.fim,op:c.carregamento?.operadorFim,peso:PESO_ETAPA.carregamento},
+    {label:"Enlonamento — Início",ts:c.enlonamento?.inicio,op:c.enlonamento?.operadorInicio,peso:PESO_ETAPA.enlonamento},
+    {label:"Enlonamento — Fim",ts:c.enlonamento?.fim,op:c.enlonamento?.operadorFim,peso:PESO_ETAPA.enlonamento},
+    {label:"Faturamento",ts:c.faturamento?.ts,op:c.faturamento?.operador,peso:PESO_ETAPA.faturamento},
+    {label:"Portaria — Fim (saída)",ts:c.portaria?.fim,op:c.portaria?.operadorFim,portariaFim:true}
+  ];
+
+  const pesoAtual=PESO_ETAPA[estagioEfetivo(c)]??-1;
+
+  let tlHtml="";
+  for(let i=0;i<etapas.length;i++){
+    const e=etapas[i];
+    const done=!!e.ts;
+    let dotCls="",horaTxt="— pendente —",horaCls="";
+
+    if(e.portariaFim){
+      // Estado especial: não entra na lógica de "pulada", tem prazo próprio de 24h.
+      if(done){
+        dotCls="done";
+        const dur=diffMs(c.portaria?.inicio,e.ts);
+        horaTxt=fmtT(e.ts)+(dur!==null?` <span class="tl-dur" style="display:inline">(${durStr(dur)} na portaria)</span>`:"");
+      }else if(c.faturamento?.ts){
+        const esperando=Date.now()-toDate(c.faturamento.ts).getTime();
+        if(esperando>LIMITE_PORTARIA_FIM_MS){dotCls="skip";horaCls="tl-skip";horaTxt=`⚠ Não registrado — ${durStr(esperando)} aguardando saída`;}
+        else{dotCls="wait";horaCls="tl-wait";horaTxt=`⏳ Aguardando registro de saída (${durStr(esperando)})`;}
+      }else{
+        dotCls="";horaTxt="— pendente —";
+      }
+    }else{
+      const proxima=!done&&(i===0||etapas[i-1].ts);
+      const pulada=!done&&e.peso<pesoAtual;
+      if(done)dotCls="done";
+      else if(pulada){dotCls="skip";horaCls="tl-skip";horaTxt="⚠ Não registrado nesta etapa";}
+      else if(proxima)dotCls="active";
+      if(done)horaTxt=fmtT(e.ts);
+    }
+
+    let durTexto="";
+    if(done&&!e.portariaFim&&i>0){
+      const prevComTs=[...etapas.slice(0,i)].reverse().find(x=>x.ts&&!x.portariaFim);
+      if(prevComTs){
+        const dur=diffMs(prevComTs.ts,e.ts);
+        if(dur!==null)durTexto=`<div class="tl-dur">+${durStr(dur)} desde a etapa anterior</div>`;
+      }
+    }
+    tlHtml+=`<div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot ${dotCls}"></div>${i<etapas.length-1?'<div class="tl-line"></div>':""}</div>
+      <div class="tl-content">
+        <div class="tl-etapa">${e.label}</div>
+        <div class="tl-hora ${horaCls}">${horaTxt}</div>
+        ${durTexto}
+        ${e.op?`<div class="tl-op">Operador: ${e.op}</div>`:""}
+      </div>
+    </div>`;
+  }
+  document.getElementById("md-timeline").innerHTML=tlHtml;
+
+  const TMAC=diffMs(c.entrada?.ts,c.faturamento?.ts)??(c.entrada?.ts?Date.now()-toDate(c.entrada.ts).getTime():null);
+  const TME=diffMs(c.entrada?.ts,c.portaria?.inicio);
+  const TMTI=diffMs(c.triagem?.inicio,c.triagem?.fim);
+  const TMCI=diffMs(c.carregamento?.inicio,c.carregamento?.fim);
+  const TMEI=diffMs(c.enlonamento?.inicio,c.enlonamento?.fim);
+  const TMF=diffMs(c.enlonamento?.fim,c.faturamento?.ts);
+  const TML=diffMs(c.entrada?.ts,c.posto1ConfirmadoEm);
+  const partesTMA=[TMTI,TMCI,TMEI].filter(v=>v!=null);
+  const TMA=partesTMA.length?partesTMA.reduce((a,b)=>a+b,0):null;
+  const metricas=[
+    {l:"TMAC"+(c.faturamento?.ts?"":" (parcial)"),v:durStr(TMAC)},
+    {l:"TME",v:durStr(TME)},
+    {l:"TMTI",v:durStr(TMTI)},
+    {l:"TMCI",v:durStr(TMCI)},
+    {l:"TMEI",v:durStr(TMEI)},
+    {l:"TMF",v:durStr(TMF)},
+    {l:"TML",v:durStr(TML)},
+    {l:"TMA",v:durStr(TMA)}
+  ];
+  document.getElementById("md-grid").innerHTML=metricas.map(m=>
+    `<div class="mg-item"><div class="mg-lbl">${m.l}</div><div class="mg-val">${m.v}</div></div>`).join("");
+
+  document.getElementById("modal-detalhe").classList.add("show");
+};
+window.fecharModal=function(){document.getElementById("modal-detalhe").classList.remove("show");};
+
+forceReconnect();
 </script>
 </body></html>
