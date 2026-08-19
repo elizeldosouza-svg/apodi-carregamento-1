@@ -27,6 +27,29 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .btn-filtros .n{background:var(--c-posto1);color:#000;border-radius:10px;padding:0 6px;font-size:9px;display:none}
 .btn-filtros.hasf .n{display:inline-block}
 
+/* ── Mostrar/ocultar colunas ── */
+.cols-wrap{position:relative}
+.btn-cols{display:flex;align-items:center;gap:6px;padding:6px 13px;border:1px solid var(--b2);border-radius:20px;background:var(--bg3);color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-cols:hover,.btn-cols.active{border-color:var(--c-posto1);color:var(--c-posto1);background:rgba(0,212,255,.07)}
+.btn-cols .n{background:var(--rd);color:#fff;border-radius:10px;padding:0 6px;font-size:9px;display:none}
+.btn-cols.hidden-some .n{display:inline-block}
+.cols-panel{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:10px;width:260px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:300;display:none}
+.cols-panel.show{display:block}
+.cols-panel-title{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;padding:4px 8px 8px}
+.col-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 8px;border-radius:8px;transition:background .15s}
+.col-toggle-row:hover{background:rgba(255,255,255,.03)}
+.col-toggle-label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx)}
+.col-toggle-label i.dot-accent{width:8px;height:8px;border-radius:50%;display:inline-block}
+.switch{position:relative;width:36px;height:20px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-track{position:absolute;inset:0;background:var(--bd);border-radius:20px;cursor:pointer;transition:background .2s}
+.switch-track:before{content:"";position:absolute;width:14px;height:14px;left:3px;top:3px;background:var(--t3);border-radius:50%;transition:transform .2s,background .2s}
+.switch input:checked + .switch-track{background:rgba(0,232,150,.25)}
+.switch input:checked + .switch-track:before{transform:translateX(16px);background:var(--c-fat)}
+.cols-panel-warn{margin-top:8px;padding:8px 10px;background:rgba(255,208,0,.08);border:1px solid rgba(255,208,0,.25);border-radius:8px;font-size:9.5px;color:#ffd000;line-height:1.5}
+.cols-panel-foot{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.cols-panel-foot button{background:none;border:none;color:var(--c-posto1);font-size:10.5px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+
 /* ── Barra de filtros ── */
 .filtros{max-width:1600px;margin:0 auto;padding:0 16px;display:none;flex-wrap:wrap;gap:8px;padding-top:14px}
 .filtros.show{display:flex}
@@ -41,7 +64,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .chip.on{border-color:var(--rd);color:var(--rd);background:rgba(255,68,102,.1)}
 
 /* ── Resumo geral ── */
-.resumo{max-width:1700px;margin:0 auto;padding:16px 16px 0;display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.resumo{max-width:1700px;margin:0 auto;padding:16px 16px 0;display:grid;grid-template-columns:repeat(var(--ncols,7),1fr);gap:10px}
 @media(max-width:1000px){.resumo{grid-template-columns:repeat(4,1fr)}}
 .res-card{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;text-align:center;cursor:pointer;transition:border-color .15s}
 .res-card:hover{border-color:var(--accent)}
@@ -50,8 +73,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 
 /* ── Board ── */
 .board-wrap{max-width:1700px;margin:0 auto;padding:16px}
-.board{display:grid;grid-template-columns:repeat(7,minmax(220px,1fr));gap:10px;overflow-x:auto;padding-bottom:10px}
-@media(max-width:1300px){.board{grid-template-columns:repeat(7,250px)}}
+.board{display:grid;grid-template-columns:repeat(var(--ncols,7),minmax(210px,1fr));gap:10px;overflow-x:auto;padding-bottom:10px}
+@media(max-width:1300px){.board{grid-template-columns:repeat(var(--ncols,7),250px)}}
 
 .col{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;min-height:60vh}
 .col-head{padding:12px 14px 10px;border-bottom:2px solid var(--accent);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
@@ -199,6 +222,25 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
   <div class="logo">🧭 KANBAN · STATUS ATUAL</div>
   <div class="spacer"></div>
   <button class="btn-limpar-global" id="btn-limpar-global" onclick="abrirLimpeza()" disabled>🧹 Limpar etapa · Portaria Fim +24h <span class="n" id="n-limpar-global">0</span></button>
+  <div class="cols-wrap">
+    <button class="btn-cols" id="btn-cols" onclick="toggleColsPanel()">🧩 Colunas <span class="n" id="n-cols">0</span></button>
+    <div class="cols-panel" id="cols-panel">
+      <div class="cols-panel-title">Mostrar / ocultar colunas</div>
+      <div class="col-toggle-row">
+        <div class="col-toggle-label"><i class="dot-accent" style="background:var(--c-portaria)"></i>Portaria</div>
+        <label class="switch"><input type="checkbox" id="sw-col-portaria" checked onchange="colToggle('portaria',this.checked)"><span class="switch-track"></span></label>
+      </div>
+      <div class="col-toggle-row">
+        <div class="col-toggle-label"><i class="dot-accent" style="background:var(--c-pfim)"></i>Portaria Fim</div>
+        <label class="switch"><input type="checkbox" id="sw-col-portaria_fim" checked onchange="colToggle('portaria_fim',this.checked)"><span class="switch-track"></span></label>
+      </div>
+      <div class="cols-panel-warn">⚠ Ocultar uma coluna só esconde ela da tela — os dados continuam sendo salvos normalmente. Útil quando a internet da Portaria está instável.</div>
+      <div class="cols-panel-foot">
+        <button onclick="colsRestaurarTodas()">Mostrar todas</button>
+        <span style="font-size:9px;color:var(--t3)">Preferência salva neste dispositivo</span>
+      </div>
+    </div>
+  </div>
   <button class="btn-filtros" id="btn-filtros" onclick="toggleFiltros()">🔍 Filtros <span class="n" id="n-filtros">0</span></button>
   <div class="clock" id="rel">—</div>
   <div class="live"><div class="dot"></div>AO VIVO</div>
@@ -420,6 +462,46 @@ function estagioEfetivo(c){
 let DADOS=[];
 let CHIPS={TMTI:false,TMCI:false,TMEI:false,TMF:false,TMAC:false};
 
+// ── Mostrar/ocultar colunas (Portaria / Portaria Fim) ──
+// Preferência salva por dispositivo (localStorage) — útil quando a internet da Portaria
+// está instável e os cards ficam "presos" lá; não afeta os dados nem outros dispositivos.
+const COLS_TOGGLE_KEY="kanban_colunas_ocultas";
+let COLS_OCULTAS=new Set();
+try{COLS_OCULTAS=new Set(JSON.parse(localStorage.getItem(COLS_TOGGLE_KEY)||"[]"));}catch(ignore){}
+
+function colsAtualizarBotao(){
+  const n=COLS_OCULTAS.size;
+  document.getElementById("n-cols").textContent=n;
+  document.getElementById("btn-cols").classList.toggle("hidden-some",n>0);
+}
+window.colToggle=function(id,visivel){
+  if(visivel)COLS_OCULTAS.delete(id);else COLS_OCULTAS.add(id);
+  localStorage.setItem(COLS_TOGGLE_KEY,JSON.stringify([...COLS_OCULTAS]));
+  colsAtualizarBotao();
+  render();
+};
+window.colsRestaurarTodas=function(){
+  COLS_OCULTAS=new Set();
+  localStorage.setItem(COLS_TOGGLE_KEY,JSON.stringify([]));
+  document.getElementById("sw-col-portaria").checked=true;
+  document.getElementById("sw-col-portaria_fim").checked=true;
+  colsAtualizarBotao();
+  render();
+};
+window.toggleColsPanel=function(){
+  document.getElementById("cols-panel").classList.toggle("show");
+  document.getElementById("btn-cols").classList.toggle("active");
+};
+document.addEventListener("click",e=>{
+  const wrap=document.querySelector(".cols-wrap");
+  if(wrap&&!wrap.contains(e.target))document.getElementById("cols-panel").classList.remove("show");
+});
+document.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById("sw-col-portaria").checked=!COLS_OCULTAS.has("portaria");
+  document.getElementById("sw-col-portaria_fim").checked=!COLS_OCULTAS.has("portaria_fim");
+  colsAtualizarBotao();
+});
+
 // ── Helpers ──
 function toDate(v){return v?.toDate?v.toDate():(v instanceof Date?v:null);}
 function diffMs(a,b){const da=toDate(a),db=toDate(b);if(!da||!db)return null;return db-da;}
@@ -574,9 +656,13 @@ window.render=function(){
     return!!c.setorAtual;
   });
 
+  const colunasVisiveis=COLUNAS.filter(col=>!COLS_OCULTAS.has(col.id));
+  document.getElementById("resumo").style.setProperty("--ncols",colunasVisiveis.length);
+  document.getElementById("board").style.setProperty("--ncols",colunasVisiveis.length);
+
   // Resumo
   let resumoHtml="";
-  COLUNAS.forEach(col=>{
+  colunasVisiveis.forEach(col=>{
     const n=ativos.filter(c=>estagioEfetivo(c)===col.id&&passaFiltros(c,col.id)).length;
     resumoHtml+=`<div class="res-card" style="--accent:${col.accent}" onclick="scrollToCol('${col.id}')">
       <div class="res-val" style="color:${col.accent}">${n}</div>
@@ -587,7 +673,7 @@ window.render=function(){
 
   // Board
   let boardHtml="";
-  COLUNAS.forEach(col=>{
+  colunasVisiveis.forEach(col=>{
     const lista=ativos.filter(c=>estagioEfetivo(c)===col.id&&passaFiltros(c,col.id))
       .sort((a,b)=>{
         const ea=toDate(col.inicio(a)),eb=toDate(col.inicio(b));
