@@ -83,6 +83,30 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .conn-banner.reconnecting{background:#ffb020;color:#1a1200}
 .conn-banner.online{background:#00e896;color:#00220f}
 .conn-spin{width:12px;height:12px;border:2px solid rgba(0,0,0,.25);border-top-color:currentColor;border-radius:50%;animation:ro .7s linear infinite}
+.rodape-label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.fatf-head{display:flex;align-items:center;justify-content:space-between;margin:20px 0 8px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px}
+.fatf-count{font-size:10px;color:var(--t3)}
+.fatf-list{display:flex;flex-direction:column;gap:6px}
+.fatf-row{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--rs);border:1.5px solid var(--bd);background:var(--c1);cursor:pointer;transition:border-color .2s}
+.fatf-row:hover{border-color:var(--ac)}
+.fatf-num{font-family:monospace;font-size:16px;font-weight:700;letter-spacing:2px;color:var(--ac)}
+.fatf-sub{font-size:10px;color:var(--t3);margin-top:1px}
+.fatf-cim{color:#ffd000;font-weight:700}
+.fatf-wait{font-size:9px;color:var(--t3);margin-left:6px;white-space:nowrap;flex-shrink:0}
+.fatf-empty{text-align:center;padding:16px;color:var(--t3);font-size:12px;font-style:italic}
+.fatf-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center;z-index:999}
+.fatf-modal.show{display:flex}
+.fatf-sheet{background:var(--c1);border:1px solid var(--bd);border-radius:16px 16px 0 0;width:100%;max-width:440px;max-height:85vh;overflow-y:auto;padding:20px}
+.fatf-sh-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.fatf-sh-placa{font-family:monospace;font-size:20px;font-weight:700;color:var(--ac);letter-spacing:1px}
+.fatf-sh-sub{font-size:11px;color:var(--t2);margin-top:2px}
+.fatf-sh-close{background:transparent;border:none;color:var(--t3);font-size:16px;cursor:pointer}
+.fatf-dsec{margin-bottom:16px}
+.fatf-dsec h4{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.fatf-drow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.fatf-drow span:first-child{color:var(--t2)}
+.fatf-drow span:last-child{color:var(--tx);text-align:right;font-weight:600}
+.fatf-op{color:var(--t3);font-weight:400;font-size:10.5px}
 </style>
 </head>
 <body>
@@ -161,6 +185,36 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
     <button class="exp-btn" onclick="gerarPDF()">📄 PDF</button>
     <button class="exp-btn" onclick="exportExcel()">📊 Excel</button>
+  </div>
+
+  <!-- FILA AGUARDANDO FATURAMENTO -->
+  <div class="fatf-head">
+    <div class="rodape-label">Fila · Aguardando veículos para faturar</div>
+    <span class="fatf-count" id="fatf-count"></span>
+  </div>
+  <div class="fatf-list" id="fatf-list">
+    <div class="fatf-empty">Fila vazia</div>
+  </div>
+</div>
+
+<!-- SHEET DETALHE VEÍCULO -->
+<div class="fatf-modal" id="fatf-modal">
+  <div class="fatf-sheet">
+    <div class="fatf-sh-head">
+      <div>
+        <div class="fatf-sh-placa" id="fatf-sh-placa">—</div>
+        <div class="fatf-sh-sub" id="fatf-sh-sub"></div>
+      </div>
+      <button class="fatf-sh-close" onclick="document.getElementById('fatf-modal').classList.remove('show')">✕</button>
+    </div>
+    <div class="fatf-dsec">
+      <h4>Linha do tempo por etapa</h4>
+      <div id="fatf-sh-etapas"></div>
+    </div>
+    <div class="fatf-dsec">
+      <h4>Situação atual</h4>
+      <div class="fatf-drow"><span>Aguardando faturamento há</span><span id="fatf-sh-espera">—</span></div>
+    </div>
   </div>
 </div>
 
@@ -267,6 +321,7 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const todos=snap.docs.map(d=>{return{id:d.id,...d.data()}});
   HD=todos.filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
   HD_REL=todos; // relatório: olha TODOS os documentos, sem excluir concluído/dia anterior
+  renderFilaFat();
 },err=>{
   console.error("Firestore listener error:",err);
   connState="offline";
@@ -295,6 +350,74 @@ await updateDoc(doc(db,"caminhoes_rastreio",c.id),{"faturamento.ts":Timestamp.fr
   document.getElementById("go").disabled=false;
 };
 function showMsg(t,x){const e=document.getElementById("msg");e.className="msg on "+t;e.textContent=x;if(t==="ok")setTimeout(()=>e.className="msg",5000);}
+
+// ── Fila · Aguardando veículos para faturar ─────────────────────────────
+const FATF_CARGA_LB={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
+function fatfDurStr(ms){
+  if(ms==null||ms<0)return"-";
+  const m=Math.round(ms/60000);
+  if(m===0)return"<1min";
+  return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?m%60+"m":"");
+}
+function fatfEnlOuCarFim(c){
+  const enF=c.enlonamento?.fim?.toDate?.();
+  if(enF)return enF;
+  const caF=c.carregamento?.fim?.toDate?.();
+  return caF||null;
+}
+function renderFilaFat(){
+  const el=document.getElementById("fatf-list");
+  const cntEl=document.getElementById("fatf-count");
+  if(!el)return;
+  const fila=HD.filter(c=>c.setorAtual==="faturamento_aguardando").sort((a,b)=>{
+    const ta=fatfEnlOuCarFim(a)?.getTime()||0;
+    const tb=fatfEnlOuCarFim(b)?.getTime()||0;
+    return ta-tb;
+  });
+  if(!fila.length){
+    el.innerHTML='<div class="fatf-empty">Fila vazia</div>';
+    cntEl.textContent="";
+    return;
+  }
+  cntEl.textContent=fila.length+" veículo"+(fila.length!==1?"s":"");
+  el.innerHTML=fila.map(c=>{
+    const cim=c.tipoCimento||c.tipoCimentoLabel||"";
+    const tp=c.tipoCarga||"";
+    const fim=fatfEnlOuCarFim(c);
+    const espera=fim?fatfDurStr(Date.now()-fim.getTime()):"-";
+    return`<div class="fatf-row" onclick="abrirFatSheet('${c.id}')">
+      <div style="flex:1">
+        <div class="fatf-num">${c.placa||"-"}</div>
+        <div class="fatf-sub">${cim?`<span class="fatf-cim">${cim}</span> · `:""}${FATF_CARGA_LB[tp]||tp} · AC ${c.ac||"-"}</div>
+      </div>
+      <span class="fatf-wait">aguardando ${espera}</span>
+    </div>`;
+  }).join("");
+}
+setInterval(renderFilaFat,30000);
+
+window.abrirFatSheet=(id)=>{
+  const c=HD.find(d=>d.id===id);if(!c)return;
+  const cim=c.tipoCimento||c.tipoCimentoLabel||"";
+  const tp=FATF_CARGA_LB[c.tipoCarga]||c.tipoCarga||"-";
+  document.getElementById("fatf-sh-placa").textContent=c.placa||"-";
+  document.getElementById("fatf-sh-sub").textContent="AC "+(c.ac||"-")+" · "+tp+(cim?" · "+cim:"");
+  const en=c.entrada?.ts?.toDate?.();
+  const poI=c.portaria?.inicio?.toDate?.(),poF=c.portaria?.fim?.toDate?.();
+  const trI=c.triagem?.inicio?.toDate?.(),trF=c.triagem?.fim?.toDate?.();
+  const caI=c.carregamento?.inicio?.toDate?.(),caF=c.carregamento?.fim?.toDate?.();
+  const enI=c.enlonamento?.inicio?.toDate?.(),enF=c.enlonamento?.fim?.toDate?.();
+  const row=(lb,ini,fim,op)=>`<div class="fatf-drow"><span>${lb}</span><span>${fmtT(ini)}${fim?" → "+fmtT(fim):""}${op?` <span class="fatf-op">· ${op}</span>`:""}</span></div>`;
+  document.getElementById("fatf-sh-etapas").innerHTML=
+    `<div class="fatf-drow"><span>Entrada · Posto 1</span><span>${fmtT(en)}${c.entrada?.operador?` <span class="fatf-op">· ${c.entrada.operador}</span>`:""}</span></div>`+
+    `<div class="fatf-drow"><span>Portaria início / fim</span><span>${fmtT(poI)} → ${fmtT(poF)}</span></div>`+
+    row("Triagem início / fim",trI,trF,c.triagem?.operadorInicio||c.triagem?.operadorFim)+
+    row("Carregamento início / fim",caI,caF,c.carregamento?.operadorInicio||c.carregamento?.operadorFim)+
+    row("Enlonamento início / fim",enI,enF,c.enlonamento?.operadorInicio||c.enlonamento?.operadorFim);
+  const fim=fatfEnlOuCarFim(c);
+  document.getElementById("fatf-sh-espera").textContent=fim?fatfDurStr(Date.now()-fim.getTime()):"-";
+  document.getElementById("fatf-modal").classList.add("show");
+};
 
 // ── Filtro do relatório ──────────────────────────────────────────────
 let MT="geral"; // 'geral' | 'A' | 'B' | 'C'
