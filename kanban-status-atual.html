@@ -60,10 +60,21 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .admin-banner-box{background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:10px;padding:10px 16px;font-size:11.5px;color:var(--rd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .admin-banner-box b{color:var(--tx)}
 .admin-banner-box .sair{margin-left:auto;cursor:pointer;text-decoration:underline}
-.card-remove{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:var(--rd);border:2px solid var(--bg2);color:#fff;font-size:12px;font-weight:800;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(255,68,102,.4);z-index:5}
-body.admin-mode .card-remove{display:flex}
+.admin-controls{position:absolute;top:-10px;right:-10px;display:none;flex-direction:column;align-items:center;gap:5px;z-index:5}
+body.admin-mode .admin-controls{display:flex}
 body.admin-mode .card{outline:1px dashed rgba(255,68,102,.25);outline-offset:2px}
+.card-remove{width:24px;height:24px;border-radius:50%;background:var(--rd);border:2px solid var(--bg2);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(255,68,102,.4)}
 .card-remove:hover{background:#ff5c7a;transform:scale(1.1)}
+.card-select{width:20px;height:20px;border-radius:6px;background:var(--bg2);border:2px solid var(--rd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:transparent;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.card-select.on{background:var(--rd);color:#fff}
+.card.selecionado{border-color:var(--rd)!important;box-shadow:0 0 0 1px var(--rd)}
+
+/* ── barra flutuante: seleção múltipla (Modo Administrador) ── */
+.sel-bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg2);border-top:2px solid var(--rd);padding:12px 20px;display:none;align-items:center;gap:14px;z-index:400;box-shadow:0 -8px 24px rgba(0,0,0,.4)}
+.sel-bar.show{display:flex}
+.sel-bar-count{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--rd);display:flex;align-items:center;gap:8px}
+.sel-bar-count span{background:var(--rd);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sel-bar-btns{margin-left:auto;display:flex;gap:10px}
 
 /* ── Barra de filtros ── */
 .filtros{max-width:1600px;margin:0 auto;padding:0 16px;display:none;flex-wrap:wrap;gap:8px;padding-top:14px}
@@ -468,6 +479,35 @@ body.admin-mode .card{outline:1px dashed rgba(255,68,102,.25);outline-offset:2px
   </div>
 </div>
 
+<!-- Barra flutuante: seleção múltipla (Modo Administrador) -->
+<div class="sel-bar" id="sel-bar">
+  <div class="sel-bar-count"><span id="sel-n">0</span> card(s) selecionado(s)</div>
+  <div class="sel-bar-btns">
+    <button class="mx-btn" onclick="limparSelecaoCards()">Cancelar seleção</button>
+    <button class="mx-btn mx-btn-primary" onclick="abrirRemocaoLote()">🗑️ Remover selecionados</button>
+  </div>
+</div>
+
+<!-- Modal remover em lote (Modo Administrador) -->
+<div class="modal-overlay" id="modal-remover-lote">
+  <div class="modal-box mx-box">
+    <div class="mx-head">
+      <button class="modal-close" style="position:absolute;top:14px;right:16px" onclick="fecharRemocaoLote()">✕</button>
+      <div class="mx-title">🗑️ Remover cards selecionados</div>
+      <div class="mx-sub">Um único motivo será aplicado a todos os cards marcados.</div>
+    </div>
+    <div class="mx-body">
+      <div class="mx-resumo" id="lote-resumo">—</div>
+      <textarea class="mx-motivo" id="lote-motivo" placeholder="Ex: Bug de fuso horário gerando tempos absurdos — removidos em lote após checagem manual." oninput="loteContarChars()"></textarea>
+      <div class="mx-charcount" id="lote-charcount">0 caracteres · mínimo 10</div>
+    </div>
+    <div class="mx-foot">
+      <button class="mx-btn" onclick="fecharRemocaoLote()">Cancelar</button>
+      <button class="mx-btn mx-btn-primary" id="lote-btn-confirmar" onclick="confirmarRemocaoLote()" disabled>🗑️ Remover todos</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import{getFirestore,collection,onSnapshot,doc,updateDoc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -697,9 +737,13 @@ function cardHtml(c,col,idx){
   const entradaLabel=col.id==="portaria_fim"?"Faturado "+fmtT(ent):"Entrada "+fmtT(ent);
   const placaEsc=(c.placa||"").replace(/'/g,"\\'");
   const colunaEsc=col.label.replace(/^\S+\s/,"").replace(/'/g,"\\'");
-  const removeBtn=`<div class="card-remove" onclick="event.stopPropagation();pedirRemocaoCard('${c.id}','${placaEsc}','${colunaEsc}')" title="Remover card (Modo Administrador)">✕</div>`;
-  return`<div class="card${alerta?" alerta":""}" onclick="abrirDetalhe('${c.id}')">
-    ${removeBtn}
+  const selecionado=SELECIONADOS.has(c.id);
+  const adminControls=`<div class="admin-controls">
+      <div class="card-remove" onclick="event.stopPropagation();pedirRemocaoCard('${c.id}','${placaEsc}','${colunaEsc}')" title="Remover card (Modo Administrador)">✕</div>
+      <div class="card-select${selecionado?" on":""}" onclick="event.stopPropagation();toggleSelecaoCard('${c.id}')" title="Selecionar para remoção em lote">${selecionado?"✓":""}</div>
+    </div>`;
+  return`<div class="card${alerta?" alerta":""}${selecionado?" selecionado":""}" data-id="${c.id}" onclick="abrirDetalhe('${c.id}')">
+    ${adminControls}
     <div class="card-row1"><span class="card-placa">${c.placa||"—"}</span>${turno?`<span class="turno ${turnoCls}">${turno}</span>`:""}</div>
     <div class="card-ac">AC: ${c.ac||"—"}</div>
     ${nfHtml}
@@ -939,6 +983,7 @@ window.mxConfirmar=async function(){
 // Usa o mesmo login/senha do painel Admin. Não altera dados reais, só marca o card
 // com kanbanRemovidoAdmin para não aparecer mais no Kanban.
 let ADMIN_MODE=false;
+let SELECIONADOS=new Set(); // seleção múltipla para remoção em lote (Modo Administrador)
 let RM_ID=null,RM_PLACA=null;
 
 window.toggleAdminMode=function(){
@@ -947,6 +992,7 @@ window.toggleAdminMode=function(){
     document.body.classList.remove("admin-mode");
     document.getElementById("btn-admin").classList.remove("on");
     document.getElementById("admin-banner").classList.remove("show");
+    limparSelecaoCards();
   }else{
     document.getElementById("admin-user").value="";
     document.getElementById("admin-pwd").value="";
@@ -1007,6 +1053,80 @@ window.confirmarRemocaoCard=async function(){
     alert("Não foi possível remover o card. Tente novamente.");
   }finally{
     btn.disabled=false;btn.textContent="🗑️ Remover";
+  }
+};
+
+// ── Seleção múltipla: remove vários cards de qualquer coluna com um único motivo ──
+window.toggleSelecaoCard=function(id){
+  if(!ADMIN_MODE)return;
+  const cardEl=document.querySelector(`.card[data-id="${id}"]`);
+  if(SELECIONADOS.has(id)){
+    SELECIONADOS.delete(id);
+    cardEl?.classList.remove("selecionado");
+    const box=cardEl?.querySelector(".card-select");
+    if(box){box.classList.remove("on");box.textContent="";}
+  }else{
+    SELECIONADOS.add(id);
+    cardEl?.classList.add("selecionado");
+    const box=cardEl?.querySelector(".card-select");
+    if(box){box.classList.add("on");box.textContent="✓";}
+  }
+  atualizarBarraSelecao();
+};
+
+function atualizarBarraSelecao(){
+  document.getElementById("sel-n").textContent=SELECIONADOS.size;
+  document.getElementById("sel-bar").classList.toggle("show",SELECIONADOS.size>0);
+}
+
+window.limparSelecaoCards=function(){
+  SELECIONADOS.forEach(id=>{
+    const cardEl=document.querySelector(`.card[data-id="${id}"]`);
+    cardEl?.classList.remove("selecionado");
+    const box=cardEl?.querySelector(".card-select");
+    if(box){box.classList.remove("on");box.textContent="";}
+  });
+  SELECIONADOS.clear();
+  atualizarBarraSelecao();
+};
+
+window.abrirRemocaoLote=function(){
+  if(!SELECIONADOS.size)return;
+  const placas=[...SELECIONADOS].map(id=>{const c=DADOS.find(x=>x.id===id);return c?.placa||id;});
+  document.getElementById("lote-resumo").innerHTML=`<b>${SELECIONADOS.size} card${SELECIONADOS.size!==1?"s":""}</b> ${SELECIONADOS.size!==1?"serão removidos":"será removido"} do Kanban: ${placas.join(", ")}.<br>O mesmo motivo abaixo será gravado em cada um deles individualmente.`;
+  document.getElementById("lote-motivo").value="";
+  loteContarChars();
+  document.getElementById("modal-remover-lote").classList.add("show");
+};
+
+window.fecharRemocaoLote=function(){
+  document.getElementById("modal-remover-lote").classList.remove("show");
+};
+
+window.loteContarChars=function(){
+  const v=document.getElementById("lote-motivo").value;
+  document.getElementById("lote-charcount").textContent=v.length+" caracteres · mínimo 10";
+  document.getElementById("lote-btn-confirmar").disabled=v.trim().length<10;
+};
+
+window.confirmarRemocaoLote=async function(){
+  const motivo=document.getElementById("lote-motivo").value.trim();
+  if(motivo.length<10||!SELECIONADOS.size)return;
+  const ids=[...SELECIONADOS];
+  const btn=document.getElementById("lote-btn-confirmar");
+  btn.disabled=true;btn.textContent="Removendo...";
+  try{
+    await Promise.all(ids.map(id=>updateDoc(doc(db,"caminhoes_rastreio",id),{
+      kanbanRemovidoAdmin:{ts:Timestamp.fromDate(new Date()),admin:ADMIN_CREDS.user,motivo:motivo}
+    })));
+    SELECIONADOS.clear();
+    atualizarBarraSelecao();
+    fecharRemocaoLote();
+  }catch(err){
+    console.error("Erro ao remover cards em lote:",err);
+    alert("Não foi possível remover os cards selecionados. Tente novamente.");
+  }finally{
+    btn.disabled=false;btn.textContent="🗑️ Remover todos";
   }
 };
 
