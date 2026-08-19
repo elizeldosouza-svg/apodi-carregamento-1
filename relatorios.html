@@ -49,6 +49,9 @@ tbody tr:hover{background:var(--bg3);cursor:pointer}
 .col-fixed{position:sticky;left:0;background:var(--bg2);z-index:2}
 th.col-fixed{z-index:4}
 .empty{padding:40px;text-align:center;color:var(--t2);font-size:13px}
+.pag-bar{display:flex;align-items:center;justify-content:center;gap:14px;padding:12px 16px;border-top:1px solid var(--bd)}
+.pag-bar #pg-info{font-size:12px;color:var(--t2);min-width:140px;text-align:center}
+.pag-bar button:disabled{opacity:.4;cursor:default}
 
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none}
 .drawer-overlay.show{display:block}
@@ -76,7 +79,7 @@ th.col-fixed{z-index:4}
 <div class="wrap">
   <div class="filters">
     <div class="ff"><label>Empresa</label>
-      <select id="f-empresa" onchange="render()">
+      <select id="f-empresa" onchange="aplicarFiltros()">
         <option value="">Todas</option>
         <option value="Apodi">Apodi</option>
         <option value="Seguro Segurança">Seguro Segurança</option>
@@ -85,12 +88,12 @@ th.col-fixed{z-index:4}
         <option value="Sousa Clean">Sousa Clean</option>
       </select>
     </div>
-    <div class="ff"><label>Data início</label><input type="date" id="f-ini" onchange="render()"></div>
-    <div class="ff"><label>Data fim</label><input type="date" id="f-fim" onchange="render()"></div>
+    <div class="ff"><label>Data início</label><input type="date" id="f-ini" onchange="aplicarFiltros()"></div>
+    <div class="ff"><label>Data fim</label><input type="date" id="f-fim" onchange="aplicarFiltros()"></div>
     <div class="ff"><label>Placa</label><input id="f-placa" placeholder="ABC1234" oninput="renderDebounced()"></div>
     <div class="ff"><label>AC</label><input id="f-ac" placeholder="AC-001" oninput="renderDebounced()"></div>
     <div class="ff"><label>Status</label>
-      <select id="f-status" onchange="render()">
+      <select id="f-status" onchange="aplicarFiltros()">
         <option value="">Todos</option>
         <option value="andamento">Em andamento</option>
         <option value="concluido">Concluído</option>
@@ -131,6 +134,11 @@ th.col-fixed{z-index:4}
       </table>
     </div>
     <div class="empty" id="empty" style="display:none">🔍 Nenhum registro encontrado com os filtros atuais.</div>
+    <div class="pag-bar">
+      <button class="btn btn-out" id="pg-prev" onclick="irPagina(-1)">◀ Anterior</button>
+      <span id="pg-info">Página 1 de 1</span>
+      <button class="btn btn-out" id="pg-next" onclick="irPagina(1)">Próxima ▶</button>
+    </div>
   </div>
 </div>
 
@@ -145,11 +153,13 @@ const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDo
 const db=getFirestore(app);
 
 const LIMITE_TMAC_MS=130*60*1000;
+const PAGE_SIZE=50;
 let HD=[];
 let HD_BY_ID=new Map();
 let selecionado=null;
 let xlsxCarregado=false;
 let debounceTimer=null;
+let paginaAtual=1;
 
 const fmtT=ts=>{
   if(!ts)return"—";
@@ -207,25 +217,30 @@ function statusInfo(c,m){
   return{key:"concluido",label:"Concluído",cls:"gr"};
 }
 
-function passaFiltros(c,m,st){
+function passaFiltros(c){
   const fe=document.getElementById("f-empresa").value;
   const fi=document.getElementById("f-ini").value;
   const ff=document.getElementById("f-fim").value;
   const fp=document.getElementById("f-placa").value.trim().toUpperCase();
   const fac=document.getElementById("f-ac").value.trim().toUpperCase();
   const fs=document.getElementById("f-status").value;
-  if(fe&&empresaAtual(c)!==fe)return false;
+  if(fe&&c._empresa!==fe)return false;
   if(fi&&c.data<fi)return false;
   if(ff&&c.data>ff)return false;
   if(fp&&(c.placa||"").toUpperCase().indexOf(fp)===-1)return false;
   if(fac&&(c.ac||"").toUpperCase().indexOf(fac)===-1)return false;
-  if(fs&&st.key!==fs)return false;
+  if(fs&&c._st.key!==fs)return false;
   return true;
 }
 
+window.aplicarFiltros=()=>{
+  paginaAtual=1;
+  render();
+};
+
 window.renderDebounced=()=>{
   clearTimeout(debounceTimer);
-  debounceTimer=setTimeout(render,300);
+  debounceTimer=setTimeout(()=>{paginaAtual=1;render();},300);
 };
 
 window.limparFiltros=()=>{
@@ -235,43 +250,72 @@ window.limparFiltros=()=>{
   document.getElementById("f-placa").value="";
   document.getElementById("f-ac").value="";
   document.getElementById("f-status").value="";
+  paginaAtual=1;
   render();
 };
 
+window.irPagina=(delta)=>{
+  paginaAtual+=delta;
+  render();
+};
+
+function getFiltrados(){
+  const filtrados=[];
+  HD.forEach((c,idx)=>{
+    if(!passaFiltros(c))return;
+    filtrados.push({c,n:HD.length-idx});
+  });
+  return filtrados;
+}
+
+const CABECALHO=["Nº","Placa","AC","Empresa Atual","Tipo Carga","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","Nota Fiscal","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Status"];
+
+function linhaCells(c,n){
+  const m=c._m,st=c._st;
+  return[n,c.placa||"—",c.ac||"—",c._empresa,c.tipoCargaLabel||"—",c.tipoCimentoLabel||"—",fmtData(c.data),(c.setorAtual||"—").replace(/_/g," "),fmtT(m.tEntrada),fmtT(m.tPortI),fmtT(m.tPortF),fmtT(m.tTriI),fmtT(m.tTriF),fmtT(m.tCarI),fmtT(m.tCarF),fmtT(m.tEnlI),fmtT(m.tEnlF),fmtT(m.tFat),c.notaFiscal||"—",fmtDur(m.TMAC),fmtDur(m.TME),fmtDur(m.TMC),fmtDur(m.TMF),fmtDur(m.TMTI),fmtDur(m.TMCI),fmtDur(m.TMEI),st.label];
+}
+
 window.render=()=>{
   const tbody=document.getElementById("tbody");
-  const filtrados=[];
+  const filtrados=getFiltrados();
   let conc=0,and=0,fora=0,slaOk=0,tmacSum=0,tmacCount=0;
-  const rows=[];
-  HD.forEach((c,idx)=>{
-    const m=metrics(c);
-    const st=statusInfo(c,m);
-    if(!passaFiltros(c,m,st))return;
-    filtrados.push({c,m,st,n:HD.length-idx});
-  });
+
   filtrados.forEach(r=>{
-    if(r.st.key==="andamento")and++;
-    if(r.st.key==="concluido"){conc++;slaOk++;}
-    if(r.st.key==="fora"){conc++;fora++;}
-    if(r.c.setorAtual==="concluido"&&r.m.TMAC!==null){tmacSum+=r.m.TMAC;tmacCount++;}
+    const st=r.c._st,m=r.c._m;
+    if(st.key==="andamento")and++;
+    if(st.key==="concluido"){conc++;slaOk++;}
+    if(st.key==="fora"){conc++;fora++;}
+    if(r.c.setorAtual==="concluido"&&m.TMAC!==null){tmacSum+=m.TMAC;tmacCount++;}
   });
+
   document.getElementById("k-total").textContent=filtrados.length;
   document.getElementById("k-conc").textContent=conc;
   document.getElementById("k-and").textContent=and;
   document.getElementById("k-tmac").textContent=tmacCount?fmtDur(tmacSum/tmacCount):"—";
   document.getElementById("k-fora").textContent=fora;
   document.getElementById("k-sla").textContent=conc?Math.round(slaOk/conc*100)+"%":"—";
-  document.getElementById("rescount").textContent=filtrados.length+" encontrados";
   document.getElementById("empty").style.display=filtrados.length?"none":"block";
 
-  filtrados.forEach(r=>{
-    const c=r.c,m=r.m,st=r.st;
+  const totalPaginas=Math.max(1,Math.ceil(filtrados.length/PAGE_SIZE));
+  if(paginaAtual>totalPaginas)paginaAtual=totalPaginas;
+  if(paginaAtual<1)paginaAtual=1;
+  const ini=(paginaAtual-1)*PAGE_SIZE;
+  const pagina=filtrados.slice(ini,ini+PAGE_SIZE);
+
+  document.getElementById("rescount").textContent=filtrados.length+" encontrados · página "+paginaAtual+" de "+totalPaginas;
+  document.getElementById("pg-info").textContent="Página "+paginaAtual+" de "+totalPaginas;
+  document.getElementById("pg-prev").disabled=paginaAtual<=1;
+  document.getElementById("pg-next").disabled=paginaAtual>=totalPaginas;
+
+  const rows=[];
+  pagina.forEach(r=>{
+    const c=r.c,m=c._m,st=c._st;
     rows.push(
       "<tr onclick=\"abrirDrawer('"+c.id+"')\">"+
       "<td class='col-fixed'>"+r.n+"</td>"+
       "<td class='col-fixed placa'>"+(c.placa||"—")+"</td>"+
       "<td>"+(c.ac||"—")+"</td>"+
-      "<td>"+empresaAtual(c)+"</td>"+
+      "<td>"+c._empresa+"</td>"+
       "<td>"+(c.tipoCargaLabel||"—")+"</td>"+
       "<td>"+(c.tipoCimentoLabel||"—")+"</td>"+
       "<td>"+fmtData(c.data)+"</td>"+
@@ -304,8 +348,8 @@ window.render=()=>{
 window.abrirDrawer=(id)=>{
   const c=HD_BY_ID.get(id);
   if(!c)return;
-  const m=metrics(c);
-  const st=statusInfo(c,m);
+  const m=c._m;
+  const st=c._st;
   const drw=document.getElementById("drw");
   drw.innerHTML=
     "<div class='drawer-head'>"+
@@ -318,7 +362,7 @@ window.abrirDrawer=(id)=>{
       "<div class='drow'><span>AC</span><span>"+(c.ac||"—")+"</span></div>"+
       "<div class='drow'><span>Data</span><span>"+fmtData(c.data)+"</span></div>"+
       "<div class='drow'><span>Setor atual</span><span>"+(c.setorAtual||"—").replace(/_/g," ")+"</span></div>"+
-      "<div class='drow'><span>Empresa responsável</span><span>"+empresaAtual(c)+"</span></div>"+
+      "<div class='drow'><span>Empresa responsável</span><span>"+c._empresa+"</span></div>"+
       "<div class='drow'><span>Nota fiscal</span><span>"+(c.notaFiscal||"—")+"</span></div>"+
       "<div class='drow'><span>Status</span><span class='tag "+st.cls+"'>"+st.label+"</span></div>"+
     "</div>"+
@@ -368,12 +412,9 @@ window.exportarExcel=async(ev)=>{
   if(btn){btn.textContent="⏳ Preparando...";btn.disabled=true;}
   try{
     await carregarXLSX();
-    const linhas=[["Nº","Placa","AC","Empresa Atual","Tipo Carga","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","Nota Fiscal","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Status"]];
-    document.querySelectorAll("#tbody tr").forEach(tr=>{
-      const cols=[];
-      tr.querySelectorAll("td").forEach(td=>cols.push(td.textContent.trim()));
-      linhas.push(cols);
-    });
+    const filtrados=getFiltrados();
+    const linhas=[CABECALHO];
+    filtrados.forEach(r=>linhas.push(linhaCells(r.c,r.n)));
     const ws=XLSX.utils.aoa_to_sheet(linhas);
     const wb=XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,ws,"Relatorio");
@@ -386,9 +427,11 @@ window.exportarExcel=async(ev)=>{
 };
 
 window.exportarPDF=()=>{
+  const filtrados=getFiltrados();
+  const thead="<tr>"+CABECALHO.map(h=>"<th>"+h+"</th>").join("")+"</tr>";
+  const corpo=filtrados.map(r=>"<tr>"+linhaCells(r.c,r.n).map(v=>"<td>"+v+"</td>").join("")+"</tr>").join("");
   const w=window.open("","_blank");
-  const tabela=document.querySelector(".tscroll table").outerHTML;
-  w.document.write("<html><head><title>Relatório TMAC</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:8pt;padding:14px;color:#000}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:4px 6px;text-align:center;white-space:nowrap}th{background:#eee}</style></head><body><h3>Relatório TMAC Online — "+new Date().toLocaleString("pt-BR")+"</h3><br>"+tabela+"</body></html>");
+  w.document.write("<html><head><title>Relatório TMAC</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:8pt;padding:14px;color:#000}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:4px 6px;text-align:center;white-space:nowrap}th{background:#eee}</style></head><body><h3>Relatório TMAC Online — "+new Date().toLocaleString("pt-BR")+" · "+filtrados.length+" registros</h3><br><table><thead>"+thead+"</thead><tbody>"+corpo+"</tbody></table></body></html>");
   w.document.close();
   setTimeout(()=>w.print(),300);
 };
@@ -408,8 +451,15 @@ function iniciarListener(){
     q=query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"),where("criadoEm",">=",Timestamp.fromDate(desde)));
   }
   unsub=onSnapshot(q,snap=>{
-    HD=snap.docs.map(d=>({id:d.id,...d.data()}));
+    HD=snap.docs.map(d=>{
+      const c={id:d.id,...d.data()};
+      c._m=metrics(c);
+      c._st=statusInfo(c,c._m);
+      c._empresa=empresaAtual(c);
+      return c;
+    });
     HD_BY_ID=new Map(HD.map(c=>[c.id,c]));
+    paginaAtual=1;
     render();
   });
 }
