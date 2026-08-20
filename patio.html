@@ -59,7 +59,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .cal-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
 .cal-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg2);border:1px solid var(--b2);border-radius:20px;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
 .cal-btn:hover,.cal-btn.active{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
-.cal-popup{position:absolute;z-index:500;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;min-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
+.cal-popup{position:absolute;top:calc(100% + 8px);left:0;z-index:500;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;min-width:320px;max-height:calc(100vh - 90px);overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
 .cal-popup.show{display:block}
 .cal-popup-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);margin-bottom:12px;letter-spacing:.5px}
 .cal-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
