@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Status do Pátio</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -170,11 +171,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 <body>
 <div class="top">
   <div class="logo">🏭 STATUS DO PÁTIO</div>
+  <div class="top-spacer"></div>
   <button class="btn-patio-view" onclick="abrirModalPatio()">👁️ Ver Pátio</button>
   <button class="btn-patio-pdf" onclick="abrirModalPatioPDF()">📄 PDF c/ Filtro</button>
   <button class="btn-patio-pdf" onclick="gerarExcelPatio()">📊 Excel</button>
+  <button class="btn-patio-pdf" id="btn-imagem" onclick="gerarImagemPatio()">🖼️ Imagem</button>
   <div class="live"><div class="dot"></div>AO VIVO</div>
-  <div class="top-spacer"></div>
 </div>
 
 <div class="wrap">
@@ -382,7 +384,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
           <table class="modal-table">
             <thead>
               <tr>
-                <th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>
+                <th>Nº</th><th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>
               </tr>
             </thead>
             <tbody id="modal-patio-tbody"></tbody>
@@ -760,7 +762,7 @@ window.fecharModal=function(id){
 };
 
 function buildTabelaPatio(lista){
-  if(!lista.length)return'<tr><td colspan="9" style="text-align:center;color:var(--t3);padding:20px">Nenhum veículo</td></tr>';
+  if(!lista.length)return'<tr><td colspan="10" style="text-align:center;color:var(--t3);padding:20px">Nenhum veículo</td></tr>';
   var rows="";
   for(var i=0;i<lista.length;i++){
     var c=lista[i];
@@ -778,6 +780,7 @@ function buildTabelaPatio(lista){
     var turnoStr=turno||"—";
     var alertaCl=(espera&&espera>LIMITE_ALERTA)?' style="color:var(--rd)"':"";
     rows+="<tr>";
+    rows+="<td>"+(i+1)+"</td>";
     rows+='<td><span class="modal-placa"'+alertaCl+">"+placa+"</span></td>";
     rows+="<td>"+ac+"</td>";
     rows+="<td>"+tipoCargaLabel+"</td>";
@@ -846,6 +849,7 @@ function imprimirPDF(lista,titulo,subtitulo){
     var turnoStr=turno||"—";
     var alertaStyle=(espera&&espera>LIMITE_ALERTA)?" background:#fff0f3;color:#c00;":"";
     linhas+="<tr style='"+alertaStyle+"'>";
+    linhas+="<td>"+(i+1)+"</td>";
     linhas+="<td>"+placa+"</td>";
     linhas+="<td>"+ac+"</td>";
     linhas+="<td>"+tipoCargaLabel+"</td>";
@@ -871,7 +875,7 @@ function imprimirPDF(lista,titulo,subtitulo){
   if(subtitulo)html+="<p>Período: "+subtitulo+"</p>";
   html+="</div><div style='font-size:11px;color:#555'>"+agora+"</div></div>";
   html+="<table><thead><tr>";
-  html+="<th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>";
+  html+="<th>Nº</th><th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>";
   html+="</tr></thead><tbody>"+linhas+"</tbody></table>";
   html+="<div class='footer'>Total: "+lista.length+" veículo"+(lista.length!==1?"s":"")+" · Gerado em "+agora+" · Apodi Cimentos</div>";
   html+="<div class='no-print' style='margin-top:16px'><button onclick='window.print()' style='padding:8px 20px;background:#0a2a5c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px'>🖨️ Imprimir / Salvar PDF</button></div>";
@@ -889,12 +893,13 @@ window.gerarExcelPatio=function(){
     if(!ea)return 1;if(!eb)return -1;
     return ea.getTime()-eb.getTime();
   });
-  var linhas=[["Placa","AC","Tipo Carga","Tipo de Carregamento","Tipo Cimento","Tempo Espera","Entrada","Operador","Turno"]];
+  var linhas=[["Nº","Placa","AC","Tipo Carga","Tipo de Carregamento","Tipo Cimento","Tempo Espera","Entrada","Operador","Turno"]];
   for(var i=0;i<lista.length;i++){
     var c=lista[i];
     var en=getTS(c,"entrada","ts");
     var espera=en?Date.now()-en.getTime():null;
     linhas.push([
+      i+1,
       c.placa||"—",
       c.ac||"—",
       c.tipoCargaLabel||c.tipoCarga||"—",
@@ -910,6 +915,25 @@ window.gerarExcelPatio=function(){
   var wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Patio");
   XLSX.writeFile(wb,"patio_tmac_"+new Date().toISOString().slice(0,10)+".xlsx");
+};
+
+// ── Imagem: captura a tela principal (cards + colunas) como PNG ──
+window.gerarImagemPatio=function(){
+  var alvo=document.getElementById("content");
+  var btn=document.getElementById("btn-imagem");
+  var txtOriginal=btn?btn.textContent:"";
+  if(btn){btn.disabled=true;btn.textContent="⏳ Gerando...";}
+  html2canvas(alvo,{backgroundColor:"#060d18",scale:2,useCORS:true}).then(function(canvas){
+    var link=document.createElement("a");
+    link.download="patio_tmac_"+new Date().toISOString().slice(0,10)+"_"+new Date().toTimeString().slice(0,5).replace(":","")+".png";
+    link.href=canvas.toDataURL("image/png");
+    link.click();
+  }).catch(function(err){
+    console.error("Erro ao gerar imagem:",err);
+    alert("Não foi possível gerar a imagem. Tente novamente.");
+  }).finally(function(){
+    if(btn){btn.disabled=false;btn.textContent=txtOriginal;}
+  });
 };
 
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
