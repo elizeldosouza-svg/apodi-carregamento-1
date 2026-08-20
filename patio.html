@@ -76,6 +76,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 /* ── Seção Aguardando ── */
 .section-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--bl);letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .section-title span{font-size:11px;font-weight:400;color:var(--t2);font-family:'Inter',sans-serif}
+.section-title #cnt-aguardando{font-size:15px;font-weight:800;color:var(--tx)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
 .vcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px;border-left:3px solid var(--bl);transition:all .2s}
 .vcard:hover{border-color:var(--bl);background:var(--bg3)}
@@ -107,19 +108,26 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
 @keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 
-/* ── 5 colunas Pátio ── */
-.patio-5col{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px;align-items:start}
-@media(max-width:900px){.patio-5col{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:600px){.patio-5col{grid-template-columns:repeat(2,1fr)}}
+/* ── 9 colunas Pátio (Ensacado / Granel / Big Bag × CP II F / CP III / CP V) ── */
+.patio-9col{display:grid;grid-template-columns:repeat(9,1fr);gap:10px;margin-bottom:24px;align-items:start}
+@media(max-width:1100px){.patio-9col{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.patio-9col{grid-template-columns:repeat(2,1fr)}}
 .col-grupo{display:flex;flex-direction:column;gap:8px}
-.col-header{border-radius:8px 8px 0 0;padding:9px 12px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:800;letter-spacing:.8px;display:flex;align-items:center;justify-content:center;gap:6px;border-bottom:2px solid transparent}
+.col-header{border-radius:8px 8px 0 0;padding:8px 6px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:800;letter-spacing:.5px;line-height:1.3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-bottom:2px solid transparent}
+.col-header .col-header-tipo{font-size:11px}
+.col-header .col-header-cim{font-size:10px;opacity:.85}
 .col-header.h-ens1{background:rgba(0,212,255,.13);color:#00d4ff;border-color:#00d4ff}
 .col-header.h-ens2{background:rgba(0,180,220,.1);color:#00bcd4;border-color:#00bcd4}
+.col-header.h-ens3{background:rgba(0,150,190,.1);color:#00a0c4;border-color:#00a0c4}
 .col-header.h-gran1{background:rgba(251,146,60,.13);color:#fb923c;border-color:#fb923c}
 .col-header.h-gran2{background:rgba(230,120,40,.1);color:#e07830;border-color:#e07830}
-.col-header.h-bb{background:rgba(0,232,150,.13);color:#00e896;border-color:#00e896}
+.col-header.h-gran3{background:rgba(200,100,30,.1);color:#c86e1e;border-color:#c86e1e}
+.col-header.h-bb1{background:rgba(0,232,150,.13);color:#00e896;border-color:#00e896}
+.col-header.h-bb2{background:rgba(0,200,130,.1);color:#00c882;border-color:#00c882}
+.col-header.h-bb3{background:rgba(0,170,110,.1);color:#00aa6e;border-color:#00aa6e}
 .col-cards{display:flex;flex-direction:column;gap:8px;min-height:60px}
 .col-vazio{text-align:center;padding:20px 8px;color:var(--t3);font-size:11px;background:var(--bg2);border:1px dashed var(--bd);border-radius:var(--rs)}
+
 
 /* ── Botões pátio no header ── */
 .btn-patio-view{display:flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-decoration:none;white-space:nowrap}
@@ -292,34 +300,45 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 
     </div>
 
-    <!-- ── 5 Colunas Pátio ── -->
+    <!-- ── 9 Colunas Pátio (Ensacado / Granel / Big Bag × CP II F / CP III / CP V) ── -->
     <div id="sec-aguardando" style="display:none;margin-bottom:24px">
       <div class="section-title">🏁 Aguardando no Pátio <span id="cnt-aguardando"></span></div>
-      <div class="patio-5col" id="patio-5col">
-        <!-- col Ensacado 1 -->
+      <div class="patio-9col" id="patio-9col">
         <div class="col-grupo">
-          <div class="col-header h-ens1">📦 Ensacado</div>
-          <div class="col-cards" id="col-ens1"></div>
+          <div class="col-header h-ens1"><span class="col-header-tipo">📦 Ensacado</span><span class="col-header-cim">CP II F</span></div>
+          <div class="col-cards" id="col-ens-cp2f"></div>
         </div>
-        <!-- col Ensacado 2 -->
         <div class="col-grupo">
-          <div class="col-header h-ens2">📦 Ensacado</div>
-          <div class="col-cards" id="col-ens2"></div>
+          <div class="col-header h-ens2"><span class="col-header-tipo">📦 Ensacado</span><span class="col-header-cim">CP III</span></div>
+          <div class="col-cards" id="col-ens-cp3"></div>
         </div>
-        <!-- col Granel 1 -->
         <div class="col-grupo">
-          <div class="col-header h-gran1">🚛 Granel</div>
-          <div class="col-cards" id="col-gran1"></div>
+          <div class="col-header h-ens3"><span class="col-header-tipo">📦 Ensacado</span><span class="col-header-cim">CP V</span></div>
+          <div class="col-cards" id="col-ens-cp5"></div>
         </div>
-        <!-- col Granel 2 -->
         <div class="col-grupo">
-          <div class="col-header h-gran2">🚛 Granel</div>
-          <div class="col-cards" id="col-gran2"></div>
+          <div class="col-header h-gran1"><span class="col-header-tipo">🚛 Granel</span><span class="col-header-cim">CP II F</span></div>
+          <div class="col-cards" id="col-gran-cp2f"></div>
         </div>
-        <!-- col Big Bag -->
         <div class="col-grupo">
-          <div class="col-header h-bb">🛍️ Big Bag</div>
-          <div class="col-cards" id="col-bb1"></div>
+          <div class="col-header h-gran2"><span class="col-header-tipo">🚛 Granel</span><span class="col-header-cim">CP III</span></div>
+          <div class="col-cards" id="col-gran-cp3"></div>
+        </div>
+        <div class="col-grupo">
+          <div class="col-header h-gran3"><span class="col-header-tipo">🚛 Granel</span><span class="col-header-cim">CP V</span></div>
+          <div class="col-cards" id="col-gran-cp5"></div>
+        </div>
+        <div class="col-grupo">
+          <div class="col-header h-bb1"><span class="col-header-tipo">🛍️ Big Bag</span><span class="col-header-cim">CP II F</span></div>
+          <div class="col-cards" id="col-bb-cp2f"></div>
+        </div>
+        <div class="col-grupo">
+          <div class="col-header h-bb2"><span class="col-header-tipo">🛍️ Big Bag</span><span class="col-header-cim">CP III</span></div>
+          <div class="col-cards" id="col-bb-cp3"></div>
+        </div>
+        <div class="col-grupo">
+          <div class="col-header h-bb3"><span class="col-header-tipo">🛍️ Big Bag</span><span class="col-header-cim">CP V</span></div>
+          <div class="col-cards" id="col-bb-cp5"></div>
         </div>
       </div>
     </div>
@@ -489,15 +508,15 @@ function makeCard(c){
 
 function set(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 
-// ── Distribuição nas 5 colunas ──
+// ── Distribuição nas 9 colunas (por tipo de carga × tipo de cimento) ──
 function distribuirColunas(ens,gran,bb){
-  const metEns=Math.ceil(ens.length/2);
-  const ens1=ens.slice(0,metEns);
-  const ens2=ens.slice(metEns);
-  const metGran=Math.ceil(gran.length/2);
-  const gran1=gran.slice(0,metGran);
-  const gran2=gran.slice(metGran);
-
+  function porCimento(lista){
+    return{
+      cp2f:lista.filter(function(c){return c.tipoCimento==="CP II F";}),
+      cp3:lista.filter(function(c){return c.tipoCimento==="CP III";}),
+      cp5:lista.filter(function(c){return c.tipoCimento==="CP V";})
+    };
+  }
   function renderCol(colId,lista){
     const el=document.getElementById(colId);
     if(!el)return;
@@ -507,11 +526,18 @@ function distribuirColunas(ens,gran,bb){
     }
     el.innerHTML=lista.map(makeCard).join("");
   }
-  renderCol("col-ens1",ens1);
-  renderCol("col-ens2",ens2);
-  renderCol("col-gran1",gran1);
-  renderCol("col-gran2",gran2);
-  renderCol("col-bb1",bb);
+  const e=porCimento(ens);
+  const g=porCimento(gran);
+  const b=porCimento(bb);
+  renderCol("col-ens-cp2f",e.cp2f);
+  renderCol("col-ens-cp3",e.cp3);
+  renderCol("col-ens-cp5",e.cp5);
+  renderCol("col-gran-cp2f",g.cp2f);
+  renderCol("col-gran-cp3",g.cp3);
+  renderCol("col-gran-cp5",g.cp5);
+  renderCol("col-bb-cp2f",b.cp2f);
+  renderCol("col-bb-cp3",b.cp3);
+  renderCol("col-bb-cp5",b.cp5);
 }
 
 function renderAll(snap){
