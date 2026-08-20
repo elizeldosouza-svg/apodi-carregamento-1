@@ -62,16 +62,24 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .fila-list-r{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding-right:2px}
 .fila-list-r::-webkit-scrollbar{width:4px}
 .fila-list-r::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
-.placa-row{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--rs);border:1.5px solid var(--bd);background:var(--c1);cursor:pointer;transition:all .2s}
+.placa-row{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--rs);border:1.5px solid var(--bd);background:var(--c1);cursor:pointer;transition:all .2s}
 .placa-row:hover{border-color:var(--ac);background:rgba(0,212,255,.05)}
 .placa-row.ativo{border-color:#00e896;background:rgba(0,232,150,.05)}
+.p-data{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.3px}
+.p-main{display:flex;align-items:center;gap:8px}
 .p-pos{font-family:monospace;font-size:11px;font-weight:700;color:var(--t3);min-width:18px}
 .p-num{font-family:monospace;font-size:16px;font-weight:700;letter-spacing:2px;color:var(--ac)}
 .p-sub{font-size:10px;color:var(--t3);margin-top:1px}
 .p-cim{color:var(--ye);font-weight:700}
-.p-sub2{font-size:9.5px;color:#00e896;margin-top:2px;font-weight:700}
+.p-carreg{color:#00e896;font-weight:700}
 .p-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;margin-left:auto}
 .p-tme{font-size:9px;font-weight:700;color:var(--ye);display:flex;align-items:center;gap:3px}
+.p-tme.alerta{color:#ff4466;font-weight:800}
+.placa-row.alerta{animation:pulseRed 1.1s ease-in-out infinite}
+@keyframes pulseRed{
+  0%,100%{border-color:var(--bd);background:var(--c1);box-shadow:0 0 0 rgba(255,68,102,0)}
+  50%{border-color:#ff4466;background:rgba(255,68,102,.1);box-shadow:0 0 14px rgba(255,68,102,.35)}
+}
 .p-cim2{font-size:9px;font-weight:700;color:var(--t2);font-family:monospace}
 .p-badge{font-size:8px;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;flex-shrink:0}
 .pb-gr{background:rgba(251,146,60,.15);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
@@ -181,11 +189,11 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   <div id="msg" class="msg"></div>
   <div class="fg">
     <label>Número da AC</label>
-    <input id="ac" type="text" placeholder="Ex: AC-001" autocomplete="off" oninput="chk()" style="text-transform:uppercase"/>
+    <input id="ac" type="text" inputmode="numeric" placeholder="Ex: 629308" maxlength="6" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);chk()"/>
   </div>
   <div class="fg">
     <label>Placa do Caminhão</label>
-    <input id="pl" type="text" placeholder="ABC1234" maxlength="8" autocomplete="off" oninput="chk()" class="placa-inp"/>
+    <input id="pl" type="text" placeholder="ABC1234" maxlength="7" autocomplete="off" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,7);chk()" class="placa-inp"/>
   </div>
   <div class="tipo-label">Tipo de Carga</div>
   <div class="tipo-group">
@@ -229,6 +237,12 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <button class="turno-btn" id="tb-a" onclick="setTurno('A',this)">A · 23h–07h</button>
       <button class="turno-btn" id="tb-b" onclick="setTurno('B',this)">B · 07h–15h</button>
       <button class="turno-btn" id="tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
+    </div>
+    <div class="filtro-row">
+      <span class="filtro-label">Operador:</span>
+      <select class="filtro-input" id="f-operador">
+        <option value="">Todos os operadores</option>
+      </select>
     </div>
   </div>
   <div class="btn-row">
@@ -404,7 +418,16 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
   const todos=snap.docs.map(d=>{return{id:d.id,...d.data()}});
   HD=todos.filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
   HD_REL=todos; // relatório: olha TODOS os documentos, sem excluir concluído/dia anterior
+  atualizarFiltroOperador();
 });
+function atualizarFiltroOperador(){
+  const sel=document.getElementById("f-operador");
+  if(!sel)return;
+  const valAtual=sel.value;
+  const nomes=[...new Set(HD_REL.map(c=>c.entrada?.operador).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">Todos os operadores</option>'+nomes.map(n=>`<option value="${n}">${n}</option>`).join("");
+  if(nomes.includes(valAtual))sel.value=valAtual;
+}
 const SUBTIPOS_POR_CARGA={
   ensacado:["Paletizado","Caricamat","Container"],
   granel:["Granel"],
@@ -436,17 +459,19 @@ window.setCimento=(val,label,el)=>{
   el.classList.add("on");
   chk();
 };
+const RE_PLACA=/^[A-Z]{3}\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/;
 window.chk=()=>{
   const ac=document.getElementById("ac").value.trim();
   const pl=document.getElementById("pl").value.replace(/[^A-Z0-9]/gi,"");
-  document.getElementById("go").disabled=!(ac.length>=2&&pl.length>=7&&TIPO&&SUBTIPO&&TIPO_CIMENTO);
+  document.getElementById("go").disabled=!(ac.length===6&&RE_PLACA.test(pl)&&TIPO&&SUBTIPO&&TIPO_CIMENTO);
 };
 let REGISTRANDO=false;
 window.registrar=async()=>{
   if(REGISTRANDO)return; // trava contra duplo clique
-  const ac=document.getElementById("ac").value.trim().toUpperCase();
+  const ac=document.getElementById("ac").value.trim();
   const pl=document.getElementById("pl").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
-  if(!ac||pl.length<7){showMsg("er","Preencha a AC e a placa.");return;}
+  if(ac.length!==6){showMsg("er","A AC deve ter exatamente 6 números.");return;}
+  if(!RE_PLACA.test(pl)){showMsg("er","Placa inválida. Use o formato ABC1234 ou ABC1D23.");return;}
   if(!TIPO){showMsg("er","Selecione o tipo de carga.");return;}
   if(!SUBTIPO){showMsg("er","Selecione o tipo de carregamento.");return;}
   // Verifica duplicidade: a AC não pode se repetir em hipótese alguma enquanto o processo anterior não for concluído/excluído
@@ -542,9 +567,24 @@ function buildRegistrosRel(){
   const [hiH,hiM]=hIni.split(":").map(Number);
   const [hfH,hfM]=hFim.split(":").map(Number);
   const iniMin=hiH*60+hiM,fimMin=hfH*60+hfM;
+  const opSel=document.getElementById("f-operador")?.value||"";
   let r=HD_REL.filter(c=>{
-    if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
+    if(opSel&&c.entrada?.operador!==opSel)return false;
     const en=c.entrada?.ts?.toDate?.();
+    if(MT==="A"){
+      // Turno A cruza a meia-noite: um registro feito entre 23:00–23:59 pertence
+      // ao Turno A do dia SEGUINTE (ex.: 18/08 23h faz parte do Turno A de 19/08),
+      // então compara pela data "efetiva" do turno, não pela data de cadastro.
+      if(!en||getTurno(en)!=="A")return false;
+      let dataEfetiva=c.data;
+      if(en.getHours()>=23){
+        const d=new Date(en.getTime());
+        d.setDate(d.getDate()+1);
+        dataEfetiva=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+      }
+      return dataEfetiva>=dataIniVal&&dataEfetiva<=dataFimVal;
+    }
+    if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
     if(!en)return true;
     if(MT==="geral"){
       const min=en.getHours()*60+en.getMinutes();
@@ -574,6 +614,7 @@ function buildLinhasRel(registros,forPrint=false){
       <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#00d4ff"}">${c.placa||"-"}</td>
       <td style="${tdStyle}">${c.ac||"-"}</td>
       <td style="${tdStyle}">${tp}</td>
+      <td style="${tdStyle}">${c.subtipoCarga||"-"}</td>
       <td style="${tdStyle}">${cim}</td>
       <td style="${tdStyle}">${turno}</td>
       <td style="${tdStyle}">${c.entrada?.operador||"-"}</td>
@@ -596,9 +637,9 @@ window.verRelatorio=()=>{
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
-        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Operador</th><th>Hora Entrada</th><th>Hora Liberação</th><th>TML</th>
+        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Tipo Carregamento</th><th>Cimento</th><th>Turno</th><th>Operador</th><th>Hora Entrada</th><th>Hora Liberação</th><th>TML</th>
       </tr></thead>
-      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="10" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="11" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
@@ -632,9 +673,9 @@ window.gerarPDF=()=>{
 <div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
-    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Operador</th><th>Hora Entrada</th><th>Hora Liberação</th><th>TML</th>
+    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Tipo Carregamento</th><th>Cimento</th><th>Turno</th><th>Operador</th><th>Hora Entrada</th><th>Hora Liberação</th><th>TML</th>
   </tr></thead>
-  <tbody>${linhas||'<tr><td colspan="10" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+  <tbody>${linhas||'<tr><td colspan="11" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
 <div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
 </body></html>`);
@@ -653,6 +694,7 @@ window.exportExcel=()=>{
       "Placa":c.placa||"",
       "AC":c.ac||"",
       "Carga":TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"",
+      "Tipo Carregamento":c.subtipoCarga||"",
       "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
       "Turno":en?(getTurno(en)||""):"",
       "Operador":c.entrada?.operador||"",
@@ -662,7 +704,7 @@ window.exportExcel=()=>{
     };
   });
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:12},{wch:8},{wch:18},{wch:20},{wch:20},{wch:10}];
+  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:16},{wch:12},{wch:8},{wch:18},{wch:20},{wch:20},{wch:10}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Posto1");
   const{dataIniVal,dataFimVal}=getFiltros();
@@ -713,20 +755,24 @@ function renderFila(){
     const tp=c.tipoCarga||"";
     const ativo=CHAMADO_ATUAL&&CHAMADO_ATUAL.id===c.id?" ativo":"";
     const enMs=c.entrada?.ts?.toDate?.()?.getTime();
-    const tme=fmtTME(enMs?agora-enMs:null);
-    return`<div class="placa-row${ativo}" onclick="chamarPlaca('${c.id}')">
-      <span class="p-pos">${i+1}°</span>
-      <div style="flex:1">
-        <div class="p-num">${c.placa}</div>
-        <div class="p-sub">${cim?`<span class="p-cim">${cim}</span> · `:""}${bl[tp]||tp} · ${c.ac}</div>
-        ${c.subtipoCarga?`<div class="p-sub2">📦 ${c.subtipoCarga}</div>`:""}
+    const tmeMs=enMs?agora-enMs:null;
+    const tme=fmtTME(tmeMs);
+    const emAlerta=tmeMs!=null&&tmeMs>=3600000; // ≥ 1h
+    return`<div class="placa-row${ativo}${emAlerta?" alerta":""}" onclick="chamarPlaca('${c.id}')">
+      <div class="p-data">📅 ${c.data?fmtDia(c.data):"-"}</div>
+      <div class="p-main">
+        <span class="p-pos">${i+1}°</span>
+        <div style="flex:1">
+          <div class="p-num">${c.placa}</div>
+          <div class="p-sub">${cim?`<span class="p-cim">${cim}</span> · `:""}${c.subtipoCarga?`<span class="p-carreg">${c.subtipoCarga}</span>`:(bl[tp]||tp)} · ${c.ac}</div>
+        </div>
+        <div class="p-right">
+          <span class="p-tme${emAlerta?" alerta":""}">⏱ ${tme}</span>
+          <span class="p-badge ${bc[tp]||"pb-en"}">${bl[tp]||tp}</span>
+          ${cim?`<span class="p-cim2">${cim}</span>`:""}
+        </div>
+        <button class="p-del" title="Excluir AC" onclick="event.stopPropagation();abrirModalExcluir('${c.id}')">🗑</button>
       </div>
-      <div class="p-right">
-        <span class="p-tme">⏱ ${tme}</span>
-        <span class="p-badge ${bc[tp]||"pb-en"}">${bl[tp]||tp}</span>
-        ${cim?`<span class="p-cim2">${cim}</span>`:""}
-      </div>
-      <button class="p-del" title="Excluir AC" onclick="event.stopPropagation();abrirModalExcluir('${c.id}')">🗑</button>
     </div>`;
   }).join("");
 }
