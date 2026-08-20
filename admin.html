@@ -198,6 +198,26 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .op-form .fg2 label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
 .op-form select,.op-form input{padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg3);color:var(--tx);font-size:12px;outline:none}
 .op-form select:focus,.op-form input:focus{border-color:var(--bl)}
+.op-form input.err{border-color:var(--rd);background:rgba(255,68,102,.06)}
+.op-err-msg{font-size:10px;color:var(--rd);font-weight:600;display:none}
+.op-err-msg.show{display:block}
+.telas-label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;display:block}
+.telas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.tela-chk{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 10px;cursor:pointer;transition:all .15s;user-select:none}
+.tela-chk:hover{border-color:var(--t2)}
+.tela-chk.checked{border-color:var(--gr);background:rgba(0,232,150,.07)}
+.tela-chk input{width:15px;height:15px;accent-color:var(--gr);cursor:pointer;flex-shrink:0}
+.tela-chk .tname{font-size:11.5px;font-weight:700;color:var(--tx)}
+.tela-chk .tsub{font-size:9px;color:var(--t3)}
+.senha-info{font-size:11px;color:var(--t3);background:var(--bg3);border:1px dashed var(--bd);border-radius:var(--rs);padding:9px 12px}
+.senha-info b{color:var(--tx)}
+.tela-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.tchip{font-size:8.5px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(0,212,255,.1);color:var(--bl);border:1px solid rgba(0,212,255,.25);white-space:nowrap}
+.op-list-toolbar{display:flex;gap:10px;padding:12px 18px;border-bottom:1px solid var(--bd);align-items:center}
+.op-search{flex:1;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:8px 12px;font-size:12px;outline:none}
+.op-search:focus{border-color:var(--rd)}
+.op-filtro-tela{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:8px 12px;font-size:11px;cursor:pointer;min-width:180px}
+.op-count{font-size:11px;color:var(--t3);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -426,27 +446,46 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
         </div>
         <div class="op-form" id="op-form">
           <div class="op-form-row">
-            <div class="fg2"><label>Tela</label>
-              <select id="op-tela">
-                <option value="posto1">Posto 1 — Apodi</option>
-                <option value="portaria">Portaria — Seguro Segurança</option>
-                <option value="triagem">Triagem — Reforme Paletes</option>
-                <option value="carregamento">Carregamento — Ambipar</option>
-                <option value="enlonamento">Enlonamento — Sousa Clean</option>
-                <option value="faturamento">Faturamento — Apodi</option>
-                <option value="justificativas">Justificativas — Supervisão</option>
-              </select>
-            </div>
             <div class="fg2"><label>Nome completo</label><input id="op-nome-in" type="text" placeholder="Ex: João Silva"/></div>
-            <div class="fg2"><label>Usuário</label><input id="op-usuario-in" type="text" placeholder="Ex: joao.silva"/></div>
+            <div class="fg2">
+              <label>Usuário</label>
+              <input id="op-usuario-in" type="text" placeholder="Ex: joao.silva"/>
+              <span class="op-err-msg" id="op-usuario-err">⚠️ Este usuário já existe — escolha outro (login é único no sistema)</span>
+            </div>
+          </div>
+          <div class="op-form-row" style="flex-direction:column;align-items:stretch;gap:8px">
+            <span class="telas-label">Telas com acesso (marque uma ou mais)</span>
+            <div class="telas-grid" id="op-telas-grid">
+              <label class="tela-chk" data-tela="posto1"><input type="checkbox" value="posto1"/><div><div class="tname">Posto 1</div><div class="tsub">Apodi</div></div></label>
+              <label class="tela-chk" data-tela="portaria"><input type="checkbox" value="portaria"/><div><div class="tname">Portaria</div><div class="tsub">Seguro Segurança</div></div></label>
+              <label class="tela-chk" data-tela="triagem"><input type="checkbox" value="triagem"/><div><div class="tname">Triagem</div><div class="tsub">Reforme Paletes</div></div></label>
+              <label class="tela-chk" data-tela="carregamento"><input type="checkbox" value="carregamento"/><div><div class="tname">Carregamento</div><div class="tsub">Ambipar</div></div></label>
+              <label class="tela-chk" data-tela="enlonamento"><input type="checkbox" value="enlonamento"/><div><div class="tname">Enlonamento</div><div class="tsub">Sousa Clean</div></div></label>
+              <label class="tela-chk" data-tela="faturamento"><input type="checkbox" value="faturamento"/><div><div class="tname">Faturamento</div><div class="tsub">Apodi</div></div></label>
+              <label class="tela-chk" data-tela="justificativas"><input type="checkbox" value="justificativas"/><div><div class="tname">Justificativas</div><div class="tsub">Supervisão</div></div></label>
+            </div>
           </div>
           <div class="op-form-row" style="align-items:center">
-            <span style="font-size:11px;color:var(--t3)">Senha inicial gerada automaticamente: <b id="op-senha-preview" style="color:var(--tx)">—</b> (o operador deve trocar no 1º acesso)</span>
+            <span class="senha-info" id="op-senha-info">🔑 Senha inicial gerada automaticamente: <b id="op-senha-preview">—</b> — válida para todas as telas marcadas (o operador troca no 1º acesso, em qualquer uma delas).</span>
           </div>
           <div class="op-form-row">
-            <button class="btn-save" onclick="salvarNovoOperador()">💾 Salvar Operador</button>
+            <button class="btn-save" id="op-save-btn" onclick="salvarNovoOperador()">💾 Salvar Operador</button>
             <button class="btn-reabrir" onclick="fecharNovoOperador()">Cancelar</button>
           </div>
+        </div>
+        <div class="op-list-toolbar">
+          <input class="op-search" id="op-search" type="text" placeholder="🔎 Buscar por nome ou usuário..." oninput="renderOperadoresList()"/>
+          <select class="op-filtro-tela" id="op-filtro-tela" onchange="renderOperadoresList()">
+            <option value="">— Filtrar por tela —</option>
+            <option value="posto1">Posto 1 — Apodi</option>
+            <option value="portaria">Portaria — Seguro Segurança</option>
+            <option value="triagem">Triagem — Reforme Paletes</option>
+            <option value="carregamento">Carregamento — Ambipar</option>
+            <option value="enlonamento">Enlonamento — Sousa Clean</option>
+            <option value="faturamento">Faturamento — Apodi</option>
+            <option value="justificativas">Justificativas — Supervisão</option>
+          </select>
+          <span class="op-count" id="op-count">—</span>
         </div>
         <div id="op-list-wrap"><div class="spin"></div></div>
       </div>
@@ -565,7 +604,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,query,orderBy,where,addDoc,getDocs,updateDoc,deleteDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,query,orderBy,where,addDoc,getDocs,updateDoc,deleteDoc,deleteField,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 const CREDS={user:"administrador",pwd:"admin2026"};
@@ -1583,14 +1622,31 @@ const EMPRESA_OPERADOR_GETTER={
   justificativas:c=>c.justificativa?.operador||c.justificativa?.armazem?.operador||c.justificativa?.faturamento?.operador||null
   // portaria, triagem, carregamento, enlonamento: sem campo de operador gravado hoje (limitação conhecida)
 };
+// Helper: telas de um operador, suportando o novo esquema (telas[]) e o legado (tela única)
+function telasDoOperador(o){
+  if(Array.isArray(o.telas)&&o.telas.length)return o.telas;
+  return o.tela?[o.tela]:[];
+}
+// Busca operadores de uma tela combinando esquema novo (telas array-contains) e legado (tela==)
+async function buscarOperadoresPorTela(telaKey){
+  const [snapNovo,snapLegado]=await Promise.all([
+    getDocs(query(collection(db,"operadores_acesso"),where("telas","array-contains",telaKey))),
+    getDocs(query(collection(db,"operadores_acesso"),where("tela","==",telaKey)))
+  ]);
+  const mapa=new Map();
+  [...snapNovo.docs,...snapLegado.docs].forEach(d=>{
+    const data=d.data();
+    if(data.nome)mapa.set(d.id,data.nome);
+  });
+  return[...new Set(mapa.values())].sort();
+}
 window.onEmpresaFiltroChange=async function(){
   const empresa=document.getElementById("f-empresa-filter").value;
   const selOp=document.getElementById("f-operador-filter");
   selOp.innerHTML=`<option value="">— Operador —</option>`;
   if(empresa&&EMPRESA_OPERADOR_GETTER[empresa]){
     try{
-      const snap=await getDocs(query(collection(db,"operadores_acesso"),where("tela","==",empresa)));
-      const nomes=[...new Set(snap.docs.map(d=>d.data().nome).filter(Boolean))].sort();
+      const nomes=await buscarOperadoresPorTela(empresa);
       nomes.forEach(n=>{
         const opt=document.createElement("option");
         opt.value=n;opt.textContent=n;
@@ -1603,7 +1659,6 @@ window.onEmpresaFiltroChange=async function(){
   }
   render();
 };
-const TELA_ORDEM=["posto1","portaria","triagem","carregamento","enlonamento","faturamento","justificativas"];
 function slugSenha(nome){
   const primeiro=(nome||"").trim().split(/\s+/)[0]||"operador";
   return primeiro.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")+"123";
@@ -1635,36 +1690,88 @@ window.voltarTabela=()=>{
     render();
   }
 };
+let EDIT_OPERADOR_ID=null;
+let OPERADORES_CACHE=[];
 window.abrirNovoOperador=()=>{
+  EDIT_OPERADOR_ID=null;
   document.getElementById("op-form").classList.add("show");
   document.getElementById("op-nome-in").value="";
   document.getElementById("op-usuario-in").value="";
+  document.getElementById("op-usuario-in").classList.remove("err");
+  document.getElementById("op-usuario-err").classList.remove("show");
   document.getElementById("op-senha-preview").textContent="—";
+  document.getElementById("op-save-btn").textContent="💾 Salvar Operador";
+  document.querySelectorAll("#op-telas-grid .tela-chk").forEach(l=>{
+    l.classList.remove("checked");
+    l.querySelector("input").checked=false;
+  });
 };
-window.fecharNovoOperador=()=>{document.getElementById("op-form").classList.remove("show");};
+window.fecharNovoOperador=()=>{
+  document.getElementById("op-form").classList.remove("show");
+  EDIT_OPERADOR_ID=null;
+};
+window.editarOperador=(id)=>{
+  const o=OPERADORES_CACHE.find(x=>x.id===id);
+  if(!o)return;
+  EDIT_OPERADOR_ID=id;
+  document.getElementById("op-form").classList.add("show");
+  document.getElementById("op-nome-in").value=o.nome||"";
+  document.getElementById("op-usuario-in").value=o.usuario||"";
+  document.getElementById("op-usuario-in").classList.remove("err");
+  document.getElementById("op-usuario-err").classList.remove("show");
+  document.getElementById("op-senha-preview").textContent=o.senha||slugSenha(o.nome||"");
+  document.getElementById("op-save-btn").textContent="💾 Atualizar Operador";
+  const telasAtuais=telasDoOperador(o);
+  document.querySelectorAll("#op-telas-grid .tela-chk").forEach(l=>{
+    const marcado=telasAtuais.includes(l.dataset.tela);
+    l.classList.toggle("checked",marcado);
+    l.querySelector("input").checked=marcado;
+  });
+  document.getElementById("op-form").scrollIntoView({behavior:"smooth",block:"start"});
+};
 document.addEventListener("input",e=>{
-  if(e.target&&e.target.id==="op-nome-in"){
+  if(e.target&&e.target.id==="op-nome-in"&&!EDIT_OPERADOR_ID){
     document.getElementById("op-senha-preview").textContent=slugSenha(e.target.value);
   }
 });
+document.addEventListener("change",e=>{
+  const label=e.target.closest?.(".tela-chk");
+  if(label)label.classList.toggle("checked",e.target.checked);
+});
 window.salvarNovoOperador=async()=>{
-  const tela=document.getElementById("op-tela").value;
   const nome=document.getElementById("op-nome-in").value.trim();
   let usuario=document.getElementById("op-usuario-in").value.trim().toLowerCase();
+  const telas=[...document.querySelectorAll("#op-telas-grid .tela-chk input:checked")].map(i=>i.value);
+  const usuarioInEl=document.getElementById("op-usuario-in");
+  const usuarioErrEl=document.getElementById("op-usuario-err");
+  usuarioInEl.classList.remove("err");usuarioErrEl.classList.remove("show");
   if(!nome){alert("Informe o nome do operador.");return;}
   if(!usuario){alert("Informe o usuário de acesso.");return;}
-  const senha=slugSenha(nome);
+  if(telas.length===0){alert("Marque ao menos uma tela para o operador.");return;}
+  // Valida usuário único no sistema (exceto o próprio registro em edição)
+  const duplicado=OPERADORES_CACHE.find(o=>o.usuario===usuario&&o.id!==EDIT_OPERADOR_ID);
+  if(duplicado){
+    usuarioInEl.classList.add("err");usuarioErrEl.classList.add("show");
+    return;
+  }
   try{
-    await addDoc(collection(db,"operadores_acesso"),{
-      tela,empresa:TELA_LABEL[tela],usuario,nome,senha,
-      primeiroAcesso:true,ativo:true,criadoEm:Timestamp.fromDate(new Date())
-    });
+    if(EDIT_OPERADOR_ID){
+      await updateDoc(doc(db,"operadores_acesso",EDIT_OPERADOR_ID),{
+        telas,usuario,nome,tela:deleteField(),empresa:deleteField()
+      });
+    }else{
+      const senha=slugSenha(nome);
+      await addDoc(collection(db,"operadores_acesso"),{
+        telas,usuario,nome,senha,
+        primeiroAcesso:true,ativo:true,criadoEm:Timestamp.fromDate(new Date())
+      });
+    }
     fecharNovoOperador();
     carregarOperadores();
   }catch(e){alert("Erro ao salvar: "+e.message);}
 };
 window.resetarSenhaOperador=async(id,nome)=>{
-  if(!confirm("Redefinir a senha de "+nome+" para o padrão? O operador precisará criar uma nova senha no próximo acesso."))return;
+  if(!confirm("Redefinir a senha de "+nome+" para o padrão? O operador precisará criar uma nova senha no próximo acesso (válida em todas as telas dele)."))return;
   await updateDoc(doc(db,"operadores_acesso",id),{senha:slugSenha(nome),primeiroAcesso:true});
   carregarOperadores();
 };
@@ -1681,30 +1788,36 @@ async function carregarOperadores(){
   const wrapEl=document.getElementById("op-list-wrap");
   wrapEl.innerHTML='<div class="spin"></div>';
   const snap=await getDocs(collection(db,"operadores_acesso"));
-  const todos=snap.docs.map(d=>({id:d.id,...d.data()}));
-  let html="";
-  TELA_ORDEM.forEach(tela=>{
-    const lista=todos.filter(o=>o.tela===tela).sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
-    html+=`<div class="op-grupo"><div class="op-grupo-title">${TELA_LABEL[tela]} · ${lista.length} operador${lista.length!==1?"es":""}</div>`;
-    if(lista.length===0){
-      html+=`<div class="op-row" style="color:var(--t3)">Nenhum operador cadastrado.</div>`;
-    }else{
-      lista.forEach(o=>{
-        const statusBadge=o.ativo===false?'<span class="op-badge inativo">Inativo</span>':(o.primeiroAcesso?'<span class="op-badge pend">1º acesso pendente</span>':'<span class="op-badge ok">Ativo</span>');
-        html+=`<div class="op-row">
-          <div class="op-nome-col"><b>${o.nome||"—"}</b>
-            <div class="op-meta">usuário: ${o.usuario||"—"} ${statusBadge}</div>
-          </div>
-          <div class="op-actions">
-            <button class="pb" onclick="resetarSenhaOperador('${o.id}','${(o.nome||"").replace(/'/g,"")}')">🔑 Resetar senha</button>
-            <button class="pb" onclick="toggleAtivoOperador('${o.id}',${o.ativo!==false})">${o.ativo===false?"✅ Ativar":"⛔ Desativar"}</button>
-            <button class="btn-excluir" onclick="excluirOperador('${o.id}','${(o.nome||"").replace(/'/g,"")}')">🗑️</button>
-          </div>
-        </div>`;
-      });
-    }
-    html+=`</div>`;
-  });
-  wrapEl.innerHTML=html;
+  OPERADORES_CACHE=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
+  renderOperadoresList();
 }
+window.renderOperadoresList=function(){
+  const wrapEl=document.getElementById("op-list-wrap");
+  const termo=(document.getElementById("op-search")?.value||"").trim().toLowerCase();
+  const filtroTela=document.getElementById("op-filtro-tela")?.value||"";
+  let lista=OPERADORES_CACHE;
+  if(termo)lista=lista.filter(o=>(o.nome||"").toLowerCase().includes(termo)||(o.usuario||"").toLowerCase().includes(termo));
+  if(filtroTela)lista=lista.filter(o=>telasDoOperador(o).includes(filtroTela));
+  document.getElementById("op-count").textContent=lista.length+" operador"+(lista.length!==1?"es":"");
+  if(lista.length===0){
+    wrapEl.innerHTML=`<div class="op-row" style="color:var(--t3)">Nenhum operador encontrado.</div>`;
+    return;
+  }
+  wrapEl.innerHTML=lista.map(o=>{
+    const statusBadge=o.ativo===false?'<span class="op-badge inativo">Inativo</span>':(o.primeiroAcesso?'<span class="op-badge pend">1º acesso pendente</span>':'<span class="op-badge ok">Ativo</span>');
+    const chips=telasDoOperador(o).map(t=>`<span class="tchip">${(TELA_LABEL[t]||t).split(" — ")[0]}</span>`).join("");
+    return`<div class="op-row">
+      <div class="op-nome-col"><b>${o.nome||"—"}</b>
+        <div class="op-meta">usuário: ${o.usuario||"—"} ${statusBadge}</div>
+        <div class="tela-chips">${chips||'<span class="tchip" style="color:var(--rd);border-color:rgba(255,68,102,.3);background:rgba(255,68,102,.08)">sem tela</span>'}</div>
+      </div>
+      <div class="op-actions">
+        <button class="pb" onclick="editarOperador('${o.id}')">✏️ Editar telas</button>
+        <button class="pb" onclick="resetarSenhaOperador('${o.id}','${(o.nome||"").replace(/'/g,"")}')">🔑 Resetar senha</button>
+        <button class="pb" onclick="toggleAtivoOperador('${o.id}',${o.ativo!==false})">${o.ativo===false?"✅ Ativar":"⛔ Desativar"}</button>
+        <button class="btn-excluir" onclick="excluirOperador('${o.id}','${(o.nome||"").replace(/'/g,"")}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join("");
+};
 </script>
