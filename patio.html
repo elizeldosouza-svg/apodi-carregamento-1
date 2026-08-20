@@ -466,7 +466,6 @@ window.aplicarFiltro=()=>{
   const df=document.getElementById("f-data-fim").value||di;
   const hi=document.getElementById("f-hora-ini").value||"00:00";
   const hf=document.getElementById("f-hora-fim").value||"23:59";
-  if(!di){alert("Informe a data início.");return;}
   const operador=document.getElementById("f-operador").value;
   const turno=document.getElementById("f-turno").value;
   const cimento=document.getElementById("f-cimento").value;
@@ -488,7 +487,8 @@ window.aplicarFiltro=()=>{
   if(ac)extras.push("AC "+ac);
   if(TME_ATIVO)extras.push("⏱ TME ≥1h");
   const badge=document.getElementById("filtro-badge-wrap");
-  badge.innerHTML=`<div class="filtro-badge">📅 ${di===df?di:di+" a "+df} · ${hi}–${hf}${extras.length?" · "+extras.join(" · "):""} <button onclick="limparFiltro()">✕</button></div>`;
+  const dataTxt=di?(di===df?di:di+" a "+df)+" · "+hi+"–"+hf:"Hoje";
+  badge.innerHTML=`<div class="filtro-badge">📅 ${dataTxt}${extras.length?" · "+extras.join(" · "):""} <button onclick="limparFiltro()">✕</button></div>`;
   renderAll(DADOS_SNAPSHOT);
 };
 window.limparFiltro=()=>{
@@ -651,20 +651,28 @@ function renderAll(snap){
   popularOperadores(snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";}));
   let base=snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";});
   if(FILTRO){
-    const di=FILTRO.di;const df=FILTRO.df;const hi=FILTRO.hi;const hf=FILTRO.hf;
-    const tsIni=new Date(di+"T"+hi+":00").getTime();
-    const tsFim=new Date(df+"T"+hf+":59").getTime();
-    base=snap.filter(function(c){
+    // Data início/fim são opcionais: sem elas, filtra em cima da base de hoje (mesmo universo padrão da tela).
+    let candidatos;
+    if(FILTRO.di){
+      const tsIni=new Date(FILTRO.di+"T"+FILTRO.hi+":00").getTime();
+      const tsFim=new Date(FILTRO.df+"T"+FILTRO.hf+":59").getTime();
+      candidatos=snap.filter(function(c){
+        const en=getTS(c,"entrada","ts");
+        if(!en)return false;
+        if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
+        return c.setorAtual==="posto1";
+      });
+    }else{
+      candidatos=snap.filter(function(c){return c.data===hj&&c.setorAtual==="posto1";});
+    }
+    base=candidatos.filter(function(c){
       const en=getTS(c,"entrada","ts");
-      if(!en)return false;
-      if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
-      if(c.setorAtual!=="posto1")return false;
       if(FILTRO.operador&&(!c.entrada||c.entrada.operador!==FILTRO.operador))return false;
       if(FILTRO.turno&&getTurno(en)!==FILTRO.turno)return false;
       if(FILTRO.cimento&&c.tipoCimento!==FILTRO.cimento)return false;
       if(FILTRO.carga&&c.tipoCarga!==FILTRO.carga)return false;
       if(FILTRO.subtipo&&c.subtipoCarga!==FILTRO.subtipo)return false;
-      if(FILTRO.intervalo!==""&&FILTRO.intervalo!==undefined&&en.getHours()!==Number(FILTRO.intervalo))return false;
+      if(FILTRO.intervalo!==""&&FILTRO.intervalo!==undefined&&(!en||en.getHours()!==Number(FILTRO.intervalo)))return false;
       if(FILTRO.placa&&(!c.placa||c.placa.toUpperCase().indexOf(FILTRO.placa)===-1))return false;
       if(FILTRO.ac&&(!c.ac||String(c.ac).indexOf(FILTRO.ac)===-1))return false;
       return true;
