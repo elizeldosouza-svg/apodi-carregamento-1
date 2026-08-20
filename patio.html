@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Status do Pátio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -170,6 +171,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
   <div class="logo">🏭 STATUS DO PÁTIO</div>
   <button class="btn-patio-view" onclick="abrirModalPatio()">👁️ Ver Pátio</button>
   <button class="btn-patio-pdf" onclick="abrirModalPatioPDF()">📄 PDF c/ Filtro</button>
+  <button class="btn-patio-pdf" onclick="gerarExcelPatio()">📊 Excel</button>
   <div class="live"><div class="dot"></div>AO VIVO</div>
   <div class="top-spacer"></div>
 </div>
@@ -379,7 +381,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
           <table class="modal-table">
             <thead>
               <tr>
-                <th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Turno</th>
+                <th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>
               </tr>
             </thead>
             <tbody id="modal-patio-tbody"></tbody>
@@ -759,7 +761,7 @@ window.fecharModal=function(id){
 };
 
 function buildTabelaPatio(lista){
-  if(!lista.length)return'<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">Nenhum veículo</td></tr>';
+  if(!lista.length)return'<tr><td colspan="9" style="text-align:center;color:var(--t3);padding:20px">Nenhum veículo</td></tr>';
   var rows="";
   for(var i=0;i<lista.length;i++){
     var c=lista[i];
@@ -769,18 +771,22 @@ function buildTabelaPatio(lista){
     var placa=c.placa||"—";
     var ac=c.ac||"—";
     var tipoCargaLabel=c.tipoCargaLabel||c.tipoCarga||"—";
+    var subtipoCarga=c.subtipoCarga||"—";
     var tipoCimento=c.tipoCimento||"—";
     var tempoStr=espera?durStr(espera):"—";
     var entradaStr=fmtT(en);
+    var operadorStr=(c.entrada&&c.entrada.operador)||"—";
     var turnoStr=turno||"—";
     var alertaCl=(espera&&espera>LIMITE_ALERTA)?' style="color:var(--rd)"':"";
     rows+="<tr>";
     rows+='<td><span class="modal-placa"'+alertaCl+">"+placa+"</span></td>";
     rows+="<td>"+ac+"</td>";
     rows+="<td>"+tipoCargaLabel+"</td>";
+    rows+="<td>"+subtipoCarga+"</td>";
     rows+="<td>"+tipoCimento+"</td>";
     rows+='<td'+alertaCl+">"+tempoStr+"</td>";
     rows+="<td>"+entradaStr+"</td>";
+    rows+="<td>"+operadorStr+"</td>";
     rows+="<td>"+turnoStr+"</td>";
     rows+="</tr>";
   }
@@ -834,18 +840,22 @@ function imprimirPDF(lista,titulo,subtitulo){
     var placa=c.placa||"—";
     var ac=c.ac||"—";
     var tipoCargaLabel=c.tipoCargaLabel||c.tipoCarga||"—";
+    var subtipoCarga=c.subtipoCarga||"—";
     var tipoCimento=c.tipoCimento||"—";
     var tempoStr=espera?durStr(espera):"—";
     var entradaStr=fmtT(en);
+    var operadorStr=(c.entrada&&c.entrada.operador)||"—";
     var turnoStr=turno||"—";
     var alertaStyle=(espera&&espera>LIMITE_ALERTA)?" background:#fff0f3;color:#c00;":"";
     linhas+="<tr style='"+alertaStyle+"'>";
     linhas+="<td>"+placa+"</td>";
     linhas+="<td>"+ac+"</td>";
     linhas+="<td>"+tipoCargaLabel+"</td>";
+    linhas+="<td>"+subtipoCarga+"</td>";
     linhas+="<td>"+tipoCimento+"</td>";
     linhas+="<td>"+tempoStr+"</td>";
     linhas+="<td>"+entradaStr+"</td>";
+    linhas+="<td>"+operadorStr+"</td>";
     linhas+="<td>"+turnoStr+"</td>";
     linhas+="</tr>";
   }
@@ -863,7 +873,7 @@ function imprimirPDF(lista,titulo,subtitulo){
   if(subtitulo)html+="<p>Período: "+subtitulo+"</p>";
   html+="</div><div style='font-size:11px;color:#555'>"+agora+"</div></div>";
   html+="<table><thead><tr>";
-  html+="<th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Turno</th>";
+  html+="<th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>";
   html+="</tr></thead><tbody>"+linhas+"</tbody></table>";
   html+="<div class='footer'>Total: "+lista.length+" veículo"+(lista.length!==1?"s":"")+" · Gerado em "+agora+" · Apodi Cimentos</div>";
   html+="<div class='no-print' style='margin-top:16px'><button onclick='window.print()' style='padding:8px 20px;background:#0a2a5c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px'>🖨️ Imprimir / Salvar PDF</button></div>";
@@ -871,6 +881,41 @@ function imprimirPDF(lista,titulo,subtitulo){
   var w=window.open("","_blank");
   if(w){w.document.write(html);w.document.close();}
 }
+
+// ── Excel (SheetJS) — mesmas colunas do PDF/Ver Pátio, snapshot de hoje ──
+window.gerarExcelPatio=function(){
+  var hj=hoje();
+  var lista=DADOS_SNAPSHOT.filter(function(c){
+    return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
+  });
+  lista.sort(function(a,b){
+    var ea=getTS(a,"entrada","ts");
+    var eb=getTS(b,"entrada","ts");
+    if(!ea)return 1;if(!eb)return -1;
+    return ea.getTime()-eb.getTime();
+  });
+  var linhas=[["Placa","AC","Tipo Carga","Tipo de Carregamento","Tipo Cimento","Tempo Espera","Entrada","Operador","Turno"]];
+  for(var i=0;i<lista.length;i++){
+    var c=lista[i];
+    var en=getTS(c,"entrada","ts");
+    var espera=en?Date.now()-en.getTime():null;
+    linhas.push([
+      c.placa||"—",
+      c.ac||"—",
+      c.tipoCargaLabel||c.tipoCarga||"—",
+      c.subtipoCarga||"—",
+      c.tipoCimento||"—",
+      espera?durStr(espera):"—",
+      fmtT(en),
+      (c.entrada&&c.entrada.operador)||"—",
+      getTurno(en)||"—"
+    ]);
+  }
+  var ws=XLSX.utils.aoa_to_sheet(linhas);
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Patio");
+  XLSX.writeFile(wb,"patio_tmac_"+new Date().toISOString().slice(0,10)+".xlsx");
+};
 
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   DADOS_SNAPSHOT=snap.docs.map(d=>({id:d.id,...d.data()}));
