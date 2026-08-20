@@ -93,13 +93,15 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .vcard.alerta .vcard-tempo{color:var(--rd)}
 .vcard-tempo-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 .vcard-entrada{font-size:11px;color:var(--t3);margin-top:5px}
+.vcard-hora{font-size:14px;font-weight:800;color:var(--tx)}
 .vcard-cim{font-size:10px;font-weight:700;color:var(--ye);margin-top:3px;font-family:monospace;letter-spacing:.3px}
 .empty{text-align:center;padding:48px;color:var(--t3);font-size:13px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r)}
 .spin{width:28px;height:28px;border:3px solid var(--bd);border-top-color:var(--bl);border-radius:50%;animation:ro .7s linear infinite;margin:40px auto 10px}
 @keyframes ro{to{transform:rotate(360deg)}}
 .loading-wrap{text-align:center;padding:40px;color:var(--t3)}
 .turno{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;vertical-align:middle;font-family:'Rajdhani',sans-serif}
-.vcard-turno-row{margin-top:2px;margin-bottom:4px}
+.vcard-turno-row{margin-top:2px;margin-bottom:4px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.vcard-data{display:inline-block;font-size:9px;font-weight:800;padding:1px 7px;border-radius:4px;background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.25);white-space:nowrap}
 .t-a{background:rgba(0,212,255,.15);color:var(--bl);border:1px solid rgba(0,212,255,.3)}
 .t-b{background:rgba(255,208,0,.15);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
 .t-c{background:rgba(167,139,250,.15);color:var(--pu);border:1px solid rgba(167,139,250,.3)}
@@ -418,6 +420,8 @@ const svgs_b="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
 function hoje(){return new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");}
 function durStr(ms){if(!ms||ms<0)return"—";const m=Math.round(ms/60000);return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?" "+m%60+"m":"");}
 function fmtT(d){return d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—";}
+const DIAS_SEMANA=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+function fmtDataDia(d){if(!d)return"—";const dd=String(d.getDate()).padStart(2,"0");const mm=String(d.getMonth()+1).padStart(2,"0");const aa=d.getFullYear();return dd+"/"+mm+"/"+aa+" - "+DIAS_SEMANA[d.getDay()];}
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
 function getTurno(d){if(!d)return null;const h=d.getHours();if(h>=23||h<7)return"A";if(h>=7&&h<15)return"B";return"C";}
 function tipoCls(t){return{ensacado:"tp-ensacado",granel:"tp-granel",bigbag:"tp-bigbag"}[t]||"";}
@@ -523,22 +527,20 @@ function makeCard(c){
   const espera=en?Date.now()-en.getTime():null;
   const alerta=espera&&espera>LIMITE_ALERTA;
   const turno=getTurno(en);
-  const tipoRaw=c.tipoCargaLabel||"";
-  const tipoSVG={
-    "Ensacado":`<img src='${svgs_e}' style='width:12px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px'> Ensacado`,
-    "Granel":`<img src='${svgs_g}' style='width:18px;height:10px;object-fit:contain;vertical-align:middle;margin-right:3px'> Granel`,
-    "Big Bag":`<img src='${svgs_b}' style='width:13px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px'> Big Bag`,
-  };
-  const tipo=tipoSVG[tipoRaw]||tipoRaw;
   const tipoCl=tipoCls(c.tipoCarga);
+  const tipoIcon={ensacado:"📦",granel:"🚛",bigbag:"🛍️"}[c.tipoCarga]||"";
+  const subtipo=c.subtipoCarga||c.tipoCargaLabel||"";
   return`<div class="vcard${alerta?" alerta":""}">
     <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h30</span>':''}</div>
-    ${turno?`<div class="vcard-turno-row"><span class="turno t-${turno.toLowerCase()}">${turno}</span></div>`:""}
+    <div class="vcard-turno-row">
+      ${turno?`<span class="turno t-${turno.toLowerCase()}">${turno}</span>`:""}
+      ${en?`<span class="vcard-data">${fmtDataDia(en)}</span>`:""}
+    </div>
     <div class="vcard-ac">AC: ${c.ac}</div>
-    ${tipo?`<span class="vcard-tipo ${tipoCl}">${tipo}</span>`:""}
+    ${subtipo?`<span class="vcard-tipo ${tipoCl}">${tipoIcon} ${subtipo}</span>`:""}
     ${c.tipoCimento?`<div class="vcard-cim">⚗️ ${c.tipoCimento}</div>`:""}
-    ${espera?`<div class="vcard-tempo">${durStr(espera)}</div><div class="vcard-tempo-label">aguardando liberação</div>`:""}
-    <div class="vcard-entrada">Marcação no Posto 1: ${fmtT(en)}</div>
+    ${espera?`<div class="vcard-tempo">⏱️ ${durStr(espera)}</div><div class="vcard-tempo-label">aguardando liberação</div>`:""}
+    <div class="vcard-entrada">Marcação no Posto1: <span class="vcard-hora">${fmtT(en)}</span></div>
   </div>`;
 }
 
