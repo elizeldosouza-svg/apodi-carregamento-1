@@ -128,6 +128,7 @@ body.admin-mode .card{outline:1px dashed rgba(255,68,102,.25);outline-offset:2px
 .t-b{background:rgba(255,208,0,.15);color:#ffd000;border:1px solid rgba(255,208,0,.3)}
 .t-c{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
 
+.card-data{font-size:10px;color:var(--t2);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
 .card-ac{font-size:10px;color:var(--t2);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
 .card-nf{font-size:9px;color:var(--t3);margin-bottom:7px;font-family:'JetBrains Mono',monospace}
 .card-nf b{color:var(--t2);font-weight:700}
@@ -137,14 +138,19 @@ body.admin-mode .card{outline:1px dashed rgba(255,68,102,.25);outline-offset:2px
 .tp-ensacado{background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.25)}
 .tp-granel{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
 .tp-bigbag{background:rgba(0,232,150,.12);color:#00e896;border:1px solid rgba(0,232,150,.25)}
+.tp-carregamento{background:rgba(251,146,60,.14);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
 .tp-cim{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid var(--bd)}
 
 .card-row2{display:flex;align-items:flex-end;justify-content:space-between}
+.tempo-wrap{display:flex;align-items:baseline;gap:6px}
+.tempo-icon{font-size:15px;line-height:1;animation:tick 1s steps(2) infinite}
+@keyframes tick{50%{opacity:.35}}
 .tempo-box .tempo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--c-fat);line-height:1}
 .tempo-box.warn .tempo{color:#ffd000}
 .tempo-box.over .tempo{color:var(--rd)}
 .tempo-lbl{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 .card-entrada{font-size:9px;color:var(--t3);text-align:right}
+.card-entrada b{display:block;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;letter-spacing:.3px;margin-top:1px}
 
 .tmac-strip{margin-top:8px;padding-top:7px;border-top:1px dashed var(--bd);display:flex;justify-content:space-between;font-size:9px;color:var(--t3)}
 .tmac-strip b{color:var(--t2);font-family:'JetBrains Mono',monospace}
@@ -538,6 +544,7 @@ const TIPO_CARGA_ICON={ensacado:"🧱",granel:"🚛",bigbag:"📦"};
 const TIPO_CARGA_TAG={ensacado:"tp-ensacado",granel:"tp-granel",bigbag:"tp-bigbag"};
 const EMPRESA_TELA={posto1:"Apodi",portaria:"Seguro Segurança",triagem:"Reforme Paletes",carregamento:"Ambipar",enlonamento:"Sousa Clean",faturamento:"Apodi",portaria_fim:"Seguro Segurança"};
 const LIMITE_TMAC_MS=2*3600000+10*60000;   // 2h10
+const LIMITE_TME_MS=1*3600000;             // 1h — meta de espera no Posto 1
 const LIMITE_TMTI_MS=5*60000;              // 5min
 const LIMITE_TMCI_MS=20*60000;             // 20min
 const LIMITE_TMEI_MS=15*60000;             // 15min
@@ -612,6 +619,8 @@ function diffMs(a,b){const da=toDate(a),db=toDate(b);if(!da||!db)return null;ret
 function durStr(ms){if(ms===null||ms===undefined||ms<0)return"—";const m=Math.round(ms/60000);return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?(""+(m%60)).padStart(2,"0"):"");}
 function fmtT(d){d=toDate(d);return d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—";}
 function getTurno(d){d=toDate(d);if(!d)return null;const h=d.getHours();if(h>=23||h<7)return"A";if(h>=7&&h<15)return"B";return"C";}
+const DIAS_SEMANA=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+function fmtDataDia(v){const d=toDate(v);if(!d)return"—";const dd=String(d.getDate()).padStart(2,"0");const mm=String(d.getMonth()+1).padStart(2,"0");const aa=d.getFullYear();return dd+"/"+mm+"/"+aa+" - "+DIAS_SEMANA[d.getDay()];}
 window.tick=function(){document.getElementById("rel").textContent=new Date().toLocaleString("pt-BR",{timeZone:"America/Fortaleza"});};
 tick();setInterval(tick,1000);
 setInterval(()=>render(),30000); // atualiza os tempos decorridos mesmo sem novo snapshot
@@ -621,7 +630,7 @@ setInterval(()=>render(),30000); // atualiza os tempos decorridos mesmo sem novo
 const COLUNAS=[
   {id:"posto1",label:"🚦 POSTO 1",accent:"var(--c-posto1)",empresa:"Apodi",
     inicio:c=>c.entrada?.ts, subStatus:()=>"Aguardando chamada",
-    limiteMs:null,metaLabel:null},
+    limiteMs:LIMITE_TME_MS,metaLabel:"Meta TME ≤1h"},
   {id:"portaria",label:"🛡️ PORTARIA",accent:"var(--c-portaria)",empresa:"Seguro Segurança",
     inicio:c=>c.portaria?.inicio, subStatus:()=>"Na portaria",
     limiteMs:null,metaLabel:null},
@@ -730,11 +739,14 @@ function cardHtml(c,col,idx){
   const tmacParcial=c.entrada?.ts?Date.now()-toDate(c.entrada.ts).getTime():null;
   const tmacHtml=col.id==="portaria_fim"&&tmacParcial!==null
     ?`<div class="tmac-strip"><span>TMAC até aqui</span><b>${durStr(tmacParcial)}</b></div>`:"";
+  const dataHtml=c.entrada?.ts?`<div class="card-data">📅 ${fmtDataDia(c.entrada.ts)}</div>`:"";
   const nfHtml=`<div class="card-nf">🧾 NF: <b>${c.notaFiscal?c.notaFiscal:'<span style="opacity:.5">— ainda não emitida</span>'}</b></div>`;
+  const carregamentoTagHtml=c.subtipoCarga?`<span class="tag tp-carregamento">📋 ${c.subtipoCarga}</span>`:"";
   const dotsIdx=COLUNAS.findIndex(x=>x.id===col.id);
   let dots="";
   for(let i=0;i<COLUNAS.length;i++)dots+=`<i class="${i<=dotsIdx?"on":""}"></i>`;
-  const entradaLabel=col.id==="portaria_fim"?"Faturado "+fmtT(ent):"Entrada "+fmtT(ent);
+  const entradaLabelTxt=col.id==="portaria_fim"?"Faturado":"Entrada";
+  const entradaHtml=`<div class="card-entrada">${entradaLabelTxt}<b>${fmtT(ent)}</b></div>`;
   const placaEsc=(c.placa||"").replace(/'/g,"\\'");
   const colunaEsc=col.label.replace(/^\S+\s/,"").replace(/'/g,"\\'");
   const selecionado=SELECIONADOS.has(c.id);
@@ -745,12 +757,16 @@ function cardHtml(c,col,idx){
   return`<div class="card${alerta?" alerta":""}${selecionado?" selecionado":""}" data-id="${c.id}" onclick="abrirDetalhe('${c.id}')">
     ${adminControls}
     <div class="card-row1"><span class="card-placa">${c.placa||"—"}</span>${turno?`<span class="turno ${turnoCls}">${turno}</span>`:""}</div>
+    ${dataHtml}
     <div class="card-ac">AC: ${c.ac||"—"}</div>
     ${nfHtml}
-    <div class="card-tags"><span class="tag ${tipoTag}">${tipoIcon} ${tipoLabel}</span><span class="tag tp-cim">${cimento}</span></div>
+    <div class="card-tags"><span class="tag ${tipoTag}">${tipoIcon} ${tipoLabel}</span>${carregamentoTagHtml}<span class="tag tp-cim">${cimento}</span></div>
     <div class="card-row2">
-      <div class="tempo-box ${tempoCls}"><div class="tempo">${durStr(ms)}</div><div class="tempo-lbl">${col.subStatus(c)}</div></div>
-      <div class="card-entrada">${entradaLabel}</div>
+      <div class="tempo-wrap">
+        <span class="tempo-icon">⏱️</span>
+        <div class="tempo-box ${tempoCls}"><div class="tempo">${durStr(ms)}</div><div class="tempo-lbl">${col.subStatus(c)}</div></div>
+      </div>
+      ${entradaHtml}
     </div>
     ${tmacHtml}
     <div class="dots">${dots}</div>
