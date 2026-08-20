@@ -98,7 +98,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .tp-granel{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
 .tp-bigbag{background:rgba(0,232,150,.12);color:#00e896;border:1px solid rgba(0,232,150,.25)}
 .vcard-tempo{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--ye);margin-top:2px}
-.vcard.alerta .vcard-tempo{color:var(--rd)}
+.vcard.alerta .vcard-tempo{color:var(--rd);animation:tempoPulse 1s ease-in-out infinite}
+@keyframes tempoPulse{0%,100%{opacity:1}50%{opacity:.4}}
 .vcard-tempo-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 .vcard-entrada{font-size:11px;color:var(--t3);margin-top:5px}
 .vcard-hora{font-size:14px;font-weight:800;color:var(--tx)}
@@ -441,7 +442,7 @@ function fmtDataDia(d){if(!d)return"—";const dd=String(d.getDate()).padStart(2
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
 function getTurno(d){if(!d)return null;const h=d.getHours();if(h>=23||h<7)return"A";if(h>=7&&h<15)return"B";return"C";}
 function tipoCls(t){return{ensacado:"tp-ensacado",granel:"tp-granel",bigbag:"tp-bigbag"}[t]||"";}
-const LIMITE_ALERTA=90*60*1000;
+const LIMITE_ALERTA=60*60*1000;
 
 // ── Filtro de data/hora ──
 let FILTRO=null;
@@ -601,7 +602,7 @@ function makeCard(c){
   const tipoIcon={ensacado:"📦",granel:"🚛",bigbag:"🛍️"}[c.tipoCarga]||"";
   const subtipo=c.subtipoCarga||c.tipoCargaLabel||"";
   return`<div class="vcard${alerta?" alerta":""}">
-    <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h30</span>':''}</div>
+    <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h</span>':''}</div>
     <div class="vcard-turno-row">
       ${turno?`<span class="turno t-${turno.toLowerCase()}">${turno}</span>`:""}
       ${en?`<span class="vcard-data">${fmtDataDia(en)}</span>`:""}
@@ -648,47 +649,49 @@ function distribuirColunas(ens,gran,bb){
   renderCol("col-bb-cp5",b.cp5);
 }
 
+// ── Filtragem central: usada pela tela E por todos os relatórios (Ver Pátio / PDF / Excel) ──
+// Corrige o bug em que os relatórios ignoravam Turno/Cimento/Carga/Tipo de carregamento/etc.
+function passaFiltroExtra(c,en){
+  if(FILTRO){
+    if(FILTRO.operador&&(!c.entrada||c.entrada.operador!==FILTRO.operador))return false;
+    if(FILTRO.turno&&getTurno(en)!==FILTRO.turno)return false;
+    if(FILTRO.cimento&&c.tipoCimento!==FILTRO.cimento)return false;
+    if(FILTRO.carga&&c.tipoCarga!==FILTRO.carga)return false;
+    if(FILTRO.subtipo&&c.subtipoCarga!==FILTRO.subtipo)return false;
+    if(FILTRO.intervalo!==""&&FILTRO.intervalo!==undefined&&(!en||en.getHours()!==Number(FILTRO.intervalo)))return false;
+    if(FILTRO.placa&&(!c.placa||c.placa.toUpperCase().indexOf(FILTRO.placa)===-1))return false;
+    if(FILTRO.ac&&(!c.ac||String(c.ac).indexOf(FILTRO.ac)===-1))return false;
+  }
+  if(TME_ATIVO){
+    if(!en)return false;
+    const fimEspera=getTS(c,"portaria","inicio");
+    const espera=fimEspera?fimEspera.getTime()-en.getTime():Date.now()-en.getTime();
+    if(espera<3600000)return false; // TME ≥ 1h
+  }
+  return true;
+}
+function listaFiltrada(snap){
+  const hj=hoje();
+  let candidatos;
+  if(FILTRO&&FILTRO.di){
+    const tsIni=new Date(FILTRO.di+"T"+FILTRO.hi+":00").getTime();
+    const tsFim=new Date(FILTRO.df+"T"+FILTRO.hf+":59").getTime();
+    candidatos=snap.filter(function(c){
+      const en=getTS(c,"entrada","ts");
+      if(!en)return false;
+      if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
+      return c.setorAtual==="posto1";
+    });
+  }else{
+    candidatos=snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";});
+  }
+  return candidatos.filter(function(c){return passaFiltroExtra(c,getTS(c,"entrada","ts"));});
+}
+
 function renderAll(snap){
   const hj=hoje();
   popularOperadores(snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";}));
-  let base=snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";});
-  if(FILTRO){
-    // Data início/fim são opcionais: sem elas, filtra em cima da base de hoje (mesmo universo padrão da tela).
-    let candidatos;
-    if(FILTRO.di){
-      const tsIni=new Date(FILTRO.di+"T"+FILTRO.hi+":00").getTime();
-      const tsFim=new Date(FILTRO.df+"T"+FILTRO.hf+":59").getTime();
-      candidatos=snap.filter(function(c){
-        const en=getTS(c,"entrada","ts");
-        if(!en)return false;
-        if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
-        return c.setorAtual==="posto1";
-      });
-    }else{
-      candidatos=snap.filter(function(c){return c.data===hj&&c.setorAtual==="posto1";});
-    }
-    base=candidatos.filter(function(c){
-      const en=getTS(c,"entrada","ts");
-      if(FILTRO.operador&&(!c.entrada||c.entrada.operador!==FILTRO.operador))return false;
-      if(FILTRO.turno&&getTurno(en)!==FILTRO.turno)return false;
-      if(FILTRO.cimento&&c.tipoCimento!==FILTRO.cimento)return false;
-      if(FILTRO.carga&&c.tipoCarga!==FILTRO.carga)return false;
-      if(FILTRO.subtipo&&c.subtipoCarga!==FILTRO.subtipo)return false;
-      if(FILTRO.intervalo!==""&&FILTRO.intervalo!==undefined&&(!en||en.getHours()!==Number(FILTRO.intervalo)))return false;
-      if(FILTRO.placa&&(!c.placa||c.placa.toUpperCase().indexOf(FILTRO.placa)===-1))return false;
-      if(FILTRO.ac&&(!c.ac||String(c.ac).indexOf(FILTRO.ac)===-1))return false;
-      return true;
-    });
-  }
-  if(TME_ATIVO){
-    base=base.filter(function(c){
-      const en=getTS(c,"entrada","ts");
-      if(!en)return false;
-      const fimEspera=getTS(c,"portaria","inicio");
-      const espera=fimEspera?fimEspera.getTime()-en.getTime():Date.now()-en.getTime();
-      return espera>=3600000; // TME ≥ 1h
-    });
-  }
+  let base=listaFiltrada(snap);
 
   // Ordenar mais antigo primeiro (menor timestamp = topo)
   base.sort(function(a,b){
@@ -734,11 +737,7 @@ function renderAll(snap){
 
 // ── Modal ──
 window.abrirModalPatio=function(){
-  const snap=DADOS_SNAPSHOT;
-  const hj=hoje();
-  const base=snap.filter(function(c){
-    return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
-  });
+  const base=listaFiltrada(DADOS_SNAPSHOT);
   base.sort(function(a,b){
     const ea=getTS(a,"entrada","ts");
     const eb=getTS(b,"entrada","ts");
@@ -808,16 +807,15 @@ window.gerarPDFPatio=function(comFiltro){
     lista=DADOS_SNAPSHOT.filter(function(c){
       var en=getTS(c,"entrada","ts");
       if(!en)return false;
-      return en.getTime()>=tsIni&&en.getTime()<=tsFim&&c.setorAtual==="posto1";
+      if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
+      if(c.setorAtual!=="posto1")return false;
+      return passaFiltroExtra(c,en); // aplica também Turno/Cimento/Carga/Tipo carreg./etc. do filtro principal
     });
     titulo="Pátio – Relatório por Período";
     subtitulo=(di===df?di:di+" a "+df)+" | "+hi+"–"+hf;
     fecharModal("modal-patio-pdf");
   } else {
-    var hj=hoje();
-    lista=DADOS_SNAPSHOT.filter(function(c){
-      return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
-    });
+    lista=listaFiltrada(DADOS_SNAPSHOT);
     fecharModal("modal-patio");
   }
   lista.sort(function(a,b){
@@ -884,10 +882,7 @@ function imprimirPDF(lista,titulo,subtitulo){
 
 // ── Excel (SheetJS) — mesmas colunas do PDF/Ver Pátio, snapshot de hoje ──
 window.gerarExcelPatio=function(){
-  var hj=hoje();
-  var lista=DADOS_SNAPSHOT.filter(function(c){
-    return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
-  });
+  var lista=listaFiltrada(DADOS_SNAPSHOT);
   lista.sort(function(a,b){
     var ea=getTS(a,"entrada","ts");
     var eb=getTS(b,"entrada","ts");
