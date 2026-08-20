@@ -1051,7 +1051,7 @@ window.render=()=>{
 window.exportExcel=()=>{
   const list=getFiltered();
   if(!list.length){alert("Nenhum dado para exportar no filtro selecionado.");return;}
-  const rows=list.map(c=>{
+  const rows=list.map((c,i)=>{
     const en=getTS(c,"entrada","ts");
     const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
     const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
@@ -1060,7 +1060,7 @@ window.exportExcel=()=>{
     const sa=getTS(c,"faturamento","ts");
     const tmac=calcTMAC(c);
     return{
-      "Placa":c.placa,"Turno":getTurno(en)||"","AC":c.ac,"Data":c.data||"",
+      "Nº":i+1,"Placa":c.placa,"Turno":getTurno(en)||"","AC":c.ac,"Tipo de Carregamento":c.subtipoCarga||"","Data":fmtDataBR(c.data),
       "Entrada":fmtEx(en),"Setor Atual":c.setorAtual||"",
       "Portaria Início":fmtEx(getTS(c,"portaria","inicio")),"Portaria Fim":fmtEx(getTS(c,"portaria","fim")),"Duração Portaria":(()=>{const pi=getTS(c,"portaria","inicio"),pf=getTS(c,"portaria","fim");return pi&&pf?durStr(pf-pi):"";})(),
       "Triagem Início":fmtEx(trI),"Triagem Fim":fmtEx(trF),"Duração Triagem":trI&&trF?durStr(trF-trI):"",
@@ -1073,7 +1073,7 @@ window.exportExcel=()=>{
   const ws=XLSX.utils.json_to_sheet(rows);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Rastreio");
-  ws["!cols"]=[{wch:10},{wch:7},{wch:10},{wch:12},{wch:20},{wch:18},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:18}];
+  ws["!cols"]=[{wch:6},{wch:10},{wch:7},{wch:10},{wch:16},{wch:12},{wch:20},{wch:18},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:18}];
   const{s,e}=periodDates(MP);
   const turnoSuffix=MT!=="t"?`_turno${MT}`:"";
   const tipoSuffix=MTC!=="t"?`_${MTC}`:"";
@@ -1093,6 +1093,12 @@ window.addEventListener("resize",()=>{
 
 // ── RELATÓRIO MASTER ──────────────────────────────────────────────────────
 const fmtRel=ts=>{if(!ts)return"";const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});};
+// Converte "YYYY-MM-DD" → "DD/MM/YYYY" (usado nos relatórios Excel/PDF)
+const fmtDataBR=dataStr=>{
+  if(!dataStr)return"";
+  const p=dataStr.split("-");
+  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:dataStr;
+};
 
 function buildRelRows(list){
   return list.map((c,i)=>{
@@ -1105,10 +1111,12 @@ function buildRelRows(list){
     const tmacMs=sa&&en?sa-en:en?Date.now()-en:null;
     const over=tmacMs&&tmacMs>LIMITE_MS;
     return`<tr>
+      <td style="text-align:center;color:#7a9fd4;font-size:8px">${i+1}</td>
       <td style="text-align:left;font-weight:700;color:#4da6ff;font-family:monospace">${c.placa||""}</td>
       <td>${c.ac||""}</td>
       <td style="font-size:8px">${(c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"")}</td>
-      <td>${c.data||""}</td>
+      <td style="font-size:8px">${c.subtipoCarga||""}</td>
+      <td>${fmtDataBR(c.data)}</td>
       <td>${fmtRel(en)}</td>
       <td style="font-size:8px">${(c.setorAtual||"").replace(/_/g," ")}</td>
       <td>${fmtRel(ptI)}</td><td>${fmtRel(ptF)}</td>
@@ -1143,7 +1151,8 @@ window.abrirRelatorioMaster=()=>{
     ?`<div style="text-align:center;padding:32px;color:var(--t3)">Nenhum registro com os filtros selecionados.</div>`
     :`<table class="mrel-table">
         <thead><tr>
-          <th style="text-align:left">Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Entrada</th><th>Setor<br>Atual</th>
+          <th>Nº</th>
+          <th style="text-align:left">Placa</th><th>AC</th><th>Cim./Carga</th><th>Tipo<br>Carreg.</th><th>Data</th><th>Entrada</th><th>Setor<br>Atual</th>
           <th>🏛️<br>Port.Ini</th><th>🏛️<br>Port.Fim</th>
           <th>📦<br>Trg.Ini</th><th>📦<br>Trg.Fim</th>
           <th>🏗️<br>Carga Ini</th><th>🏗️<br>Carga Fim</th>
@@ -1172,10 +1181,12 @@ window.exportarPDFMaster=()=>{
     const bg=i%2===1?"#f5f8ff":"#fff";
     const td=(v,ex="")=>"<td style='padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;"+ex+"'>"+(v||"")+"</td>";
     return "<tr style='background:"+bg+"'>"
+      +td(i+1,"text-align:center;color:#666")
       +td(c.placa,"font-weight:bold;color:#003399;font-family:monospace;text-align:left")
       +td(c.ac)
       +td((c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||""),"font-size:7pt")
-      +td(c.data)+td(fmtRel(en))
+      +td(c.subtipoCarga||"","font-size:7pt")
+      +td(fmtDataBR(c.data))+td(fmtRel(en))
       +td((c.setorAtual||"").replace(/_/g," "),"font-size:6.5pt")
       +td(fmtRel(ptI))+td(fmtRel(ptF))
       +td(fmtRel(trI))+td(fmtRel(trF))
@@ -1202,12 +1213,13 @@ window.exportarPDFMaster=()=>{
     +"<h2>Relatorio de Rastreio de Carregamento</h2>"
     +"<div class='info'>Apodi Cimentos &middot; Periodo: <b>"+per+"</b> &middot; Turno: <b>"+turno+"</b> &middot; Carga: <b>"+carga+"</b> &middot; Cimento: <b>"+cim+"</b><br>Status: <b>"+st+"</b> &middot; Total: <b>"+list.length+" veiculo"+(list.length!==1?"s":"")+"</b> &middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>"
     +"<table><thead><tr>"
-    +"<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Data</th><th>Posto1</th><th>Setor</th>"
+    +"<th>Nº</th>"
+    +"<th style='text-align:left'>Placa</th><th>AC</th><th>Cim./Carga</th><th>Tipo Carreg.</th><th>Data</th><th>Posto1</th><th>Setor</th>"
     +"<th>Port.Ini</th><th>Port.Fim</th><th>Trg.Ini</th><th>Trg.Fim</th>"
     +"<th>Carga Ini</th><th>Carga Fim</th><th>Enl.Ini</th><th>Enl.Fim</th>"
     +"<th>Fatur</th><th>TMAC</th><th>Nota Fiscal</th><th>Status</th>"
     +"</tr></thead><tbody>"
-    +(linhas||"<tr><td colspan='18' style='text-align:center;padding:16px'>Nenhum registro</td></tr>")
+    +(linhas||"<tr><td colspan='20' style='text-align:center;padding:16px'>Nenhum registro</td></tr>")
     +"</tbody></table>"
     +"<div class='footer'>Sistema de Rastreio de Carregamento - Apodi Cimentos - "+dtNow+"</div>"
     +"</body></html>";
