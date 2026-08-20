@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Status do Pátio</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -59,6 +57,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 
 /* ── Calendário ── */
 .cal-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.modo-toggle-wrap{display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--b2);border-radius:20px;background:var(--bg3)}
+.modo-toggle-wrap span{font-size:11px;font-weight:800;color:var(--bl);white-space:nowrap;max-width:340px}
+.modo-toggle-wrap.alt span{color:var(--t2)}
+.modo-toggle{width:34px;height:18px;border-radius:10px;background:var(--bl);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.modo-toggle.alt{background:var(--t3)}
+.modo-toggle-knob{width:14px;height:14px;border-radius:50%;background:#06121e;position:absolute;top:2px;left:2px;transition:left .2s}
+.modo-toggle.alt .modo-toggle-knob{left:18px;background:var(--tx)}
+@media(max-width:900px){.modo-toggle-wrap span{max-width:180px;white-space:normal;line-height:1.2}}
 .cal-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg2);border:1px solid var(--b2);border-radius:20px;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
 .cal-btn:hover,.cal-btn.active{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
 .cal-popup{position:absolute;top:calc(100% + 8px);left:0;z-index:500;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;min-width:320px;max-height:calc(100vh - 90px);overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
@@ -68,14 +74,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .cal-field label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px}
 .cal-field input,.cal-field select{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
 .cal-field input:focus,.cal-field select:focus{border-color:var(--bl)}
-.cal-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.cal-quick{display:flex;gap:8px;margin-right:auto;flex-wrap:wrap}
-.cal-quick-btn{padding:7px 14px;background:rgba(0,212,255,.08);color:var(--bl);border:1px solid rgba(0,212,255,.3);border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;display:flex;align-items:center;gap:5px}
-.cal-quick-btn:hover{background:rgba(0,212,255,.18)}
-.cal-quick-btn.active{background:var(--bl);color:#000;border-color:var(--bl)}
-.cal-quick-btn.tme{background:rgba(255,208,0,.08);color:var(--ye);border-color:rgba(255,208,0,.3)}
-.cal-quick-btn.tme:hover{background:rgba(255,208,0,.18)}
-.cal-quick-btn.tme.active{background:var(--ye);color:#1a1400;border-color:var(--ye)}
+.cal-actions{display:flex;gap:8px;justify-content:flex-end}
 .cal-apply{padding:7px 18px;background:var(--bl);color:#000;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif}
 .cal-clear{padding:7px 14px;background:transparent;color:var(--t2);border:1px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
 .cal-clear:hover{border-color:var(--rd);color:var(--rd)}
@@ -99,8 +98,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .tp-granel{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
 .tp-bigbag{background:rgba(0,232,150,.12);color:#00e896;border:1px solid rgba(0,232,150,.25)}
 .vcard-tempo{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--ye);margin-top:2px}
-.vcard.alerta .vcard-tempo{color:var(--rd);animation:tempoPulse 1s ease-in-out infinite}
-@keyframes tempoPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.vcard.alerta .vcard-tempo{color:var(--rd)}
 .vcard-tempo-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 .vcard-entrada{font-size:11px;color:var(--t3);margin-top:5px}
 .vcard-hora{font-size:14px;font-weight:800;color:var(--tx)}
@@ -171,12 +169,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 <body>
 <div class="top">
   <div class="logo">🏭 STATUS DO PÁTIO</div>
-  <div class="top-spacer"></div>
   <button class="btn-patio-view" onclick="abrirModalPatio()">👁️ Ver Pátio</button>
   <button class="btn-patio-pdf" onclick="abrirModalPatioPDF()">📄 PDF c/ Filtro</button>
-  <button class="btn-patio-pdf" onclick="gerarExcelPatio()">📊 Excel</button>
-  <button class="btn-patio-pdf" id="btn-imagem" onclick="gerarImagemPatio()">🖼️ Imagem</button>
   <div class="live"><div class="dot"></div>AO VIVO</div>
+  <div class="top-spacer"></div>
 </div>
 
 <div class="wrap">
@@ -184,9 +180,17 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
   <div id="content" style="display:none">
 
     <!-- ── Barra Calendário ── -->
-    <div class="cal-bar" style="position:relative">
-      <button class="cal-btn" id="cal-toggle" onclick="toggleCal()">📅 Filtrar por Data/Hora</button>
-      <div id="filtro-badge-wrap"></div>
+    <div class="cal-bar" style="position:relative;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="cal-btn" id="cal-toggle" onclick="toggleCal()">📅 Filtrar por Data/Hora</button>
+        <div id="filtro-badge-wrap"></div>
+      </div>
+      <div class="modo-toggle-wrap">
+        <span id="modo-label">Status do Pátio - Posto1</span>
+        <div class="modo-toggle" id="modo-toggle" onclick="alternarModo()">
+          <div class="modo-toggle-knob"></div>
+        </div>
+      </div>
       <div class="cal-popup" id="cal-popup" style="min-width:380px">
         <div class="cal-popup-title">📅 Consultar período</div>
         <div class="cal-fields">
@@ -200,17 +204,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
           <div class="cal-field"><label>Turno</label><select id="f-turno"><option value="">Todos</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select></div>
           <div class="cal-field"><label>Cimento</label><select id="f-cimento"><option value="">Todos</option><option value="CP II F">CP II F</option><option value="CP III">CP III</option><option value="CP V">CP V</option></select></div>
           <div class="cal-field"><label>Carga</label><select id="f-carga"><option value="">Todas</option><option value="ensacado">Ensacado</option><option value="granel">Granel</option><option value="bigbag">Big Bag</option></select></div>
-          <div class="cal-field"><label>Tipo de carregamento</label><select id="f-subtipo"><option value="">Todos</option><option value="Paletizado">Paletizado</option><option value="Caricamat">Caricamat</option><option value="Container">Container</option><option value="Granel">Granel</option></select></div>
-          <div class="cal-field"><label>Intervalo de marcação</label><select id="f-intervalo"><option value="">Todos</option></select></div>
           <div class="cal-field"><label>Placa</label><input type="text" id="f-placa" placeholder="ABC1D23"/></div>
           <div class="cal-field"><label>AC</label><input type="text" id="f-ac" placeholder="629555"/></div>
         </div>
         <div class="cal-actions">
-          <div class="cal-quick">
-            <button class="cal-quick-btn" id="btn-ontem" onclick="filtroOntem()">📆 Ontem</button>
-            <button class="cal-quick-btn" id="btn-hoje" onclick="filtroHoje()">📅 Hoje</button>
-            <button class="cal-quick-btn tme" id="btn-tme" onclick="toggleFiltroTME()">⏱ TME ≥ 1h</button>
-          </div>
           <button class="cal-clear" onclick="limparFiltro()">Limpar</button>
           <button class="cal-apply" onclick="aplicarFiltro()">Aplicar</button>
         </div>
@@ -384,7 +381,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
           <table class="modal-table">
             <thead>
               <tr>
-                <th>Nº</th><th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>
+                <th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Turno</th>
               </tr>
             </thead>
             <tbody id="modal-patio-tbody"></tbody>
@@ -444,24 +441,11 @@ function fmtDataDia(d){if(!d)return"—";const dd=String(d.getDate()).padStart(2
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
 function getTurno(d){if(!d)return null;const h=d.getHours();if(h>=23||h<7)return"A";if(h>=7&&h<15)return"B";return"C";}
 function tipoCls(t){return{ensacado:"tp-ensacado",granel:"tp-granel",bigbag:"tp-bigbag"}[t]||"";}
-const LIMITE_ALERTA=60*60*1000;
+const LIMITE_ALERTA=90*60*1000;
 
 // ── Filtro de data/hora ──
 let FILTRO=null;
-let TME_ATIVO=false; // filtro rápido "TME ≥ 1h"
-
-function popularIntervalos(){
-  const sel=document.getElementById("f-intervalo");
-  if(!sel||sel.options.length>1)return;
-  let html='<option value="">Todos</option>';
-  for(let h=0;h<24;h++){
-    const ini=String(h).padStart(2,"0");
-    const fim=String(h).padStart(2,"0");
-    html+=`<option value="${h}">${ini}:00h - ${fim}:59h</option>`;
-  }
-  sel.innerHTML=html;
-}
-popularIntervalos();
+let MODO="fila"; // "fila" = Status do Pátio - Posto1 (ainda não chegou) | "geral" = comportamento atual (todos em posto1)
 window.toggleCal=()=>{
   const p=document.getElementById("cal-popup");
   p.classList.toggle("show");
@@ -471,37 +455,28 @@ window.aplicarFiltro=()=>{
   const df=document.getElementById("f-data-fim").value||di;
   const hi=document.getElementById("f-hora-ini").value||"00:00";
   const hf=document.getElementById("f-hora-fim").value||"23:59";
+  if(!di){alert("Informe a data início.");return;}
   const operador=document.getElementById("f-operador").value;
   const turno=document.getElementById("f-turno").value;
   const cimento=document.getElementById("f-cimento").value;
   const carga=document.getElementById("f-carga").value;
-  const subtipo=document.getElementById("f-subtipo").value;
-  const intervalo=document.getElementById("f-intervalo").value;
   const placa=document.getElementById("f-placa").value.trim().toUpperCase();
   const ac=document.getElementById("f-ac").value.trim();
-  FILTRO={di,df,hi,hf,operador,turno,cimento,carga,subtipo,intervalo,placa,ac};
+  FILTRO={di,df,hi,hf,operador,turno,cimento,carga,placa,ac};
   document.getElementById("cal-popup").classList.remove("show");
   const extras=[];
   if(operador)extras.push("👤 "+operador);
   if(turno)extras.push("Turno "+turno);
   if(cimento)extras.push(cimento);
   if(carga)extras.push({ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"}[carga]);
-  if(subtipo)extras.push("📋 "+subtipo);
-  if(intervalo!=="")extras.push(String(intervalo).padStart(2,"0")+":00h-"+String(intervalo).padStart(2,"0")+":59h");
   if(placa)extras.push("Placa "+placa);
   if(ac)extras.push("AC "+ac);
-  if(TME_ATIVO)extras.push("⏱ TME ≥1h");
   const badge=document.getElementById("filtro-badge-wrap");
-  const dataTxt=di?(di===df?di:di+" a "+df)+" · "+hi+"–"+hf:"Hoje";
-  badge.innerHTML=`<div class="filtro-badge">📅 ${dataTxt}${extras.length?" · "+extras.join(" · "):""} <button onclick="limparFiltro()">✕</button></div>`;
+  badge.innerHTML=`<div class="filtro-badge">📅 ${di===df?di:di+" a "+df} · ${hi}–${hf}${extras.length?" · "+extras.join(" · "):""} <button onclick="limparFiltro()">✕</button></div>`;
   renderAll(DADOS_SNAPSHOT);
 };
 window.limparFiltro=()=>{
   FILTRO=null;
-  TME_ATIVO=false;
-  document.getElementById("btn-tme").classList.remove("active");
-  document.getElementById("btn-hoje").classList.remove("active");
-  document.getElementById("btn-ontem").classList.remove("active");
   document.getElementById("filtro-badge-wrap").innerHTML="";
   document.getElementById("f-data-ini").value="";
   document.getElementById("f-data-fim").value="";
@@ -511,41 +486,24 @@ window.limparFiltro=()=>{
   document.getElementById("f-turno").value="";
   document.getElementById("f-cimento").value="";
   document.getElementById("f-carga").value="";
-  document.getElementById("f-subtipo").value="";
-  document.getElementById("f-intervalo").value="";
   document.getElementById("f-placa").value="";
   document.getElementById("f-ac").value="";
   document.getElementById("cal-popup").classList.remove("show");
   renderAll(DADOS_SNAPSHOT);
 };
 
-// ── Filtros rápidos: Ontem / Hoje / TME ≥1h ──
-function pad2(n){return String(n).padStart(2,"0");}
-function toISO(d){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());}
-window.filtroHoje=()=>{
-  const hoje=new Date();
-  document.getElementById("f-data-ini").value=toISO(hoje);
-  document.getElementById("f-data-fim").value=toISO(hoje);
-  document.getElementById("f-hora-ini").value="00:00";
-  document.getElementById("f-hora-fim").value="23:59";
-  document.getElementById("btn-hoje").classList.add("active");
-  document.getElementById("btn-ontem").classList.remove("active");
-  aplicarFiltro();
-};
-window.filtroOntem=()=>{
-  const ontem=new Date();ontem.setDate(ontem.getDate()-1);
-  document.getElementById("f-data-ini").value=toISO(ontem);
-  document.getElementById("f-data-fim").value=toISO(ontem);
-  document.getElementById("f-hora-ini").value="00:00";
-  document.getElementById("f-hora-fim").value="23:59";
-  document.getElementById("btn-ontem").classList.add("active");
-  document.getElementById("btn-hoje").classList.remove("active");
-  aplicarFiltro();
-};
-window.toggleFiltroTME=()=>{
-  TME_ATIVO=!TME_ATIVO;
-  document.getElementById("btn-tme").classList.toggle("active",TME_ATIVO);
-  if(FILTRO)aplicarFiltro();else renderAll(DADOS_SNAPSHOT);
+window.alternarModo=function(){
+  MODO=MODO==="fila"?"geral":"fila";
+  const wrap=document.getElementById("modo-toggle");
+  const label=document.getElementById("modo-label");
+  if(MODO==="geral"){
+    wrap.classList.add("alt");
+    label.textContent="Veículos que ainda não foram registrados nas Etapas seguintes ao Posto1";
+  }else{
+    wrap.classList.remove("alt");
+    label.textContent="Status do Pátio - Posto1";
+  }
+  renderAll(DADOS_SNAPSHOT);
 };
 
 function popularOperadores(snap){
@@ -604,7 +562,7 @@ function makeCard(c){
   const tipoIcon={ensacado:"📦",granel:"🚛",bigbag:"🛍️"}[c.tipoCarga]||"";
   const subtipo=c.subtipoCarga||c.tipoCargaLabel||"";
   return`<div class="vcard${alerta?" alerta":""}">
-    <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h</span>':''}</div>
+    <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h30</span>':''}</div>
     <div class="vcard-turno-row">
       ${turno?`<span class="turno t-${turno.toLowerCase()}">${turno}</span>`:""}
       ${en?`<span class="vcard-data">${fmtDataDia(en)}</span>`:""}
@@ -612,7 +570,7 @@ function makeCard(c){
     <div class="vcard-ac">AC: ${c.ac}</div>
     ${subtipo?`<span class="vcard-tipo ${tipoCl}">${tipoIcon} ${subtipo}</span>`:""}
     ${c.tipoCimento?`<div class="vcard-cim">⚗️ ${c.tipoCimento}</div>`:""}
-    ${espera?`<div class="vcard-tempo">⏱️ ${durStr(espera)}</div><div class="vcard-tempo-label">aguardando liberação</div>`:""}
+    ${espera?`<div class="vcard-tempo">⏱️ ${durStr(espera)}</div><div class="vcard-tempo-label">${MODO==="fila"?"aguardando chamada":"aguardando liberação"}</div>`:""}
     <div class="vcard-entrada">Marcação no Posto1: <span class="vcard-hora">${fmtT(en)}</span></div>
   </div>`;
 }
@@ -651,49 +609,32 @@ function distribuirColunas(ens,gran,bb){
   renderCol("col-bb-cp5",b.cp5);
 }
 
-// ── Filtragem central: usada pela tela E por todos os relatórios (Ver Pátio / PDF / Excel) ──
-// Corrige o bug em que os relatórios ignoravam Turno/Cimento/Carga/Tipo de carregamento/etc.
-function passaFiltroExtra(c,en){
-  if(FILTRO){
-    if(FILTRO.operador&&(!c.entrada||c.entrada.operador!==FILTRO.operador))return false;
-    if(FILTRO.turno&&getTurno(en)!==FILTRO.turno)return false;
-    if(FILTRO.cimento&&c.tipoCimento!==FILTRO.cimento)return false;
-    if(FILTRO.carga&&c.tipoCarga!==FILTRO.carga)return false;
-    if(FILTRO.subtipo&&c.subtipoCarga!==FILTRO.subtipo)return false;
-    if(FILTRO.intervalo!==""&&FILTRO.intervalo!==undefined&&(!en||en.getHours()!==Number(FILTRO.intervalo)))return false;
-    if(FILTRO.placa&&(!c.placa||c.placa.toUpperCase().indexOf(FILTRO.placa)===-1))return false;
-    if(FILTRO.ac&&(!c.ac||String(c.ac).indexOf(FILTRO.ac)===-1))return false;
-  }
-  if(TME_ATIVO){
-    if(!en)return false;
-    const fimEspera=getTS(c,"portaria","inicio");
-    const espera=fimEspera?fimEspera.getTime()-en.getTime():Date.now()-en.getTime();
-    if(espera<3600000)return false; // TME ≥ 1h
-  }
-  return true;
-}
-function listaFiltrada(snap){
-  const hj=hoje();
-  let candidatos;
-  if(FILTRO&&FILTRO.di){
-    const tsIni=new Date(FILTRO.di+"T"+FILTRO.hi+":00").getTime();
-    const tsFim=new Date(FILTRO.df+"T"+FILTRO.hf+":59").getTime();
-    candidatos=snap.filter(function(c){
-      const en=getTS(c,"entrada","ts");
-      if(!en)return false;
-      if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
-      return c.setorAtual==="posto1";
-    });
-  }else{
-    candidatos=snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";});
-  }
-  return candidatos.filter(function(c){return passaFiltroExtra(c,getTS(c,"entrada","ts"));});
-}
-
 function renderAll(snap){
   const hj=hoje();
   popularOperadores(snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";}));
-  let base=listaFiltrada(snap);
+  let base=snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";});
+  if(FILTRO){
+    const di=FILTRO.di;const df=FILTRO.df;const hi=FILTRO.hi;const hf=FILTRO.hf;
+    const tsIni=new Date(di+"T"+hi+":00").getTime();
+    const tsFim=new Date(df+"T"+hf+":59").getTime();
+    base=snap.filter(function(c){
+      const en=getTS(c,"entrada","ts");
+      if(!en)return false;
+      if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
+      if(c.setorAtual!=="posto1")return false;
+      if(FILTRO.operador&&(!c.entrada||c.entrada.operador!==FILTRO.operador))return false;
+      if(FILTRO.turno&&getTurno(en)!==FILTRO.turno)return false;
+      if(FILTRO.cimento&&c.tipoCimento!==FILTRO.cimento)return false;
+      if(FILTRO.carga&&c.tipoCarga!==FILTRO.carga)return false;
+      if(FILTRO.placa&&(!c.placa||c.placa.toUpperCase().indexOf(FILTRO.placa)===-1))return false;
+      if(FILTRO.ac&&(!c.ac||String(c.ac).indexOf(FILTRO.ac)===-1))return false;
+      return true;
+    });
+  }
+
+  if(MODO==="fila"){
+    base=base.filter(function(c){return!c.posto1Confirmado;});
+  }
 
   // Ordenar mais antigo primeiro (menor timestamp = topo)
   base.sort(function(a,b){
@@ -739,7 +680,11 @@ function renderAll(snap){
 
 // ── Modal ──
 window.abrirModalPatio=function(){
-  const base=listaFiltrada(DADOS_SNAPSHOT);
+  const snap=DADOS_SNAPSHOT;
+  const hj=hoje();
+  const base=snap.filter(function(c){
+    return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
+  });
   base.sort(function(a,b){
     const ea=getTS(a,"entrada","ts");
     const eb=getTS(b,"entrada","ts");
@@ -762,7 +707,7 @@ window.fecharModal=function(id){
 };
 
 function buildTabelaPatio(lista){
-  if(!lista.length)return'<tr><td colspan="10" style="text-align:center;color:var(--t3);padding:20px">Nenhum veículo</td></tr>';
+  if(!lista.length)return'<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">Nenhum veículo</td></tr>';
   var rows="";
   for(var i=0;i<lista.length;i++){
     var c=lista[i];
@@ -772,23 +717,18 @@ function buildTabelaPatio(lista){
     var placa=c.placa||"—";
     var ac=c.ac||"—";
     var tipoCargaLabel=c.tipoCargaLabel||c.tipoCarga||"—";
-    var subtipoCarga=c.subtipoCarga||"—";
     var tipoCimento=c.tipoCimento||"—";
     var tempoStr=espera?durStr(espera):"—";
     var entradaStr=fmtT(en);
-    var operadorStr=(c.entrada&&c.entrada.operador)||"—";
     var turnoStr=turno||"—";
     var alertaCl=(espera&&espera>LIMITE_ALERTA)?' style="color:var(--rd)"':"";
     rows+="<tr>";
-    rows+="<td>"+(i+1)+"</td>";
     rows+='<td><span class="modal-placa"'+alertaCl+">"+placa+"</span></td>";
     rows+="<td>"+ac+"</td>";
     rows+="<td>"+tipoCargaLabel+"</td>";
-    rows+="<td>"+subtipoCarga+"</td>";
     rows+="<td>"+tipoCimento+"</td>";
     rows+='<td'+alertaCl+">"+tempoStr+"</td>";
     rows+="<td>"+entradaStr+"</td>";
-    rows+="<td>"+operadorStr+"</td>";
     rows+="<td>"+turnoStr+"</td>";
     rows+="</tr>";
   }
@@ -810,15 +750,16 @@ window.gerarPDFPatio=function(comFiltro){
     lista=DADOS_SNAPSHOT.filter(function(c){
       var en=getTS(c,"entrada","ts");
       if(!en)return false;
-      if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
-      if(c.setorAtual!=="posto1")return false;
-      return passaFiltroExtra(c,en); // aplica também Turno/Cimento/Carga/Tipo carreg./etc. do filtro principal
+      return en.getTime()>=tsIni&&en.getTime()<=tsFim&&c.setorAtual==="posto1";
     });
     titulo="Pátio – Relatório por Período";
     subtitulo=(di===df?di:di+" a "+df)+" | "+hi+"–"+hf;
     fecharModal("modal-patio-pdf");
   } else {
-    lista=listaFiltrada(DADOS_SNAPSHOT);
+    var hj=hoje();
+    lista=DADOS_SNAPSHOT.filter(function(c){
+      return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";
+    });
     fecharModal("modal-patio");
   }
   lista.sort(function(a,b){
@@ -841,23 +782,18 @@ function imprimirPDF(lista,titulo,subtitulo){
     var placa=c.placa||"—";
     var ac=c.ac||"—";
     var tipoCargaLabel=c.tipoCargaLabel||c.tipoCarga||"—";
-    var subtipoCarga=c.subtipoCarga||"—";
     var tipoCimento=c.tipoCimento||"—";
     var tempoStr=espera?durStr(espera):"—";
     var entradaStr=fmtT(en);
-    var operadorStr=(c.entrada&&c.entrada.operador)||"—";
     var turnoStr=turno||"—";
     var alertaStyle=(espera&&espera>LIMITE_ALERTA)?" background:#fff0f3;color:#c00;":"";
     linhas+="<tr style='"+alertaStyle+"'>";
-    linhas+="<td>"+(i+1)+"</td>";
     linhas+="<td>"+placa+"</td>";
     linhas+="<td>"+ac+"</td>";
     linhas+="<td>"+tipoCargaLabel+"</td>";
-    linhas+="<td>"+subtipoCarga+"</td>";
     linhas+="<td>"+tipoCimento+"</td>";
     linhas+="<td>"+tempoStr+"</td>";
     linhas+="<td>"+entradaStr+"</td>";
-    linhas+="<td>"+operadorStr+"</td>";
     linhas+="<td>"+turnoStr+"</td>";
     linhas+="</tr>";
   }
@@ -875,7 +811,7 @@ function imprimirPDF(lista,titulo,subtitulo){
   if(subtitulo)html+="<p>Período: "+subtitulo+"</p>";
   html+="</div><div style='font-size:11px;color:#555'>"+agora+"</div></div>";
   html+="<table><thead><tr>";
-  html+="<th>Nº</th><th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo de Carregamento</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Operador</th><th>Turno</th>";
+  html+="<th>Placa</th><th>AC</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Tempo Espera</th><th>Entrada</th><th>Turno</th>";
   html+="</tr></thead><tbody>"+linhas+"</tbody></table>";
   html+="<div class='footer'>Total: "+lista.length+" veículo"+(lista.length!==1?"s":"")+" · Gerado em "+agora+" · Apodi Cimentos</div>";
   html+="<div class='no-print' style='margin-top:16px'><button onclick='window.print()' style='padding:8px 20px;background:#0a2a5c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px'>🖨️ Imprimir / Salvar PDF</button></div>";
@@ -883,58 +819,6 @@ function imprimirPDF(lista,titulo,subtitulo){
   var w=window.open("","_blank");
   if(w){w.document.write(html);w.document.close();}
 }
-
-// ── Excel (SheetJS) — mesmas colunas do PDF/Ver Pátio, snapshot de hoje ──
-window.gerarExcelPatio=function(){
-  var lista=listaFiltrada(DADOS_SNAPSHOT);
-  lista.sort(function(a,b){
-    var ea=getTS(a,"entrada","ts");
-    var eb=getTS(b,"entrada","ts");
-    if(!ea)return 1;if(!eb)return -1;
-    return ea.getTime()-eb.getTime();
-  });
-  var linhas=[["Nº","Placa","AC","Tipo Carga","Tipo de Carregamento","Tipo Cimento","Tempo Espera","Entrada","Operador","Turno"]];
-  for(var i=0;i<lista.length;i++){
-    var c=lista[i];
-    var en=getTS(c,"entrada","ts");
-    var espera=en?Date.now()-en.getTime():null;
-    linhas.push([
-      i+1,
-      c.placa||"—",
-      c.ac||"—",
-      c.tipoCargaLabel||c.tipoCarga||"—",
-      c.subtipoCarga||"—",
-      c.tipoCimento||"—",
-      espera?durStr(espera):"—",
-      fmtT(en),
-      (c.entrada&&c.entrada.operador)||"—",
-      getTurno(en)||"—"
-    ]);
-  }
-  var ws=XLSX.utils.aoa_to_sheet(linhas);
-  var wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,"Patio");
-  XLSX.writeFile(wb,"patio_tmac_"+new Date().toISOString().slice(0,10)+".xlsx");
-};
-
-// ── Imagem: captura a tela principal (cards + colunas) como PNG ──
-window.gerarImagemPatio=function(){
-  var alvo=document.getElementById("content");
-  var btn=document.getElementById("btn-imagem");
-  var txtOriginal=btn?btn.textContent:"";
-  if(btn){btn.disabled=true;btn.textContent="⏳ Gerando...";}
-  html2canvas(alvo,{backgroundColor:"#060d18",scale:2,useCORS:true}).then(function(canvas){
-    var link=document.createElement("a");
-    link.download="patio_tmac_"+new Date().toISOString().slice(0,10)+"_"+new Date().toTimeString().slice(0,5).replace(":","")+".png";
-    link.href=canvas.toDataURL("image/png");
-    link.click();
-  }).catch(function(err){
-    console.error("Erro ao gerar imagem:",err);
-    alert("Não foi possível gerar a imagem. Tente novamente.");
-  }).finally(function(){
-    if(btn){btn.disabled=false;btn.textContent=txtOriginal;}
-  });
-};
 
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   DADOS_SNAPSHOT=snap.docs.map(d=>({id:d.id,...d.data()}));
