@@ -65,6 +65,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .tb-btn.ok:hover{opacity:.9}
 .tb-btn.dl{background:rgba(77,166,255,.12);border-color:rgba(77,166,255,.4);color:#4da6ff}
 .tb-btn.dl:hover{background:rgba(77,166,255,.22);color:#7bc4ff}
+.tb-btn.active{background:rgba(108,99,255,.18);border-color:var(--acc);color:#c9c6ff}
+.tb-btn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
 .tb-gap{flex:1;min-width:4px}
 .zoom-wrap{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .zoom-val{font-size:11px;color:var(--t2);min-width:36px;text-align:center;font-family:'JetBrains Mono',monospace}
@@ -153,6 +155,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .cel{position:absolute;cursor:default;user-select:none;transition:outline .1s}
 .cel:hover{outline:1.5px dashed rgba(108,99,255,.5);outline-offset:1px}
 .cel.sel{outline:2px solid var(--acc)!important;outline-offset:1px}
+.cel.msel{outline:2px dashed var(--acc)!important;outline-offset:2px}
+/* Marquee (seleção em laço) */
+.marquee-box{position:absolute;border:1px solid var(--acc);background:rgba(108,99,255,.12);pointer-events:none;z-index:40;display:none}
+/* Guias inteligentes */
+.smart-guide{position:absolute;background:#ff2fb0;pointer-events:none;z-index:41;display:none}
+.smart-guide.v{width:1px;top:0;bottom:0}
+.smart-guide.h{height:1px;left:0;right:0}
 .rh{position:absolute;width:7px;height:7px;background:var(--acc);border-radius:2px;z-index:20;display:none}
 .cel.sel .rh{display:block}
 .rh-br{bottom:-4px;right:-4px;cursor:se-resize}
@@ -283,6 +292,47 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <button class="tb-btn" onclick="desfazer()" title="Ctrl+Z">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l4-4-4 4 4 4M3 7h13a4 4 0 010 8H11"/></svg>Desfazer
   </button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn active" id="btn-grid" onclick="toggleGrid()" title="Mostrar/ocultar grade">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>Grade
+  </button>
+  <select class="tb-select" id="snap-sel" style="min-width:96px" onchange="setSnap(this.value)" title="Tamanho do snap">
+    <option value="0">Snap: livre</option>
+    <option value="4">Snap: 4px</option>
+    <option value="8" selected>Snap: 8px</option>
+    <option value="16">Snap: 16px</option>
+  </select>
+  <button class="tb-btn active" id="btn-guides" onclick="toggleGuides()" title="Ligar/desligar guias inteligentes ao arrastar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="3" x2="12" y2="21" stroke-dasharray="3 3"/></svg>Guias
+  </button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" id="a-l" onclick="alinhar('l')" title="Alinhar à esquerda" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="3" x2="4" y2="21"/><rect x="4" y="6" width="12" height="5"/><rect x="4" y="14" width="8" height="5"/></svg>
+  </button>
+  <button class="tb-btn" id="a-ch" onclick="alinhar('ch')" title="Centralizar horizontal" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="3" x2="12" y2="21"/><rect x="7" y="6" width="10" height="5"/><rect x="9" y="14" width="6" height="5"/></svg>
+  </button>
+  <button class="tb-btn" id="a-r" onclick="alinhar('r')" title="Alinhar à direita" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="20" y1="3" x2="20" y2="21"/><rect x="8" y="6" width="12" height="5"/><rect x="12" y="14" width="8" height="5"/></svg>
+  </button>
+  <button class="tb-btn" id="a-t" onclick="alinhar('t')" title="Alinhar ao topo" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="4" x2="21" y2="4"/><rect x="6" y="4" width="5" height="12"/><rect x="14" y="4" width="5" height="8"/></svg>
+  </button>
+  <button class="tb-btn" id="a-cv" onclick="alinhar('cv')" title="Centralizar vertical" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><rect x="6" y="7" width="5" height="10"/><rect x="14" y="9" width="5" height="6"/></svg>
+  </button>
+  <button class="tb-btn" id="a-b" onclick="alinhar('b')" title="Alinhar à base" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="20" x2="21" y2="20"/><rect x="6" y="8" width="5" height="12"/><rect x="14" y="12" width="5" height="8"/></svg>
+  </button>
+  <button class="tb-btn" id="d-h" onclick="distribuir('h')" title="Distribuir horizontalmente (min. 3)" disabled>↔</button>
+  <button class="tb-btn" id="d-v" onclick="distribuir('v')" title="Distribuir verticalmente (min. 3)" disabled>↕</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="copiarSel()" title="Ctrl+C">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V4h12"/></svg>Copiar
+  </button>
+  <button class="tb-btn" onclick="colarSel()" title="Ctrl+V">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2H15a1 1 0 011 1v2H8V3a1 1 0 011-1z"/><rect x="6" y="4" width="12" height="18" rx="2"/></svg>Colar
+  </button>
   <div class="tb-gap"></div>
   <div class="zoom-wrap">
     <button class="tb-btn" style="padding:4px 8px" onclick="zoom(-10)">
@@ -404,8 +454,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <span>Selecione uma tela para começar</span>
   </div>
   <div class="canvas-wrap" id="canvas-wrap" style="display:none">
-    <div class="canvas-bg-grid"></div>
-    <div class="canvas" id="canvas"></div>
+    <div class="canvas-bg-grid" id="canvas-bg-grid"></div>
+    <div class="canvas" id="canvas">
+      <div class="marquee-box" id="marquee-box"></div>
+      <div class="smart-guide v" id="guide-v"></div>
+      <div class="smart-guide h" id="guide-h"></div>
+    </div>
   </div>
 </div>
 
@@ -419,6 +473,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="no-sel-msg" id="no-sel">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 15l5 5M10 17a7 7 0 100-14 7 7 0 000 14z"/></svg>
       <p>Clique em um elemento para editar suas propriedades</p>
+    </div>
+    <div class="no-sel-msg" id="multi-sel-msg" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <p><b id="multi-sel-count" style="color:var(--acc)">0</b> elementos selecionados<br><span style="font-size:10px">Use alinhar/distribuir na barra superior</span></p>
     </div>
     <div id="props-form" style="display:none">
       <div class="pg">
@@ -686,6 +744,10 @@ const TELAS={
 // ESTADO
 // ══════════════════════════════════════════════════════════════════
 let ELS=[], SEL=null, TELA=null, HIST=[], ZOOM=100, nextId=1;
+let MSEL=[];        // seleção múltipla (ids), além do SEL "primário"
+let SNAP=8;          // tamanho do snap em px (0 = livre)
+let GUIDES_ON=true;  // guias inteligentes ao arrastar
+let CLIP=[];         // clipboard copiar/colar
 const DIRTY=new Set(); // telas modificadas
 const cor={texto:"#6c63ff",botao:"#00d68f",caixa:"#4da6ff",input:"#ffc107",divisor:"#ff8c42"};
 const URLS={
@@ -794,57 +856,241 @@ function mkEl(d){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// DRAG / RESIZE
+// GRADE / SNAP / GUIAS INTELIGENTES
+// ══════════════════════════════════════════════════════════════════
+function snapv(v){return SNAP>0?Math.round(v/SNAP)*SNAP:Math.round(v);}
+window.toggleGrid=()=>{
+  const g=document.getElementById("canvas-bg-grid");
+  const btn=document.getElementById("btn-grid");
+  const show=g.style.display!=="none";
+  g.style.display=show?"none":"block";
+  btn.classList.toggle("active",!show);
+};
+window.setSnap=(v)=>{SNAP=parseInt(v);};
+window.toggleGuides=()=>{
+  GUIDES_ON=!GUIDES_ON;
+  document.getElementById("btn-guides").classList.toggle("active",GUIDES_ON);
+  if(!GUIDES_ON)hideGuides();
+};
+function smartGuides(primary,x,y){
+  const THRESH=6;
+  let bestX=x,bestY=y,gv=null,gh=null;
+  const pcx=x+primary.w/2,pcy=y+primary.h/2;
+  ELS.filter(o=>o.id!==primary.id).forEach(o=>{
+    const ocx=o.x+o.w/2,ocy=o.y+o.h/2;
+    [[o.x,x],[ocx,pcx],[o.x+o.w,x+primary.w]].forEach(([ref,cur])=>{
+      if(Math.abs(ref-cur)<THRESH){bestX=x+(ref-cur);gv=ref;}
+    });
+    [[o.y,y],[ocy,pcy],[o.y+o.h,y+primary.h]].forEach(([ref,cur])=>{
+      if(Math.abs(ref-cur)<THRESH){bestY=y+(ref-cur);gh=ref;}
+    });
+  });
+  showGuides(gv,gh);
+  return{x:bestX,y:bestY};
+}
+function showGuides(gv,gh){
+  const v=document.getElementById("guide-v"),h=document.getElementById("guide-h");
+  if(gv!==null){v.style.left=gv+"px";v.style.display="block";}else v.style.display="none";
+  if(gh!==null){h.style.top=gh+"px";h.style.display="block";}else h.style.display="none";
+}
+function hideGuides(){
+  document.getElementById("guide-v").style.display="none";
+  document.getElementById("guide-h").style.display="none";
+}
+
+// ══════════════════════════════════════════════════════════════════
+// DRAG / RESIZE (com suporte a grupo/multi-seleção + snap + guias)
 // ══════════════════════════════════════════════════════════════════
 function onMD(e){
   const h=e.target.dataset?.h;
   const div=e.currentTarget;
   const id=div.dataset.id;
   const d=ELS.find(el=>el.id===id);if(!d)return;
-  salvarHist();selEl(id);
   e.preventDefault();e.stopPropagation();
+
+  // Shift+clique (fora de alça de resize) alterna seleção múltipla, sem arrastar
+  if(e.shiftKey&&!h){toggleMulti(id);return;}
+
+  if(!MSEL.includes(id))selEl(id);
+  salvarHist();
   const sx=e.clientX,sy=e.clientY;
   const ox=d.x,oy=d.y,ow=d.w,oh=d.h;
   const scale=ZOOM/100;
+  const group=MSEL.length>1?MSEL:[id];
+  const origins={};
+  group.forEach(gid=>{const gd=ELS.find(el=>el.id===gid);origins[gid]={x:gd.x,y:gd.y};});
+
   function mv(ev){
     const dx=(ev.clientX-sx)/scale,dy=(ev.clientY-sy)/scale;
-    if(h==="br"){d.w=Math.max(20,ow+dx);d.h=Math.max(16,oh+dy);}
-    else if(h==="r"){d.w=Math.max(20,ow+dx);}
-    else if(h==="b"){d.h=Math.max(16,oh+dy);}
-    else if(h==="tl"){d.x=ox+dx;d.y=oy+dy;d.w=Math.max(20,ow-dx);d.h=Math.max(16,oh-dy);}
-    else{d.x=ox+dx;d.y=oy+dy;}
-    d.x=Math.round(d.x);d.y=Math.round(d.y);d.w=Math.round(d.w);d.h=Math.round(d.h);
-    const el=document.querySelector(`.cel[data-id="${id}"]`);
-    if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";el.style.width=d.w+"px";el.style.height=d.h+"px";}
-    syncPos(d);
+    if(h){
+      // Redimensionar sempre afeta só o elemento clicado, mesmo em grupo
+      if(h==="br"){d.w=Math.max(20,ow+dx);d.h=Math.max(16,oh+dy);}
+      else if(h==="r"){d.w=Math.max(20,ow+dx);}
+      else if(h==="b"){d.h=Math.max(16,oh+dy);}
+      else if(h==="tl"){d.x=ox+dx;d.y=oy+dy;d.w=Math.max(20,ow-dx);d.h=Math.max(16,oh-dy);}
+      d.x=Math.round(d.x);d.y=Math.round(d.y);d.w=Math.round(d.w);d.h=Math.round(d.h);
+      const el=document.querySelector(`.cel[data-id="${id}"]`);
+      if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";el.style.width=d.w+"px";el.style.height=d.h+"px";}
+      syncPos(d);
+    } else {
+      let newX=snapv(ox+dx),newY=snapv(oy+dy);
+      if(GUIDES_ON&&group.length===1){
+        const g=smartGuides(d,newX,newY);newX=g.x;newY=g.y;
+      } else hideGuides();
+      const rdx=newX-ox,rdy=newY-oy;
+      group.forEach(gid=>{
+        const gd=ELS.find(el=>el.id===gid);
+        gd.x=origins[gid].x+rdx;gd.y=origins[gid].y+rdy;
+        const gel=document.querySelector(`.cel[data-id="${gid}"]`);
+        if(gel){gel.style.left=gd.x+"px";gel.style.top=gd.y+"px";}
+      });
+      syncPos(d);
+    }
     marcarDirty(TELA);
   }
-  function up(){document.removeEventListener("mousemove",mv);document.removeEventListener("mouseup",up);}
+  function up(){document.removeEventListener("mousemove",mv);document.removeEventListener("mouseup",up);hideGuides();}
   document.addEventListener("mousemove",mv);document.addEventListener("mouseup",up);
 }
+
+// ══════════════════════════════════════════════════════════════════
+// SELEÇÃO MÚLTIPLA (shift+clique / laço) + ALINHAR / DISTRIBUIR
+// ══════════════════════════════════════════════════════════════════
+function toggleMulti(id){
+  if(MSEL.includes(id)){
+    MSEL=MSEL.filter(x=>x!==id);
+  } else {
+    if(!MSEL.length&&SEL&&SEL!==id)MSEL=[SEL];
+    MSEL.push(id);
+  }
+  if(MSEL.length<=1){
+    const single=MSEL[0]||null;MSEL=[];
+    single?selEl(single):escProps();
+    return;
+  }
+  SEL=null;
+  document.querySelectorAll(".cel").forEach(e=>{
+    e.classList.toggle("msel",MSEL.includes(e.dataset.id));
+    e.classList.remove("sel");
+  });
+  document.getElementById("no-sel").style.display="none";
+  document.getElementById("props-form").style.display="none";
+  updateMultiUI();
+  renderLayers();
+}
+function updateMultiUI(){
+  const n=MSEL.length;
+  const multiOk=n>=2,distOk=n>=3;
+  ["a-l","a-ch","a-r","a-t","a-cv","a-b"].forEach(bid=>document.getElementById(bid).disabled=!multiOk);
+  ["d-h","d-v"].forEach(bid=>document.getElementById(bid).disabled=!distOk);
+  document.getElementById("multi-sel-msg").style.display=n>=2?"block":"none";
+  if(n>=2)document.getElementById("multi-sel-count").textContent=n;
+  document.getElementById("sb-s").style.display=(n>=2||SEL)?"block":"none";
+  document.getElementById("sb-sel").textContent=n>=2?`${n} elementos`:(SEL||"—");
+}
+window.alinhar=(mode)=>{
+  if(MSEL.length<2)return;salvarHist();
+  const sels=ELS.filter(d=>MSEL.includes(d.id));
+  const minX=Math.min(...sels.map(d=>d.x)),maxX=Math.max(...sels.map(d=>d.x+d.w));
+  const minY=Math.min(...sels.map(d=>d.y)),maxY=Math.max(...sels.map(d=>d.y+d.h));
+  sels.forEach(d=>{
+    if(mode==="l")d.x=minX;
+    if(mode==="r")d.x=maxX-d.w;
+    if(mode==="ch")d.x=Math.round((minX+maxX)/2-d.w/2);
+    if(mode==="t")d.y=minY;
+    if(mode==="b")d.y=maxY-d.h;
+    if(mode==="cv")d.y=Math.round((minY+maxY)/2-d.h/2);
+    const el=document.querySelector(`.cel[data-id="${d.id}"]`);
+    if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";}
+  });
+  marcarDirty(TELA);showToast("✓ Alinhado");
+};
+window.distribuir=(axis)=>{
+  if(MSEL.length<3)return;salvarHist();
+  const sels=ELS.filter(d=>MSEL.includes(d.id));
+  if(axis==="h"){
+    sels.sort((a,b)=>a.x-b.x);
+    const first=sels[0],last=sels[sels.length-1];
+    const totalSpan=last.x-(first.x+first.w);
+    const totalW=sels.slice(1,-1).reduce((s,d)=>s+d.w,0);
+    const gap=(totalSpan-totalW)/(sels.length-1);
+    let cursor=first.x+first.w+gap;
+    for(let i=1;i<sels.length-1;i++){sels[i].x=Math.round(cursor);cursor+=sels[i].w+gap;}
+  } else {
+    sels.sort((a,b)=>a.y-b.y);
+    const first=sels[0],last=sels[sels.length-1];
+    const totalSpan=last.y-(first.y+first.h);
+    const totalH=sels.slice(1,-1).reduce((s,d)=>s+d.h,0);
+    const gap=(totalSpan-totalH)/(sels.length-1);
+    let cursor=first.y+first.h+gap;
+    for(let i=1;i<sels.length-1;i++){sels[i].y=Math.round(cursor);cursor+=sels[i].h+gap;}
+  }
+  sels.forEach(d=>{
+    const el=document.querySelector(`.cel[data-id="${d.id}"]`);
+    if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";}
+  });
+  marcarDirty(TELA);showToast("✓ Distribuído");
+};
+
+// ══════════════════════════════════════════════════════════════════
+// COPIAR / COLAR
+// ══════════════════════════════════════════════════════════════════
+window.copiarSel=()=>{
+  const ids=MSEL.length?MSEL:(SEL?[SEL]:[]);
+  if(!ids.length){showToast("Nada selecionado");return;}
+  CLIP=ELS.filter(d=>ids.includes(d.id)).map(d=>JSON.parse(JSON.stringify(d)));
+  showToast(`✓ ${CLIP.length} elemento(s) copiado(s)`);
+};
+window.colarSel=()=>{
+  if(!TELA){showToast("Selecione uma tela primeiro");return;}
+  if(!CLIP.length){showToast("Nada copiado ainda");return;}
+  salvarHist();
+  const novos=CLIP.map(d=>{
+    const n=JSON.parse(JSON.stringify(d));
+    n.id=n.tipo+"_"+nextId++;n.x=d.x+16;n.y=d.y+16;
+    return n;
+  });
+  novos.forEach(n=>{ELS.push(n);document.getElementById("canvas").appendChild(mkEl(n));});
+  if(novos.length===1){MSEL=[];selEl(novos[0].id);}
+  else{
+    MSEL=novos.map(n=>n.id);SEL=null;
+    document.querySelectorAll(".cel").forEach(e=>e.classList.toggle("msel",MSEL.includes(e.dataset.id)));
+    document.getElementById("no-sel").style.display="none";
+    document.getElementById("props-form").style.display="none";
+    updateMultiUI();renderLayers();
+  }
+  document.getElementById("sb-n").textContent=ELS.length;
+  marcarDirty(TELA);
+  showToast(`✓ ${novos.length} elemento(s) colado(s)`);
+};
 
 // ══════════════════════════════════════════════════════════════════
 // SELEÇÃO
 // ══════════════════════════════════════════════════════════════════
 function selEl(id){
+  MSEL=[];
   SEL=id;
+  document.querySelectorAll(".cel").forEach(e=>e.classList.remove("msel"));
   document.querySelectorAll(".cel").forEach(e=>e.classList.toggle("sel",e.dataset.id===id));
   const d=ELS.find(e=>e.id===id);
   if(d){fillProps(d);document.getElementById("props-form").style.display="block";document.getElementById("no-sel").style.display="none";}
+  document.getElementById("multi-sel-msg").style.display="none";
   document.getElementById("sb-s").style.display="block";
   document.getElementById("sb-sel").textContent=id;
   syncPos(d);
   renderLayers();
+  updateMultiUI();
 }
 function escProps(){
-  SEL=null;
-  document.querySelectorAll(".cel").forEach(e=>e.classList.remove("sel"));
+  SEL=null;MSEL=[];
+  document.querySelectorAll(".cel").forEach(e=>e.classList.remove("sel","msel"));
   document.getElementById("no-sel").style.display="block";
   document.getElementById("props-form").style.display="none";
+  document.getElementById("multi-sel-msg").style.display="none";
   document.getElementById("sb-s").style.display="none";
   document.getElementById("sb-p").style.display="none";
   document.getElementById("sb-z").style.display="none";
   renderLayers();
+  updateMultiUI();
 }
 function syncPos(d){
   if(!d)return;
@@ -952,10 +1198,12 @@ window.addEl=(tipo)=>{
 // DELETAR / DUPLICAR / MOVER LAYER
 // ══════════════════════════════════════════════════════════════════
 window.delEl=()=>{
-  if(!SEL)return;salvarHist();
-  ELS=ELS.filter(e=>e.id!==SEL);
-  document.querySelector(`.cel[data-id="${SEL}"]`)?.remove();
-  SEL=null;escProps();
+  const ids=MSEL.length?MSEL:(SEL?[SEL]:[]);
+  if(!ids.length)return;
+  salvarHist();
+  ELS=ELS.filter(e=>!ids.includes(e.id));
+  ids.forEach(id=>document.querySelector(`.cel[data-id="${id}"]`)?.remove());
+  SEL=null;MSEL=[];escProps();
   document.getElementById("sb-n").textContent=ELS.length;
   marcarDirty(TELA);
 };
@@ -985,7 +1233,7 @@ function renderLayers(){
   const el=document.getElementById("layers-list");
   if(!ELS.length){el.innerHTML='<div style="text-align:center;padding:16px 8px;color:var(--t3);font-size:11px">Nenhum elemento</div>';return;}
   el.innerHTML=[...ELS].reverse().map(d=>`
-    <div class="layer-item${SEL===d.id?" on":""}" onclick="selEl('${d.id}')">
+    <div class="layer-item${(SEL===d.id||MSEL.includes(d.id))?" on":""}" onclick="selEl('${d.id}')">
       <div class="layer-dot" style="background:${cor[d.tipo]||"#888"}"></div>
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${d.txt||"("+d.tipo+")"}</span>
       <svg class="layer-del" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();SEL='${d.id}';delEl()"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
@@ -1011,8 +1259,10 @@ function salvarHist(){HIST.push(JSON.stringify(ELS));if(HIST.length>30)HIST.shif
 window.desfazer=()=>{
   if(!HIST.length)return;
   ELS=JSON.parse(HIST.pop());
+  MSEL=[];
   renderAll();
   if(SEL){const d=ELS.find(e=>e.id===SEL);if(d){selEl(SEL);}else{SEL=null;escProps();}}
+  else escProps();
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -1143,28 +1393,69 @@ window.setTab=(tab,el)=>{
   document.querySelectorAll(".ptab")[tab==="props"?0:1].classList.add("on");
 };
 
-// Clicar fora deseleciona
+// Clicar em área vazia deseleciona; arrastar em área vazia = laço de seleção
 document.getElementById("canvas").addEventListener("mousedown",e=>{
-  if(e.target===document.getElementById("canvas"))escProps();
+  const cv=document.getElementById("canvas");
+  if(e.target!==cv)return;
+  if(!e.shiftKey)escProps();
+  const rect=cv.getBoundingClientRect();
+  const scale=ZOOM/100;
+  const startX=(e.clientX-rect.left)/scale,startY=(e.clientY-rect.top)/scale;
+  const box=document.getElementById("marquee-box");
+  box.style.display="block";box.style.left=startX+"px";box.style.top=startY+"px";box.style.width="0px";box.style.height="0px";
+  const preExisting=e.shiftKey?[...MSEL]:[];
+  function mv(ev){
+    const cx=(ev.clientX-rect.left)/scale,cy=(ev.clientY-rect.top)/scale;
+    const x1=Math.min(cx,startX),y1=Math.min(cy,startY);
+    const x2=Math.max(cx,startX),y2=Math.max(cy,startY);
+    box.style.left=x1+"px";box.style.top=y1+"px";box.style.width=(x2-x1)+"px";box.style.height=(y2-y1)+"px";
+    const inside=ELS.filter(d=>d.x<x2&&d.x+d.w>x1&&d.y<y2&&d.y+d.h>y1).map(d=>d.id);
+    const merged=[...new Set([...preExisting,...inside])];
+    if(merged.length>=2){
+      MSEL=merged;SEL=null;
+      document.querySelectorAll(".cel").forEach(el=>{
+        el.classList.toggle("msel",MSEL.includes(el.dataset.id));
+        el.classList.remove("sel");
+      });
+      document.getElementById("no-sel").style.display="none";
+      document.getElementById("props-form").style.display="none";
+      updateMultiUI();renderLayers();
+    } else if(merged.length===1){
+      MSEL=[];selEl(merged[0]);
+    } else {
+      MSEL=[];escProps();
+    }
+  }
+  function up(){document.removeEventListener("mousemove",mv);document.removeEventListener("mouseup",up);box.style.display="none";}
+  document.addEventListener("mousemove",mv);document.addEventListener("mouseup",up);
 });
 
 // Teclado
 document.addEventListener("keydown",e=>{
+  const typing=["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName);
   if(e.ctrlKey&&e.key==="z"){e.preventDefault();desfazer();return;}
   if(e.ctrlKey&&e.key==="s"){e.preventDefault();TELA?baixarHTML():null;return;}
-  if((e.key==="Delete"||e.key==="Backspace")&&SEL&&!["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)){
-    delEl();
+  if(e.ctrlKey&&e.key==="c"&&!typing){e.preventDefault();copiarSel();return;}
+  if(e.ctrlKey&&e.key==="v"&&!typing){e.preventDefault();colarSel();return;}
+  if((e.key==="Delete"||e.key==="Backspace")&&(SEL||MSEL.length)&&!typing){
+    e.preventDefault();delEl();return;
   }
-  if(SEL&&["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)){
-    const d=ELS.find(el=>el.id===SEL);if(!d)return;
+  const ids=MSEL.length?MSEL:(SEL?[SEL]:[]);
+  if(ids.length&&["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)){
     const step=e.shiftKey?10:1;
-    if(e.key==="ArrowLeft")d.x-=step;
-    if(e.key==="ArrowRight")d.x+=step;
-    if(e.key==="ArrowUp")d.y-=step;
-    if(e.key==="ArrowDown")d.y+=step;
-    const el=document.querySelector(`.cel[data-id="${SEL}"]`);
-    if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";}
-    syncPos(d);marcarDirty(TELA);e.preventDefault();
+    let dx=0,dy=0;
+    if(e.key==="ArrowLeft")dx=-step;
+    if(e.key==="ArrowRight")dx=step;
+    if(e.key==="ArrowUp")dy=-step;
+    if(e.key==="ArrowDown")dy=step;
+    ids.forEach(id=>{
+      const d=ELS.find(el=>el.id===id);if(!d)return;
+      d.x+=dx;d.y+=dy;
+      const el=document.querySelector(`.cel[data-id="${id}"]`);
+      if(el){el.style.left=d.x+"px";el.style.top=d.y+"px";}
+    });
+    if(SEL){const d=ELS.find(el=>el.id===SEL);syncPos(d);}
+    marcarDirty(TELA);e.preventDefault();
   }
 });
 </script>
