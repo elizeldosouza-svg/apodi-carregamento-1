@@ -1,6 +1,7 @@
 // auth-tela.js — Autenticação multiusuário por tela (TMAC Online)
 // Coleção Firestore: operadores_acesso
-// Doc: { tela, empresa, usuario, senha, nome, primeiroAcesso, ativo, criadoEm, atualizadoEm }
+// Doc (novo esquema): { telas: string[], usuario, senha, nome, primeiroAcesso, ativo, criadoEm, atualizadoEm }
+// Doc (esquema legado, ainda suportado para não quebrar logins não migrados): { tela: string, ... }
 import{collection,query,where,getDocs,doc,updateDoc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const SESSAO_MS=8*60*60*1000; // 8 horas
@@ -37,9 +38,17 @@ function salvarSessao(tela,usuario,nome,docId){
 
 export async function fazerLogin(db,tela,usuario,senha){
   if(!usuario||!senha)return{ok:false,erro:"Preencha usuário e senha."};
-  const q=query(collection(db,"operadores_acesso"),where("tela","==",tela),where("usuario","==",usuario.trim().toLowerCase()));
-  const snap=await getDocs(q);
-  const d=snap.docs.find(x=>x.data().ativo!==false);
+  const uLower=usuario.trim().toLowerCase();
+  // Esquema novo: operador com acesso a várias telas (array "telas")
+  let snap=await getDocs(query(collection(db,"operadores_acesso"),
+    where("telas","array-contains",tela),where("usuario","==",uLower)));
+  let d=snap.docs.find(x=>x.data().ativo!==false);
+  if(!d){
+    // Esquema legado: operador com 1 doc por tela (campo "tela" único) — compatibilidade
+    snap=await getDocs(query(collection(db,"operadores_acesso"),
+      where("tela","==",tela),where("usuario","==",uLower)));
+    d=snap.docs.find(x=>x.data().ativo!==false);
+  }
   if(!d)return{ok:false,erro:"Usuário ou senha incorretos."};
   const data=d.data();
   if(data.senha!==senha)return{ok:false,erro:"Usuário ou senha incorretos."};
@@ -51,6 +60,8 @@ export async function fazerLogin(db,tela,usuario,senha){
 }
 
 export async function salvarNovaSenha(db,tela,docId,usuario,nome,novaSenha){
+  // Como o documento agora é único por operador (válido para todas as suas telas),
+  // atualizar a senha aqui já reflete em todas as telas às quais ele tem acesso.
   await updateDoc(doc(db,"operadores_acesso",docId),{senha:novaSenha,primeiroAcesso:false,atualizadoEm:Timestamp.fromDate(new Date())});
   salvarSessao(tela,usuario,nome,docId);
   return{logado:true,usuario,nome,docId};
