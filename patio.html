@@ -64,8 +64,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .cal-popup-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--bl);margin-bottom:12px;letter-spacing:.5px}
 .cal-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .cal-field label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px}
-.cal-field input{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
-.cal-field input:focus{border-color:var(--bl)}
+.cal-field input,.cal-field select{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
+.cal-field input:focus,.cal-field select:focus{border-color:var(--bl)}
 .cal-actions{display:flex;gap:8px;justify-content:flex-end}
 .cal-apply{padding:7px 18px;background:var(--bl);color:#000;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif}
 .cal-clear{padding:7px 14px;background:transparent;color:var(--t2);border:1px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
@@ -78,7 +78,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .section-title span{font-size:11px;font-weight:400;color:var(--t2);font-family:'Inter',sans-serif}
 .section-title #cnt-aguardando{font-size:15px;font-weight:800;color:var(--tx)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
-.vcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;border-left:3px solid var(--bl);transition:all .2s}
+.vcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;border-left:3px solid var(--bl);transition:all .2s;min-height:180px;display:flex;flex-direction:column}
 .vcard:hover{border-color:var(--bl);background:var(--bg3)}
 .vcard.alerta{border-left-color:var(--rd);animation:cardAlert 1.2s ease-in-out infinite}
 @keyframes cardAlert{0%,100%{background:rgba(255,68,102,.06)}50%{background:rgba(255,68,102,.14)}}
@@ -98,7 +98,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .spin{width:28px;height:28px;border:3px solid var(--bd);border-top-color:var(--bl);border-radius:50%;animation:ro .7s linear infinite;margin:40px auto 10px}
 @keyframes ro{to{transform:rotate(360deg)}}
 .loading-wrap{text-align:center;padding:40px;color:var(--t3)}
-.turno{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;font-family:'Rajdhani',sans-serif}
+.turno{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;vertical-align:middle;font-family:'Rajdhani',sans-serif}
+.vcard-turno-row{margin-top:2px;margin-bottom:4px}
 .t-a{background:rgba(0,212,255,.15);color:var(--bl);border:1px solid rgba(0,212,255,.3)}
 .t-b{background:rgba(255,208,0,.15);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
 .t-c{background:rgba(167,139,250,.15);color:var(--pu);border:1px solid rgba(167,139,250,.3)}
@@ -113,9 +114,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 @media(max-width:1100px){.patio-9col{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.patio-9col{grid-template-columns:repeat(2,1fr)}}
 .col-grupo{display:flex;flex-direction:column;gap:8px}
-.col-header{border-radius:8px 8px 0 0;padding:8px 6px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:800;letter-spacing:.5px;line-height:1.3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-bottom:2px solid transparent}
-.col-header .col-header-tipo{font-size:11px}
-.col-header .col-header-cim{font-size:10px;opacity:.85}
+.col-header{border-radius:8px 8px 0 0;padding:9px 6px;text-align:center;font-family:'Rajdhani',sans-serif;font-weight:800;letter-spacing:.5px;line-height:1.3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-bottom:2px solid transparent}
+.col-header .col-header-tipo{font-size:13px}
+.col-header .col-header-cim{font-size:13px;font-weight:700}
 .col-header.h-ens1{background:rgba(0,212,255,.13);color:#00d4ff;border-color:#00d4ff}
 .col-header.h-ens2{background:rgba(0,180,220,.1);color:#00bcd4;border-color:#00bcd4}
 .col-header.h-ens3{background:rgba(0,150,190,.1);color:#00a0c4;border-color:#00a0c4}
@@ -172,13 +173,21 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
     <div class="cal-bar" style="position:relative">
       <button class="cal-btn" id="cal-toggle" onclick="toggleCal()">📅 Filtrar por Data/Hora</button>
       <div id="filtro-badge-wrap"></div>
-      <div class="cal-popup" id="cal-popup">
+      <div class="cal-popup" id="cal-popup" style="min-width:380px">
         <div class="cal-popup-title">📅 Consultar período</div>
         <div class="cal-fields">
           <div class="cal-field"><label>Data início</label><input type="date" id="f-data-ini"/></div>
           <div class="cal-field"><label>Data fim</label><input type="date" id="f-data-fim"/></div>
           <div class="cal-field"><label>Hora início</label><input type="time" id="f-hora-ini" value="00:00"/></div>
           <div class="cal-field"><label>Hora fim</label><input type="time" id="f-hora-fim" value="23:59"/></div>
+        </div>
+        <div style="border-top:1px solid var(--bd);margin:10px 0;padding-top:10px" class="cal-fields">
+          <div class="cal-field"><label>Operador</label><select id="f-operador"><option value="">Todos</option></select></div>
+          <div class="cal-field"><label>Turno</label><select id="f-turno"><option value="">Todos</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select></div>
+          <div class="cal-field"><label>Cimento</label><select id="f-cimento"><option value="">Todos</option><option value="CP II F">CP II F</option><option value="CP III">CP III</option><option value="CP V">CP V</option></select></div>
+          <div class="cal-field"><label>Carga</label><select id="f-carga"><option value="">Todas</option><option value="ensacado">Ensacado</option><option value="granel">Granel</option><option value="bigbag">Big Bag</option></select></div>
+          <div class="cal-field"><label>Placa</label><input type="text" id="f-placa" placeholder="ABC1D23"/></div>
+          <div class="cal-field"><label>AC</label><input type="text" id="f-ac" placeholder="629555"/></div>
         </div>
         <div class="cal-actions">
           <button class="cal-clear" onclick="limparFiltro()">Limpar</button>
@@ -426,10 +435,23 @@ window.aplicarFiltro=()=>{
   const hi=document.getElementById("f-hora-ini").value||"00:00";
   const hf=document.getElementById("f-hora-fim").value||"23:59";
   if(!di){alert("Informe a data início.");return;}
-  FILTRO={di,df,hi,hf};
+  const operador=document.getElementById("f-operador").value;
+  const turno=document.getElementById("f-turno").value;
+  const cimento=document.getElementById("f-cimento").value;
+  const carga=document.getElementById("f-carga").value;
+  const placa=document.getElementById("f-placa").value.trim().toUpperCase();
+  const ac=document.getElementById("f-ac").value.trim();
+  FILTRO={di,df,hi,hf,operador,turno,cimento,carga,placa,ac};
   document.getElementById("cal-popup").classList.remove("show");
+  const extras=[];
+  if(operador)extras.push("👤 "+operador);
+  if(turno)extras.push("Turno "+turno);
+  if(cimento)extras.push(cimento);
+  if(carga)extras.push({ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"}[carga]);
+  if(placa)extras.push("Placa "+placa);
+  if(ac)extras.push("AC "+ac);
   const badge=document.getElementById("filtro-badge-wrap");
-  badge.innerHTML=`<div class="filtro-badge">📅 ${di===df?di:di+" a "+df} · ${hi}–${hf} <button onclick="limparFiltro()">✕</button></div>`;
+  badge.innerHTML=`<div class="filtro-badge">📅 ${di===df?di:di+" a "+df} · ${hi}–${hf}${extras.length?" · "+extras.join(" · "):""} <button onclick="limparFiltro()">✕</button></div>`;
   renderAll(DADOS_SNAPSHOT);
 };
 window.limparFiltro=()=>{
@@ -439,9 +461,24 @@ window.limparFiltro=()=>{
   document.getElementById("f-data-fim").value="";
   document.getElementById("f-hora-ini").value="00:00";
   document.getElementById("f-hora-fim").value="23:59";
+  document.getElementById("f-operador").value="";
+  document.getElementById("f-turno").value="";
+  document.getElementById("f-cimento").value="";
+  document.getElementById("f-carga").value="";
+  document.getElementById("f-placa").value="";
+  document.getElementById("f-ac").value="";
   document.getElementById("cal-popup").classList.remove("show");
   renderAll(DADOS_SNAPSHOT);
 };
+
+function popularOperadores(snap){
+  const sel=document.getElementById("f-operador");
+  if(!sel)return;
+  const atual=sel.value;
+  const nomes=Array.from(new Set(snap.map(function(c){return c.entrada&&c.entrada.operador;}).filter(Boolean))).sort();
+  sel.innerHTML='<option value="">Todos</option>'+nomes.map(function(n){return'<option value="'+n+'">'+n+"</option>";}).join("");
+  sel.value=atual;
+}
 
 // Fechar popup ao clicar fora
 document.addEventListener("click",e=>{
@@ -495,9 +532,8 @@ function makeCard(c){
   const tipo=tipoSVG[tipoRaw]||tipoRaw;
   const tipoCl=tipoCls(c.tipoCarga);
   return`<div class="vcard${alerta?" alerta":""}">
-    <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h30</span>':''}
-      ${turno?`<span class="turno t-${turno.toLowerCase()}">${turno}</span>`:""}
-    </div>
+    <div class="vcard-placa">${c.placa}${alerta?'<span class="alerta-badge">+1h30</span>':''}</div>
+    ${turno?`<div class="vcard-turno-row"><span class="turno t-${turno.toLowerCase()}">${turno}</span></div>`:""}
     <div class="vcard-ac">AC: ${c.ac}</div>
     ${tipo?`<span class="vcard-tipo ${tipoCl}">${tipo}</span>`:""}
     ${c.tipoCimento?`<div class="vcard-cim">⚗️ ${c.tipoCimento}</div>`:""}
@@ -542,6 +578,7 @@ function distribuirColunas(ens,gran,bb){
 
 function renderAll(snap){
   const hj=hoje();
+  popularOperadores(snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";}));
   let base=snap.filter(function(c){return(c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"))&&c.setorAtual==="posto1";});
   if(FILTRO){
     const di=FILTRO.di;const df=FILTRO.df;const hi=FILTRO.hi;const hf=FILTRO.hf;
@@ -550,7 +587,15 @@ function renderAll(snap){
     base=snap.filter(function(c){
       const en=getTS(c,"entrada","ts");
       if(!en)return false;
-      return en.getTime()>=tsIni&&en.getTime()<=tsFim&&c.setorAtual==="posto1";
+      if(en.getTime()<tsIni||en.getTime()>tsFim)return false;
+      if(c.setorAtual!=="posto1")return false;
+      if(FILTRO.operador&&(!c.entrada||c.entrada.operador!==FILTRO.operador))return false;
+      if(FILTRO.turno&&getTurno(en)!==FILTRO.turno)return false;
+      if(FILTRO.cimento&&c.tipoCimento!==FILTRO.cimento)return false;
+      if(FILTRO.carga&&c.tipoCarga!==FILTRO.carga)return false;
+      if(FILTRO.placa&&(!c.placa||c.placa.toUpperCase().indexOf(FILTRO.placa)===-1))return false;
+      if(FILTRO.ac&&(!c.ac||String(c.ac).indexOf(FILTRO.ac)===-1))return false;
+      return true;
     });
   }
 
