@@ -198,6 +198,48 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .pr-btn.danger{color:var(--rd);border-color:rgba(255,77,106,.3)}
 .pr-btn.danger:hover{background:rgba(255,77,106,.1)}
 
+/* ══════ BIBLIOTECA ══════ */
+.sub-tabs{display:flex;gap:4px;padding:8px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.stab{flex:1;padding:6px 4px;font-size:10px;font-weight:600;text-align:center;cursor:pointer;color:var(--t2);background:var(--bg3);border:1px solid var(--bd);border-radius:6px;transition:all .12s}
+.stab.on{background:rgba(108,99,255,.15);border-color:var(--acc);color:#c9c6ff}
+.lib-body{flex:1;overflow-y:auto;padding:10px}
+.lib-search{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-size:11px;margin-bottom:10px;outline:none;font-family:'DM Sans',sans-serif}
+.lib-search:focus{border-color:var(--acc)}
+.comp-cat{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin:12px 0 6px;display:flex;align-items:center;gap:6px}
+.comp-cat::after{content:'';flex:1;height:1px;background:var(--bd)}
+.comp-cat:first-child{margin-top:0}
+.comp-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;border:1px solid transparent;cursor:pointer;transition:all .12s;margin-bottom:3px}
+.comp-item:hover{background:var(--bg3);border-color:var(--bd)}
+.comp-ic{width:26px;height:26px;background:var(--bg4);border:1px solid var(--bd);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.comp-info{flex:1;min-width:0}
+.comp-name{font-size:11.5px;font-weight:500;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comp-badges{display:flex;gap:3px;margin-top:2px}
+.bdg{font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px;letter-spacing:.3px}
+.bdg.on{background:rgba(0,214,143,.15);color:#00d68f}
+.bdg.off{background:rgba(255,77,106,.1);color:#6a4a52;text-decoration:line-through}
+.bdg.opt{background:rgba(255,193,7,.12);color:#ffc107}
+.comp-add{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:5px;color:var(--t3);opacity:0;transition:opacity .12s}
+.comp-item:hover .comp-add{opacity:1;color:var(--acc)}
+.acc-cat{border:1px solid var(--bd);border-radius:8px;margin-bottom:6px;overflow:hidden}
+.acc-head{display:flex;align-items:center;gap:7px;padding:9px 10px;cursor:pointer;background:var(--bg3);font-size:11px;font-weight:600;color:var(--tx);user-select:none}
+.acc-head .chev{margin-left:auto;font-size:9px;color:var(--t3);transition:transform .15s}
+.acc-cat.open .chev{transform:rotate(90deg)}
+.acc-body{display:none;padding:6px 10px 10px}
+.acc-cat.open .acc-body{display:block}
+.prop-row{padding:6px 0;border-bottom:1px solid var(--bd)}
+.prop-row:last-child{border-bottom:none}
+.prop-name{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--bl);font-weight:600}
+.prop-func{font-size:10px;color:var(--t2);margin:2px 0}
+.prop-ex{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--gr);background:var(--bg);padding:3px 6px;border-radius:4px;display:inline-block;margin-top:2px;word-break:break-all}
+.no-results{text-align:center;padding:24px 10px;color:var(--t3);font-size:11px}
+.roteiro-item{display:flex;align-items:center;gap:10px;padding:9px 4px;position:relative}
+.roteiro-item::before{content:'';position:absolute;left:14px;top:32px;bottom:-9px;width:1px;background:var(--bd2)}
+.roteiro-item:last-child::before{display:none}
+.roteiro-num{width:26px;height:26px;border-radius:50%;background:rgba(108,99,255,.15);border:1px solid var(--acc);color:#c9c6ff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;font-family:'JetBrains Mono',monospace}
+.roteiro-txt{font-size:11.5px;color:var(--tx);font-weight:500}
+.roteiro-sub{font-size:9.5px;color:var(--t3);margin-top:1px}
+.lib-legend{display:flex;gap:10px;padding:8px 10px;background:var(--bg3);border-top:1px solid var(--bd);font-size:9px;color:var(--t3);flex-shrink:0}
+
 /* ══════ CÓDIGO ══════ */
 .code-area{padding:12px;display:none;flex-direction:column;gap:8px;flex:1;overflow:hidden}
 .code-area.show{display:flex}
@@ -504,6 +546,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <div class="prop-tabs">
     <div class="ptab on" onclick="setTab('props',this)">Propriedades</div>
     <div class="ptab" onclick="setTab('codigo',this)">Código</div>
+    <div class="ptab" onclick="setTab('biblioteca',this)">📚 Biblioteca</div>
   </div>
   <div class="props" id="tab-props" style="display:flex;flex-direction:column">
     <div class="no-sel-msg" id="no-sel">
@@ -625,6 +668,30 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
   <div id="tab-codigo" style="display:none;flex:1;overflow:hidden;flex-direction:column">
     <div style="padding:10px 12px;font-size:11px;color:var(--t2)">Clique em <b style="color:var(--gr)">"Ver código"</b> na toolbar para gerar o código completo da tela editada.</div>
+  </div>
+  <div id="tab-biblioteca" style="display:none;flex:1;overflow:hidden;flex-direction:column">
+    <div class="sub-tabs">
+      <div class="stab on" id="st-comp" onclick="setSubLib('comp')">Componentes</div>
+      <div class="stab" id="st-css" onclick="setSubLib('css')">Referência CSS</div>
+      <div class="stab" id="st-rot" onclick="setSubLib('rot')">Roteiro</div>
+    </div>
+    <div class="lib-body" id="body-comp">
+      <input class="lib-search" id="search-comp" placeholder="🔍 Buscar componente..." oninput="filterComp(this.value)"/>
+      <div id="comp-list"></div>
+    </div>
+    <div class="lib-body" id="body-css" style="display:none">
+      <input class="lib-search" id="search-css" placeholder="🔍 Buscar propriedade..." oninput="filterCss(this.value)"/>
+      <div id="css-list"></div>
+      <div class="no-results" id="css-empty" style="display:none">Nenhuma propriedade encontrada</div>
+    </div>
+    <div class="lib-body" id="body-rot" style="display:none">
+      <div id="roteiro-list"></div>
+    </div>
+    <div class="lib-legend">
+      <span>✅ obrigatório</span>
+      <span>◐ opcional</span>
+      <span>✕ não usa</span>
+    </div>
   </div>
 </div>
 
@@ -1466,8 +1533,467 @@ window.setTab=(tab,el)=>{
   document.getElementById("tab-props").style.display=tab==="props"?"flex":"none";
   document.getElementById("tab-props").style.flexDirection="column";
   document.getElementById("tab-codigo").style.display=tab==="codigo"?"flex":"none";
-  document.querySelectorAll(".ptab")[tab==="props"?0:1].classList.add("on");
+  document.getElementById("tab-biblioteca").style.display=tab==="biblioteca"?"flex":"none";
+  const idx=tab==="props"?0:(tab==="codigo"?1:2);
+  document.querySelectorAll(".ptab")[idx].classList.add("on");
 };
+window.setSubLib=(tab)=>{
+  document.querySelectorAll(".stab").forEach(t=>t.classList.remove("on"));
+  document.getElementById("st-"+tab).classList.add("on");
+  document.getElementById("body-comp").style.display=tab==="comp"?"block":"none";
+  document.getElementById("body-css").style.display=tab==="css"?"block":"none";
+  document.getElementById("body-rot").style.display=tab==="rot"?"block":"none";
+};
+
+// ══════════════════════════════════════════════════════════════════
+// BIBLIOTECA — COMPONENTES (tabela do usuário + extras do documento)
+// ══════════════════════════════════════════════════════════════════
+const COMPONENTES=[
+  {cat:"Botões & Ações", items:[
+    {nome:"Botão simples", ic:"🔘", h:1,c:1,j:0},
+    {nome:"Botão com ação", ic:"⚡", h:1,c:1,j:1},
+  ]},
+  {cat:"Seleção & Formulário", items:[
+    {nome:"Toggle visual", ic:"🔵", h:1,c:1,j:2},
+    {nome:"Toggle que altera algo", ic:"🔀", h:1,c:1,j:1},
+    {nome:"Checkbox", ic:"☑️", h:1,c:1,j:2},
+    {nome:"Radio button", ic:"⭕", h:1,c:1,j:2},
+    {nome:"Select / Dropdown", ic:"📋", h:1,c:1,j:0},
+    {nome:"Input de texto", ic:"📝", h:1,c:1,j:2},
+    {nome:"Slider / Range", ic:"🎚️", h:1,c:1,j:2},
+    {nome:"Formulário completo", ic:"🧾", h:1,c:1,j:1},
+    {nome:"Validação de formulário", ic:"✔️", h:1,c:1,j:1},
+    {nome:"Color picker", ic:"🎨", h:1,c:1,j:0},
+    {nome:"Mostrar/ocultar senha", ic:"👁️", h:1,c:1,j:1},
+    {nome:"Campo de pesquisa", ic:"🔍", h:1,c:1,j:2},
+  ]},
+  {cat:"Navegação", items:[
+    {nome:"Tabs", ic:"📑", h:1,c:1,j:1},
+    {nome:"Accordion", ic:"📂", h:1,c:1,j:2},
+    {nome:"Navbar / Menu", ic:"🧭", h:1,c:1,j:2},
+    {nome:"Menu hamburger", ic:"☰", h:1,c:1,j:1},
+  ]},
+  {cat:"Overlay & Feedback", items:[
+    {nome:"Modal", ic:"🪟", h:1,c:1,j:1},
+    {nome:"Tooltip simples", ic:"💬", h:1,c:1,j:0},
+    {nome:"Alert / Notificação", ic:"🔔", h:1,c:1,j:2},
+  ]},
+  {cat:"Progresso & Status", items:[
+    {nome:"Loading / Spinner", ic:"⏳", h:1,c:1,j:0},
+    {nome:"Progress bar", ic:"📊", h:1,c:1,j:2},
+    {nome:"Rating / Estrelas", ic:"⭐", h:1,c:1,j:2},
+    {nome:"Badge", ic:"🏷️", h:1,c:1,j:0},
+  ]},
+  {cat:"Layout", items:[
+    {nome:"Card", ic:"🃏", h:1,c:1,j:0},
+    {nome:"Animação (hover/keyframes)", ic:"🎬", h:1,c:1,j:0},
+  ]},
+];
+function bdg(v,label){
+  if(v===1)return `<span class="bdg on">${label}</span>`;
+  if(v===2)return `<span class="bdg opt">${label}</span>`;
+  return `<span class="bdg off">${label}</span>`;
+}
+function renderComp(filter){
+  filter=filter||"";
+  const list=document.getElementById("comp-list");
+  const f=filter.trim().toLowerCase();
+  let html="";
+  COMPONENTES.forEach(grupo=>{
+    const items=grupo.items.filter(i=>!f||i.nome.toLowerCase().includes(f));
+    if(!items.length)return;
+    html+=`<div class="comp-cat">${grupo.cat}</div>`;
+    items.forEach(i=>{
+      html+=`<div class="comp-item" onclick="addComponente('${i.nome.replace(/'/g,"\\'")}')">
+        <div class="comp-ic">${i.ic}</div>
+        <div class="comp-info">
+          <div class="comp-name">${i.nome}</div>
+          <div class="comp-badges">${bdg(i.h,"HTML")}${bdg(i.c,"CSS")}${bdg(i.j,"JS")}</div>
+        </div>
+        <div class="comp-add">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </div>`;
+    });
+  });
+  list.innerHTML=html||'<div class="no-results">Nenhum componente encontrado</div>';
+}
+window.filterComp=(v)=>renderComp(v);
+
+// ══════════════════════════════════════════════════════════════════
+// PRESETS — cada componente vira 1+ elementos reais no canvas
+// (dx,dy relativos ao ponto de inserção; tipo reaproveita texto/botao/caixa/input/divisor)
+// ══════════════════════════════════════════════════════════════════
+const COMP_PRESETS={
+  "Botão simples":[
+    {tipo:"botao",txt:"Botão",dx:0,dy:0,w:140,h:44,s:{background:"#0f1a2e",border:"2px solid #00d4ff",borderRadius:"8px",fontSize:"13px",fontWeight:"700",color:"#00d4ff",textAlign:"center"}},
+  ],
+  "Botão com ação":[
+    {tipo:"botao",txt:"⚡ Confirmar",dx:0,dy:0,w:160,h:46,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"8px",fontSize:"13px",fontWeight:"800",color:"#000",textAlign:"center"}},
+  ],
+  "Toggle visual":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:46,h:24,s:{background:"#2a2a35",borderRadius:"20px",border:"1px solid #353545"}},
+    {tipo:"caixa",txt:"",dx:24,dy:3,w:18,h:18,s:{background:"#f0f0f5",borderRadius:"50%"}},
+  ],
+  "Toggle que altera algo":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:46,h:24,s:{background:"rgba(0,232,150,.2)",borderRadius:"20px",border:"1px solid #00e896"}},
+    {tipo:"caixa",txt:"",dx:24,dy:3,w:18,h:18,s:{background:"#00e896",borderRadius:"50%"}},
+    {tipo:"texto",txt:"Ativo",dx:54,dy:3,w:60,h:18,s:{fontSize:"11px",color:"#00e896",fontWeight:"600"}},
+  ],
+  "Checkbox":[
+    {tipo:"caixa",txt:"✓",dx:0,dy:0,w:20,h:20,s:{background:"rgba(108,99,255,.15)",border:"2px solid #6c63ff",borderRadius:"5px",fontSize:"13px",color:"#6c63ff",textAlign:"center"}},
+    {tipo:"texto",txt:"Aceito os termos",dx:28,dy:2,w:180,h:18,s:{fontSize:"12px",color:"#dff0ff"}},
+  ],
+  "Radio button":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:18,h:18,s:{background:"#0f1a2e",border:"2px solid #7aafcc",borderRadius:"50%"}},
+    {tipo:"texto",txt:"Opção",dx:26,dy:1,w:120,h:18,s:{fontSize:"12px",color:"#dff0ff"}},
+  ],
+  "Select / Dropdown":[
+    {tipo:"caixa",txt:"Selecione...  ▾",dx:0,dy:0,w:200,h:40,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"8px",fontSize:"12px",color:"#7aafcc",padding:"10px 12px"}},
+  ],
+  "Input de texto":[
+    {tipo:"input",txt:"Digite aqui...",dx:0,dy:0,w:220,h:44,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"8px",fontSize:"13px",color:"#7aafcc",padding:"12px 14px"}},
+  ],
+  "Slider / Range":[
+    {tipo:"caixa",txt:"",dx:0,dy:8,w:200,h:6,s:{background:"#1e3558",borderRadius:"3px"}},
+    {tipo:"caixa",txt:"",dx:90,dy:2,w:18,h:18,s:{background:"#00d4ff",borderRadius:"50%",border:"3px solid #0a0f1e"}},
+  ],
+  "Formulário completo":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:260,h:190,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px"}},
+    {tipo:"texto",txt:"Nome",dx:16,dy:14,w:100,h:16,s:{fontSize:"10px",color:"#7aafcc",fontWeight:"700",textTransform:"uppercase"}},
+    {tipo:"caixa",txt:"",dx:16,dy:32,w:228,h:40,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"8px"}},
+    {tipo:"texto",txt:"E-mail",dx:16,dy:84,w:100,h:16,s:{fontSize:"10px",color:"#7aafcc",fontWeight:"700",textTransform:"uppercase"}},
+    {tipo:"caixa",txt:"",dx:16,dy:102,w:228,h:40,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"8px"}},
+    {tipo:"botao",txt:"Enviar",dx:16,dy:152,w:228,h:38,s:{background:"linear-gradient(135deg,#00d4ff,#0099bb)",border:"none",borderRadius:"8px",fontSize:"13px",fontWeight:"800",color:"#000",textAlign:"center"}},
+  ],
+  "Validação de formulário":[
+    {tipo:"input",txt:"email@invalido",dx:0,dy:0,w:220,h:44,s:{background:"#0f1a2e",border:"2px solid #ff4d6a",borderRadius:"8px",fontSize:"13px",color:"#ff4d6a",padding:"12px 14px"}},
+    {tipo:"texto",txt:"⚠ E-mail inválido",dx:0,dy:48,w:220,h:16,s:{fontSize:"10px",color:"#ff4d6a",fontWeight:"600"}},
+  ],
+  "Color picker":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:40,h:32,s:{background:"linear-gradient(135deg,#00d4ff,#6c63ff)",border:"2px solid #1e3558",borderRadius:"6px"}},
+  ],
+  "Mostrar/ocultar senha":[
+    {tipo:"input",txt:"••••••••",dx:0,dy:0,w:220,h:44,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"8px",fontSize:"13px",color:"#7aafcc",padding:"12px 40px 12px 14px",letterSpacing:"3px"}},
+    {tipo:"texto",txt:"👁",dx:192,dy:12,w:20,h:20,s:{fontSize:"14px"}},
+  ],
+  "Campo de pesquisa":[
+    {tipo:"input",txt:"🔍  Pesquisar...",dx:0,dy:0,w:220,h:40,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"20px",fontSize:"12px",color:"#7aafcc",padding:"10px 16px"}},
+  ],
+  "Tabs":[
+    {tipo:"botao",txt:"Início",dx:0,dy:0,w:90,h:36,s:{background:"#00d4ff",border:"none",borderRadius:"6px 6px 0 0",fontSize:"12px",fontWeight:"700",color:"#000",textAlign:"center"}},
+    {tipo:"botao",txt:"Produtos",dx:92,dy:0,w:90,h:36,s:{background:"#1a1a1e",border:"none",borderRadius:"6px 6px 0 0",fontSize:"12px",fontWeight:"600",color:"#7aafcc",textAlign:"center"}},
+    {tipo:"botao",txt:"Contato",dx:184,dy:0,w:90,h:36,s:{background:"#1a1a1e",border:"none",borderRadius:"6px 6px 0 0",fontSize:"12px",fontWeight:"600",color:"#7aafcc",textAlign:"center"}},
+  ],
+  "Accordion":[
+    {tipo:"caixa",txt:"▼  Como faço meu cadastro?",dx:0,dy:0,w:260,h:42,s:{background:"#0f1a2e",border:"1px solid #1e3558",borderRadius:"8px",fontSize:"12px",fontWeight:"600",color:"#dff0ff",padding:"12px 14px"}},
+    {tipo:"caixa",txt:"Você pode se cadastrar pelo formulário na tela inicial.",dx:0,dy:46,w:260,h:56,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"8px",fontSize:"11px",color:"#7aafcc",padding:"12px 14px"}},
+  ],
+  "Navbar / Menu":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:440,h:56,s:{background:"#0a1628",borderBottom:"2px solid #1e3558"}},
+    {tipo:"texto",txt:"LOGO",dx:16,dy:18,w:80,h:20,s:{fontSize:"14px",fontWeight:"900",color:"#00d4ff",fontFamily:"'Rajdhani',sans-serif",letterSpacing:"2px"}},
+    {tipo:"texto",txt:"Início",dx:220,dy:18,w:56,h:20,s:{fontSize:"12px",fontWeight:"600",color:"#dff0ff"}},
+    {tipo:"texto",txt:"Produtos",dx:284,dy:18,w:70,h:20,s:{fontSize:"12px",fontWeight:"600",color:"#7aafcc"}},
+    {tipo:"texto",txt:"Contato",dx:364,dy:18,w:60,h:20,s:{fontSize:"12px",fontWeight:"600",color:"#7aafcc"}},
+  ],
+  "Menu hamburger":[
+    {tipo:"caixa",txt:"☰",dx:0,dy:0,w:40,h:40,s:{background:"#0f1a2e",border:"2px solid #1e3558",borderRadius:"8px",fontSize:"18px",color:"#dff0ff",textAlign:"center"}},
+  ],
+  "Modal":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:320,h:180,s:{background:"#141420",border:"1px solid #2a2a35",borderRadius:"12px",boxShadow:"0 20px 60px rgba(0,0,0,.6)"}},
+    {tipo:"texto",txt:"Confirmar ação",dx:20,dy:16,w:220,h:22,s:{fontSize:"15px",fontWeight:"800",color:"#f0f0f5"}},
+    {tipo:"texto",txt:"Deseja continuar?",dx:20,dy:52,w:260,h:20,s:{fontSize:"12px",color:"#8888a0"}},
+    {tipo:"botao",txt:"Cancelar",dx:20,dy:126,w:130,h:38,s:{background:"#1a1a1e",border:"1px solid #353545",borderRadius:"7px",fontSize:"12px",fontWeight:"600",color:"#8888a0",textAlign:"center"}},
+    {tipo:"botao",txt:"Confirmar",dx:160,dy:126,w:140,h:38,s:{background:"#6c63ff",border:"none",borderRadius:"7px",fontSize:"12px",fontWeight:"700",color:"#fff",textAlign:"center"}},
+  ],
+  "Tooltip simples":[
+    {tipo:"botao",txt:"💾",dx:0,dy:30,w:40,h:36,s:{background:"#0f1a2e",border:"1px solid #1e3558",borderRadius:"8px",fontSize:"16px",textAlign:"center"}},
+    {tipo:"caixa",txt:"Salvar arquivo",dx:-10,dy:0,w:110,h:26,s:{background:"#1e1e2a",border:"1px solid #353545",borderRadius:"5px",fontSize:"10px",color:"#8888a0",textAlign:"center",padding:"5px"}},
+  ],
+  "Alert / Notificação":[
+    {tipo:"caixa",txt:"✓  Cadastro realizado!",dx:0,dy:0,w:280,h:44,s:{background:"rgba(0,232,150,.1)",border:"1px solid #00e896",borderLeft:"4px solid #00e896",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#00e896",padding:"12px 14px"}},
+  ],
+  "Loading / Spinner":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:32,h:32,s:{background:"transparent",border:"4px solid #2a2a35",borderTop:"4px solid #00d4ff",borderRadius:"50%"}},
+  ],
+  "Progress bar":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:220,h:10,s:{background:"#1e3558",borderRadius:"5px"}},
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:154,h:10,s:{background:"linear-gradient(90deg,#00d4ff,#00e896)",borderRadius:"5px"}},
+  ],
+  "Rating / Estrelas":[
+    {tipo:"texto",txt:"★ ★ ★ ★ ☆",dx:0,dy:0,w:140,h:24,s:{fontSize:"18px",color:"#ffd000",letterSpacing:"2px"}},
+  ],
+  "Badge":[
+    {tipo:"caixa",txt:"NOVO",dx:0,dy:0,w:60,h:22,s:{background:"#00d68f",borderRadius:"20px",fontSize:"9px",fontWeight:"800",color:"#000",textAlign:"center",letterSpacing:"1px"}},
+  ],
+  "Card":[
+    {tipo:"caixa",txt:"",dx:0,dy:0,w:220,h:240,s:{background:"#141420",border:"1px solid #2a2a35",borderRadius:"12px",boxShadow:"0 8px 24px rgba(0,0,0,.3)"}},
+    {tipo:"caixa",txt:"IMAGEM",dx:12,dy:12,w:196,h:110,s:{background:"#0a1628",borderRadius:"8px",fontSize:"10px",color:"#3a6880",textAlign:"center",fontWeight:"700"}},
+    {tipo:"texto",txt:"Produto",dx:14,dy:134,w:180,h:20,s:{fontSize:"13px",fontWeight:"700",color:"#f0f0f5"}},
+    {tipo:"texto",txt:"R$ 99,90",dx:14,dy:156,w:120,h:18,s:{fontSize:"12px",color:"#00e896",fontWeight:"600"}},
+    {tipo:"botao",txt:"Comprar",dx:14,dy:190,w:194,h:36,s:{background:"#6c63ff",border:"none",borderRadius:"7px",fontSize:"12px",fontWeight:"700",color:"#fff",textAlign:"center"}},
+  ],
+  "Animação (hover/keyframes)":[
+    {tipo:"caixa",txt:"🎬 Elemento animado (hover/scale)",dx:0,dy:0,w:220,h:44,s:{background:"rgba(108,99,255,.08)",border:"2px dashed rgba(108,99,255,.4)",borderRadius:"8px",fontSize:"11px",color:"#c9c6ff",textAlign:"center",padding:"12px"}},
+  ],
+};
+window.addComponente=(nome)=>{
+  if(!TELA){showToast("Selecione uma tela primeiro");return;}
+  const parts=COMP_PRESETS[nome];
+  if(!parts){showToast("Preset não encontrado");return;}
+  salvarHist();
+  const baseX=40,baseY=40;
+  const novos=[];
+  parts.forEach(p=>{
+    const id=p.tipo+"_"+nextId++;
+    const d={id,tipo:p.tipo,txt:p.txt,x:baseX+p.dx,y:baseY+p.dy,w:p.w,h:p.h,s:{...p.s}};
+    ELS.push(d);
+    document.getElementById("canvas").appendChild(mkEl(d));
+    novos.push(id);
+  });
+  document.getElementById("sb-n").textContent=ELS.length;
+  if(novos.length===1){MSEL=[];selEl(novos[0]);}
+  else{
+    MSEL=novos;SEL=null;
+    document.querySelectorAll(".cel").forEach(e=>e.classList.toggle("msel",MSEL.includes(e.dataset.id)));
+    document.getElementById("no-sel").style.display="none";
+    document.getElementById("props-form").style.display="none";
+    updateMultiUI();renderLayers();
+  }
+  marcarDirty(TELA);
+  showToast(`✓ "${nome}" adicionado ao canvas`);
+};
+
+// ══════════════════════════════════════════════════════════════════
+// BIBLIOTECA — REFERÊNCIA CSS (30 categorias)
+// ══════════════════════════════════════════════════════════════════
+const CSS_REF=[
+  {cat:"Cores e fundos", props:[
+    ["color","Cor do texto","color: red;"],
+    ["background-color","Cor do fundo","background-color: blue;"],
+    ["background-image","Imagem de fundo","background-image: url('img.jpg');"],
+    ["background-size","Tamanho da imagem de fundo","background-size: cover;"],
+    ["background-position","Posição da imagem","background-position: center;"],
+    ["opacity","Transparência do elemento","opacity: 0.5;"],
+  ]},
+  {cat:"Texto", props:[
+    ["font-family","Escolhe a fonte","font-family: Arial;"],
+    ["font-size","Tamanho da fonte","font-size: 20px;"],
+    ["font-weight","Espessura da fonte","font-weight: bold;"],
+    ["text-align","Alinha o texto","text-align: center;"],
+    ["text-decoration","Sublinhado/riscado","text-decoration: underline;"],
+    ["line-height","Espaçamento entre linhas","line-height: 1.5;"],
+    ["letter-spacing","Espaço entre letras","letter-spacing: 2px;"],
+    ["text-shadow","Sombra do texto","text-shadow: 2px 2px 5px #aaa;"],
+    ["text-transform","Maiúsculas/minúsculas","text-transform: uppercase;"],
+  ]},
+  {cat:"Box Model", props:[
+    ["width / height","Largura / altura","width: 300px;"],
+    ["margin","Espaço fora do elemento","margin: 20px;"],
+    ["padding","Espaço dentro do elemento","padding: 20px;"],
+    ["border","Cria uma borda","border: 1px solid black;"],
+    ["border-radius","Arredonda os cantos","border-radius: 10px;"],
+    ["min/max-width/height","Limites de tamanho","max-width: 600px;"],
+  ]},
+  {cat:"Box sizing", props:[
+    ["box-sizing","Inclui padding/borda na largura","box-sizing: border-box;"],
+  ]},
+  {cat:"Display", props:[
+    ["display: block","Ocupa uma linha inteira","display: block;"],
+    ["display: inline-block","Inline mas aceita dimensões","display: inline-block;"],
+    ["display: none","Esconde o elemento","display: none;"],
+    ["display: flex","Ativa Flexbox","display: flex;"],
+    ["display: grid","Ativa Grid","display: grid;"],
+  ]},
+  {cat:"Flexbox", props:[
+    ["display: flex","Organiza em linha/coluna","display: flex;"],
+    ["flex-direction","Direção dos elementos","flex-direction: column;"],
+    ["justify-content","Alinha no eixo principal","justify-content: center;"],
+    ["align-items","Alinha no eixo transversal","align-items: center;"],
+    ["flex-wrap","Permite quebra de linha","flex-wrap: wrap;"],
+    ["gap","Espaço entre elementos","gap: 12px;"],
+    ["flex-grow / shrink","Cresce/diminui o filho","flex-grow: 1;"],
+  ]},
+  {cat:"CSS Grid", props:[
+    ["display: grid","Ativa layout em grade","display: grid;"],
+    ["grid-template-columns","Define colunas","grid-template-columns: 1fr 1fr 1fr;"],
+    ["grid-template-rows","Define linhas","grid-template-rows: auto 1fr;"],
+    ["grid-column / row","Posiciona item na grade","grid-column: 1/3;"],
+    ["gap","Espaçamento entre células","gap: 20px;"],
+  ]},
+  {cat:"Position", props:[
+    ["position: static","Padrão, sem posicionamento","position: static;"],
+    ["position: relative","Relativo à posição normal","position: relative;"],
+    ["position: absolute","Relativo ao ancestral posicionado","position: absolute;"],
+    ["position: fixed","Fixo na tela (não rola)","position: fixed;"],
+    ["position: sticky","Gruda ao rolar","position: sticky;"],
+    ["z-index","Ordem de sobreposição","z-index: 10;"],
+  ]},
+  {cat:"Visibilidade e overflow", props:[
+    ["visibility","Esconde sem remover espaço","visibility: hidden;"],
+    ["overflow","Conteúdo que ultrapassa a caixa","overflow: hidden;"],
+    ["overflow-y","Excesso vertical","overflow-y: auto;"],
+  ]},
+  {cat:"Sombras", props:[
+    ["box-shadow","Sombra em caixas","box-shadow: 0 4px 10px gray;"],
+    ["text-shadow","Sombra em texto","text-shadow: 2px 2px gray;"],
+  ]},
+  {cat:"Bordas", props:[
+    ["border-radius","Arredonda cantos","border-radius: 20px;"],
+    ["border-top-left-radius","Arredonda um canto específico","border-top-left-radius: 8px;"],
+    ["border-style","Estilo da borda","border-style: dashed;"],
+  ]},
+  {cat:"Cursor", props:[
+    ["cursor: pointer","Cursor de link/clicável","cursor: pointer;"],
+    ["cursor: not-allowed","Indica ação bloqueada","cursor: not-allowed;"],
+    ["cursor: grab","Indica que pode arrastar","cursor: grab;"],
+  ]},
+  {cat:"Transições", props:[
+    ["transition","Muda suavemente uma propriedade","transition: 0.3s;"],
+    ["transition-property","Qual propriedade anima","transition-property: background;"],
+    ["transition-timing-function","Curva de velocidade","transition-timing-function: ease;"],
+  ]},
+  {cat:"Transformações", props:[
+    ["transform: translate()","Move o elemento","transform: translateX(20px);"],
+    ["transform: scale()","Aumenta/diminui","transform: scale(1.1);"],
+    ["transform: rotate()","Gira o elemento","transform: rotate(45deg);"],
+  ]},
+  {cat:"Animações", props:[
+    ["@keyframes","Define os passos da animação","@keyframes girar{to{transform:rotate(360deg)}}"],
+    ["animation","Aplica a animação","animation: girar 1s linear infinite;"],
+    ["animation-delay","Atraso antes de começar","animation-delay: .5s;"],
+  ]},
+  {cat:"Responsividade", props:[
+    ["@media","Aplica CSS por tamanho de tela","@media (max-width:600px){...}"],
+    ["min-width / max-width","Limites de largura","max-width: 768px;"],
+  ]},
+  {cat:"Unidades CSS", props:[
+    ["px","Pixel fixo","width: 300px;"],
+    ["%","Relativo ao pai","width: 80%;"],
+    ["rem / em","Relativo à fonte","font-size: 1rem;"],
+    ["vw / vh","Relativo à tela","width: 100vw;"],
+    ["fr","Fração (só em Grid)","grid-template-columns: 1fr 2fr;"],
+  ]},
+  {cat:"Funções CSS", props:[
+    ["calc()","Faz cálculos","width: calc(100% - 40px);"],
+    ["clamp()","Valor responsivo com limites","font-size: clamp(20px,5vw,50px);"],
+    ["var()","Usa variável CSS","background: var(--cor-principal);"],
+    ["min() / max()","Escolhe menor/maior valor","width: min(90%,1000px);"],
+  ]},
+  {cat:"Gradientes", props:[
+    ["linear-gradient","Gradiente em linha reta","background: linear-gradient(red,blue);"],
+    ["radial-gradient","Gradiente circular","background: radial-gradient(red,blue);"],
+  ]},
+  {cat:"Imagens", props:[
+    ["object-fit","Como a imagem preenche o espaço","object-fit: cover;"],
+    ["object-position","Posição do recorte","object-position: top;"],
+  ]},
+  {cat:"Listas", props:[
+    ["list-style-type","Marcador da lista","list-style-type: square;"],
+    ["list-style-position","Posição do marcador","list-style-position: inside;"],
+  ]},
+  {cat:"Links", props:[
+    ["a:link","Link não visitado","a:link{color:blue;}"],
+    ["a:visited","Link já visitado","a:visited{color:purple;}"],
+  ]},
+  {cat:"Pseudo-classes", props:[
+    [":hover","Quando o mouse passa por cima",":hover{background:blue;}"],
+    [":active","Enquanto está sendo clicado",":active{transform:scale(.97);}"],
+    [":focus","Quando recebe foco",":focus{border-color:blue;}"],
+    [":disabled","Elemento desabilitado",":disabled{opacity:.5;}"],
+    [":nth-child()","Elemento em posição específica","li:nth-child(2){color:red;}"],
+  ]},
+  {cat:"Pseudo-elementos", props:[
+    ["::before","Insere conteúdo antes","p::before{content:'★';}"],
+    ["::after","Insere conteúdo depois","p::after{content:'→';}"],
+    ["::placeholder","Estiliza o texto de exemplo","input::placeholder{color:#999;}"],
+  ]},
+  {cat:"Seletores CSS", props:[
+    [".classe","Seleciona por classe",".titulo{color:blue;}"],
+    ["#id","Seleciona por id","#menu{background:black;}"],
+    ["a b","Seleciona descendente",".menu a{color:white;}"],
+    ["a > b","Seleciona filho direto",".menu > a{color:red;}"],
+    ["[attr]","Seleciona por atributo","input[type='text']{...}"],
+  ]},
+  {cat:"Variáveis CSS", props:[
+    ["--nome","Declara uma variável",":root{--cor:#3498db;}"],
+    ["var(--nome)","Usa a variável","background: var(--cor);"],
+  ]},
+  {cat:"Formulários", props:[
+    ["accent-color","Cor de checkbox/radio","accent-color: #2563eb;"],
+    ["outline","Contorno de foco","outline: none;"],
+    ["resize","Permite redimensionar textarea","resize: vertical;"],
+  ]},
+  {cat:"Rolagem", props:[
+    ["scroll-behavior","Rolagem suave","scroll-behavior: smooth;"],
+    ["scroll-snap-type","Trava a rolagem em pontos","scroll-snap-type: x mandatory;"],
+  ]},
+  {cat:"Filtros", props:[
+    ["filter: blur()","Desfoca o elemento","filter: blur(5px);"],
+    ["filter: grayscale()","Deixa em escala de cinza","filter: grayscale(1);"],
+    ["filter: drop-shadow()","Sombra que segue a forma","filter: drop-shadow(0 4px 6px #0006);"],
+  ]},
+  {cat:"Mix-blend e efeitos avançados", props:[
+    ["backdrop-filter","Desfoca o fundo atrás (glass)","backdrop-filter: blur(10px);"],
+    ["mix-blend-mode","Mistura de cores entre camadas","mix-blend-mode: multiply;"],
+  ]},
+];
+function renderCss(filter){
+  filter=filter||"";
+  const list=document.getElementById("css-list");
+  const f=filter.trim().toLowerCase();
+  let html="",any=false;
+  CSS_REF.forEach((grupo,gi)=>{
+    const props=grupo.props.filter(p=>!f||p[0].toLowerCase().includes(f)||p[1].toLowerCase().includes(f));
+    if(!props.length)return;
+    any=true;
+    const open=f.length>0;
+    html+=`<div class="acc-cat${open?' open':''}" id="cat-${gi}">
+      <div class="acc-head" onclick="toggleCat(${gi})">${grupo.cat}<span class="chev">▶</span></div>
+      <div class="acc-body">
+        ${props.map(p=>`<div class="prop-row">
+          <div class="prop-name">${p[0]}</div>
+          <div class="prop-func">${p[1]}</div>
+          <div class="prop-ex">${p[2]}</div>
+        </div>`).join("")}
+      </div>
+    </div>`;
+  });
+  list.innerHTML=html;
+  document.getElementById("css-empty").style.display=any?"none":"block";
+}
+window.filterCss=(v)=>renderCss(v);
+window.toggleCat=(i)=>document.getElementById("cat-"+i).classList.toggle("open");
+
+// ══════════════════════════════════════════════════════════════════
+// BIBLIOTECA — ROTEIRO DE ESTUDO
+// ══════════════════════════════════════════════════════════════════
+const ROTEIRO=[
+  ["HTML","Estrutura da página"],
+  ["CSS","Cores, fontes, tamanhos, margens, bordas"],
+  ["Box Model","margin, padding, border, width, height"],
+  ["Flexbox","Organização de elementos em linha/coluna"],
+  ["Grid","Layouts complexos em linhas e colunas"],
+  ["Botões","Simples e com ação (hover, active, disabled)"],
+  ["Formulários","Input, select, checkbox, radio, validação"],
+  ["Cards","Composição de imagem + texto + ação"],
+  ["Navbar","Menu de navegação, responsivo"],
+  ["Toggle","Switch visual e switch funcional"],
+  ["Modal","Overlay, foco, fechar por fora/ESC"],
+  ["Responsividade","Media queries, unidades relativas"],
+  ["JavaScript p/ interação","Tabs, accordion, modal, validação, hamburger"],
+];
+function renderRoteiro(){
+  document.getElementById("roteiro-list").innerHTML=ROTEIRO.map((r,i)=>`
+    <div class="roteiro-item">
+      <div class="roteiro-num">${i+1}</div>
+      <div>
+        <div class="roteiro-txt">${r[0]}</div>
+        <div class="roteiro-sub">${r[1]}</div>
+      </div>
+    </div>`).join("");
+}
+renderComp();renderCss();renderRoteiro();
 
 // Clicar em área vazia deseleciona; arrastar em área vazia = laço de seleção
 document.getElementById("canvas").addEventListener("mousedown",e=>{
