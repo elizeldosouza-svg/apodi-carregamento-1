@@ -23,7 +23,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 /* ══════ LAYOUT ══════ */
 .app{
   display:grid;
-  grid-template-rows:48px 1fr 24px;
+  grid-template-rows:auto 1fr 24px;
   grid-template-columns:var(--sb-l-w) 1fr 280px;
   height:100vh;
   overflow:hidden;
@@ -43,13 +43,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   background:var(--bg2);
   border-bottom:1px solid var(--bd);
   display:flex;
-  align-items:center;
-  padding:0 12px;
-  gap:8px;
+  flex-direction:column;
+  gap:4px;
+  padding:6px 12px;
   z-index:100;
-  overflow-x:auto;
-  flex-wrap:nowrap;
 }
+.tb-row{display:flex;align-items:center;gap:8px;overflow-x:auto;flex-wrap:nowrap;min-height:32px}
+.tb-row::-webkit-scrollbar{height:2px}
+.tb-row-2{padding-top:4px;border-top:1px solid var(--bd)}
+.tb-row-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;flex-shrink:0}
 .topbar::-webkit-scrollbar{height:2px}
 .logo{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:900;color:var(--acc);letter-spacing:2px;margin-right:4px;white-space:nowrap;flex-shrink:0}
 .logo span{color:var(--t2);font-weight:700}
@@ -244,6 +246,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- ── TOPBAR ── -->
 <div class="topbar">
+  <div class="tb-row">
   <!-- Toggle sidebar -->
   <button class="sb-toggle" id="sb-toggle-btn" onclick="toggleSidebar()" title="Mostrar/ocultar painel de telas">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
@@ -266,6 +269,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <option value="analise">Análise</option>
       <option value="justificativas">Justificativas</option>
       <option value="placas">Placas</option>
+      <option value="relatorios">Relatórios</option>
+      <option value="kanban">Kanban</option>
+      <option value="faturamentoFila">Faturamento · Fila</option>
+      <option value="carregamentoArmazem">Armazém — TMA</option>
+      <option value="acsExcluidas">ACs Excluídas</option>
     </optgroup>
     <optgroup label="Sistema">
       <option value="senha">Painel TV</option>
@@ -292,7 +300,29 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <button class="tb-btn" onclick="desfazer()" title="Ctrl+Z">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l4-4-4 4 4 4M3 7h13a4 4 0 010 8H11"/></svg>Desfazer
   </button>
+  <div class="tb-gap"></div>
+  <div class="zoom-wrap">
+    <button class="tb-btn" style="padding:4px 8px" onclick="zoom(-10)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <span class="zoom-val" id="zoom-val">100%</span>
+    <button class="tb-btn" style="padding:4px 8px" onclick="zoom(10)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </div>
   <div class="tb-sep"></div>
+  <button class="tb-btn acc" id="btn-aplicar" onclick="aplicarEdicao()" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Aplicar edição
+  </button>
+  <button class="tb-btn dl" id="btn-baixar" onclick="baixarHTML()" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Baixar HTML
+  </button>
+  <button class="tb-btn ok" id="btn-codigo" onclick="mostrarCodigo()" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Ver código
+  </button>
+  </div>
+  <div class="tb-row tb-row-2">
+  <span class="tb-row-label">Ferramentas</span>
   <button class="tb-btn active" id="btn-grid" onclick="toggleGrid()" title="Mostrar/ocultar grade">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>Grade
   </button>
@@ -333,26 +363,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <button class="tb-btn" onclick="colarSel()" title="Ctrl+V">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2H15a1 1 0 011 1v2H8V3a1 1 0 011-1z"/><rect x="6" y="4" width="12" height="18" rx="2"/></svg>Colar
   </button>
-  <div class="tb-gap"></div>
-  <div class="zoom-wrap">
-    <button class="tb-btn" style="padding:4px 8px" onclick="zoom(-10)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
-    <span class="zoom-val" id="zoom-val">100%</span>
-    <button class="tb-btn" style="padding:4px 8px" onclick="zoom(10)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
   </div>
-  <div class="tb-sep"></div>
-  <button class="tb-btn acc" id="btn-aplicar" onclick="aplicarEdicao()" style="display:none">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Aplicar edição
-  </button>
-  <button class="tb-btn dl" id="btn-baixar" onclick="baixarHTML()" style="display:none">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Baixar HTML
-  </button>
-  <button class="tb-btn ok" id="btn-codigo" onclick="mostrarCodigo()" style="display:none">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Ver código
-  </button>
 </div>
 
 <!-- ── SIDEBAR ESQUERDA ── -->
