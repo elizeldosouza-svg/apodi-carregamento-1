@@ -422,6 +422,31 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="dirty-dot"></div>
         <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('placas')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
       </div>
+      <div class="tela-item" data-tela="relatorios" data-url="apodi-carregamento.vercel.app/relatorios" onclick="carregarTelaBtn('relatorios',this)">
+        <div class="tela-icon">📑</div><span class="tela-name">Relatórios</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('relatorios')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="kanban" data-url="apodi-carregamento.vercel.app/kanban" onclick="carregarTelaBtn('kanban',this)">
+        <div class="tela-icon">🗂️</div><span class="tela-name">Kanban</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('kanban')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="faturamentoFila" data-url="apodi-carregamento.vercel.app/faturamento-fila" onclick="carregarTelaBtn('faturamentoFila',this)">
+        <div class="tela-icon">⏱️</div><span class="tela-name">Faturamento · Fila</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('faturamentoFila')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="carregamentoArmazem" data-url="apodi-carregamento.vercel.app/carregamento-armazem" onclick="carregarTelaBtn('carregamentoArmazem',this)">
+        <div class="tela-icon">🏬</div><span class="tela-name">Armazém — TMA</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('carregamentoArmazem')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <div class="tela-item" data-tela="acsExcluidas" data-url="apodi-carregamento.vercel.app/acs-excluidas" onclick="carregarTelaBtn('acsExcluidas',this)">
+        <div class="tela-icon">🗑️</div><span class="tela-name">ACs Excluídas</span>
+        <div class="dirty-dot"></div>
+        <svg class="tela-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation();abrirTela('acsExcluidas')"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </div>
     </div>
 
     <!-- SISTEMA -->
@@ -738,6 +763,41 @@ const TELAS={
     {id:"ad_form",tipo:"caixa",txt:"Formulário de edição de veículos",x:20,y:70,w:600,h:580,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"20px"}},
     {id:"ad_log",tipo:"caixa",txt:"Log de ações",x:640,y:70,w:340,h:580,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",color:"#3a6880",padding:"14px",fontFamily:"monospace"}},
   ]},
+  relatorios:{label:"Relatórios — TMAC Online",w:1200,h:800,bg:"#060d18",els:[
+    {id:"rl_h1",tipo:"texto",txt:"📑 RELATÓRIOS",x:20,y:20,w:400,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#ffd000",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"rl_sub",tipo:"texto",txt:"Métricas TMAC, TMTI, TMCI, TMEI, TMF paginadas",x:20,y:56,w:500,h:20,s:{fontSize:"12px",color:"#7aafcc"}},
+    {id:"rl_filtros",tipo:"caixa",txt:"Filtros: período · turno · operador · placa",x:20,y:90,w:1160,h:56,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",color:"#7aafcc",padding:"16px"}},
+    {id:"rl_tbl",tipo:"caixa",txt:"Tabela paginada (50 linhas) · exportar Excel",x:20,y:160,w:1160,h:560,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"16px"}},
+    {id:"rl_exp",tipo:"botao",txt:"📥 Exportar Excel",x:960,y:20,w:220,h:38,s:{background:"rgba(255,208,0,.1)",border:"2px solid #ffd000",borderRadius:"8px",fontSize:"12px",fontWeight:"700",color:"#ffd000",textAlign:"center"}},
+  ]},
+  kanban:{label:"Kanban · Status Atual",w:1400,h:780,bg:"#060d18",els:[
+    {id:"kb_h1",tipo:"texto",txt:"🗂️ KANBAN — STATUS ATUAL",x:20,y:20,w:500,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#00d4ff",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"kb_badge",tipo:"caixa",txt:"● TEMPO REAL",x:540,y:24,w:110,h:24,s:{background:"rgba(0,214,143,.1)",border:"1px solid #00d68f",borderRadius:"20px",fontSize:"10px",fontWeight:"700",color:"#00d68f",textAlign:"center",letterSpacing:"2px"}},
+    {id:"kb_c1",tipo:"caixa",txt:"Posto 1",x:20,y:70,w:190,h:660,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",fontWeight:"700",color:"#00d4ff",padding:"12px",textAlign:"center"}},
+    {id:"kb_c2",tipo:"caixa",txt:"Portaria Início",x:222,y:70,w:190,h:660,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",fontWeight:"700",color:"#ffd000",padding:"12px",textAlign:"center"}},
+    {id:"kb_c3",tipo:"caixa",txt:"Triagem",x:424,y:70,w:190,h:660,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",fontWeight:"700",color:"#fb923c",padding:"12px",textAlign:"center"}},
+    {id:"kb_c4",tipo:"caixa",txt:"Carregamento",x:626,y:70,w:190,h:660,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",fontWeight:"700",color:"#00e896",padding:"12px",textAlign:"center"}},
+    {id:"kb_c5",tipo:"caixa",txt:"Enlonamento",x:828,y:70,w:190,h:660,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",fontWeight:"700",color:"#38bdf8",padding:"12px",textAlign:"center"}},
+    {id:"kb_c6",tipo:"caixa",txt:"Faturamento",x:1030,y:70,w:190,h:660,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",fontWeight:"700",color:"#ff5c7a",padding:"12px",textAlign:"center"}},
+    {id:"kb_c7",tipo:"caixa",txt:"Portaria Fim",x:1232,y:70,w:150,h:660,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"12px",fontWeight:"700",color:"#ff9f43",padding:"12px",textAlign:"center"}},
+  ]},
+  faturamentoFila:{label:"Faturamento — TMF · Fila",w:900,h:700,bg:"#060d18",els:[
+    {id:"ff_h1",tipo:"texto",txt:"⏱️ FATURAMENTO — TMF",x:20,y:20,w:450,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#00e896",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"ff_sub",tipo:"texto",txt:"Tempo médio de fila · enlonamento.fim → faturamento.ts",x:20,y:56,w:500,h:20,s:{fontSize:"12px",color:"#7aafcc"}},
+    {id:"ff_meta",tipo:"caixa",txt:"Meta TMF ≤ 8 min",x:20,y:90,w:220,h:70,s:{background:"rgba(0,232,150,.06)",border:"2px solid rgba(0,232,150,.3)",borderRadius:"10px",fontSize:"14px",fontWeight:"700",color:"#00e896",textAlign:"center",padding:"18px"}},
+    {id:"ff_lista",tipo:"caixa",txt:"Fila · Aguardando faturamento",x:20,y:176,w:860,h:490,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"16px"}},
+  ]},
+  carregamentoArmazem:{label:"Carregamento Armazém — TMA",w:1100,h:750,bg:"#060d18",els:[
+    {id:"ca_h1",tipo:"texto",txt:"🏬 CARREGAMENTO ARMAZÉM — TMA",x:20,y:20,w:600,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#ffd000",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"ca_sub",tipo:"texto",txt:"TMA = TMTI + TMCI + TMEI · meta ≤ 40 min",x:20,y:56,w:500,h:20,s:{fontSize:"12px",color:"#7aafcc"}},
+    {id:"ca_tma",tipo:"caixa",txt:"TMA médio: 34 min",x:20,y:90,w:240,h:80,s:{background:"rgba(255,208,0,.06)",border:"2px solid rgba(255,208,0,.3)",borderRadius:"10px",fontSize:"16px",fontWeight:"700",color:"#ffd000",textAlign:"center",padding:"20px"}},
+    {id:"ca_tbl",tipo:"caixa",txt:"Tabela de rastreio por turno A/B/C",x:20,y:190,w:1060,h:520,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"16px"}},
+  ]},
+  acsExcluidas:{label:"ACs Excluídas",w:900,h:700,bg:"#060d18",els:[
+    {id:"ae_h1",tipo:"texto",txt:"🗑️ ACS EXCLUÍDAS",x:20,y:20,w:400,h:32,s:{fontSize:"20px",fontWeight:"900",color:"#ff4d6a",letterSpacing:"2px",fontFamily:"'Rajdhani',sans-serif"}},
+    {id:"ae_sub",tipo:"texto",txt:"Registros movidos para caminhoes_excluidos (soft-delete)",x:20,y:56,w:520,h:20,s:{fontSize:"12px",color:"#7aafcc"}},
+    {id:"ae_tbl",tipo:"caixa",txt:"Placa · AC · Excluído por · Motivo · Data",x:20,y:90,w:860,h:560,s:{background:"#0a1628",border:"1px solid #1e3558",borderRadius:"10px",fontSize:"13px",color:"#7aafcc",padding:"16px"}},
+  ]},
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -764,6 +824,11 @@ const URLS={
   placas:"https://apodi-carregamento.vercel.app/placas",
   senha:"https://apodi-carregamento.vercel.app/senha",
   admin:"https://apodi-carregamento.vercel.app/admin",
+  relatorios:"https://apodi-carregamento.vercel.app/relatorios",
+  kanban:"https://apodi-carregamento.vercel.app/kanban",
+  faturamentoFila:"https://apodi-carregamento.vercel.app/faturamento-fila",
+  carregamentoArmazem:"https://apodi-carregamento.vercel.app/carregamento-armazem",
+  acsExcluidas:"https://apodi-carregamento.vercel.app/acs-excluidas",
 };
 
 // ══════════════════════════════════════════════════════════════════
