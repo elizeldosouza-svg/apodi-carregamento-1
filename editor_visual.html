@@ -271,6 +271,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   :root{--sb-l-w:220px}
   .sidebar-r{min-width:240px}
 }
+
+/* ══════ TOOLTIP DE CÓDIGO POR ELEMENTO ══════ */
+.el-tooltip{position:fixed;width:360px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.6);z-index:600;display:none;overflow:hidden}
+.el-tooltip.show{display:block;animation:et-pop .12s ease-out}
+@keyframes et-pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.et-head{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg3);border-bottom:1px solid var(--bd)}
+.et-ic{width:24px;height:24px;background:var(--bg4);border:1px solid var(--bd);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.et-name{font-size:12px;font-weight:700;color:var(--tx);flex:1}
+.et-close{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:5px;color:var(--t3);cursor:pointer;flex-shrink:0}
+.et-close:hover{background:var(--bg4);color:var(--tx)}
+.et-desc{padding:9px 12px;font-size:11px;color:var(--t2);line-height:1.5;border-bottom:1px solid var(--bd)}
+.et-lines{display:flex;align-items:center;gap:6px;padding:8px 12px;font-size:10px;color:var(--bl);border-bottom:1px solid var(--bd);font-family:'JetBrains Mono',monospace;background:rgba(77,166,255,.05)}
+.et-alert{display:flex;align-items:flex-start;gap:7px;padding:9px 12px;font-size:10.5px;line-height:1.5;border-bottom:1px solid var(--bd)}
+.et-alert.warn{background:rgba(255,193,7,.08);color:#ffc107}
+.et-alert.safe{background:rgba(0,214,143,.06);color:#00d68f}
+.et-code{padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gr);background:var(--bg);max-height:160px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;line-height:1.6;margin:0}
+.et-copy{display:flex;align-items:center;gap:5px;padding:8px 12px;font-size:10px;color:var(--t2);cursor:pointer;border-top:1px solid var(--bd);transition:color .12s}
+.et-copy:hover{color:var(--acc)}
 @media (max-width:860px){
   .app{grid-template-columns:0px 1fr 240px}
   .sidebar-l{width:0;overflow:hidden;border:none}
@@ -323,19 +341,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     </optgroup>
   </select>
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="addEl('texto')">
+  <button class="tb-btn" onclick="addElWithTooltip(event,'texto')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>Texto
   </button>
-  <button class="tb-btn" onclick="addEl('botao')">
+  <button class="tb-btn" onclick="addElWithTooltip(event,'botao')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>Botão
   </button>
-  <button class="tb-btn" onclick="addEl('caixa')">
+  <button class="tb-btn" onclick="addElWithTooltip(event,'caixa')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>Caixa
   </button>
-  <button class="tb-btn" onclick="addEl('input')">
+  <button class="tb-btn" onclick="addElWithTooltip(event,'input')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="10" rx="2"/><line x1="7" y1="12" x2="7.01" y2="12" stroke-width="3" stroke-linecap="round"/></svg>Campo
   </button>
-  <button class="tb-btn" onclick="addEl('divisor')">
+  <button class="tb-btn" onclick="addElWithTooltip(event,'divisor')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/></svg>Linha
   </button>
   <div class="tb-sep"></div>
@@ -728,6 +746,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <div class="toast" id="toast">✓ Copiado para a área de transferência</div>
 
+<!-- ── TOOLTIP DE CÓDIGO POR ELEMENTO ── -->
+<div class="el-tooltip" id="el-tooltip">
+  <div class="et-head">
+    <div class="et-ic" id="et-ic">🔘</div>
+    <div class="et-name" id="et-name">Elemento</div>
+    <div class="et-close" onclick="closeElTooltip()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="et-desc" id="et-desc"></div>
+  <div class="et-lines" id="et-lines"></div>
+  <div class="et-alert" id="et-alert"></div>
+  <pre class="et-code" id="et-code"></pre>
+  <div class="et-copy" onclick="copyTooltipCode()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V4h12"/></svg>
+    Copiar código
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════════════
 // DADOS DAS TELAS
@@ -882,6 +919,7 @@ const TELAS={
 // ESTADO
 // ══════════════════════════════════════════════════════════════════
 let ELS=[], SEL=null, TELA=null, HIST=[], ZOOM=100, nextId=1;
+let ELDRAGGED=false;  // true quando um arraste real ocorreu (evita abrir tooltip após drag)
 let MSEL=[];        // seleção múltipla (ids), além do SEL "primário"
 let SNAP=8;          // tamanho do snap em px (0 = livre)
 let GUIDES_ON=true;  // guias inteligentes ao arrastar
@@ -995,8 +1033,99 @@ function mkEl(d){
     rh.className="rh";rh.style.cssText=st;rh.dataset.h=h;div.appendChild(rh);
   });
   div.addEventListener("mousedown",onMD);
+  div.addEventListener("click",e=>{
+    if(ELDRAGGED){ELDRAGGED=false;return;}
+    if(e.target.classList&&e.target.classList.contains("rh"))return;
+    if(e.shiftKey)return;
+    showElTooltip(d,e.clientX,e.clientY);
+  });
   return div;
 }
+
+// ══════════════════════════════════════════════════════════════════
+// TOOLTIP DE CÓDIGO POR ELEMENTO
+// ══════════════════════════════════════════════════════════════════
+const ET_ICON={texto:"🔤",botao:"🔘",caixa:"🔲",input:"📝",divisor:"➖"};
+const ET_NOME={texto:"Texto",botao:"Botão",caixa:"Caixa",input:"Campo",divisor:"Linha"};
+const ET_DESC={
+  texto:"Texto livre — elemento estático, sem interação por padrão. Usado para títulos, labels e informações.",
+  botao:"Botão — elemento clicável. Normalmente dispara uma ação via JavaScript (confirmar, enviar, navegar).",
+  caixa:"Caixa / Container — agrupa e organiza conteúdo visualmente. Pode ter fundo, borda, sombra e cantos arredondados.",
+  input:"Campo de entrada — permite o usuário digitar ou inserir dados (texto, número, senha etc.).",
+  divisor:"Linha divisória — separa visualmente seções ou blocos de conteúdo.",
+};
+let currentTooltipCode="";
+
+function realCode(d){
+  const ss=Object.entries(d.s||{}).map(([k,v])=>`${k.replace(/([A-Z])/g,c=>"-"+c.toLowerCase())}: ${v};`).join("\n  ");
+  return`<div id="${d.id}" style="\n  position: absolute;\n  left: ${Math.round(d.x)}px;\n  top: ${Math.round(d.y)}px;\n  width: ${Math.round(d.w)}px;\n  height: ${Math.round(d.h)}px;\n  ${ss}\n">\n  ${d.txt||""}\n</div>`;
+}
+function elLineRanges(d){
+  if(!TELA)return{htmlLine:null,cssStart:null,cssEnd:null};
+  const code=gerarCodigo();
+  const lines=code.split("\n");
+  let htmlLine=null,cssStart=null,cssEnd=null;
+  lines.forEach((l,i)=>{if(htmlLine===null&&l.includes(`class="${d.id}"`))htmlLine=i+1;});
+  const ci=lines.findIndex(l=>l.trim()===`/* ${d.id} (${d.tipo}) */`);
+  if(ci!==-1){cssStart=ci+1;for(let i=ci;i<lines.length;i++){if(lines[i].trim()==="}"){cssEnd=i+1;break;}}}
+  return{htmlLine,cssStart,cssEnd};
+}
+function setAlertTooltip(d){
+  const box=document.getElementById("et-alert");
+  const area=(d.w||0)*(d.h||0);
+  if(d.grupo){
+    box.className="et-alert warn";
+    box.innerHTML=`⚠️ <span><b>Faz parte de um componente composto</b> (${d.grupo}). Mudar posição/tamanho isoladamente pode desalinhar as outras partes.</span>`;
+  } else if(area>40000){
+    box.className="et-alert warn";
+    box.innerHTML=`⚠️ <span><b>Elemento grande</b> — provável fundo/container. Mover ou redimensionar pode descolar elementos posicionados por cima.</span>`;
+  } else {
+    box.className="et-alert safe";
+    box.innerHTML=`✅ <span>Sem dependência conhecida — seguro editar isoladamente.</span>`;
+  }
+}
+function positionElTooltip(x,y){
+  const tt=document.getElementById("el-tooltip");
+  const vw=window.innerWidth,vh=window.innerHeight,w=360;
+  let left=x+16,top=y-10;
+  if(left+w>vw-16)left=x-w-16;
+  if(left<8)left=8;
+  const ttH=tt.offsetHeight||300;
+  if(top+ttH>vh-16)top=vh-ttH-16;
+  if(top<16)top=16;
+  tt.style.left=left+"px";tt.style.top=top+"px";
+}
+window.showElTooltip=(d,x,y)=>{
+  document.getElementById("et-ic").textContent=ET_ICON[d.tipo]||"◻️";
+  document.getElementById("et-name").textContent=(ET_NOME[d.tipo]||d.tipo)+" · "+d.id;
+  document.getElementById("et-desc").textContent=ET_DESC[d.tipo]||"";
+  const lr=elLineRanges(d);
+  document.getElementById("et-lines").innerHTML=lr.htmlLine?`📍 HTML: linha ${lr.htmlLine} · CSS: linhas ${lr.cssStart}–${lr.cssEnd}`:"📍 Linha não localizada no código gerado";
+  setAlertTooltip(d);
+  currentTooltipCode=realCode(d);
+  document.getElementById("et-code").textContent=currentTooltipCode;
+  document.getElementById("el-tooltip").classList.add("show");
+  positionElTooltip(x,y);
+};
+window.addElWithTooltip=(e,tipo)=>{
+  const id=addEl(tipo);
+  if(!id)return;
+  const d=ELS.find(x=>x.id===id);
+  if(!d)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  showElTooltip(d,rect.left,rect.bottom+8);
+};
+window.closeElTooltip=()=>{document.getElementById("el-tooltip").classList.remove("show");};
+window.copyTooltipCode=()=>{
+  navigator.clipboard?.writeText(currentTooltipCode).catch(()=>{});
+  showToast("✓ Código do elemento copiado");
+};
+document.addEventListener("click",e=>{
+  const tt=document.getElementById("el-tooltip");
+  if(tt&&tt.classList.contains("show")&&!tt.contains(e.target)&&!e.target.closest(".cel")&&!e.target.closest(".tb-btn")){
+    closeElTooltip();
+  }
+});
 
 // ══════════════════════════════════════════════════════════════════
 // GRADE / SNAP / GUIAS INTELIGENTES
@@ -1050,6 +1179,7 @@ function onMD(e){
   const id=div.dataset.id;
   const d=ELS.find(el=>el.id===id);if(!d)return;
   e.preventDefault();e.stopPropagation();
+  ELDRAGGED=false;
 
   // Shift+clique (fora de alça de resize) alterna seleção múltipla, sem arrastar
   if(e.shiftKey&&!h){toggleMulti(id);return;}
@@ -1064,6 +1194,7 @@ function onMD(e){
   group.forEach(gid=>{const gd=ELS.find(el=>el.id===gid);origins[gid]={x:gd.x,y:gd.y};});
 
   function mv(ev){
+    ELDRAGGED=true;
     const dx=(ev.clientX-sx)/scale,dy=(ev.clientY-sy)/scale;
     if(h){
       // Redimensionar sempre afeta só o elemento clicado, mesmo em grupo
@@ -1335,6 +1466,7 @@ window.addEl=(tipo)=>{
   document.getElementById("sb-n").textContent=ELS.length;
   renderLayers();
   marcarDirty(TELA);
+  return id;
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -1744,9 +1876,11 @@ window.addComponente=(nome)=>{
   salvarHist();
   const baseX=40,baseY=40;
   const novos=[];
+  const grupoLabel=parts.length>1?(nome+" #"+nextId):null;
   parts.forEach(p=>{
     const id=p.tipo+"_"+nextId++;
     const d={id,tipo:p.tipo,txt:p.txt,x:baseX+p.dx,y:baseY+p.dy,w:p.w,h:p.h,s:{...p.s}};
+    if(grupoLabel)d.grupo=grupoLabel;
     ELS.push(d);
     document.getElementById("canvas").appendChild(mkEl(d));
     novos.push(id);
@@ -2035,6 +2169,7 @@ document.getElementById("canvas").addEventListener("mousedown",e=>{
 // Teclado
 document.addEventListener("keydown",e=>{
   const typing=["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName);
+  if(e.key==="Escape"){closeElTooltip();}
   if(e.ctrlKey&&e.key==="z"){e.preventDefault();desfazer();return;}
   if(e.ctrlKey&&e.key==="s"){e.preventDefault();TELA?baixarHTML():null;return;}
   if(e.ctrlKey&&e.key==="c"&&!typing){e.preventDefault();copiarSel();return;}
