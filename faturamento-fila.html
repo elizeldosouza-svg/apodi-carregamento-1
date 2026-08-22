@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>Faturamento — TMF · Tempo Médio de Fila</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -16,7 +17,22 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--gr);margin-left:auto}
 .dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
 @keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
-.wrap{max-width:1240px;margin:0 auto;padding:18px 16px 40px}
+.wrap{max-width:1900px;margin:0 auto;padding:18px 16px 40px}
+
+/* estado 1 / estado 2 toggle */
+.estado-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.estado-toggle-wrap{display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--b2);border-radius:20px;background:var(--bg3)}
+.estado-toggle-wrap span{font-size:11px;font-weight:800;color:var(--gr);white-space:nowrap}
+.estado-toggle-wrap.alt span{color:var(--bl)}
+.estado-toggle{width:34px;height:18px;border-radius:10px;background:var(--gr);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.estado-toggle.alt{background:var(--bl)}
+.estado-toggle-knob{width:14px;height:14px;border-radius:50%;background:#06121e;position:absolute;top:2px;left:2px;transition:left .2s}
+.estado-toggle.alt .estado-toggle-knob{left:18px}
+.top-spacer{flex:1}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-patio-pdf{display:flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.btn-patio-pdf:hover{background:rgba(0,232,150,.15)}
+.hidden{display:none !important}
 
 /* filtros */
 .filtros{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -30,7 +46,109 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .exp-btn:hover{background:rgba(0,232,150,.15)}
 .exp-wrap{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
 
-/* cards */
+/* item 4: caixa de filtro interativo */
+.cal-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg);border:1px solid var(--b2);border-radius:20px;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.cal-btn:hover,.cal-btn.active{border-color:var(--gr);color:var(--gr);background:rgba(0,232,150,.07)}
+.cal-popup{position:absolute;top:calc(100% + 8px);left:0;z-index:500;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;min-width:380px;max-height:calc(100vh - 90px);overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
+.cal-popup.show{display:block}
+.cal-popup-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--gr);margin-bottom:12px;letter-spacing:.5px}
+.cal-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.cal-field label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px}
+.cal-field input,.cal-field select{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
+.cal-field input:focus,.cal-field select:focus{border-color:var(--gr)}
+.cal-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cal-quick{display:flex;gap:8px;margin-right:auto;flex-wrap:wrap}
+.cal-quick-btn{padding:7px 14px;background:rgba(0,232,150,.08);color:var(--gr);border:1px solid rgba(0,232,150,.3);border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;display:flex;align-items:center;gap:5px}
+.cal-quick-btn:hover{background:rgba(0,232,150,.18)}
+.cal-quick-btn.active{background:var(--gr);color:#000;border-color:var(--gr)}
+.cal-quick-btn.tmf{background:rgba(255,68,102,.08);color:var(--rd);border-color:rgba(255,68,102,.3)}
+.cal-quick-btn.tmf:hover{background:rgba(255,68,102,.18)}
+.cal-quick-btn.tmf.active{background:var(--rd);color:#1a0400;border-color:var(--rd)}
+.cal-apply{padding:7px 18px;background:var(--gr);color:#000;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif}
+.cal-clear{padding:7px 14px;background:transparent;color:var(--t2);border:1px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.cal-clear:hover{border-color:var(--rd);color:var(--rd)}
+.filtro-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(0,232,150,.1);border:1px solid rgba(0,232,150,.3);border-radius:20px;font-size:11px;font-weight:700;color:var(--gr)}
+.filtro-badge button{background:none;border:none;color:var(--gr);cursor:pointer;font-size:13px;line-height:1;padding:0}
+
+/* ===== ESTADO 2 — grid estilo Pátio, foco em TMF ===== */
+.tmf-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:700px){.tmf-row{grid-template-columns:1fr 1fr}}
+.tmf-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.tmf-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.tmf-geral::before{background:var(--ye)}
+.tmf-ens::before{background:var(--bl)}
+.tmf-gran::before{background:#fb923c}
+.tmf-bb::before{background:var(--gr)}
+.tmf-label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.tmf-val{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:800;line-height:1}
+.tmf-geral .tmf-val{color:var(--ye)}
+.tmf-ens .tmf-val{color:var(--bl)}
+.tmf-gran .tmf-val{color:#fb923c}
+.tmf-bb .tmf-val{color:var(--gr)}
+.tmf-sub{font-size:10px;color:var(--t3);margin-top:4px}
+
+.carga-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:900px){.carga-row{grid-template-columns:1fr}}
+.carga-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
+.carga-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.cc-ens::before{background:var(--bl)}
+.cc-gran::before{background:#fb923c}
+.cc-bb::before{background:var(--gr)}
+.cc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cc-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;letter-spacing:.5px}
+.cc-ens .cc-title{color:var(--bl)}
+.cc-gran .cc-title{color:#fb923c}
+.cc-bb .cc-title{color:var(--gr)}
+.cc-total{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:800;line-height:1}
+.cc-ens .cc-total{color:var(--bl)}
+.cc-gran .cc-total{color:#fb923c}
+.cc-bb .cc-total{color:var(--gr)}
+.cc-sub{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;margin-bottom:14px}
+.cc-subtipos{display:grid;gap:6px}
+.cc-subtipos.n1{grid-template-columns:1fr}
+.cc-subtipos.n2{grid-template-columns:1fr 1fr}
+.cc-subtipos.n3{grid-template-columns:repeat(3,1fr)}
+.sub-mini{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 6px;text-align:center}
+.sub-mini-label{font-size:8px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-mini-val{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--ye)}
+.sub-mini-sub{font-size:8px;color:var(--t3);margin-top:1px}
+
+.patio-cols{display:grid;gap:0;margin-bottom:24px;align-items:start;grid-template-columns:repeat(6,1fr)}
+@media(max-width:1100px){.patio-cols{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.patio-cols{grid-template-columns:repeat(2,1fr)}}
+.col-grupo{display:flex;flex-direction:column;gap:8px;padding:0 10px;border-right:1px solid var(--bd)}
+.col-grupo:first-child{padding-left:0}
+.col-grupo:last-child{border-right:none;padding-right:0}
+@media(max-width:1100px){.col-grupo:nth-child(3n){border-right:none}.col-grupo:nth-child(3n+1){padding-left:0}}
+@media(max-width:600px){.col-grupo:nth-child(3n){border-right:1px solid var(--bd)}.col-grupo:nth-child(2n){border-right:none}.col-grupo:nth-child(2n+1){padding-left:0}}
+.col-header{border-radius:8px 8px 0 0;padding:9px 6px;text-align:center;font-family:'Rajdhani',sans-serif;font-weight:800;letter-spacing:.5px;line-height:1.3;border-bottom:2px solid transparent;font-size:12.5px}
+.col-header.h-ens{background:rgba(0,212,255,.13);color:var(--bl);border-color:var(--bl)}
+.col-header.h-gran{background:rgba(251,146,60,.13);color:#fb923c;border-color:#fb923c}
+.col-header.h-bb{background:rgba(0,232,150,.13);color:var(--gr);border-color:var(--gr)}
+.col-milestone{text-align:center;font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;padding:4px 4px 0;line-height:1.3}
+.col-cards{display:flex;flex-direction:column;gap:8px;min-height:60px}
+.col-vazio{text-align:center;padding:20px 8px;color:var(--t3);font-size:11px;background:var(--bg2);border:1px dashed var(--bd);border-radius:var(--rs)}
+
+.vcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px}
+.vcard.alerta{border-color:var(--rd);background:rgba(255,68,102,.05)}
+.vcard-placa{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx);letter-spacing:1px;font-size:13px;display:flex;align-items:center;gap:6px}
+.vcard-alerta-badge{display:inline-block;background:rgba(255,68,102,.2);border:1px solid rgba(255,68,102,.4);color:var(--rd);font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;letter-spacing:.3px}
+.vcard-turno-row{margin-top:3px;margin-bottom:5px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.turno-mini{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px}
+.t-a{background:rgba(0,212,255,.15);color:var(--bl);border:1px solid rgba(0,212,255,.3)}
+.t-b{background:rgba(255,208,0,.15);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
+.t-c{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+.vcard-data{display:inline-block;font-size:9px;font-weight:800;padding:1px 7px;border-radius:4px;background:rgba(0,212,255,.12);color:var(--bl);border:1px solid rgba(0,212,255,.25)}
+.vcard-ac{font-size:11px;color:var(--t2)}
+.vcard-nf{font-size:11px;color:var(--t2);margin-top:2px}
+.vcard-tmf-row{display:flex;align-items:center;gap:6px;margin-top:8px}
+.tmf-icon{font-size:13px;animation:p 1.2s infinite}
+.tmf-badge{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;padding:4px 13px;border-radius:20px;letter-spacing:.3px;background:rgba(0,232,150,.12);color:var(--gr);border:1px solid rgba(0,232,150,.35)}
+.vcard.alerta .tmf-badge{background:rgba(255,68,102,.16);color:var(--rd);border-color:rgba(255,68,102,.5);animation:tmfPulse 1s ease-in-out infinite}
+@keyframes tmfPulse{0%,100%{opacity:1}50%{opacity:.45}}
+.vcard-tmf-label{font-size:9.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+.vcard-marco{font-size:10.5px;color:var(--t3);margin-top:6px;display:flex;align-items:center;gap:5px}
+.vcard-marco b{color:var(--tx);font-weight:700}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
 .card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gr)}
@@ -84,16 +202,30 @@ tr:hover td{background:rgba(0,232,150,.04)}
 <body>
 <div class="top">
   <div class="logo">🧾 FATURAMENTO — TMF<span class="sub">Tempo Médio de Fila · consulta em tempo real</span></div>
+  <div class="top-spacer"></div>
+  <div class="top-actions hidden" id="top-actions-estado2">
+    <button class="btn-patio-pdf" onclick="gerarPDFEstado2()">📄 PDF c/ Filtro</button>
+    <button class="btn-patio-pdf" onclick="exportExcelEstado2()">📊 Excel</button>
+    <button class="btn-patio-pdf" onclick="gerarImagemEstado2()">🖼️ Imagem</button>
+  </div>
   <div class="live"><div class="dot"></div>AO VIVO</div>
 </div>
 
 <div class="wrap">
 
-  <div class="filtros">
-    <label>Período</label>
-    <input type="date" id="f-data-ini"/>
-    <span style="color:var(--t3);font-size:11px">até</span>
-    <input type="date" id="f-data-fim"/>
+  <!-- item 2: Estado 1 é o padrão ao abrir a página -->
+  <div class="estado-bar">
+    <div class="estado-toggle-wrap" id="estado-toggle-wrap">
+      <span id="estado-label">Fila de Faturamento — Tabela (Estado 1)</span>
+      <div class="estado-toggle" id="estado-toggle" onclick="alternarEstado()">
+        <div class="estado-toggle-knob"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filtros" style="position:relative">
+    <button class="cal-btn" id="cal-toggle" onclick="toggleCal()">📅 Filtrar por Data/Hora</button>
+    <div id="filtro-badge-wrap"></div>
     <button class="turno-btn on" id="tb-geral" onclick="setTurno('geral',this)">Geral <span class="cnt" id="cnt-geral"></span></button>
     <button class="turno-btn" id="tb-A" onclick="setTurno('A',this)">Turno A <span class="cnt" id="cnt-A"></span></button>
     <button class="turno-btn" id="tb-B" onclick="setTurno('B',this)">Turno B <span class="cnt" id="cnt-B"></span></button>
@@ -103,7 +235,40 @@ tr:hover td{background:rgba(0,232,150,.04)}
       <button class="exp-btn" onclick="gerarPDF()">📄 PDF</button>
       <button class="exp-btn" onclick="exportExcel()">📊 Excel</button>
     </div>
+
+    <!-- item 4: caixa de filtro interativo -->
+    <div class="cal-popup" id="cal-popup">
+      <div class="cal-popup-title">📅 Consultar período</div>
+      <div class="cal-fields">
+        <div class="cal-field"><label>Data início</label><input type="date" id="f-data-ini"/></div>
+        <div class="cal-field"><label>Data fim</label><input type="date" id="f-data-fim"/></div>
+        <div class="cal-field"><label>Hora início</label><input type="time" id="f2-hora-ini" value="00:00"/></div>
+        <div class="cal-field"><label>Hora fim</label><input type="time" id="f2-hora-fim" value="23:59"/></div>
+      </div>
+      <div style="border-top:1px solid var(--bd);margin:10px 0;padding-top:10px" class="cal-fields">
+        <div class="cal-field"><label>Operador</label><select id="f2-operador"><option value="">Todos</option></select></div>
+        <div class="cal-field"><label>Cimento</label><select id="f2-cimento"><option value="">Todos</option><option value="CP II F">CP II F</option><option value="CP III">CP III</option><option value="CP V">CP V</option></select></div>
+        <div class="cal-field"><label>Carga</label><select id="f2-carga"><option value="">Todas</option><option value="ensacado">Ensacado</option><option value="granel">Granel</option><option value="bigbag">Big Bag</option></select></div>
+        <div class="cal-field"><label>Tipo de carregamento</label><select id="f2-subtipo"><option value="">Todos</option><option value="Paletizado">Paletizado</option><option value="Caricamat">Caricamat</option><option value="Container">Container</option><option value="Granel">Granel</option></select></div>
+        <div class="cal-field"><label>Placa</label><input type="text" id="f2-placa" placeholder="ABC1D23"/></div>
+        <div class="cal-field"><label>AC</label><input type="text" id="f2-ac" placeholder="629555"/></div>
+      </div>
+      <div class="cal-actions">
+        <div class="cal-quick">
+          <button class="cal-quick-btn" id="btn-ontem" onclick="filtroOntem()">📆 Ontem</button>
+          <button class="cal-quick-btn" id="btn-hoje" onclick="filtroHoje()">📅 Hoje</button>
+          <button class="cal-quick-btn tmf" id="btn-tmf" onclick="toggleFiltroTMF()">⏱ TMF ≥ 8min</button>
+        </div>
+        <button class="cal-clear" onclick="limparFiltro2()">Limpar</button>
+        <button class="cal-apply" onclick="aplicarFiltro2()">Aplicar</button>
+      </div>
+    </div>
   </div>
+
+  <!-- =====================================================
+       ESTADO 1 — TELA ATUAL (default)
+  ====================================================== -->
+  <div id="estado1">
 
   <div class="cards" id="cards"></div>
 
@@ -127,6 +292,24 @@ tr:hover td{background:rgba(0,232,150,.04)}
       </tr></thead>
       <tbody id="tb-fat"></tbody>
     </table>
+  </div>
+
+  </div>
+
+  <!-- =====================================================
+       ESTADO 2 — "STATUS DO PÁTIO" · FOCO TMF, por Tipo de Carregamento
+  ====================================================== -->
+  <div id="estado2" class="hidden">
+
+    <div class="tmf-row" id="tmf-row-2"></div>
+
+    <div class="carga-row" id="carga-row-2"></div>
+
+    <div class="sec-title"><span class="line"></span>🟡 AGUARDANDO FATURAMENTO<span id="sec-count-2"></span><span class="line"></span></div>
+    <div style="font-size:10.5px;color:var(--t3);margin:-8px 0 12px">⏱️ Alerta (vermelho pulsando) quando TMF &gt; <b style="color:var(--rd)">8min</b> — mesmo limiar para todos os Tipos de Carregamento. Cada coluna some da tela automaticamente quando o veículo é faturado (NF emitida).</div>
+
+    <div class="patio-cols" id="patio-cols-2"></div>
+
   </div>
 
 </div>
@@ -194,6 +377,7 @@ function tmfClass(mins){
 let TODOS=[];
 onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   TODOS=snap.docs.map(d=>({id:d.id,...d.data()}));
+  popularOperadores();
   render();
 });
 
@@ -212,6 +396,107 @@ window.setTurno=(t,el)=>{
 };
 document.getElementById("f-data-ini").addEventListener("change",render);
 document.getElementById("f-data-fim").addEventListener("change",render);
+
+// ── item 1/2: alternância Estado 1 (tabela) / Estado 2 (grid tipo Pátio) ──
+window.alternarEstado=function(){
+  const toggle=document.getElementById("estado-toggle");
+  const wrap=document.getElementById("estado-toggle-wrap");
+  const label=document.getElementById("estado-label");
+  const e1=document.getElementById("estado1");
+  const e2=document.getElementById("estado2");
+  const actions2=document.getElementById("top-actions-estado2");
+  const paraEstado2=!toggle.classList.contains("alt");
+  toggle.classList.toggle("alt",paraEstado2);
+  wrap.classList.toggle("alt",paraEstado2);
+  if(paraEstado2){
+    label.textContent="Status do Pátio - Faturamento (Estado 2)";
+    e1.classList.add("hidden");
+    e2.classList.remove("hidden");
+    actions2.classList.remove("hidden");
+  }else{
+    label.textContent="Fila de Faturamento — Tabela (Estado 1)";
+    e2.classList.add("hidden");
+    e1.classList.remove("hidden");
+    actions2.classList.add("hidden");
+  }
+};
+
+// ── item 4: caixa de filtro interativo ──
+window.toggleCal=function(){
+  document.getElementById("cal-popup").classList.toggle("show");
+  document.getElementById("cal-toggle").classList.toggle("active");
+};
+document.addEventListener("click",e=>{
+  const popup=document.getElementById("cal-popup");
+  const btn=document.getElementById("cal-toggle");
+  if(popup&&popup.classList.contains("show")&&!popup.contains(e.target)&&e.target!==btn){
+    popup.classList.remove("show");
+    btn.classList.remove("active");
+  }
+});
+window.filtroHoje=function(){
+  const hj=hoje();
+  document.getElementById("f-data-ini").value=hj;
+  document.getElementById("f-data-fim").value=hj;
+  document.getElementById("btn-hoje").classList.add("active");
+  document.getElementById("btn-ontem").classList.remove("active");
+  render();
+};
+window.filtroOntem=function(){
+  const d=new Date();d.setDate(d.getDate()-1);
+  const ontem=d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+  document.getElementById("f-data-ini").value=ontem;
+  document.getElementById("f-data-fim").value=ontem;
+  document.getElementById("btn-ontem").classList.add("active");
+  document.getElementById("btn-hoje").classList.remove("active");
+  render();
+};
+window.toggleFiltroTMF=function(){
+  TMF_ATIVO=!TMF_ATIVO;
+  document.getElementById("btn-tmf").classList.toggle("active",TMF_ATIVO);
+  renderEstado2();
+};
+window.aplicarFiltro2=function(){
+  FILTROS2={
+    operador:document.getElementById("f2-operador").value,
+    cimento:document.getElementById("f2-cimento").value,
+    carga:document.getElementById("f2-carga").value,
+    subtipo:document.getElementById("f2-subtipo").value,
+    placa:document.getElementById("f2-placa").value.trim().toUpperCase(),
+    ac:document.getElementById("f2-ac").value.trim()
+  };
+  document.getElementById("cal-popup").classList.remove("show");
+  document.getElementById("cal-toggle").classList.remove("active");
+  const extras=[];
+  if(FILTROS2.operador)extras.push("👤 "+FILTROS2.operador);
+  if(FILTROS2.cimento)extras.push(FILTROS2.cimento);
+  if(FILTROS2.carga)extras.push(TIPO_CARGA_LABELS[FILTROS2.carga]);
+  if(FILTROS2.subtipo)extras.push("📋 "+FILTROS2.subtipo);
+  if(FILTROS2.placa)extras.push("Placa "+FILTROS2.placa);
+  if(FILTROS2.ac)extras.push("AC "+FILTROS2.ac);
+  if(TMF_ATIVO)extras.push("⏱ TMF ≥"+TMF_LIMITE+"min");
+  document.getElementById("filtro-badge-wrap").innerHTML=extras.length?`<div class="filtro-badge">${extras.join(" · ")} <button onclick="limparFiltro2()">✕</button></div>`:"";
+  render();
+};
+window.limparFiltro2=function(){
+  FILTROS2={operador:"",cimento:"",carga:"",subtipo:"",placa:"",ac:""};
+  TMF_ATIVO=false;
+  document.getElementById("btn-tmf").classList.remove("active");
+  document.getElementById("btn-hoje").classList.remove("active");
+  document.getElementById("btn-ontem").classList.remove("active");
+  document.getElementById("f2-hora-ini").value="00:00";
+  document.getElementById("f2-hora-fim").value="23:59";
+  document.getElementById("f2-operador").value="";
+  document.getElementById("f2-cimento").value="";
+  document.getElementById("f2-carga").value="";
+  document.getElementById("f2-subtipo").value="";
+  document.getElementById("f2-placa").value="";
+  document.getElementById("f2-ac").value="";
+  document.getElementById("filtro-badge-wrap").innerHTML="";
+  document.getElementById("cal-popup").classList.remove("show");
+  document.getElementById("cal-toggle").classList.remove("active");
+  render();
+};
 
 function getFiltros(){
   const dataIniVal=document.getElementById("f-data-ini").value||hoje();
@@ -339,6 +624,143 @@ function render(){
 
   window.__FILA_ATUAL=fila;
   window.__FAT_ATUAL=faturados;
+
+  renderEstado2();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ESTADO 2 — grid estilo "Status do Pátio", colunas por Tipo de Carregamento
+// ═══════════════════════════════════════════════════════════════════
+const SUBTIPOS_POR_CARGA={ensacado:["Paletizado","Caricamat","Container"],granel:["Granel"],bigbag:["Paletizado","Container"]};
+const CARGA_LABELS={ensacado:"📦 Ensacado",granel:"🚛 Granel",bigbag:"🛍️ Big Bag"};
+const CARGA_CLS={ensacado:"cc-ens",granel:"cc-gran",bigbag:"cc-bb"};
+const COL_CLS={ensacado:"h-ens",granel:"h-gran",bigbag:"h-bb"};
+const TMF_LIMITE=8; // minutos — limiar de alerta (item 2 da solicitação anterior)
+
+// item 5: marco que faz o cartão aparecer no Estado 2 — Paletizado/Caricamat = Enlonamento Final;
+// Container/Granel = Carregamento Final (não passam por Enlonamento)
+function usaCarregamento(subtipo){return subtipo==="Container"||subtipo==="Granel";}
+function getMarcoTS(c){
+  const ts=usaCarregamento(c.subtipoCarga)?c.carregamento?.fim:c.enlonamento?.fim;
+  return ts?.toDate?.()||null;
+}
+function getMarcoLabel(c){return usaCarregamento(c.subtipoCarga)?"Carregamento fim":"Enlonamento fim";}
+function calcTMF2(c,agora){
+  const marco=getMarcoTS(c);
+  if(!marco)return null;
+  const ftTs=c.faturamento?.ts?.toDate?.();
+  const ref=ftTs||agora;
+  return(ref-marco)/60000;
+}
+
+let FILTROS2={operador:"",cimento:"",carga:"",subtipo:"",placa:"",ac:""};
+let TMF_ATIVO=false;
+
+function popularOperadores(){
+  const sel=document.getElementById("f2-operador");
+  if(!sel)return;
+  const atual=sel.value;
+  const nomes=[...new Set(TODOS.map(c=>c.entrada?.operador).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">Todos</option>'+nomes.map(n=>`<option value="${n}">${n}</option>`).join("");
+  if(nomes.includes(atual))sel.value=atual;
+}
+
+// veículos aguardando faturamento no Estado 2: possuem marco batido e ainda não faturados (some ao faturar)
+function buildBaseEstado2(){
+  const hi=document.getElementById("f2-hora-ini")?.value||"00:00";
+  const hf=document.getElementById("f2-hora-fim")?.value||"23:59";
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const tsIni=new Date(dataIniVal+"T"+hi+":00").getTime();
+  const tsFim=new Date(dataFimVal+"T"+hf+":59").getTime();
+  return TODOS.filter(c=>{
+    if(c.notaFiscal)return false; // faturado -> desaparece do Estado 2
+    const marco=getMarcoTS(c);
+    if(!marco)return false;
+    const t=marco.getTime();
+    if(t<tsIni||t>tsFim)return false;
+    if(MT!=="geral"&&getTurno(marco)!==MT)return false;
+    if(FILTROS2.operador&&c.entrada?.operador!==FILTROS2.operador)return false;
+    if(FILTROS2.cimento&&c.tipoCimento!==FILTROS2.cimento)return false;
+    if(FILTROS2.carga&&c.tipoCarga!==FILTROS2.carga)return false;
+    if(FILTROS2.subtipo&&c.subtipoCarga!==FILTROS2.subtipo)return false;
+    if(FILTROS2.placa&&!(c.placa||"").toUpperCase().includes(FILTROS2.placa))return false;
+    if(FILTROS2.ac&&!String(c.ac||"").includes(FILTROS2.ac))return false;
+    if(TMF_ATIVO){const mins=calcTMF2(c,new Date());if(mins==null||mins<TMF_LIMITE)return false;}
+    return true;
+  }).sort((a,b)=>(getMarcoTS(a)?.getTime()||0)-(getMarcoTS(b)?.getTime()||0));
+}
+
+function makeVcard(c,agora){
+  const mins=calcTMF2(c,agora);
+  const alerta=mins!=null&&mins>TMF_LIMITE;
+  const marco=getMarcoTS(c);
+  const turno=marco?getTurno(marco):null;
+  const excedente=alerta?Math.round(mins-TMF_LIMITE):0;
+  return`<div class="vcard${alerta?" alerta":""}">
+    <div class="vcard-placa">${c.placa||"-"}${alerta?`<span class="vcard-alerta-badge">+${excedente}min</span>`:""}</div>
+    <div class="vcard-turno-row">
+      ${turno?`<span class="turno-mini t-${turno.toLowerCase()}">${turno}</span>`:""}
+      ${marco?`<span class="vcard-data">${marco.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"})}</span>`:""}
+    </div>
+    <div class="vcard-ac">AC: ${c.ac||"-"}</div>
+    <div class="vcard-nf">NF: aguardando</div>
+    <div class="vcard-tmf-row"><span class="tmf-icon">⏱️</span><span class="tmf-badge">${fmtMin(mins)}</span></div>
+    <div class="vcard-tmf-label">aguardando faturamento</div>
+    <div class="vcard-marco"><span class="pulse"></span>${getMarcoLabel(c)}: <b>${fmtHora(marco)}</b></div>
+  </div>`;
+}
+
+function renderEstado2(){
+  const agora=new Date();
+  const base2=buildBaseEstado2();
+
+  function tmfMedio2(lista){
+    const vals=lista.map(c=>calcTMF2(c,agora)).filter(v=>v!=null);
+    if(!vals.length)return null;
+    return vals.reduce((a,b)=>a+b,0)/vals.length;
+  }
+  const geral=tmfMedio2(base2);
+  const porCarga=t=>tmfMedio2(base2.filter(c=>c.tipoCarga===t));
+  document.getElementById("tmf-row-2").innerHTML=`
+    <div class="tmf-card tmf-geral"><div class="tmf-label">TMF Espera Geral</div><div class="tmf-val">${fmtMin(geral)}</div><div class="tmf-sub">tempo médio de fila (faturamento)</div></div>
+    <div class="tmf-card tmf-ens"><div class="tmf-label">TMF Ensacado</div><div class="tmf-val">${fmtMin(porCarga("ensacado"))}</div><div class="tmf-sub">tempo médio de espera</div></div>
+    <div class="tmf-card tmf-gran"><div class="tmf-label">TMF Granel</div><div class="tmf-val">${fmtMin(porCarga("granel"))}</div><div class="tmf-sub">tempo médio de espera</div></div>
+    <div class="tmf-card tmf-bb"><div class="tmf-label">TMF Big Bag</div><div class="tmf-val">${fmtMin(porCarga("bigbag"))}</div><div class="tmf-sub">tempo médio de espera</div></div>`;
+
+  // cards de resumo por Tipo de Carregamento (cadastro), quantidade de colunas dinâmica
+  document.getElementById("carga-row-2").innerHTML=Object.keys(SUBTIPOS_POR_CARGA).map(tipo=>{
+    const subtipos=SUBTIPOS_POR_CARGA[tipo];
+    const lista=base2.filter(c=>c.tipoCarga===tipo);
+    const n=subtipos.length;
+    const mini=subtipos.map(s=>{
+      const q=lista.filter(c=>c.subtipoCarga===s).length;
+      return`<div class="sub-mini"><div class="sub-mini-label">${s}</div><div class="sub-mini-val">${q}</div><div class="sub-mini-sub">veíc.</div></div>`;
+    }).join("");
+    return`<div class="carga-card ${CARGA_CLS[tipo]}">
+      <div class="cc-header"><div class="cc-title">${CARGA_LABELS[tipo]}</div><div class="cc-total">${lista.length}</div></div>
+      <div class="cc-sub">CAMINHÕES AGUARDANDO</div>
+      <div class="cc-subtipos n${n}">${mini}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("sec-count-2").textContent=` · ${base2.length} VEÍCULO${base2.length!==1?"S":""}`;
+
+  // colunas dinâmicas = soma do cadastro (Ensacado 3 + Granel 1 + Big Bag 2 = 6 colunas)
+  const colsHtml=[];
+  Object.keys(SUBTIPOS_POR_CARGA).forEach(tipo=>{
+    SUBTIPOS_POR_CARGA[tipo].forEach(sub=>{
+      const lista=base2.filter(c=>c.tipoCarga===tipo&&c.subtipoCarga===sub);
+      const marcoLbl=usaCarregamento(sub)?"Carregamento Final":"Enlonamento Final";
+      colsHtml.push(`<div class="col-grupo">
+        <div class="col-header ${COL_CLS[tipo]}">${tipo==="ensacado"?"Ensacado":tipo==="granel"?"Granel":"Big Bag"}<br/>${sub}</div>
+        <div class="col-milestone">Aparece: ${marcoLbl}</div>
+        <div class="col-cards">${lista.length?lista.map(c=>makeVcard(c,agora)).join(""):'<div class="col-vazio">Vazio</div>'}</div>
+      </div>`);
+    });
+  });
+  document.getElementById("patio-cols-2").innerHTML=colsHtml.join("");
+
+  window.__ESTADO2_ATUAL=base2;
 }
 
 // ── relatório: visualizar / PDF / Excel (usa lista de FATURADOS) ────
@@ -443,6 +865,95 @@ window.exportExcel=()=>{
   const turnoSuffix=MT!=="geral"?`_turno${MT}`:"";
   const fname=dataIniVal===dataFimVal?`faturamento_tmf_${dataIniVal}${turnoSuffix}.xlsx`:`faturamento_tmf_${dataIniVal}_a_${dataFimVal}${turnoSuffix}.xlsx`;
   XLSX.writeFile(wb,fname);
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// Exportações do Estado 2 (PDF c/ Filtro / Excel / Imagem)
+// ═══════════════════════════════════════════════════════════════════
+window.exportExcelEstado2=function(){
+  const registros=window.__ESTADO2_ATUAL||[];
+  if(!registros.length){alert("Nenhum veículo aguardando faturamento no filtro selecionado.");return;}
+  const rows=registros.map(c=>{
+    const mins=calcTMF2(c,new Date());
+    const marco=getMarcoTS(c);
+    return{
+      "Placa":c.placa||"",
+      "AC":c.ac||"",
+      "Carga":TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"",
+      "Tipo de Carregamento":c.subtipoCarga||"",
+      "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
+      "Turno":marco?(getTurno(marco)||""):"",
+      [getMarcoLabel(c)]:fmtEx(marco),
+      "TMF (min)":mins!=null?Math.round(mins):"",
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:18},{wch:12},{wch:8},{wch:18},{wch:10}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Estado2 - Fila TMF");
+  XLSX.writeFile(wb,"faturamento_estado2_"+new Date().toISOString().slice(0,10)+".xlsx");
+};
+
+window.gerarPDFEstado2=function(){
+  const registros=window.__ESTADO2_ATUAL||[];
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const periodoTxt=dataIniVal===dataFimVal?fmtDia(dataIniVal):`${fmtDia(dataIniVal)} a ${fmtDia(dataFimVal)}`;
+  const linhas=registros.map((c,i)=>{
+    const mins=calcTMF2(c,new Date());
+    const marco=getMarcoTS(c);
+    return`<tr>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center">${i+1}</td>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center;font-weight:bold">${c.placa||"-"}</td>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center">${c.ac||"-"}</td>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center">${TIPO_CARGA_LABELS[c.tipoCarga]||"-"}</td>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center">${c.subtipoCarga||"-"}</td>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center">${getMarcoLabel(c)}</td>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center">${fmtDT(marco)}</td>
+      <td style="border:1px solid #ccc;padding:6px 10px;text-align:center">${fmtMin(mins)}</td>
+    </tr>`;
+  }).join("");
+  const janela=window.open("","_blank","width=900,height=700");
+  janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"/>
+<title>Faturamento — Estado 2 (Fila) — ${periodoTxt}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;font-size:11pt;padding:24px;color:#000}
+  h2{font-size:14pt;font-weight:bold;text-align:center;margin-bottom:14pt;text-transform:uppercase;letter-spacing:1px}
+  .hinfo{margin-bottom:16pt;border-bottom:2px solid #000;padding-bottom:10pt;font-size:11pt}
+  table.reg{border-collapse:collapse;width:100%}
+  table.reg th{background:#003366;color:#fff;padding:7px 10px;font-size:10pt;text-align:center;border:1px solid #ccc}
+  table.reg tr:nth-child(even) td{background:#f0f4fb}
+  @media print{@page{margin:1.5cm;size:A4 landscape}}
+</style>
+</head><body>
+<h2>Faturamento — Fila (Estado 2)</h2>
+<div class="hinfo">Período: ${periodoTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]} &nbsp;·&nbsp; ${registros.length} veículo(s) aguardando</div>
+<table class="reg">
+  <thead><tr><th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Tipo de Carregamento</th><th>Marco</th><th>Data/Hora</th><th>TMF</th></tr></thead>
+  <tbody>${linhas||'<tr><td colspan="8" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+</table>
+</body></html>`);
+  janela.document.close();janela.focus();
+  setTimeout(()=>janela.print(),600);
+};
+
+window.gerarImagemEstado2=function(){
+  const alvo=document.getElementById("estado2");
+  const btns=document.querySelectorAll("#top-actions-estado2 button");
+  btns.forEach(b=>{b.disabled=true;});
+  html2canvas(alvo,{backgroundColor:"#060d18",scale:2,useCORS:true}).then(canvas=>{
+    const link=document.createElement("a");
+    link.download="faturamento_estado2_"+new Date().toISOString().slice(0,10)+".png";
+    link.href=canvas.toDataURL("image/png");
+    link.click();
+  }).catch(err=>{
+    console.error("Erro ao gerar imagem:",err);
+    alert("Não foi possível gerar a imagem. Tente novamente.");
+  }).finally(()=>{
+    btns.forEach(b=>{b.disabled=false;});
+  });
 };
 </script>
 </body></html>
