@@ -266,6 +266,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .code-output{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a9b1d6;line-height:1.8;white-space:pre;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:14px;overflow:auto;max-height:480px}
 .modal-foot{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end}
 
+/* ══════ TESTAR CÓDIGO (colar/editar/visualizar) ══════ */
+.modal-box.wide{max-width:1100px;width:96vw;height:82vh}
+.tc-sub{font-size:10px;color:var(--t3);font-weight:400;letter-spacing:0}
+.tc-cols{flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.tc-col{display:flex;flex-direction:column;overflow:hidden}
+.tc-col-l{border-right:1px solid var(--bd)}
+.tc-col-head{padding:8px 14px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--bd);background:var(--bg3);flex-shrink:0}
+.tc-code-input{flex:1;width:100%;background:var(--bg);border:none;color:#a9dc76;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;padding:14px;resize:none;outline:none}
+.tc-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tc-analysis{padding:12px 14px;border-bottom:1px solid var(--bd);background:rgba(108,99,255,.04);max-height:190px;overflow-y:auto;flex-shrink:0}
+.tc-analysis-title{font-size:10px;font-weight:700;color:#c9c6ff;margin-bottom:6px}
+.tc-analysis-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.tc-analysis-list li{font-size:11px;color:var(--t2);line-height:1.5}
+.tc-preview-wrap{flex:1;position:relative;background:repeating-conic-gradient(#1a1a1e 0% 25%, #141416 0% 50%) 50% / 16px 16px;overflow:hidden}
+.tc-preview-frame{width:100%;height:100%;border:none;background:#fff}
+.tc-preview-badge{position:absolute;top:8px;right:8px;font-size:9px;background:rgba(0,0,0,.6);color:#8888a0;padding:3px 8px;border-radius:20px;border:1px solid var(--bd2)}
+.tc-foot-hint{font-size:10px;color:var(--t3);margin-right:auto}
+
 /* ══════ RESPONSIVO ══════ */
 @media (max-width:1100px){
   :root{--sb-l-w:220px}
@@ -379,6 +397,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </button>
   <button class="tb-btn ok" id="btn-codigo" onclick="mostrarCodigo()" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Ver código
+  </button>
+  <button class="tb-btn dl" onclick="abrirTestarCodigo()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>🧪 Testar código
   </button>
   </div>
   <div class="tb-row tb-row-2">
@@ -746,6 +767,45 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <div class="toast" id="toast">✓ Copiado para a área de transferência</div>
 
+<!-- ── MODAL TESTAR CÓDIGO (colar/editar/visualizar) ── -->
+<div class="modal-overlay" id="modal-testcode">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">🧪 Testar Código</div>
+        <div class="tc-sub">Cole ou edite HTML/CSS · clique em "Visualizar tela" pra ver o resultado</div>
+      </div>
+      <button class="modal-close" onclick="fecharTestarCodigo()">✕</button>
+    </div>
+    <div class="tc-cols">
+      <div class="tc-col tc-col-l">
+        <div class="tc-col-head">Código (editável)</div>
+        <textarea class="tc-code-input" id="tc-code-in" spellcheck="false" placeholder="Cole aqui o HTML/CSS que quer testar..."></textarea>
+      </div>
+      <div class="tc-col tc-right">
+        <div class="tc-col-head">O que esse código faz + visual</div>
+        <div class="tc-analysis" id="tc-analysis"></div>
+        <div class="tc-preview-wrap">
+          <iframe class="tc-preview-frame" id="tc-preview" sandbox="allow-scripts"></iframe>
+          <div class="tc-preview-badge">preview isolado (sandbox)</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span class="tc-foot-hint">Edite o código e clique em "Visualizar tela" pra atualizar</span>
+      <button class="tb-btn" onclick="document.getElementById('tc-code-in').value=''">Limpar</button>
+      <button class="tb-btn dl" onclick="tcRender()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Visualizar tela
+      </button>
+      <button class="tb-btn ok" onclick="tcAdicionarAoCanvas()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar ao Canvas
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ── TOOLTIP DE CÓDIGO POR ELEMENTO ── -->
 <div class="el-tooltip" id="el-tooltip">
   <div class="et-head">
@@ -1018,10 +1078,18 @@ function mkEl(d){
   div.className="cel";div.dataset.id=d.id;
   div.style.cssText=`left:${d.x}px;top:${d.y}px;width:${d.w}px;height:${d.h}px;position:absolute;cursor:move;user-select:none;display:flex;align-items:center;justify-content:center;`;
   Object.assign(div.style,d.s||{});
-  const txt=document.createElement("span");
-  txt.style.cssText="pointer-events:none;width:100%;text-align:inherit";
-  txt.textContent=d.txt||"";
-  div.appendChild(txt);
+  if(d.tipo==="html"){
+    div.id=d.id;
+    const wrap=document.createElement("div");
+    wrap.style.cssText="width:100%;height:100%;overflow:hidden;pointer-events:none";
+    wrap.innerHTML=d.txt||"";
+    div.appendChild(wrap);
+  } else {
+    const txt=document.createElement("span");
+    txt.style.cssText="pointer-events:none;width:100%;text-align:inherit";
+    txt.textContent=d.txt||"";
+    div.appendChild(txt);
+  }
   const lbl=document.createElement("div");
   lbl.className="cel-label";lbl.textContent=d.id+" · "+d.tipo;div.appendChild(lbl);
   [["br","bottom:-4px;right:-4px;cursor:se-resize"],
@@ -1045,14 +1113,15 @@ function mkEl(d){
 // ══════════════════════════════════════════════════════════════════
 // TOOLTIP DE CÓDIGO POR ELEMENTO
 // ══════════════════════════════════════════════════════════════════
-const ET_ICON={texto:"🔤",botao:"🔘",caixa:"🔲",input:"📝",divisor:"➖"};
-const ET_NOME={texto:"Texto",botao:"Botão",caixa:"Caixa",input:"Campo",divisor:"Linha"};
+const ET_ICON={texto:"🔤",botao:"🔘",caixa:"🔲",input:"📝",divisor:"➖",html:"🧩"};
+const ET_NOME={texto:"Texto",botao:"Botão",caixa:"Caixa",input:"Campo",divisor:"Linha",html:"Bloco HTML colado"};
 const ET_DESC={
   texto:"Texto livre — elemento estático, sem interação por padrão. Usado para títulos, labels e informações.",
   botao:"Botão — elemento clicável. Normalmente dispara uma ação via JavaScript (confirmar, enviar, navegar).",
   caixa:"Caixa / Container — agrupa e organiza conteúdo visualmente. Pode ter fundo, borda, sombra e cantos arredondados.",
   input:"Campo de entrada — permite o usuário digitar ou inserir dados (texto, número, senha etc.).",
   divisor:"Linha divisória — separa visualmente seções ou blocos de conteúdo.",
+  html:"Bloco de código colado inteiro via 'Testar código' — tem HTML/CSS próprios embutidos (CSS isolado por ID pra não vazar pro resto do editor).",
 };
 let currentTooltipCode="";
 
@@ -1126,6 +1195,127 @@ document.addEventListener("click",e=>{
     closeElTooltip();
   }
 });
+
+// ══════════════════════════════════════════════════════════════════
+// TESTAR CÓDIGO (colar/editar/visualizar + adicionar ao canvas)
+// ══════════════════════════════════════════════════════════════════
+window.abrirTestarCodigo=()=>{
+  document.getElementById("modal-testcode").classList.add("show");
+  if(document.getElementById("tc-code-in").value.trim())tcRender();
+};
+window.fecharTestarCodigo=()=>{
+  document.getElementById("modal-testcode").classList.remove("show");
+};
+function tcAnalisar(code){
+  const itens=[];
+  const tagCounts={};
+  [...code.matchAll(/<([a-z0-9]+)[\s>]/gi)].forEach(m=>{
+    const t=m[1].toLowerCase();
+    if(["style","script"].includes(t))return;
+    tagCounts[t]=(tagCounts[t]||0)+1;
+  });
+  const tagResumo=Object.entries(tagCounts).map(([t,n])=>`${n}× <b>&lt;${t}&gt;</b>`).join(", ");
+  if(tagResumo)itens.push(`🏗️ Estrutura: ${tagResumo}`);
+
+  const cores=[...new Set([...code.matchAll(/#[0-9a-fA-F]{3,8}\b/g)].map(m=>m[0]))].slice(0,8);
+  if(cores.length)itens.push(`🎨 Cores detectadas: ${cores.map(c=>`<b>${c}</b>`).join(", ")}`);
+
+  const layouts=[];
+  if(/display\s*:\s*flex/i.test(code))layouts.push("Flexbox");
+  if(/display\s*:\s*grid/i.test(code))layouts.push("Grid");
+  if(/position\s*:\s*absolute/i.test(code))layouts.push("posicionamento absoluto");
+  if(/position\s*:\s*fixed/i.test(code))layouts.push("posicionamento fixo");
+  if(/border-radius/i.test(code))layouts.push("cantos arredondados");
+  if(/box-shadow/i.test(code))layouts.push("sombra");
+  if(/linear-gradient|radial-gradient/i.test(code))layouts.push("gradiente");
+  if(layouts.length)itens.push(`📐 Layout/estilo: usa ${layouts.join(", ")}`);
+
+  if(/@media/i.test(code))itens.push(`📱 Responsivo: sim (media query encontrada)`);
+
+  const inter=[];
+  if(/<script/i.test(code))inter.push("bloco &lt;script&gt;");
+  const onEvents=[...new Set([...code.matchAll(/\son([a-z]+)\s*=/gi)].map(m=>m[1]))];
+  if(onEvents.length)inter.push(`atributos on${onEvents.join(", on")}`);
+  if(/addEventListener/i.test(code))inter.push("addEventListener");
+  itens.push(inter.length?`⚡ Interatividade: ${inter.join(", ")}`:`⚡ Interatividade: nenhuma (é estático)`);
+
+  if(/<form/i.test(code)){
+    const nInputs=(code.match(/<input/gi)||[]).length;
+    itens.push(`🧾 Contém formulário com ${nInputs} campo(s) de entrada`);
+  }
+
+  const sem=["header","nav","main","section","article","footer","aside"].filter(t=>new RegExp(`<${t}[\\s>]`,"i").test(code));
+  if(sem.length)itens.push(`🏷️ Tags semânticas: ${sem.map(t=>`&lt;${t}&gt;`).join(", ")}`);
+
+  const imgs=[...code.matchAll(/<img[^>]*>/gi)];
+  if(imgs.length){
+    const semAlt=imgs.filter(m=>!/alt\s*=/.test(m[0])).length;
+    itens.push(`♿ Acessibilidade: ${imgs.length} imagem(ns), ${semAlt>0?`<b>${semAlt} sem atributo alt ⚠️</b>`:"todas com alt ✓"}`);
+  }
+  const ariaCount=(code.match(/\saria-[a-z-]+=/gi)||[]).length;
+  if(ariaCount)itens.push(`♿ ${ariaCount} atributo(s) ARIA encontrado(s)`);
+
+  const libDefs=[[/bootstrap/i,"Bootstrap"],[/tailwind/i,"Tailwind CSS"],[/font-?awesome|fa-/i,"Font Awesome"],[/jquery/i,"jQuery"],[/chart\.js/i,"Chart.js"]];
+  const libs=[...new Set(libDefs.filter(([re])=>re.test(code)).map(([,n])=>n))];
+  if(libs.length)itens.push(`📚 Bibliotecas detectadas: ${libs.join(", ")} — <i>confira se o CDN está carregado</i>`);
+
+  const totalTags=Object.values(tagCounts).reduce((a,b)=>a+b,0);
+  if(totalTags>30)itens.push(`⚙️ Complexidade: ${totalTags} elementos — código relativamente denso`);
+  const inlineStyles=(code.match(/\sstyle\s*=/gi)||[]).length;
+  if(inlineStyles>5)itens.push(`⚙️ ${inlineStyles} estilos inline — considere mover pra classes se for reaproveitar`);
+
+  return itens.length?itens:["Nenhum padrão reconhecido — cole um HTML/CSS válido."];
+}
+window.tcRender=()=>{
+  const code=document.getElementById("tc-code-in").value;
+  const itens=tcAnalisar(code);
+  document.getElementById("tc-analysis").innerHTML=
+    `<div class="tc-analysis-title">📋 O que esse código faz</div>
+     <ul class="tc-analysis-list">${itens.map(i=>`<li>${i}</li>`).join("")}</ul>`;
+  const frame=document.getElementById("tc-preview");
+  frame.srcdoc=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f4f8;font-family:sans-serif}</style></head><body>${code}</body></html>`;
+};
+function tcScopeCss(css,scopeId){
+  css=css.replace(/\/\*[\s\S]*?\*\//g,"");
+  return css.replace(/([^{}]+)\{/g,(m,sel)=>{
+    sel=sel.trim();
+    if(!sel||sel.startsWith("@")||sel==="from"||sel==="to"||/^\d+%/.test(sel))return m;
+    return sel.split(",").map(s=>`#${scopeId} ${s.trim()}`).join(", ")+" {";
+  });
+}
+window.tcAdicionarAoCanvas=()=>{
+  if(!TELA){showToast("Selecione uma tela primeiro");return;}
+  const code=document.getElementById("tc-code-in").value;
+  if(!code.trim()){showToast("Cole algum código primeiro");return;}
+  salvarHist();
+  const styleMatch=[...code.matchAll(/<style>([\s\S]*?)<\/style>/gi)].map(m=>m[1]).join("\n");
+  const bodyHtml=code.replace(/<style>[\s\S]*?<\/style>/gi,"").trim();
+  const id="html_"+nextId++;
+  const scoped=tcScopeCss(styleMatch,id);
+  const conteudo=`<style>${scoped}</style>${bodyHtml}`;
+
+  // mede o tamanho real renderizando fora da tela antes de inserir de vez
+  const medidor=document.createElement("div");
+  medidor.style.cssText="position:fixed;left:-9999px;top:-9999px;display:inline-block";
+  medidor.id=id;
+  medidor.innerHTML=conteudo;
+  document.body.appendChild(medidor);
+  const alvo=[...medidor.children].find(el=>!["STYLE"].includes(el.tagName))||medidor;
+  const rect=alvo.getBoundingClientRect();
+  const w=Math.max(60,Math.round(rect.width)||300);
+  const h=Math.max(30,Math.round(rect.height)||150);
+  medidor.remove();
+
+  const d={id,tipo:"html",txt:conteudo,x:40,y:40,w,h,s:{}};
+  ELS.push(d);
+  document.getElementById("canvas").appendChild(mkEl(d));
+  document.getElementById("sb-n").textContent=ELS.length;
+  selEl(id);
+  renderLayers();
+  marcarDirty(TELA);
+  fecharTestarCodigo();
+  showToast(`✓ Adicionado ao canvas como elemento HTML (${w}×${h}px)`);
+};
 
 // ══════════════════════════════════════════════════════════════════
 // GRADE / SNAP / GUIAS INTELIGENTES
@@ -1566,7 +1756,7 @@ window.baixarHTML=()=>{
       const prop=k.replace(/([A-Z])/g,c=>"-"+c.toLowerCase());
       return`${prop}:${v}`;
     }).join(";");
-    return`  <div class="el-${d.id}" style="position:absolute;left:${Math.round(d.x)}px;top:${Math.round(d.y)}px;width:${Math.round(d.w)}px;height:${Math.round(d.h)}px;${ss}">${d.txt||""}</div>`;
+    return`  <div id="${d.id}" class="el-${d.id}" style="position:absolute;left:${Math.round(d.x)}px;top:${Math.round(d.y)}px;width:${Math.round(d.w)}px;height:${Math.round(d.h)}px;${ss}">${d.txt||""}</div>`;
   }).join("\n");
   const estilos=ELS.map(d=>{
     const s=Object.entries(d.s||{}).map(([k,v])=>{
@@ -1629,7 +1819,7 @@ function gerarCodigo(){
       const prop=k.replace(/([A-Z])/g,c=>"-"+c.toLowerCase());
       return`${prop}:${v}`;
     }).join(";");
-    return`  <div class="${d.id}" style="position:absolute;left:${Math.round(d.x)}px;top:${Math.round(d.y)}px;width:${Math.round(d.w)}px;height:${Math.round(d.h)}px;${ss}">${d.txt||""}</div>`;
+    return`  <div id="${d.id}" class="${d.id}" style="position:absolute;left:${Math.round(d.x)}px;top:${Math.round(d.y)}px;width:${Math.round(d.w)}px;height:${Math.round(d.h)}px;${ss}">${d.txt||""}</div>`;
   }).join("\n");
   return`<!-- ============================================\n     ${t.label}\n     Gerado pelo Editor Visual Apodi\n     ${new Date().toLocaleString("pt-BR")}\n     ============================================ -->\n\n<!-- HTML -->\n<div class="tela-container" style="position:relative;width:${t.w}px;height:${t.h}px;background:${t.bg};">\n${htmlEls}\n</div>\n\n/* ============ CSS ============ */\n\n${estilosEl}`;
 }
