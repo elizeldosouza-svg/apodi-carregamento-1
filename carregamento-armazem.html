@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Carregamento Armazém — TMAC Online</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -202,14 +203,114 @@ tr.alerta .turno{opacity:.7}
 .deate-input{background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--tx);padding:4px 8px;font-size:11px;font-family:'Inter',sans-serif;outline:none;width:76px}
 .deate-input:focus{border-color:var(--bl)}
 .deate-sep{color:var(--t3);font-size:11px}
+
+/* ══ ESTADO 1/2 — toggle ══ */
+.est-tag{display:inline-block;margin-left:8px;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;vertical-align:middle;letter-spacing:.5px}
+.est-tag.e1{background:rgba(0,212,255,.12);color:var(--bl);border:1px solid rgba(0,212,255,.3)}
+.est-tag.e2{background:rgba(255,208,0,.12);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
+.e2-toggle-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;margin-bottom:16px}
+.e2-toggle-lbl{font-size:12px;font-weight:700;color:var(--tx);flex:1;min-width:200px}
+.e2-toggle-lbl small{display:block;font-size:10px;font-weight:400;color:var(--t2);margin-top:2px}
+.e2-tgl{position:relative;width:46px;height:24px;background:var(--bg4);border:1px solid var(--b2);border-radius:20px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.e2-tgl::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:var(--t2);border-radius:50%;transition:all .2s}
+.e2-tgl.on{background:rgba(255,208,0,.18);border-color:var(--ye)}
+.e2-tgl.on::after{left:24px;background:var(--ye)}
+
+/* ══ ESTADO 2 — fila/kanban do armazém ══ */
+.e2-period-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.e2-pbtn{padding:8px 16px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.e2-pbtn.on{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.08)}
+.e2-pbtn:hover:not(.on){border-color:var(--t2);color:var(--tx)}
+.e2-toolbar-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.e2-filtros-toggle-btn{display:flex;align-items:center;gap:8px;background:rgba(255,208,0,.08);border:1px solid var(--ye);color:var(--ye);font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.e2-export-row{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.e2-exp-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.06);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif}
+.e2-exp-btn:hover{background:rgba(0,232,150,.14)}
+.e2-live-tag{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--gr);padding:0 4px}
+.e2-live-tag .e2-sdot{width:7px;height:7px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
+.e2-filtro-panel{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;margin-bottom:16px}
+.e2-filtro-panel-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--gr);margin-bottom:14px}
+.e2-filtro-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+@media(max-width:700px){.e2-filtro-grid{grid-template-columns:1fr}}
+.e2-ffield{display:flex;flex-direction:column;gap:5px}
+.e2-ffield label{font-size:9.5px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.e2-ffield input,.e2-ffield select{background:var(--bg3);border:1px solid var(--b2);border-radius:8px;color:var(--tx);padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none}
+.e2-ffield input::placeholder{color:var(--t3)}
+.e2-ffield input:focus,.e2-ffield select:focus{border-color:var(--gr)}
+.e2-filtro-btns-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--bd)}
+.e2-fbtn{padding:8px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--t2);display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif}
+.e2-fbtn-ontem{border-color:rgba(0,232,150,.4);color:var(--gr);background:rgba(0,232,150,.06)}
+.e2-fbtn-hoje{border-color:rgba(0,212,255,.4);color:var(--bl);background:rgba(0,212,255,.06)}
+.e2-fbtn-alert{border-color:rgba(255,68,102,.4);color:var(--rd);background:rgba(255,68,102,.06)}
+.e2-fbtn-alert.on{background:rgba(255,68,102,.18)}
+.e2-fbtn-clear{margin-left:auto;color:var(--t2)}
+.e2-fbtn-apply{background:var(--gr);color:#000;border-color:var(--gr);font-weight:800}
+.e2-cargo-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:1100px){.e2-cargo-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.e2-cargo-row{grid-template-columns:repeat(2,1fr)}}
+.e2-cc-card{background:var(--bg2);border:1px solid var(--bd);border-top:3px solid var(--accent);border-radius:var(--rs);padding:10px 8px;text-align:center}
+.e2-cc-tipo{font-size:11px;font-weight:800;color:var(--accent);font-family:'Rajdhani',sans-serif;letter-spacing:.3px}
+.e2-cc-sub{font-size:9.5px;color:var(--t2);margin-top:1px;text-transform:uppercase;letter-spacing:.3px}
+.e2-cc-count{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:var(--tx);margin-top:6px}
+.e2-tma-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.e2-tma-grid{grid-template-columns:repeat(2,1fr)}}
+.e2-tma-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;border-top:3px solid var(--accent)}
+.e2-tma-lbl{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px}
+.e2-tma-val{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:800;color:var(--accent);margin-top:4px}
+.e2-tma-sub{font-size:9px;color:var(--t3);margin-top:2px}
+.e2-board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.e2-board{grid-template-columns:1fr}}
+.e2-col{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;min-height:180px}
+.e2-col-head{padding:12px 14px 10px;border-bottom:2px solid var(--accent);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.e2-col-head-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.e2-col-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;letter-spacing:.6px;color:var(--accent);display:flex;align-items:center;gap:6px}
+.e2-col-count{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--accent);background:rgba(255,255,255,.06);border-radius:8px;padding:1px 10px;min-width:30px;text-align:center}
+.e2-col-empresa{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.e2-col-meta{font-size:9px;color:var(--t2);margin-top:4px}
+.e2-col-body{flex:1;padding:10px;display:flex;flex-direction:column;gap:8px;max-height:640px;overflow-y:auto}
+.e2-col-empty{text-align:center;padding:26px 8px;color:var(--t3);font-size:11px;border:1px dashed var(--bd);border-radius:var(--rs)}
+.e2-card{background:var(--bg3);border:1px solid var(--bd);border-left:3px solid var(--accent);border-radius:10px;padding:11px 12px}
+.e2-card.alerta{border-left-color:var(--rd);animation:e2CardAlert 1.3s ease-in-out infinite}
+@keyframes e2CardAlert{0%,100%{background:rgba(255,68,102,.05)}50%{background:rgba(255,68,102,.12)}}
+.e2-card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.e2-card-placa{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--accent);letter-spacing:.8px}
+.e2-card.alerta .e2-card-placa{color:var(--rd)}
+.e2-card-meta{font-size:10.5px;color:var(--t2);margin-bottom:3px}
+.e2-card-ac{font-size:10.5px;color:var(--t2);margin-bottom:6px}
+.e2-card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.e2-tag{font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.3px}
+.e2-tag-ens{background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.25)}
+.e2-tag-gra{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
+.e2-tag-big{background:rgba(0,232,150,.12);color:#00e896;border:1px solid rgba(0,232,150,.25)}
+.e2-tag-sub{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid var(--bd)}
+.e2-tag-cim{background:rgba(255,208,0,.10);color:var(--ye);border:1px solid rgba(255,208,0,.25)}
+.e2-card-row2{display:flex;align-items:center;justify-content:space-between}
+.e2-tempo-wrap{display:flex;align-items:center;gap:6px}
+.e2-tempo-box .e2-tempo{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800}
+.e2-tempo-box .e2-tempo-lbl{font-size:8.5px;color:var(--t2);text-transform:uppercase}
+.e2-entrada-box{text-align:right}
+.e2-entrada-box .e2-el{font-size:8px;color:var(--t3);text-transform:uppercase}
+.e2-entrada-box .e2-ev{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--tx)}
+.e2-status-foot{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid rgba(255,208,0,.3);border-radius:var(--r);padding:12px 16px;font-size:12px;font-weight:700;color:var(--ye)}
+.e2-status-foot .e2-fdot{width:9px;height:9px;background:var(--ye);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
+.e2-status-foot .e2-fn{margin-left:auto;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:var(--tx)}
+@media(max-width:768px){.e2-toolbar-row{flex-direction:column;align-items:stretch}.e2-export-row{margin-left:0}}
 </style>
 </head>
 <body>
 <div class="top">
-  <div class="logo">🏗️ ARMAZÉM — TMA<span style="display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:var(--t2);letter-spacing:0;text-transform:none">Tempo Médio do Armazém · consulta em tempo real</span></div>
+  <div class="logo">🏗️ ARMAZÉM — TMA<span class="est-tag e1" id="est-tag">Estado 1</span><span style="display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:var(--t2);letter-spacing:0;text-transform:none">Tempo Médio do Armazém · consulta em tempo real</span></div>
   <div class="live"><div class="dot"></div>AO VIVO</div>
 </div>
 <div class="wrap">
+  <div class="e2-toggle-bar">
+    <div class="e2-toggle-lbl">Visualização · Fila do Armazém — Kanban (Estado 2)
+      <small>Desligado = tela principal (Estado 1, padrão ao abrir a página) · Ligado = board por etapa (Estado 2)</small>
+    </div>
+    <div class="e2-tgl" id="e2-tgl" onclick="toggleEstado2()"></div>
+  </div>
+
+  <div id="estado1-view">
   <div class="stats">
     <div class="st s0"><div class="sv" id="s0">—</div><div class="sl">Total</div></div>
     <div class="st s1"><div class="sv" id="s1">—</div><div class="sl">Triagem</div></div>
@@ -408,6 +509,94 @@ tr.alerta .turno{opacity:.7}
     <div class="empty" id="emp-conc" style="display:none">🔍 Nenhum caminhão concluído.</div>
   </div>
   <div class="cards" id="cards"></div>
+  </div><!-- /estado1-view -->
+
+  <!-- ═══════════ ESTADO 2 — FILA / KANBAN DO ARMAZÉM ═══════════ -->
+  <div id="estado2-view" style="display:none">
+
+    <div class="e2-period-row">
+      <button class="e2-pbtn on" id="e2-tb-geral" onclick="e2SetTurno('geral',this)">Geral (<span id="e2-cnt-geral">0</span>)</button>
+      <button class="e2-pbtn" id="e2-tb-A" onclick="e2SetTurno('A',this)">Turno A (<span id="e2-cnt-A">0</span>)</button>
+      <button class="e2-pbtn" id="e2-tb-B" onclick="e2SetTurno('B',this)">Turno B (<span id="e2-cnt-B">0</span>)</button>
+      <button class="e2-pbtn" id="e2-tb-C" onclick="e2SetTurno('C',this)">Turno C (<span id="e2-cnt-C">0</span>)</button>
+    </div>
+
+    <div class="e2-toolbar-row">
+      <button class="e2-filtros-toggle-btn" onclick="e2ToggleFiltroPanel()">🔍 Filtros <span id="e2-filtro-icon">▾</span></button>
+      <div class="e2-export-row">
+        <button class="e2-exp-btn" onclick="e2ExportarPDF()">📄 PDF c/ Filtro</button>
+        <button class="e2-exp-btn" onclick="e2ExportExcel()">📊 Excel</button>
+        <button class="e2-exp-btn" onclick="e2ExportImagem()">🖼️ Imagem</button>
+        <div class="e2-live-tag"><div class="e2-sdot"></div>AO VIVO</div>
+      </div>
+    </div>
+
+    <div class="e2-filtro-panel" id="e2-filtro-panel" style="display:none">
+      <div class="e2-filtro-panel-title">📅 Consultar período</div>
+      <div class="e2-filtro-grid">
+        <div class="e2-ffield"><label>Data Início</label><input type="date" id="e2-f-data-ini"></div>
+        <div class="e2-ffield"><label>Data Fim</label><input type="date" id="e2-f-data-fim"></div>
+        <div class="e2-ffield"><label>Hora Início</label><input type="time" id="e2-f-hora-ini" value="00:00"></div>
+        <div class="e2-ffield"><label>Hora Fim</label><input type="time" id="e2-f-hora-fim" value="23:59"></div>
+        <div class="e2-ffield"><label>Operador</label><select id="e2-f-operador"><option value="">Todos</option></select></div>
+        <div class="e2-ffield"><label>Cimento</label><select id="e2-f-cimento"><option value="">Todos</option><option value="CP II F">CP II F</option><option value="CP III">CP III</option><option value="CP V">CP V</option></select></div>
+        <div class="e2-ffield"><label>Carga</label><select id="e2-f-carga" onchange="e2AtualizarSubtipos()"><option value="">Todas</option><option value="ensacado">Ensacado</option><option value="granel">Granel</option><option value="bigbag">Big Bag</option></select></div>
+        <div class="e2-ffield"><label>Tipo de Carregamento</label><select id="e2-f-subtipo"><option value="">Todos</option></select></div>
+        <div class="e2-ffield"><label>Placa</label><input type="text" id="e2-f-placa" placeholder="ABC1D23"></div>
+        <div class="e2-ffield"><label>AC</label><input type="text" id="e2-f-ac" placeholder="629555"></div>
+      </div>
+      <div class="e2-filtro-btns-row">
+        <button class="e2-fbtn e2-fbtn-ontem" onclick="e2SetOntemHoje('ontem')">📅 Ontem</button>
+        <button class="e2-fbtn e2-fbtn-hoje" onclick="e2SetOntemHoje('hoje')">📅 Hoje</button>
+        <button class="e2-fbtn e2-fbtn-alert" id="e2-btn-alerta" onclick="e2ToggleAlerta(this)">⏱️ TMA ≥ 40min</button>
+        <button class="e2-fbtn e2-fbtn-clear" onclick="e2LimparFiltros()">Limpar</button>
+        <button class="e2-fbtn e2-fbtn-apply" onclick="e2AplicarFiltros()">Aplicar</button>
+      </div>
+    </div>
+
+    <div class="e2-tma-grid">
+      <div class="e2-tma-card" style="--accent:#ff9f43"><div class="e2-tma-lbl">TMA Geral</div><div class="e2-tma-val" id="e2-tma-geral">—</div><div class="e2-tma-sub">Meta ≤ 40min</div></div>
+      <div class="e2-tma-card" style="--accent:#ffd000"><div class="e2-tma-lbl">TMTI · Triagem</div><div class="e2-tma-val" id="e2-tma-tmti">—</div><div class="e2-tma-sub">Meta ≤ 05min</div></div>
+      <div class="e2-tma-card" style="--accent:#fb923c"><div class="e2-tma-lbl">TMCI · Carregamento</div><div class="e2-tma-val" id="e2-tma-tmci">—</div><div class="e2-tma-sub">Meta ≤ 20min</div></div>
+      <div class="e2-tma-card" style="--accent:#a78bfa"><div class="e2-tma-lbl">TMEI · Enlonamento</div><div class="e2-tma-val" id="e2-tma-tmei">—</div><div class="e2-tma-sub">Meta ≤ 15min</div></div>
+    </div>
+
+    <div class="e2-cargo-row" id="e2-cargo-row"></div>
+
+    <div class="e2-board" id="e2-board">
+      <div class="e2-col">
+        <div class="e2-col-head" style="--accent:#ffd000">
+          <div class="e2-col-head-top"><div class="e2-col-title">🔎 TRIAGEM</div><div class="e2-col-count" id="e2-cnt-col-triagem">0</div></div>
+          <div class="e2-col-empresa">Reforme Paletes</div>
+          <div class="e2-col-meta">Meta TMTI ≤5min</div>
+        </div>
+        <div class="e2-col-body" id="e2-col-body-triagem"></div>
+      </div>
+      <div class="e2-col">
+        <div class="e2-col-head" style="--accent:#fb923c">
+          <div class="e2-col-head-top"><div class="e2-col-title">⚙️ CARREGAMENTO</div><div class="e2-col-count" id="e2-cnt-col-carregamento">0</div></div>
+          <div class="e2-col-empresa">Ambipar</div>
+          <div class="e2-col-meta">Meta TMCI ≤20min</div>
+        </div>
+        <div class="e2-col-body" id="e2-col-body-carregamento"></div>
+      </div>
+      <div class="e2-col">
+        <div class="e2-col-head" style="--accent:#a78bfa">
+          <div class="e2-col-head-top"><div class="e2-col-title">🪢 ENLONAMENTO</div><div class="e2-col-count" id="e2-cnt-col-enlonamento">0</div></div>
+          <div class="e2-col-empresa">Sousa Clean</div>
+          <div class="e2-col-meta">Meta TMEI ≤15min</div>
+        </div>
+        <div class="e2-col-body" id="e2-col-body-enlonamento"></div>
+      </div>
+    </div>
+
+    <div class="e2-status-foot">
+      <div class="e2-fdot"></div>
+      🟡 EM PROCESSO NO ARMAZÉM
+      <div class="e2-fn" id="e2-foot-n">0 VEÍCULOS</div>
+    </div>
+
+  </div><!-- /estado2-view -->
 </div>
 
 <!-- MODAL RELATÓRIO MASTER -->
@@ -1163,6 +1352,300 @@ window.exportarPDFMaster=()=>{
   janela.document.close();
   janela.focus();
   setTimeout(()=>janela.print(),600);
+};
+
+// ══════════════════════════════════════════════════════════════════════════
+// ── ESTADO 2 · Fila / Kanban do Armazém ─────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+const E2_SUBTIPOS_POR_CARGA={ensacado:["Paletizado","Caricamat","Container"],granel:["Granel"],bigbag:["Paletizado","Container"]};
+const E2_STAGES=[
+  {id:"triagem",label:"🔎 TRIAGEM",accent:"#ffd000",meta:5*60*1000,metaLabel:"Meta TMTI ≤5min",tempoLabel:"triagem"},
+  {id:"carregamento",label:"⚙️ CARREGAMENTO",accent:"#fb923c",meta:20*60*1000,metaLabel:"Meta TMCI ≤20min",tempoLabel:"carregamento"},
+  {id:"enlonamento",label:"🪢 ENLONAMENTO",accent:"#a78bfa",meta:15*60*1000,metaLabel:"Meta TMEI ≤15min",tempoLabel:"enlonamento"},
+];
+let E2_TURNO="geral",E2_ALERTA=false;
+
+function e2EstagioAtivo(c){
+  if(c.setorAtual==="concluido")return null;
+  if(c.setorAtual?.startsWith("triagem"))return"triagem";
+  if(c.setorAtual?.startsWith("carregamento"))return"carregamento";
+  if(c.setorAtual?.startsWith("enlonamento"))return"enlonamento";
+  return null;
+}
+function e2OperadoresLista(){
+  const nomes=new Set();
+  ALL.forEach(c=>{
+    [c.triagem?.operadorInicio,c.triagem?.operadorFim,c.carregamento?.operadorInicio,c.carregamento?.operadorFim,c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim]
+      .forEach(n=>{if(n)nomes.add(n);});
+  });
+  return[...nomes].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+}
+function e2VeiculoTemOperador(c,nome){
+  if(!nome)return true;
+  return[c.triagem?.operadorInicio,c.triagem?.operadorFim,c.carregamento?.operadorInicio,c.carregamento?.operadorFim,c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim].includes(nome);
+}
+function e2PopulaOperadores(){
+  const sel=document.getElementById("e2-f-operador");if(!sel)return;
+  const atual=sel.value;
+  sel.innerHTML='<option value="">Todos</option>'+e2OperadoresLista().map(n=>`<option value="${n}">${n}</option>`).join("");
+  sel.value=atual;
+}
+window.e2AtualizarSubtipos=()=>{
+  const carga=document.getElementById("e2-f-carga").value;
+  const sel=document.getElementById("e2-f-subtipo");
+  const atual=sel.value;
+  const opcoes=carga?(E2_SUBTIPOS_POR_CARGA[carga]||[]):[...new Set(Object.values(E2_SUBTIPOS_POR_CARGA).flat())];
+  sel.innerHTML='<option value="">Todos</option>'+opcoes.map(o=>`<option value="${o}">${o}</option>`).join("");
+  if(opcoes.includes(atual))sel.value=atual;
+};
+
+window.toggleEstado2=()=>{
+  const tgl=document.getElementById("e2-tgl");
+  const on=!tgl.classList.contains("on");
+  tgl.classList.toggle("on",on);
+  document.getElementById("estado1-view").style.display=on?"none":"block";
+  document.getElementById("estado2-view").style.display=on?"block":"none";
+  const tag=document.getElementById("est-tag");
+  tag.textContent=on?"Estado 2":"Estado 1";
+  tag.className="est-tag "+(on?"e2":"e1");
+  if(on){
+    if(!document.getElementById("e2-f-data-ini").value){
+      const{s}=periodDates("hoje");
+      document.getElementById("e2-f-data-ini").value=s;
+      document.getElementById("e2-f-data-fim").value=s;
+    }
+    e2PopulaOperadores();
+    e2AtualizarSubtipos();
+    e2Render();
+  }
+};
+window.e2ToggleFiltroPanel=()=>{
+  const p=document.getElementById("e2-filtro-panel");
+  const icon=document.getElementById("e2-filtro-icon");
+  const show=p.style.display==="none";
+  p.style.display=show?"block":"none";
+  icon.textContent=show?"▴":"▾";
+};
+window.e2SetTurno=(t,el)=>{E2_TURNO=t;document.querySelectorAll(".e2-pbtn").forEach(b=>b.classList.remove("on"));el.classList.add("on");e2Render();};
+window.e2ToggleAlerta=el=>{E2_ALERTA=!E2_ALERTA;el.classList.toggle("on",E2_ALERTA);e2Render();};
+window.e2SetOntemHoje=which=>{
+  const{s}=periodDates(which);
+  document.getElementById("e2-f-data-ini").value=s;
+  document.getElementById("e2-f-data-fim").value=s;
+  e2AplicarFiltros();
+};
+window.e2LimparFiltros=()=>{
+  const{s}=periodDates("hoje");
+  document.getElementById("e2-f-data-ini").value=s;
+  document.getElementById("e2-f-data-fim").value=s;
+  document.getElementById("e2-f-hora-ini").value="00:00";
+  document.getElementById("e2-f-hora-fim").value="23:59";
+  document.getElementById("e2-f-operador").value="";
+  document.getElementById("e2-f-cimento").value="";
+  document.getElementById("e2-f-carga").value="";
+  e2AtualizarSubtipos();
+  document.getElementById("e2-f-subtipo").value="";
+  document.getElementById("e2-f-placa").value="";
+  document.getElementById("e2-f-ac").value="";
+  E2_ALERTA=false;
+  document.getElementById("e2-btn-alerta").classList.remove("on");
+  E2_TURNO="geral";
+  document.querySelectorAll(".e2-pbtn").forEach(b=>b.classList.remove("on"));
+  document.getElementById("e2-tb-geral").classList.add("on");
+  e2Render();
+};
+window.e2AplicarFiltros=()=>{e2Render();};
+
+// Pool base: veículos com passagem pelo armazém, dentro do período/hora/turno/carga/cimento/subtipo/operador/placa/ac selecionados
+function e2Pool(turnoOverride){
+  const dIni=document.getElementById("e2-f-data-ini")?.value||"";
+  const dFim=document.getElementById("e2-f-data-fim")?.value||dIni;
+  const hIni=document.getElementById("e2-f-hora-ini")?.value||"00:00";
+  const hFim=document.getElementById("e2-f-hora-fim")?.value||"23:59";
+  const operador=document.getElementById("e2-f-operador")?.value||"";
+  const cimento=document.getElementById("e2-f-cimento")?.value||"";
+  const carga=document.getElementById("e2-f-carga")?.value||"";
+  const subtipo=document.getElementById("e2-f-subtipo")?.value||"";
+  const placa=(document.getElementById("e2-f-placa")?.value||"").toUpperCase().trim();
+  const ac=(document.getElementById("e2-f-ac")?.value||"").trim();
+  const turno=turnoOverride!==undefined?turnoOverride:E2_TURNO;
+
+  return ALL.filter(c=>{
+    if(!temEtapaArmazem(c))return false;
+    const dr=dataRef(c);
+    if(dIni&&(!dr||dr<dIni||dr>dFim))return false;
+    const en=getTS(c,"entrada","ts");
+    if(en){
+      const hhmm=en.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"}).replace(/[^0-9:]/g,"").substring(0,5);
+      if(hIni&&hhmm<hIni)return false;
+      if(hFim&&hhmm>hFim)return false;
+    }
+    if(turno!=="geral"&&getTurno(turnoTS(c))!==turno)return false;
+    if(cimento&&c.tipoCimento!==cimento)return false;
+    if(carga&&c.tipoCarga!==carga)return false;
+    if(subtipo&&c.subtipoCarga!==subtipo)return false;
+    if(operador&&!e2VeiculoTemOperador(c,operador))return false;
+    if(placa&&!c.placa?.toUpperCase().includes(placa))return false;
+    if(ac&&!c.ac?.includes(ac))return false;
+    if(E2_ALERTA&&!isAlerta(c))return false;
+    return true;
+  });
+}
+// Veículos ativos no armazém (colunas do board) — dentro do pool filtrado
+function e2Ativos(turnoOverride){
+  return e2Pool(turnoOverride).filter(c=>e2EstagioAtivo(c)!==null);
+}
+
+function e2TempoCard(c,stage){
+  const ini=getTS(c,stage.id,"inicio"),fim=getTS(c,stage.id,"fim");
+  if(fim)return{ms:fim-ini,label:stage.tempoLabel+" concluído"};
+  if(ini)return{ms:Date.now()-ini.getTime(),label:"em processo"};
+  return{ms:null,label:"aguardando"};
+}
+
+function e2CardHtml(c,stage){
+  const{ms,label}=e2TempoCard(c,stage);
+  const alerta=isAlerta(c);
+  const cor=ms==null?"var(--t2)":(ms<=stage.meta?"var(--gr)":"var(--rd)");
+  const tagMap={ensacado:["e2-tag-ens","📦 Ensacado"],granel:["e2-tag-gra","🌀 Granel"],bigbag:["e2-tag-big","🎒 Big Bag"]};
+  const tag=tagMap[c.tipoCarga];
+  const tipoTagHtml=tag?`<span class="e2-tag ${tag[0]}">${tag[1]}</span>`:"";
+  const subTagHtml=c.subtipoCarga?`<span class="e2-tag e2-tag-sub">🧱 ${c.subtipoCarga}</span>`:"";
+  const cimTagHtml=c.tipoCimento?`<span class="e2-tag e2-tag-cim">${c.tipoCimento}</span>`:"";
+  const dataFmt=c.data?c.data.split("-").reverse().join("/"):"—";
+  const en=getTS(c,"entrada","ts");
+  return`<div class="e2-card${alerta?" alerta":""}" style="--accent:${stage.accent}">
+    <div class="e2-card-row1"><div class="e2-card-placa">${c.placa||"—"}</div>${turnoPill(turnoTS(c))}</div>
+    <div class="e2-card-meta">📅 ${dataFmt}</div>
+    <div class="e2-card-ac">AC: ${c.ac||"—"} &nbsp;·&nbsp; NF: ${c.notaFiscal||"ainda não emitida"}</div>
+    <div class="e2-card-tags">${tipoTagHtml}${subTagHtml}${cimTagHtml}</div>
+    <div class="e2-card-row2">
+      <div class="e2-tempo-wrap"><span>⏱️</span><div class="e2-tempo-box"><div class="e2-tempo" style="color:${cor}">${ms!=null?durStr(ms):"—"}</div><div class="e2-tempo-lbl">${label}</div></div></div>
+      <div class="e2-entrada-box"><div class="e2-el">Entrada</div><div class="e2-ev">${en?fmtT(en).substring(0,5):"—"}</div></div>
+    </div>
+  </div>`;
+}
+
+window.e2Render=()=>{
+  if(document.getElementById("estado2-view").style.display==="none")return;
+
+  // Contadores do período (Geral/Turno A/B/C) — cada botão conta sob os demais filtros aplicados
+  document.getElementById("e2-cnt-geral").textContent=e2Ativos("geral").length;
+  document.getElementById("e2-cnt-A").textContent=e2Ativos("A").length;
+  document.getElementById("e2-cnt-B").textContent=e2Ativos("B").length;
+  document.getElementById("e2-cnt-C").textContent=e2Ativos("C").length;
+
+  const pool=e2Pool();
+  const ativos=e2Ativos();
+
+  // Cards TMA (médias sobre o pool filtrado)
+  const tmtiV=pool.map(calcTMTI).filter(v=>v!=null);
+  const tmciV=pool.map(calcTMCI).filter(v=>v!=null);
+  const tmeiV=pool.map(calcTMEI).filter(v=>v!=null);
+  const avg=vs=>vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
+  const aTmti=avg(tmtiV),aTmci=avg(tmciV),aTmei=avg(tmeiV);
+  document.getElementById("e2-tma-tmti").textContent=aTmti!=null?durStr(aTmti):"—";
+  document.getElementById("e2-tma-tmci").textContent=aTmci!=null?durStr(aTmci):"—";
+  document.getElementById("e2-tma-tmei").textContent=aTmei!=null?durStr(aTmei):"—";
+  const partesE2=[aTmti,aTmci,aTmei].filter(v=>v!=null);
+  document.getElementById("e2-tma-geral").textContent=partesE2.length?durStr(partesE2.reduce((a,b)=>a+b,0)):"—";
+
+  // Cards de contagem por tipo/subtipo de carga (sobre os veículos ativos no armazém)
+  const combos=[["ensacado","Paletizado","#00d4ff","Ensacado"],["ensacado","Caricamat","#00d4ff","Ensacado"],["ensacado","Container","#00d4ff","Ensacado"],
+    ["granel","Granel","#fb923c","Granel"],["bigbag","Paletizado","#00e896","Big Bag"],["bigbag","Container","#00e896","Big Bag"]];
+  document.getElementById("e2-cargo-row").innerHTML=combos.map(([tc,sub,accent,label])=>{
+    const n=ativos.filter(c=>c.tipoCarga===tc&&c.subtipoCarga===sub).length;
+    return`<div class="e2-cc-card" style="--accent:${accent}"><div class="e2-cc-tipo">${label}</div><div class="e2-cc-sub">${sub}</div><div class="e2-cc-count">${n}</div></div>`;
+  }).join("");
+
+  // Board — 3 colunas
+  let totalAtivos=0;
+  E2_STAGES.forEach(stage=>{
+    const lista=ativos.filter(c=>e2EstagioAtivo(c)===stage.id)
+      .sort((a,b)=>{
+        const ea=getTS(a,stage.id,"inicio"),eb=getTS(b,stage.id,"inicio");
+        if(!ea)return 1;if(!eb)return-1;
+        return ea-eb;
+      });
+    totalAtivos+=lista.length;
+    document.getElementById("e2-cnt-col-"+stage.id).textContent=lista.length;
+    document.getElementById("e2-col-body-"+stage.id).innerHTML=lista.length
+      ?lista.map(c=>e2CardHtml(c,stage)).join("")
+      :'<div class="e2-col-empty">Nenhum veículo</div>';
+  });
+
+  document.getElementById("e2-foot-n").textContent=totalAtivos+(totalAtivos===1?" VEÍCULO":" VEÍCULOS");
+};
+
+window.e2ExportExcel=()=>{
+  const ativos=e2Ativos();
+  if(!ativos.length){alert("Nenhum veículo em processo no armazém com os filtros selecionados.");return;}
+  const rows=ativos.map(c=>{
+    const stage=E2_STAGES.find(s=>s.id===e2EstagioAtivo(c));
+    const{ms}=e2TempoCard(c,stage);
+    return{
+      "Placa":c.placa,"Etapa Atual":stage?.label.replace(/^\S+\s/,"")||"","AC":c.ac,"Cimento":c.tipoCimento||"",
+      "Carga":({ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"})[c.tipoCarga]||"","Tipo de Carregamento":c.subtipoCarga||"",
+      "Nota Fiscal":c.notaFiscal||"","Turno":getTurno(turnoTS(c))||"","Tempo na Etapa":ms!=null?durStr(ms):"",
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Armazem Estado2");
+  ws["!cols"]=[{wch:10},{wch:16},{wch:10},{wch:10},{wch:10},{wch:18},{wch:18},{wch:8},{wch:14}];
+  const dIni=document.getElementById("e2-f-data-ini")?.value||"";
+  XLSX.writeFile(wb,`armazem_estado2_${dIni||"hoje"}.xlsx`);
+};
+
+window.e2ExportarPDF=()=>{
+  const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const hora=new Date().toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
+  const dIni=document.getElementById("e2-f-data-ini")?.value||"";
+  const dFim=document.getElementById("e2-f-data-fim")?.value||dIni;
+  const ativos=e2Ativos();
+  const colsHtml=E2_STAGES.map(stage=>{
+    const lista=ativos.filter(c=>e2EstagioAtivo(c)===stage.id);
+    const linhas=lista.map(c=>{
+      const{ms}=e2TempoCard(c,stage);
+      const td=(v,ex="")=>"<td style='padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;"+ex+"'>"+(v||"")+"</td>";
+      return"<tr>"+td(c.placa,"font-weight:bold;color:#003399;font-family:monospace")+td(c.ac)+td(c.subtipoCarga||"")+td(c.tipoCimento||"")+td(ms!=null?durStr(ms):"","color:#006600;font-weight:bold")+"</tr>";
+    }).join("");
+    return"<h3 style='font-size:9pt;margin:10pt 0 4pt'>"+stage.label.replace(/^\S+\s/,"")+" ("+lista.length+")</h3>"
+      +"<table style='width:100%;border-collapse:collapse;margin-bottom:6pt'><thead><tr>"
+      +"<th style='background:#003366;color:#fff;padding:4px;font-size:7pt;border:1px solid #ccc'>Placa</th>"
+      +"<th style='background:#003366;color:#fff;padding:4px;font-size:7pt;border:1px solid #ccc'>AC</th>"
+      +"<th style='background:#003366;color:#fff;padding:4px;font-size:7pt;border:1px solid #ccc'>Tipo Carreg.</th>"
+      +"<th style='background:#003366;color:#fff;padding:4px;font-size:7pt;border:1px solid #ccc'>Cimento</th>"
+      +"<th style='background:#003366;color:#fff;padding:4px;font-size:7pt;border:1px solid #ccc'>Tempo na Etapa</th>"
+      +"</tr></thead><tbody>"+(linhas||"<tr><td colspan='5' style='text-align:center;padding:10px;border:1px solid #ccc'>Nenhum veículo</td></tr>")+"</tbody></table>";
+  }).join("");
+  const html="<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>Armazem Estado 2 - "+dtNow+"</title>"
+    +"<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}"
+    +"h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}"
+    +".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}"
+    +".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}"
+    +"@page{margin:.8cm;size:A4 portrait}</style></head><body>"
+    +"<h2>Fila do Armazem (Estado 2) - Board por Etapa</h2>"
+    +"<div class='info'>Apodi Cimentos &middot; Periodo: <b>"+dIni+(dFim&&dFim!==dIni?" a "+dFim:"")+"</b> &middot; Turno: <b>"+E2_TURNO+"</b> &middot; Total em processo: <b>"+ativos.length+"</b> &middot; Gerado em: <b>"+dtNow+" as "+hora+"</b></div>"
+    +colsHtml
+    +"<div class='footer'>Sistema de Carregamento Armazem - Apodi Cimentos - "+dtNow+"</div></body></html>";
+  const janela=window.open("","_blank","width=900,height=800");
+  janela.document.write(html);
+  janela.document.close();
+  janela.focus();
+  setTimeout(()=>janela.print(),600);
+};
+
+window.e2ExportImagem=()=>{
+  const el=document.getElementById("estado2-view");
+  if(typeof html2canvas!=="function"){alert("Não foi possível gerar a imagem. Tente novamente em instantes.");return;}
+  html2canvas(el,{backgroundColor:"#060d18",scale:2}).then(canvas=>{
+    const link=document.createElement("a");
+    const dIni=document.getElementById("e2-f-data-ini")?.value||"hoje";
+    link.download=`armazem_estado2_${dIni}.png`;
+    link.href=canvas.toDataURL("image/png");
+    link.click();
+  });
 };
 </script>
 <!-- Badge Admin -->
