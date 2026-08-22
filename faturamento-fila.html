@@ -710,17 +710,49 @@ function makeVcard(c,agora){
   </div>`;
 }
 
+// universo do período (independente de já faturado ou não) usando o marco correto por subtipo —
+// mesma lógica de fallback do Estado 1 (faturados do período; se não houver, usa o período completo),
+// garantindo que os cartões de TMF por Carga não fiquem vazios quando não há ninguém na fila no momento
+function buildPeriodoEstado2(){
+  const hi=document.getElementById("f2-hora-ini")?.value||"00:00";
+  const hf=document.getElementById("f2-hora-fim")?.value||"23:59";
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const tsIni=new Date(dataIniVal+"T"+hi+":00").getTime();
+  const tsFim=new Date(dataFimVal+"T"+hf+":59").getTime();
+  return TODOS.filter(c=>{
+    const marco=getMarcoTS(c);
+    if(!marco)return false;
+    const t=marco.getTime();
+    if(t<tsIni||t>tsFim)return false;
+    if(MT!=="geral"){
+      const ft=c.faturamento?.ts?.toDate?.();
+      if(getTurno(ft||marco)!==MT)return false;
+    }
+    if(FILTROS2.operador&&c.entrada?.operador!==FILTROS2.operador)return false;
+    if(FILTROS2.cimento&&c.tipoCimento!==FILTROS2.cimento)return false;
+    if(FILTROS2.carga&&c.tipoCarga!==FILTROS2.carga)return false;
+    if(FILTROS2.subtipo&&c.subtipoCarga!==FILTROS2.subtipo)return false;
+    if(FILTROS2.placa&&!(c.placa||"").toUpperCase().includes(FILTROS2.placa))return false;
+    if(FILTROS2.ac&&!String(c.ac||"").includes(FILTROS2.ac))return false;
+    return true;
+  });
+}
+
 function renderEstado2(){
   const agora=new Date();
   const base2=buildBaseEstado2();
 
+  // item: cartões de TMF por Carga/Turno — mesma lógica de totais do Estado 1 (fallback para faturados do período)
+  const periodo2=buildPeriodoEstado2();
+  const faturados2=periodo2.filter(c=>c.notaFiscal);
+  const universoTMF=faturados2.length?faturados2:periodo2;
   function tmfMedio2(lista){
     const vals=lista.map(c=>calcTMF2(c,agora)).filter(v=>v!=null);
     if(!vals.length)return null;
     return vals.reduce((a,b)=>a+b,0)/vals.length;
   }
-  const geral=tmfMedio2(base2);
-  const porCarga=t=>tmfMedio2(base2.filter(c=>c.tipoCarga===t));
+  const geral=tmfMedio2(universoTMF);
+  const porCarga=t=>tmfMedio2(universoTMF.filter(c=>c.tipoCarga===t));
   document.getElementById("tmf-row-2").innerHTML=`
     <div class="tmf-card tmf-geral"><div class="tmf-label">TMF Espera Geral</div><div class="tmf-val">${fmtMin(geral)}</div><div class="tmf-sub">tempo médio de fila (faturamento)</div></div>
     <div class="tmf-card tmf-ens"><div class="tmf-label">TMF Ensacado</div><div class="tmf-val">${fmtMin(porCarga("ensacado"))}</div><div class="tmf-sub">tempo médio de espera</div></div>
