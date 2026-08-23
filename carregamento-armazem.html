@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Carregamento Armazém — TMAC Online</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1456,42 +1456,51 @@ window.e2LimparFiltros=()=>{
 };
 window.e2AplicarFiltros=()=>{e2Render();};
 
-// Pool base: veículos com passagem pelo armazém, dentro do período/hora/turno/carga/cimento/subtipo/operador/placa/ac selecionados
-function e2Pool(turnoOverride){
+// Pool base: veículos com passagem pelo armazém, dentro do período/hora/carga/cimento/subtipo/operador/placa/ac selecionados (sem turno)
+function e2LerFiltros(){
   const dIni=document.getElementById("e2-f-data-ini")?.value||"";
-  const dFim=document.getElementById("e2-f-data-fim")?.value||dIni;
-  const hIni=document.getElementById("e2-f-hora-ini")?.value||"00:00";
-  const hFim=document.getElementById("e2-f-hora-fim")?.value||"23:59";
-  const operador=document.getElementById("e2-f-operador")?.value||"";
-  const cimento=document.getElementById("e2-f-cimento")?.value||"";
-  const carga=document.getElementById("e2-f-carga")?.value||"";
-  const subtipo=document.getElementById("e2-f-subtipo")?.value||"";
-  const placa=(document.getElementById("e2-f-placa")?.value||"").toUpperCase().trim();
-  const ac=(document.getElementById("e2-f-ac")?.value||"").trim();
-  const turno=turnoOverride!==undefined?turnoOverride:E2_TURNO;
-
+  return{
+    dIni,dFim:document.getElementById("e2-f-data-fim")?.value||dIni,
+    hIni:document.getElementById("e2-f-hora-ini")?.value||"00:00",
+    hFim:document.getElementById("e2-f-hora-fim")?.value||"23:59",
+    operador:document.getElementById("e2-f-operador")?.value||"",
+    cimento:document.getElementById("e2-f-cimento")?.value||"",
+    carga:document.getElementById("e2-f-carga")?.value||"",
+    subtipo:document.getElementById("e2-f-subtipo")?.value||"",
+    placa:(document.getElementById("e2-f-placa")?.value||"").toUpperCase().trim(),
+    ac:(document.getElementById("e2-f-ac")?.value||"").trim(),
+  };
+}
+// Passada única (cara) sobre ALL — sem filtro de turno, que é aplicado depois (barato) sobre o resultado já reduzido
+function e2PoolBase(f){
   return ALL.filter(c=>{
     if(!temEtapaArmazem(c))return false;
     const dr=dataRef(c);
-    if(dIni&&(!dr||dr<dIni||dr>dFim))return false;
+    if(f.dIni&&(!dr||dr<f.dIni||dr>f.dFim))return false;
     const en=getTS(c,"entrada","ts");
     if(en){
       const hhmm=en.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"}).replace(/[^0-9:]/g,"").substring(0,5);
-      if(hIni&&hhmm<hIni)return false;
-      if(hFim&&hhmm>hFim)return false;
+      if(f.hIni&&hhmm<f.hIni)return false;
+      if(f.hFim&&hhmm>f.hFim)return false;
     }
-    if(turno!=="geral"&&getTurno(turnoTS(c))!==turno)return false;
-    if(cimento&&c.tipoCimento!==cimento)return false;
-    if(carga&&c.tipoCarga!==carga)return false;
-    if(subtipo&&c.subtipoCarga!==subtipo)return false;
-    if(operador&&!e2VeiculoTemOperador(c,operador))return false;
-    if(placa&&!c.placa?.toUpperCase().includes(placa))return false;
-    if(ac&&!c.ac?.includes(ac))return false;
+    if(f.cimento&&c.tipoCimento!==f.cimento)return false;
+    if(f.carga&&c.tipoCarga!==f.carga)return false;
+    if(f.subtipo&&c.subtipoCarga!==f.subtipo)return false;
+    if(f.operador&&!e2VeiculoTemOperador(c,f.operador))return false;
+    if(f.placa&&!c.placa?.toUpperCase().includes(f.placa))return false;
+    if(f.ac&&!c.ac?.includes(f.ac))return false;
     if(E2_ALERTA&&!isAlerta(c))return false;
     return true;
   });
 }
-// Veículos ativos no armazém (colunas do board) — dentro do pool filtrado
+function e2FiltraTurno(list,turno){
+  return turno==="geral"?list:list.filter(c=>getTurno(turnoTS(c))===turno);
+}
+// Mantidas para uso pontual (exportações) — chamadas uma única vez, sem custo de repetição
+function e2Pool(turnoOverride){
+  const turno=turnoOverride!==undefined?turnoOverride:E2_TURNO;
+  return e2FiltraTurno(e2PoolBase(e2LerFiltros()),turno);
+}
 function e2Ativos(turnoOverride){
   return e2Pool(turnoOverride).filter(c=>e2EstagioAtivo(c)!==null);
 }
@@ -1529,14 +1538,18 @@ function e2CardHtml(c,stage){
 window.e2Render=()=>{
   if(document.getElementById("estado2-view").style.display==="none")return;
 
-  // Contadores do período (Geral/Turno A/B/C) — cada botão conta sob os demais filtros aplicados
-  document.getElementById("e2-cnt-geral").textContent=e2Ativos("geral").length;
-  document.getElementById("e2-cnt-A").textContent=e2Ativos("A").length;
-  document.getElementById("e2-cnt-B").textContent=e2Ativos("B").length;
-  document.getElementById("e2-cnt-C").textContent=e2Ativos("C").length;
+  // Uma única passada cara sobre ALL; os contadores de turno reaproveitam este resultado
+  const f=e2LerFiltros();
+  const base=e2PoolBase(f);
+  const baseAtivos=base.filter(c=>e2EstagioAtivo(c)!==null);
 
-  const pool=e2Pool();
-  const ativos=e2Ativos();
+  document.getElementById("e2-cnt-geral").textContent=baseAtivos.length;
+  document.getElementById("e2-cnt-A").textContent=e2FiltraTurno(baseAtivos,"A").length;
+  document.getElementById("e2-cnt-B").textContent=e2FiltraTurno(baseAtivos,"B").length;
+  document.getElementById("e2-cnt-C").textContent=e2FiltraTurno(baseAtivos,"C").length;
+
+  const pool=e2FiltraTurno(base,E2_TURNO);
+  const ativos=e2FiltraTurno(baseAtivos,E2_TURNO);
 
   // Cards TMA (médias sobre o pool filtrado)
   const tmtiV=pool.map(calcTMTI).filter(v=>v!=null);
