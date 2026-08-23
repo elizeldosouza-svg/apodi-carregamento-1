@@ -155,6 +155,11 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .drawer-body{padding:16px 20px;flex:1;display:flex;flex-direction:column;gap:14px}
 .dsec{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:14px}
 .dsec-title{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.just-grupo{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 14px;margin-bottom:10px}
+.just-grupo:last-child{margin-bottom:0}
+.just-grupo-title{font-size:11px;font-weight:800;color:var(--tm);text-transform:uppercase;letter-spacing:.4px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.just-meta{font-size:9px;color:var(--t3);font-weight:600;white-space:nowrap}
+.just-flag{display:inline-flex;align-items:center;gap:3px;font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:8px;background:rgba(255,159,67,.14);color:var(--tm);border:1px solid rgba(255,159,67,.3);margin-left:6px;cursor:help;vertical-align:middle}
 .dsec-title::after{content:'';flex:1;height:1px;background:var(--bd)}
 .drow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .dfield{display:flex;flex-direction:column;gap:4px}
@@ -527,6 +532,12 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
           </select>
         </div>
         <div class="dfield">
+          <label>Tipo de Carregamento</label>
+          <select class="dselect" id="d-subtipo">
+            <option value="">— Selecione o tipo de carga —</option>
+          </select>
+        </div>
+        <div class="dfield">
           <label>Data do registro</label>
           <input class="dinput" id="d-data" type="date"/>
         </div>
@@ -565,6 +576,61 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
         <div class="dfield"><label>Enlone — Início</label><input class="dinput" id="d-enI" type="datetime-local"/></div>
         <div class="dfield"><label>Enlone — Fim</label><input class="dinput" id="d-enF" type="datetime-local"/></div>
         <div class="dfield"><label>Saída (Faturamento)</label><input class="dinput" id="d-sa" type="datetime-local"/></div>
+      </div>
+    </div>
+    <div class="dsec">
+      <div class="dsec-title">⚠️ Justificativas</div>
+      <div class="just-grupo">
+        <div class="just-grupo-title">
+          <span>Armazém (Triagem → Enlonamento)</span>
+          <span class="just-meta" id="d-just-armazem-meta">sem registro</span>
+        </div>
+        <div class="drow">
+          <div class="dfield">
+            <label>Motivo</label>
+            <select class="dselect" id="d-just-armazem-motivo">
+              <option value="">— Selecione —</option>
+              <option>DataSul</option>
+              <option>Falta de cimento</option>
+              <option>Concentração de veículos</option>
+              <option>Dificuldade de extração</option>
+              <option>Falha do equipamento</option>
+              <option>Falha de processo</option>
+              <option>Falta de mão obra</option>
+              <option>TMAC online teste</option>
+            </select>
+          </div>
+          <div class="dfield" style="grid-column:span 2">
+            <label>Descrição (opcional)</label>
+            <textarea class="dinput" id="d-just-armazem-desc" rows="2" style="resize:vertical;min-height:44px;font-family:inherit"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="just-grupo">
+        <div class="just-grupo-title">
+          <span>Faturamento</span>
+          <span class="just-meta" id="d-just-faturamento-meta">sem registro</span>
+        </div>
+        <div class="drow">
+          <div class="dfield">
+            <label>Motivo</label>
+            <select class="dselect" id="d-just-faturamento-motivo">
+              <option value="">— Selecione —</option>
+              <option>DataSul</option>
+              <option>Falta de cimento</option>
+              <option>Concentração de veículos</option>
+              <option>Dificuldade de extração</option>
+              <option>Falha do equipamento</option>
+              <option>Falha de processo</option>
+              <option>Falta de mão obra</option>
+              <option>TMAC online teste</option>
+            </select>
+          </div>
+          <div class="dfield" style="grid-column:span 2">
+            <label>Descrição (opcional)</label>
+            <textarea class="dinput" id="d-just-faturamento-desc" rows="2" style="resize:vertical;min-height:44px;font-family:inherit"></textarea>
+          </div>
+        </div>
       </div>
     </div>
     <div class="dsec">
@@ -954,7 +1020,7 @@ function getFiltered(){
   // Operador (só filtra onde há campo de operador gravado para a empresa selecionada)
   const operador=document.getElementById("f-operador-filter")?.value||"";
   if(operador&&EMPRESA_OPERADOR_GETTER[empresa]){
-    list=list.filter(c=>(EMPRESA_OPERADOR_GETTER[empresa](c)||"")===operador);
+    list=list.filter(c=>EMPRESA_OPERADOR_GETTER[empresa](c).includes(operador));
   }
   // Busca global
   const q=(document.getElementById("q-global")?.value||"").toUpperCase();
@@ -1027,7 +1093,7 @@ window.render=()=>{
       <td style="text-align:center" onclick="event.stopPropagation()"><input type="checkbox" ${chk?"checked":""} onclick="toggleSelect('${c.id}',this.checked)"/></td>
       <td style="text-align:center;color:var(--t3);font-size:10px">${numSeq}</td>
       <td><span class="ptag">${c.placa}</span></td>
-      <td style="color:var(--t2)">${c.ac}</td>
+      <td style="color:var(--t2)">${c.ac}${justFlag(c)}</td>
       <td style="color:var(--t2);font-size:10px">${c.notaFiscal||"—"}</td>
       <td style="color:var(--t2);font-size:10px">${fmtDataBR(c.data)}</td>
       <td>${t?`<span class="turno t-${t.toLowerCase()}">${t}</span>`:"—"}</td>
@@ -1190,6 +1256,48 @@ window.bulkExcluir=async()=>{
 };
 
 // -- drawer -----------------------------------------------------------------
+// Mesma cascata usada no Posto 1: opções de "Tipo de Carregamento" por Tipo de Carga
+const SUBTIPOS_POR_CARGA_ADMIN={
+  ensacado:["Paletizado","Caricamat","Container"],
+  granel:["Granel"],
+  bigbag:["Paletizado","Container"]
+};
+function popularSubtipoCarga(tipo,selecionado){
+  const sel=document.getElementById("d-subtipo");
+  const opcoes=SUBTIPOS_POR_CARGA_ADMIN[tipo]||[];
+  if(!opcoes.length){
+    sel.innerHTML=`<option value="">— Selecione o tipo de carga —</option>`;
+    sel.disabled=true;
+    return;
+  }
+  sel.disabled=opcoes.length===1;
+  sel.innerHTML=`<option value="">— Selecione —</option>`+opcoes.map(op=>`<option value="${op}">${op}</option>`).join("");
+  sel.value=opcoes.includes(selecionado)?selecionado:(opcoes.length===1?opcoes[0]:"");
+}
+document.getElementById("d-tipo").addEventListener("change",e=>{
+  popularSubtipoCarga(e.target.value,"");
+});
+function justFlag(c){
+  const arm=c.justificativa?.armazem?.motivo,fat=c.justificativa?.faturamento?.motivo;
+  if(!arm&&!fat)return"";
+  const tip=`Armazém: ${arm||"—"} · Faturamento: ${fat||"—"}`.replace(/"/g,"&quot;");
+  return`<span class="just-flag" title="${tip}">⚠️ Justif.</span>`;
+}
+function fmtDTCompleto(ts){
+  const d=ts?.toDate?ts.toDate():null;
+  if(!d)return"";
+  return d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+}
+let ORIG_JUSTIFICATIVA={armazem:null,faturamento:null};
+function preencherJustificativaGrupo(grupo,dados){
+  const selMotivo=document.getElementById(`d-just-${grupo}-motivo`);
+  const txtDesc=document.getElementById(`d-just-${grupo}-desc`);
+  const meta=document.getElementById(`d-just-${grupo}-meta`);
+  selMotivo.value=dados?.motivo||"";
+  txtDesc.value=dados?.descricao||"";
+  meta.textContent=dados?.operador?`registrado por ${dados.operador}${fmtDTCompleto(dados.dataRegistro)?" em "+fmtDTCompleto(dados.dataRegistro):""}`:"sem registro";
+  ORIG_JUSTIFICATIVA[grupo]=dados?{motivo:dados.motivo||"",descricao:dados.descricao||""}:{motivo:"",descricao:""};
+}
 window.openDrawer=id=>{
   const c=ALL.find(x=>x.id===id);if(!c)return;
   SELECTED_ID=id;render();
@@ -1205,8 +1313,11 @@ window.openDrawer=id=>{
   document.getElementById("d-nf").value=c.notaFiscal||"";
   document.getElementById("d-tipo").value=c.tipoCarga||"";
   document.getElementById("d-cimento").value=c.tipoCimento||"";
+  popularSubtipoCarga(c.tipoCarga,c.subtipoCarga);
   document.getElementById("d-data").value=c.data||"";
   document.getElementById("d-obs").value=c.observacao||"";
+  preencherJustificativaGrupo("armazem",c.justificativa?.armazem);
+  preencherJustificativaGrupo("faturamento",c.justificativa?.faturamento);
   document.getElementById("d-setor").value=c.setorAtual||"posto1";
   const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
   document.getElementById("d-entrada").value=fmtInput(en);
@@ -1289,11 +1400,20 @@ window.salvar=async()=>{
       ac:document.getElementById("d-ac").value.trim().toUpperCase(),
       notaFiscal:document.getElementById("d-nf").value.trim(),
       tipoCarga:tipo,tipoCargaLabel:tipoMap[tipo]||"",
+      subtipoCarga:document.getElementById("d-subtipo").value,
       tipoCimento:cimento,tipoCimentoLabel:cimMap[cimento]||"",
       setorAtual:document.getElementById("d-setor").value,
     };
     if(dataVal)u.data=dataVal;
     if(obsVal)u.observacao=obsVal;
+    ["armazem","faturamento"].forEach(grupo=>{
+      const motivo=document.getElementById(`d-just-${grupo}-motivo`).value;
+      const desc=document.getElementById(`d-just-${grupo}-desc`).value.trim();
+      const orig=ORIG_JUSTIFICATIVA[grupo]||{motivo:"",descricao:""};
+      const mudou=motivo!==orig.motivo||desc!==orig.descricao;
+      if(!mudou)return; // sem alteração: preserva operador/data originais, não sobrescreve
+      u[`justificativa.${grupo}`]=motivo?{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:"Administrador"}:null;
+    });
     const en=tsFromInput("d-entrada"),trI=tsFromInput("d-trI"),trF=tsFromInput("d-trF");
     const caI=tsFromInput("d-caI"),caF=tsFromInput("d-caF");
     const enI=tsFromInput("d-enI"),enF=tsFromInput("d-enF"),sa=tsFromInput("d-sa");
@@ -1617,10 +1737,13 @@ function empresaTocaEtapa(c,empresa){
 }
 // Empresa -> função que extrai o nome do operador do registro (só existe para quem grava operador hoje)
 const EMPRESA_OPERADOR_GETTER={
-  posto1:c=>c.entrada?.operador||null,
-  faturamento:c=>c.faturamento?.operador||null,
-  justificativas:c=>c.justificativa?.operador||c.justificativa?.armazem?.operador||c.justificativa?.faturamento?.operador||null
-  // portaria, triagem, carregamento, enlonamento: sem campo de operador gravado hoje (limitação conhecida)
+  posto1:c=>c.entrada?.operador?[c.entrada.operador]:[],
+  triagem:c=>[c.triagem?.operadorInicio,c.triagem?.operadorFim].filter(Boolean),
+  carregamento:c=>[c.carregamento?.operadorInicio,c.carregamento?.operadorFim].filter(Boolean),
+  enlonamento:c=>[c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim].filter(Boolean),
+  faturamento:c=>c.faturamento?.operador?[c.faturamento.operador]:[],
+  justificativas:c=>[c.justificativa?.operador,c.justificativa?.armazem?.operador,c.justificativa?.faturamento?.operador].filter(Boolean)
+  // portaria: sem campo de operador gravado hoje (limitação conhecida)
 };
 // Helper: telas de um operador, suportando o novo esquema (telas[]) e o legado (tela única)
 function telasDoOperador(o){
