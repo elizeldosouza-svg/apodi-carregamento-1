@@ -57,6 +57,16 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .rel-btn-m{padding:7px 16px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .rel-btn-m:hover{background:rgba(167,139,250,.15)}
 .mrel-overlay{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);padding:12px;overflow-y:auto}
+.fix-overlay{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);padding:20px}
+.fix-overlay.show{display:flex}
+.fix-box{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:22px;max-width:520px;width:100%}
+.fix-box h3{font-family:'Rajdhani',sans-serif;font-size:16px;color:var(--ye);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.fix-box p{font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px}
+.fix-list{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--tx);font-family:'JetBrains Mono',monospace;max-height:160px;overflow-y:auto;margin-bottom:14px}
+.fix-actions{display:flex;gap:10px}
+.fix-btn-confirm{padding:9px 18px;border:none;border-radius:8px;background:var(--gr);color:#00170d;font-size:12px;font-weight:800;cursor:pointer}
+.fix-btn-confirm:disabled{opacity:.4;cursor:not-allowed}
+.fix-btn-cancel{padding:9px 18px;border:1px solid var(--bd);border-radius:8px;background:transparent;color:var(--t2);font-size:12px;font-weight:700;cursor:pointer}
 .mrel-overlay.show{display:flex}
 .mrel-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);width:100%;max-width:1500px;margin:auto;overflow:hidden}
 .mrel-head{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -160,6 +170,8 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .just-grupo-title{font-size:11px;font-weight:800;color:var(--tm);text-transform:uppercase;letter-spacing:.4px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .just-meta{font-size:9px;color:var(--t3);font-weight:600;white-space:nowrap}
 .just-flag{display:inline-flex;align-items:center;gap:3px;font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:8px;background:rgba(255,159,67,.14);color:var(--tm);border:1px solid rgba(255,159,67,.3);margin-left:6px;cursor:help;vertical-align:middle}
+.lock-note{font-size:9.5px;color:var(--gr);margin-top:6px;display:flex;align-items:center;gap:5px;font-weight:600}
+.dselect.locked{border-color:var(--gr);background:rgba(0,232,150,.06);color:var(--gr);font-weight:700}
 .dsec-title::after{content:'';flex:1;height:1px;background:var(--bd)}
 .drow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .dfield{display:flex;flex-direction:column;gap:4px}
@@ -246,6 +258,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <div class="logo">🔧 ADMIN — GESTÃO DE PROCESSOS</div>
     <button class="nav-btn" onclick="abrirRelatorioAdmin()" style="cursor:pointer">📋 Visualizar PDF</button>
     <button class="nav-btn" onclick="exportExcel()" style="cursor:pointer">📊 Exportar Excel</button>
+    <button class="nav-btn" onclick="verificarSetorInconsistente()" style="cursor:pointer;border-color:var(--ye);color:var(--ye)">🔧 Corrigir Setor Atual</button>
     <a class="nav-btn" href="/posto1" target="_blank">🏁 Posto 1</a>
     <a class="nav-btn" href="/portaria" target="_blank">🏛️ Portaria</a>
     <a class="nav-btn" href="/triagem" target="_blank">📦 Triagem</a>
@@ -560,6 +573,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <option value="faturamento_aguardando">Ag. Faturamento</option>
             <option value="concluido">Concluído</option>
           </select>
+          <div class="lock-note" id="d-setor-lock-note" style="display:none">🔒 Travado automaticamente — existe data de Saída (Faturamento)</div>
         </div>
       </div>
     </div>
@@ -649,6 +663,19 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <button class="btn-encerrar" id="btn-encerrar" onclick="encerrar()">✅ Encerrar</button>
     <button class="btn-reabrir" id="btn-reabrir" onclick="reabrir()">↩️ Reabrir</button>
     <button class="btn-excluir" onclick="excluir()">🗑️ Excluir</button>
+  </div>
+</div>
+
+<!-- MODAL CORREÇÃO SETOR ATUAL -->
+<div class="fix-overlay" id="fix-overlay">
+  <div class="fix-box">
+    <h3 id="fix-title">🔧 Verificando...</h3>
+    <p id="fix-desc"></p>
+    <div class="fix-list" id="fix-list"></div>
+    <div class="fix-actions">
+      <button class="fix-btn-confirm" id="fix-btn-confirm" onclick="corrigirSetorInconsistente()" disabled>✅ Corrigir</button>
+      <button class="fix-btn-cancel" onclick="document.getElementById('fix-overlay').classList.remove('show')">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -1283,6 +1310,21 @@ function justFlag(c){
   const tip=`Armazém: ${arm||"—"} · Faturamento: ${fat||"—"}`.replace(/"/g,"&quot;");
   return`<span class="just-flag" title="${tip}">⚠️ Justif.</span>`;
 }
+function atualizarTravaSetor(){
+  const saVal=document.getElementById("d-sa").value;
+  const sel=document.getElementById("d-setor");
+  const note=document.getElementById("d-setor-lock-note");
+  if(saVal){
+    sel.value="concluido";
+    sel.classList.add("locked");
+    note.style.display="flex";
+  }else{
+    sel.classList.remove("locked");
+    note.style.display="none";
+  }
+}
+document.getElementById("d-sa").addEventListener("input",atualizarTravaSetor);
+document.getElementById("d-sa").addEventListener("change",atualizarTravaSetor);
 function fmtDTCompleto(ts){
   const d=ts?.toDate?ts.toDate():null;
   if(!d)return"";
@@ -1326,6 +1368,7 @@ window.openDrawer=id=>{
   document.getElementById("d-caI").value=fmtInput(caI);document.getElementById("d-caF").value=fmtInput(caF);
   document.getElementById("d-enI").value=fmtInput(enI);document.getElementById("d-enF").value=fmtInput(enF);
   document.getElementById("d-sa").value=fmtInput(sa);
+  atualizarTravaSetor();
   document.getElementById("btn-encerrar").disabled=c.setorAtual==="concluido";
   document.getElementById("btn-reabrir").disabled=c.setorAtual==="posto1";
   document.getElementById("dmsg").className="dmsg";
@@ -1372,6 +1415,43 @@ function confirmarInconsistenciaSetor(){
     overlay.querySelector("#inc-fill").onclick=()=>fechar("fill");
   });
 }
+let FIX_PENDENTES=[];
+window.verificarSetorInconsistente=()=>{
+  FIX_PENDENTES=ALL.filter(c=>getTS(c,"faturamento","ts")&&c.setorAtual!=="concluido");
+  const overlay=document.getElementById("fix-overlay");
+  const title=document.getElementById("fix-title");
+  const desc=document.getElementById("fix-desc");
+  const list=document.getElementById("fix-list");
+  const btn=document.getElementById("fix-btn-confirm");
+  if(FIX_PENDENTES.length===0){
+    title.textContent="✅ Nenhuma inconsistência encontrada";
+    desc.textContent="Todos os ACs com Faturamento gravado já estão com Setor Atual = Concluído.";
+    list.innerHTML="";
+    btn.disabled=true;
+  }else{
+    title.textContent=`⚠️ ${FIX_PENDENTES.length} registro${FIX_PENDENTES.length!==1?"s":""} inconsistente${FIX_PENDENTES.length!==1?"s":""} encontrado${FIX_PENDENTES.length!==1?"s":""}`;
+    desc.textContent="Estes ACs têm Faturamento gravado mas o Setor Atual não está como \"Concluído\". Isso faz com que apareçam errado no Pátio, Kanban, Master e demais telas. Corrigir ajusta o Setor Atual para \"Concluído\" na raiz do registro — nenhum outro dado é alterado.";
+    list.innerHTML=FIX_PENDENTES.map(c=>`${c.placa||"—"} · AC ${c.ac||"—"} · atual: ${(c.setorAtual||"—").replace(/_/g," ")} → concluido`).join("<br>");
+    btn.disabled=false;
+  }
+  overlay.classList.add("show");
+};
+window.corrigirSetorInconsistente=async()=>{
+  if(!FIX_PENDENTES.length)return;
+  const btn=document.getElementById("fix-btn-confirm");
+  btn.disabled=true;btn.textContent="Corrigindo...";
+  try{
+    await Promise.all(FIX_PENDENTES.map(c=>updateDoc(doc(db,"caminhoes_rastreio",c.id),{setorAtual:"concluido"})));
+    document.getElementById("fix-title").textContent=`✅ ${FIX_PENDENTES.length} registro${FIX_PENDENTES.length!==1?"s":""} corrigido${FIX_PENDENTES.length!==1?"s":""}`;
+    document.getElementById("fix-desc").textContent="Setor Atual ajustado para Concluído. As demais telas já refletem a mudança.";
+    document.getElementById("fix-list").innerHTML="";
+    btn.style.display="none";
+    FIX_PENDENTES=[];
+  }catch(e){
+    document.getElementById("fix-desc").textContent="Erro ao corrigir: "+e.message;
+    btn.disabled=false;btn.textContent="✅ Corrigir";
+  }
+};
 window.salvar=async()=>{
   if(!SELECTED_ID)return;
   // Item 06: checa inconsistência antes de gravar
@@ -1395,6 +1475,8 @@ window.salvar=async()=>{
     const cimento=document.getElementById("d-cimento").value;
     const dataVal=document.getElementById("d-data").value;
     const obsVal=document.getElementById("d-obs").value.trim();
+    // Faturado sempre implica Concluído — não importa o que está selecionado no dropdown
+    const setorFinal=saInput.value?"concluido":document.getElementById("d-setor").value;
     const u={
       placa:(document.getElementById("d-placa").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""),
       ac:document.getElementById("d-ac").value.trim().toUpperCase(),
@@ -1402,7 +1484,7 @@ window.salvar=async()=>{
       tipoCarga:tipo,tipoCargaLabel:tipoMap[tipo]||"",
       subtipoCarga:document.getElementById("d-subtipo").value,
       tipoCimento:cimento,tipoCimentoLabel:cimMap[cimento]||"",
-      setorAtual:document.getElementById("d-setor").value,
+      setorAtual:setorFinal,
     };
     if(dataVal)u.data=dataVal;
     if(obsVal)u.observacao=obsVal;
