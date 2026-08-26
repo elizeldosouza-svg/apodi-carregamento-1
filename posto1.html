@@ -15,9 +15,9 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .col-fila{width:100%}
 @media(min-width:700px){
   .box{max-width:900px}
-  .layout-2col{flex-direction:row;gap:24px;align-items:flex-start}
+  .layout-2col{flex-direction:row;gap:24px;align-items:stretch}
   .col-form{flex:0 0 400px}
-  .col-fila{flex:1;min-width:0}
+  .col-fila{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
 }
 .hdr{text-align:center;margin-bottom:28px}
 .hdr .ic{font-size:52px;display:block;margin-bottom:8px}
@@ -73,7 +73,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .badge-recall{display:inline-block;margin-left:6px;font-size:9px;font-weight:800;padding:1px 6px;border-radius:8px;background:rgba(255,208,0,.12);border:1px solid rgba(255,208,0,.35);color:#ffd000;vertical-align:middle}
 .p-del{width:26px;height:26px;flex-shrink:0;border-radius:7px;border:1px solid var(--bd);background:transparent;color:var(--t3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;margin-left:6px}
 .p-del:hover{border-color:#ff4466;color:#ff4466;background:rgba(255,68,102,.07)}
-.fila-list-r{max-height:520px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding-right:2px}
+.fila-list-r{flex:1;min-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding-right:2px}
 .fila-list-r::-webkit-scrollbar{width:4px}
 .fila-list-r::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
 .placa-row{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--rs);border:1.5px solid var(--bd);background:var(--c1);cursor:pointer;transition:all .2s}
@@ -272,7 +272,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   <div class="col-fila">
 
   <!-- RODAPÉ FILA -->
-  <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px">
+  <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px;display:flex;flex-direction:column;flex:1;min-height:0">
     <div class="rodape-label">Veículo chamado</div>
     <div class="chamado-strip vazio" id="strip">
       <div style="flex:1">
