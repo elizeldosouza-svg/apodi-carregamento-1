@@ -282,6 +282,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .tc-preview-wrap{flex:1;position:relative;background:repeating-conic-gradient(#1a1a1e 0% 25%, #141416 0% 50%) 50% / 16px 16px;overflow:hidden}
 .tc-preview-frame{width:100%;height:100%;border:none;background:#fff}
 .tc-preview-badge{position:absolute;top:8px;right:8px;font-size:9px;background:rgba(0,0,0,.6);color:#8888a0;padding:3px 8px;border-radius:20px;border:1px solid var(--bd2)}
+.tc-preview-fs{position:absolute;top:8px;left:8px;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;background:rgba(0,0,0,.6);color:#e8e8f0;padding:5px 10px;border-radius:20px;border:1px solid var(--bd2);cursor:pointer;transition:background .15s}
+.tc-preview-fs:hover{background:rgba(108,99,255,.5);border-color:var(--acc)}
 .tc-foot-hint{font-size:10px;color:var(--t3);margin-right:auto}
 .tc-skip-login{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--t2);cursor:pointer;user-select:none;white-space:nowrap}
 .tc-skip-login input{cursor:pointer;accent-color:var(--acc)}
@@ -797,6 +799,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="tc-preview-wrap">
           <iframe class="tc-preview-frame" id="tc-preview" sandbox="allow-scripts"></iframe>
           <div class="tc-preview-badge">preview isolado (sandbox)</div>
+          <button class="tc-preview-fs" onclick="tcMaximizarPreview()" title="Tela cheia">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M3 16v3a2 2 0 002 2h3"/></svg>
+            Tela cheia
+          </button>
         </div>
       </div>
     </div>
@@ -1476,6 +1482,13 @@ function tcForcarTelaPrincipal(html){
   out=out.replace(/(<div\b[^>]*\bid=["']app-screen["'][^>]*)>/i,(m,pre)=>pre.replace(/display\s*:\s*none;?/gi,"")+">");
   return out;
 }
+window.tcMaximizarPreview=()=>{
+  const frame=document.getElementById("tc-preview");
+  if(!frame)return;
+  if(frame.requestFullscreen)frame.requestFullscreen();
+  else if(frame.webkitRequestFullscreen)frame.webkitRequestFullscreen();
+  else showToast("Seu navegador não suporta tela cheia");
+};
 window.tcRender=()=>{
   const raw=document.getElementById("tc-code-in").value;
   const itens=tcAnalisar(raw);
