@@ -988,20 +988,31 @@ function tempoDisp(c,tipo){
   return true;
 }
 
-function getFiltered(){
+// Base única do período — a passada cara (datas + dedup + relevância ao armazém); reaproveitada por render()/getFiltered()
+function getBasePeriodo(){
   const{s,e}=periodDates(MP);
   const mdata=MDATA||null;
   const mdataFim=MDATA_FIM||null;
-  const horaDE=document.getElementById("hora-de")?.value||"";
-  const horaATE=document.getElementById("hora-ate")?.value||"";
-
-  let list=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
+  let base=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
   const seen=new Set();
-  list=list.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
-  list=list.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
+  base=base.filter(c=>{if(seen.has(c.id))return false;seen.add(c.id);return true;});
+  base=base.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
+  return base;
+}
+// Turno/Carga/Cimento — filtro barato sobre a base já reduzida (não rescaneia ALL)
+function aplicaFiltrosBasicos(base){
+  let list=base;
   if(MT!=="t")list=list.filter(c=>getTurno(turnoTS(c))===MT);
   if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
   if(MTCIM!=="t")list=list.filter(c=>c.tipoCimento===MTCIM);
+  return list;
+}
+function getFiltered(baseOverride){
+  const base=baseOverride||aplicaFiltrosBasicos(getBasePeriodo());
+  const horaDE=document.getElementById("hora-de")?.value||"";
+  const horaATE=document.getElementById("hora-ate")?.value||"";
+
+  let list=base;
   if(MF==="a")list=list.filter(c=>c.setorAtual!=="concluido");
   if(MF==="c")list=list.filter(c=>c.setorAtual==="concluido");
   if(horaDE||horaATE){
@@ -1031,18 +1042,10 @@ window.render=()=>{
   const mdata=MDATA||null;
   const mdataFim=MDATA_FIM||null;
 
-  let period=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
-  const seenSt=new Set();
-  period=period.filter(c=>{if(seenSt.has(c.id))return false;seenSt.add(c.id);return true;});
-  period=period.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
-  if(MT!=="t")period=period.filter(c=>getTurno(turnoTS(c))===MT);
-  if(MTC!=="t")period=period.filter(c=>c.tipoCarga===MTC);
-  if(MTCIM!=="t")period=period.filter(c=>c.tipoCimento===MTCIM);
+  // Uma única passada cara sobre ALL; period/allP/list abaixo reaproveitam este mesmo resultado
+  const allP=getBasePeriodo();
+  const period=aplicaFiltrosBasicos(allP);
 
-  const allPeriod=ALL.filter(c=>noperiodo(c,s,e,mdata,mdataFim));
-  const allSeen=new Set();
-  let allP=allPeriod.filter(c=>{if(allSeen.has(c.id))return false;allSeen.add(c.id);return true;});
-  allP=allP.filter(c=>c.setorAtual==="concluido"||temEtapaArmazem(c));
   document.getElementById("cnt-carga-t").textContent=allP.length;
   document.getElementById("cnt-ensacado").textContent=allP.filter(c=>c.tipoCarga==="ensacado").length;
   document.getElementById("cnt-granel").textContent=allP.filter(c=>c.tipoCarga==="granel").length;
@@ -1125,7 +1128,7 @@ window.render=()=>{
   const partes=[avgTMTI,avgTMCI,avgTMEI].filter(v=>v!=null);
   document.getElementById("s6").textContent=partes.length?durStr(partes.reduce((a,b)=>a+b,0)):"—";
 
-  const list=getFiltered();
+  const list=getFiltered(period);
   updateFiltrosResumo(list.length);
   const listProc=list.filter(c=>c.setorAtual!=="concluido");
   const listConc=list.filter(c=>c.setorAtual==="concluido");
