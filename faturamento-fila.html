@@ -42,6 +42,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .turno-btn.on{border-color:var(--gr);color:var(--gr);background:rgba(0,232,150,.1)}
 .turno-btn:hover{border-color:var(--gr)}
 .turno-btn .cnt{opacity:.65;margin-left:3px}
+.subtipo-cnt-wrap{display:flex;align-items:center;gap:12px;padding:7px 14px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg)}
+.subtipo-cnt-item{font-size:11px;font-weight:700;color:var(--t2);white-space:nowrap}
+.subtipo-cnt-item .cnt{color:var(--gr);opacity:1;margin-left:3px;font-weight:800}
 .exp-btn{padding:8px 16px;border:1px solid rgba(0,232,150,.4);border-radius:var(--rs);background:rgba(0,232,150,.08);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
 .exp-btn:hover{background:rgba(0,232,150,.15)}
 .exp-wrap{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
@@ -230,6 +233,12 @@ tr:hover td{background:rgba(0,232,150,.04)}
     <button class="turno-btn" id="tb-A" onclick="setTurno('A',this)">Turno A <span class="cnt" id="cnt-A"></span></button>
     <button class="turno-btn" id="tb-B" onclick="setTurno('B',this)">Turno B <span class="cnt" id="cnt-B"></span></button>
     <button class="turno-btn" id="tb-C" onclick="setTurno('C',this)">Turno C <span class="cnt" id="cnt-C"></span></button>
+    <div class="subtipo-cnt-wrap" id="subtipo-cnt-wrap">
+      <span class="subtipo-cnt-item">Paletizado <span class="cnt" id="cnt-sub-Paletizado"></span></span>
+      <span class="subtipo-cnt-item">Caricamat <span class="cnt" id="cnt-sub-Caricamat"></span></span>
+      <span class="subtipo-cnt-item">Container <span class="cnt" id="cnt-sub-Container"></span></span>
+      <span class="subtipo-cnt-item">Granel <span class="cnt" id="cnt-sub-Granel"></span></span>
+    </div>
     <div class="exp-wrap">
       <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
       <button class="exp-btn" onclick="gerarPDF()">📄 PDF</button>
@@ -276,7 +285,7 @@ tr:hover td{background:rgba(0,232,150,.04)}
   <div class="tbl-wrap">
     <table>
       <thead><tr>
-        <th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th>
+        <th>Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th>
         <th>Enlonamento Fim</th><th>Tempo em Fila</th><th>Status</th>
       </tr></thead>
       <tbody id="tb-fila"></tbody>
@@ -287,7 +296,7 @@ tr:hover td{background:rgba(0,232,150,.04)}
   <div class="tbl-wrap">
     <table>
       <thead><tr>
-        <th>Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th>
+        <th>Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th>
         <th>Enlonamento Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
       </tr></thead>
       <tbody id="tb-fat"></tbody>
@@ -409,7 +418,7 @@ window.alternarEstado=function(){
   toggle.classList.toggle("alt",paraEstado2);
   wrap.classList.toggle("alt",paraEstado2);
   if(paraEstado2){
-    label.textContent="Fila de Faturamento — Tabela (Estado 2)";
+    label.textContent="Status do Pátio - Faturamento (Estado 2)";
     e1.classList.add("hidden");
     e2.classList.remove("hidden");
     actions2.classList.remove("hidden");
@@ -562,6 +571,12 @@ function render(){
     document.getElementById("cnt-"+t).textContent="("+n+")";
   });
 
+  // item 3: total de veículos por Tipo de Carregamento no período selecionado
+  ["Paletizado","Caricamat","Container","Granel"].forEach(sub=>{
+    const n=todosPeriodo.filter(c=>c.subtipoCarga===sub).length;
+    document.getElementById("cnt-sub-"+sub).textContent="("+n+")";
+  });
+
   // cards
   function tmfMedio(lista){
     const vals=lista.map(c=>calcTMF(c,agora)).filter(v=>v!=null);
@@ -587,10 +602,11 @@ function render(){
   document.getElementById("cards").innerHTML=cardsHtml+filaCard;
 
   // tabela fila
-  document.getElementById("tb-fila").innerHTML=fila.length?fila.map(c=>{
+  document.getElementById("tb-fila").innerHTML=fila.length?fila.map((c,i)=>{
     const enF=c.enlonamento?.fim?.toDate?.();
     const mins=calcTMF(c,agora);
     return`<tr class="row-fila">
+      <td>${i+1}</td>
       <td class="placa">${c.placa||"-"}</td>
       <td>${c.ac||"-"}</td>
       <td>—</td>
@@ -601,7 +617,7 @@ function render(){
       <td class="${tmfClass(mins)}">${fmtMin(mins)}</td>
       <td><span class="badge-fila">NA FILA</span></td>
     </tr>`;
-  }).join(""):`<tr class="empty-row"><td colspan="9">Nenhum caminhão na fila do faturamento.</td></tr>`;
+  }).join(""):`<tr class="empty-row"><td colspan="10">Nenhum caminhão na fila do faturamento.</td></tr>`;
 
   // tabela faturados
   document.getElementById("tb-fat").innerHTML=faturados.length?faturados.map((c,i)=>{
@@ -613,6 +629,7 @@ function render(){
       <td>${c.ac||"-"}</td>
       <td>${c.notaFiscal||"-"}</td>
       <td>${TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-"}</td>
+      <td>${c.subtipoCarga||"-"}</td>
       <td>${c.tipoCimento||c.tipoCimentoLabel||"-"}</td>
       <td>${ft?(getTurno(ft)||"-"):"-"}</td>
       <td>${fmtHora(c.enlonamento?.fim)}</td>
@@ -620,7 +637,7 @@ function render(){
       <td class="${tmfClass(mins)}">${fmtMin(mins)}</td>
       <td>${c.faturamento?.operador||"-"}</td>
     </tr>`;
-  }).join(""):`<tr class="empty-row"><td colspan="11">Nenhum registro faturado no período/turno selecionado.</td></tr>`;
+  }).join(""):`<tr class="empty-row"><td colspan="12">Nenhum registro faturado no período/turno selecionado.</td></tr>`;
 
   window.__FILA_ATUAL=fila;
   window.__FAT_ATUAL=faturados;
@@ -811,6 +828,7 @@ function buildLinhasRel(registros,forPrint=false){
       <td style="${tdStyle}">${c.ac||"-"}</td>
       <td style="${tdStyle}">${c.notaFiscal||"-"}</td>
       <td style="${tdStyle}">${carga}</td>
+      <td style="${tdStyle}">${c.subtipoCarga||"-"}</td>
       <td style="${tdStyle}">${cimento}</td>
       <td style="${tdStyle}">${turno}</td>
       <td style="${tdStyle}">${fmtDT(c.enlonamento?.fim)}</td>
@@ -828,9 +846,9 @@ window.verRelatorio=()=>{
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
-        <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+        <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
       </tr></thead>
-      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="11" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="12" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
@@ -861,9 +879,9 @@ window.gerarPDF=()=>{
 <div class="hinfo">Período: ${periodoTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
-    <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+    <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
   </tr></thead>
-  <tbody>${linhas||'<tr><td colspan="11" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+  <tbody>${linhas||'<tr><td colspan="12" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
 <div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
 </body></html>`);
@@ -881,6 +899,7 @@ window.exportExcel=()=>{
       "AC":c.ac||"",
       "Nota Fiscal":c.notaFiscal||"",
       "Carga":TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"",
+      "Tipo de Carregamento":c.subtipoCarga||"",
       "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
       "Turno":ft?(getTurno(ft)||""):"",
       "Enlonamento Fim":fmtEx(c.enlonamento?.fim?.toDate?.()),
@@ -890,7 +909,7 @@ window.exportExcel=()=>{
     };
   });
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[{wch:10},{wch:10},{wch:14},{wch:12},{wch:12},{wch:8},{wch:18},{wch:18},{wch:10},{wch:20}];
+  ws["!cols"]=[{wch:10},{wch:10},{wch:14},{wch:12},{wch:16},{wch:12},{wch:8},{wch:18},{wch:18},{wch:10},{wch:20}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Faturamento TMF");
   const{dataIniVal,dataFimVal}=getFiltros();
