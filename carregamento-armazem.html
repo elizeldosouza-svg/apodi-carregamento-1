@@ -423,7 +423,7 @@ tr.alerta .turno{opacity:.7}
   </div>
 
   <div class="filter-row" style="margin-bottom:16px">
-    <input class="fi" id="q" type="text" placeholder="🔍 Placa ou AC..." oninput="render()"/>
+    <input class="fi" id="q" type="text" placeholder="🔍 Placa ou AC..." oninput="renderDebounced()"/>
     <button class="fb on" onclick="setF('t',this)">Todos (<span id="cnt-f-t">0</span>)</button>
     <button class="fb" onclick="setF('a',this)">Em processo (<span id="cnt-f-a">0</span>)</button>
     <button class="fb" onclick="setF('c',this)">Concluídos (<span id="cnt-f-c">0</span>)</button>
@@ -1031,6 +1031,12 @@ function getFiltered(baseOverride){
   return list;
 }
 
+let _renderDebounceT=null;
+window.renderDebounced=()=>{
+  clearTimeout(_renderDebounceT);
+  _renderDebounceT=setTimeout(()=>{if(typeof render==="function")render();},250);
+};
+
 window.render=()=>{
   const{s,e}=periodDates(MP);
   const mdata=MDATA||null;
@@ -1183,6 +1189,8 @@ window.render=()=>{
   if(!listConc.length){tbC.innerHTML="";emC.style.display="block";document.getElementById("tbl-conc").style.display="none";}
   else{emC.style.display="none";document.getElementById("tbl-conc").style.display="block";tbC.innerHTML=listConc.map((c,idx)=>buildRow(c,idx)).join("");}
 
+  // Grid de cards só existe visualmente em telas ≤768px (ver CSS .cards{display:none}); em desktop, não vale montar esse HTML pesado à toa
+  if(window.innerWidth>768){cards.innerHTML="";return;}
   if(!list.length){cards.innerHTML="<div class='empty'>🔍 Nenhum resultado.</div>";return;}
 
   cards.innerHTML=list.map(c=>{
@@ -1240,6 +1248,16 @@ window.exportExcel=()=>{
 
 // Re-render a cada 60s para atualizar alertas de tempo
 setInterval(()=>{if(typeof render==="function")render();},60000);
+
+// Re-render ao cruzar o breakpoint mobile (768px), pra montar/limpar o grid de #cards corretamente
+let _lastIsMobile=window.innerWidth<=768,_resizeT=null;
+window.addEventListener("resize",()=>{
+  clearTimeout(_resizeT);
+  _resizeT=setTimeout(()=>{
+    const isMobile=window.innerWidth<=768;
+    if(isMobile!==_lastIsMobile){_lastIsMobile=isMobile;if(typeof render==="function")render();}
+  },300);
+});
 
 // ── RELATÓRIO MASTER ──────────────────────────────────────────────────────
 const fmtRel=ts=>{if(!ts)return"";const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});};
