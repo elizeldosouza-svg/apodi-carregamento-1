@@ -10,6 +10,15 @@
 :root{--bg:#0a0f1e;--c1:#0f1a2e;--bd:#1e3558;--b2:#2a4870;--tx:#dff0ff;--t2:#7aafcc;--t3:#3a6880;--ac:#00d4ff;--r:14px;--rs:10px}
 body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .box{width:100%;max-width:440px}
+.layout-2col{display:flex;flex-direction:column}
+.col-form{width:100%}
+.col-fila{width:100%}
+@media(min-width:700px){
+  .box{max-width:900px}
+  .layout-2col{flex-direction:row;gap:24px;align-items:flex-start}
+  .col-form{flex:0 0 400px}
+  .col-fila{flex:1;min-width:0}
+}
 .hdr{text-align:center;margin-bottom:28px}
 .hdr .ic{font-size:52px;display:block;margin-bottom:8px}
 .hdr h1{font-size:20px;font-weight:800;color:var(--ac);letter-spacing:1px;text-transform:uppercase}
@@ -18,6 +27,11 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .fg label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
 .fg input{background:var(--c1);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:14px 16px;font-size:16px;font-family:system-ui,sans-serif;outline:none;transition:border-color .2s;width:100%}
 .fg input:focus{border-color:var(--ac)}
+.fg input.dup{border-color:#ff4466}
+.alerta-dup{display:flex;align-items:flex-start;gap:8px;background:rgba(255,68,102,.08);border:1.5px solid rgba(255,68,102,.4);border-radius:var(--rs);padding:10px 12px;margin-top:2px}
+.alerta-dup .ic{font-size:15px;flex-shrink:0}
+.alerta-dup .txt{font-size:11.5px;color:#ffb3c1;line-height:1.5}
+.alerta-dup .txt b{color:#fff}
 .placa-inp{text-transform:uppercase;letter-spacing:3px;font-weight:700;font-family:monospace;font-size:20px;text-align:center}
 .tipo-label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
 .tipo-group{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
@@ -187,13 +201,17 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     <p>Preencha os dados do caminhão</p>
   </div>
   <div id="msg" class="msg"></div>
+  <div class="layout-2col">
+  <div class="col-form">
   <div class="fg">
     <label>Número da AC</label>
     <input id="ac" type="text" inputmode="numeric" placeholder="Ex: 629308" maxlength="6" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);chk()"/>
+    <div id="ac-alerta" class="alerta-dup" style="display:none"><span class="ic">⚠️</span><div class="txt" id="ac-alerta-txt"></div></div>
   </div>
   <div class="fg">
     <label>Placa do Caminhão</label>
     <input id="pl" type="text" placeholder="ABC1234" maxlength="7" autocomplete="off" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,7);chk()" class="placa-inp"/>
+    <div id="pl-alerta" class="alerta-dup" style="display:none"><span class="ic">⚠️</span><div class="txt" id="pl-alerta-txt"></div></div>
   </div>
   <div class="tipo-label">Tipo de Carga</div>
   <div class="tipo-group">
@@ -250,6 +268,8 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     <button class="exp-btn" onclick="gerarPDF()">📄 PDF</button>
     <button class="exp-btn" onclick="exportExcel()">📊 Excel</button>
   </div>
+  </div>
+  <div class="col-fila">
 
   <!-- RODAPÉ FILA -->
   <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px">
@@ -348,6 +368,8 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     </div>
   </div>
 
+  </div>
+  </div>
 </div>
 
 <!-- MODAL PREVIEW -->
@@ -460,10 +482,32 @@ window.setCimento=(val,label,el)=>{
   chk();
 };
 const RE_PLACA=/^[A-Z]{3}\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/;
+function checarDuplicidade(){
+  const acEl=document.getElementById("ac"),plEl=document.getElementById("pl");
+  const acAlerta=document.getElementById("ac-alerta"),plAlerta=document.getElementById("pl-alerta");
+  const ac=acEl.value.trim(),pl=plEl.value.trim();
+  let temDup=false;
+  if(ac.length===6){
+    const dupAC=HD.find(c=>c.ac===ac&&c.setorAtual!=="concluido");
+    if(dupAC){
+      document.getElementById("ac-alerta-txt").innerHTML="Essa AC já está em uso pela placa <b>"+dupAC.placa+"</b>, ainda não faturada. Confira antes de continuar.";
+      acAlerta.style.display="flex";acEl.classList.add("dup");temDup=true;
+    }else{acAlerta.style.display="none";acEl.classList.remove("dup");}
+  }else{acAlerta.style.display="none";acEl.classList.remove("dup");}
+  if(RE_PLACA.test(pl)){
+    const dupPlaca=HD.find(c=>c.placa===pl&&c.setorAtual!=="concluido");
+    if(dupPlaca){
+      document.getElementById("pl-alerta-txt").innerHTML="Essa placa já está em processo com a AC <b>"+dupPlaca.ac+"</b>, ainda não faturada. Confira antes de continuar.";
+      plAlerta.style.display="flex";plEl.classList.add("dup");temDup=true;
+    }else{plAlerta.style.display="none";plEl.classList.remove("dup");}
+  }else{plAlerta.style.display="none";plEl.classList.remove("dup");}
+  return temDup;
+}
 window.chk=()=>{
   const ac=document.getElementById("ac").value.trim();
   const pl=document.getElementById("pl").value.replace(/[^A-Z0-9]/gi,"");
-  document.getElementById("go").disabled=!(ac.length===6&&RE_PLACA.test(pl)&&TIPO&&SUBTIPO&&TIPO_CIMENTO);
+  const temDup=checarDuplicidade();
+  document.getElementById("go").disabled=!(ac.length===6&&RE_PLACA.test(pl)&&TIPO&&SUBTIPO&&TIPO_CIMENTO&&!temDup);
 };
 let REGISTRANDO=false;
 window.registrar=async()=>{
