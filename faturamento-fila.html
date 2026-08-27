@@ -676,8 +676,10 @@ let FILTROS2={operador:"",cimento:"",carga:"",subtipo:"",placa:"",ac:""};
 let TMF_ATIVO=false;
 
 // filtros extras compartilhados (Operador/Cimento/Carga/Tipo de Carregamento/Placa/AC) — usados por Estado 1 e Estado 2
+// Operador aqui = operador do FATURAMENTO (faturamento.operador), que é o que a coluna "Operador" desta tela exibe —
+// não o operador do Posto1 (entrada.operador), que é de outra etapa do processo
 function passaFiltrosComuns(c){
-  if(FILTROS2.operador&&c.entrada?.operador!==FILTROS2.operador)return false;
+  if(FILTROS2.operador&&c.faturamento?.operador!==FILTROS2.operador)return false;
   if(FILTROS2.cimento&&c.tipoCimento!==FILTROS2.cimento)return false;
   if(FILTROS2.carga&&c.tipoCarga!==FILTROS2.carga)return false;
   if(FILTROS2.subtipo&&c.subtipoCarga!==FILTROS2.subtipo)return false;
@@ -690,7 +692,7 @@ function popularOperadores(){
   const sel=document.getElementById("f2-operador");
   if(!sel)return;
   const atual=sel.value;
-  const nomes=[...new Set(TODOS.map(c=>c.entrada?.operador).filter(Boolean))].sort();
+  const nomes=[...new Set(TODOS.map(c=>c.faturamento?.operador).filter(Boolean))].sort();
   sel.innerHTML='<option value="">Todos</option>'+nomes.map(n=>`<option value="${n}">${n}</option>`).join("");
   if(nomes.includes(atual))sel.value=atual;
 }
