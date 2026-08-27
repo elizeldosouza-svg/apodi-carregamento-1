@@ -273,7 +273,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .tc-col{display:flex;flex-direction:column;overflow:hidden}
 .tc-col-l{border-right:1px solid var(--bd)}
 .tc-col-head{padding:8px 14px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--bd);background:var(--bg3);flex-shrink:0}
-.tc-code-input{flex:1;width:100%;background:var(--bg);border:none;color:#a9dc76;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;padding:14px;resize:none;outline:none}
+.tc-code-body{flex:1;display:flex;overflow:hidden;min-height:0}
+.tc-linenums{flex-shrink:0;width:42px;background:var(--bg3);color:var(--t3);font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;padding:14px 6px 14px 0;text-align:right;overflow:hidden;user-select:none;border-right:1px solid var(--bd);white-space:pre}
+.tc-code-input{flex:1;width:100%;background:var(--bg);border:none;color:#a9dc76;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;padding:14px;resize:none;outline:none;white-space:pre;overflow:auto}
 .tc-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .tc-analysis{padding:12px 14px;border-bottom:1px solid var(--bd);background:rgba(108,99,255,.04);max-height:190px;overflow-y:auto;flex-shrink:0}
 .tc-analysis-title{font-size:10px;font-weight:700;color:#c9c6ff;margin-bottom:6px}
@@ -791,7 +793,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="tc-cols">
       <div class="tc-col tc-col-l">
         <div class="tc-col-head">Código (editável)</div>
-        <textarea class="tc-code-input" id="tc-code-in" spellcheck="false" placeholder="Cole aqui o HTML/CSS que quer testar..."></textarea>
+        <div class="tc-code-body">
+          <div class="tc-linenums" id="tc-linenums">1</div>
+          <textarea class="tc-code-input" id="tc-code-in" spellcheck="false" wrap="off" placeholder="Cole aqui o HTML/CSS que quer testar..." oninput="tcUpdateLineNumbers()" onscroll="tcSyncLineScroll()"></textarea>
+        </div>
       </div>
       <div class="tc-col tc-right">
         <div class="tc-col-head">O que esse código faz + visual</div>
@@ -1376,11 +1381,13 @@ document.addEventListener("click",e=>{
 window.abrirTestarCodigo=()=>{
   document.getElementById("tc-source-badge").style.display="none";
   document.getElementById("modal-testcode").classList.add("show");
+  tcUpdateLineNumbers();
   if(document.getElementById("tc-code-in").value.trim())tcRender();
 };
 window.tcLimpar=()=>{
   document.getElementById("tc-code-in").value="";
   document.getElementById("tc-source-badge").style.display="none";
+  tcUpdateLineNumbers();
 };
 window.atualizarTela=async()=>{
   if(!TELA){showToast("Selecione uma tela primeiro");return;}
@@ -1398,6 +1405,7 @@ window.atualizarTela=async()=>{
   const html=await resp.text();
   document.getElementById("modal-testcode").classList.add("show");
   document.getElementById("tc-code-in").value=html;
+  tcUpdateLineNumbers();
   const badge=document.getElementById("tc-source-badge");
   badge.style.display="flex";
   badge.querySelector("span").textContent="📡 Buscado agora de "+url.replace("https://","");
@@ -1407,6 +1415,51 @@ window.atualizarTela=async()=>{
 window.fecharTestarCodigo=()=>{
   document.getElementById("modal-testcode").classList.remove("show");
 };
+
+// ── Régua de números de linha (sincronizada com o textarea) ──
+window.tcUpdateLineNumbers=()=>{
+  const raw=document.getElementById("tc-code-in");
+  const gutter=document.getElementById("tc-linenums");
+  if(!raw||!gutter)return;
+  const n=raw.value.split("\n").length;
+  let out="";
+  for(let i=1;i<=n;i++)out+=i+"\n";
+  gutter.textContent=out;
+  gutter.scrollTop=raw.scrollTop;
+};
+window.tcSyncLineScroll=()=>{
+  const raw=document.getElementById("tc-code-in");
+  const gutter=document.getElementById("tc-linenums");
+  if(raw&&gutter)gutter.scrollTop=raw.scrollTop;
+};
+let _tcCharW=null;
+function tcCharWidth(textarea){
+  if(_tcCharW)return _tcCharW;
+  const span=document.createElement("span");
+  const cs=getComputedStyle(textarea);
+  span.style.cssText=`position:absolute;visibility:hidden;white-space:pre;font:${cs.font};letter-spacing:${cs.letterSpacing}`;
+  span.textContent="MMMMMMMMMM";
+  document.body.appendChild(span);
+  _tcCharW=span.getBoundingClientRect().width/10;
+  span.remove();
+  return _tcCharW||6.6;
+}
+function tcScrollToRange(raw,range){
+  const before=raw.value.slice(0,range.start);
+  const linha=before.split("\n").length;
+  const lineHeight=parseFloat(getComputedStyle(raw).lineHeight)||17.6;
+  const padTop=parseFloat(getComputedStyle(raw).paddingTop)||14;
+  const targetY=padTop+(linha-1)*lineHeight;
+  raw.scrollTop=Math.max(0,targetY-raw.clientHeight/2+lineHeight/2);
+  const lineStart=before.lastIndexOf("\n")+1;
+  const col=range.start-lineStart;
+  const charW=tcCharWidth(raw);
+  const padLeft=parseFloat(getComputedStyle(raw).paddingLeft)||14;
+  raw.scrollLeft=Math.max(0,col*charW-padLeft-40);
+  tcSyncLineScroll();
+  return linha;
+}
+
 function tcAnalisar(code){
   const itens=[];
   const tagCounts={};
@@ -1544,9 +1597,7 @@ function tcAttachClickSelect(){
     if(!range){showToast("Não encontrei esse elemento no código");return;}
     raw.focus();
     raw.setSelectionRange(range.start,range.end);
-    const before=raw.value.slice(0,range.start);
-    const linha=before.split("\n").length;
-    raw.scrollTop=Math.max(0,(linha-4)*17);
+    const linha=tcScrollToRange(raw,range);
     showToast(`✓ Trecho selecionado · linha ${linha}`);
   },true);
 }
