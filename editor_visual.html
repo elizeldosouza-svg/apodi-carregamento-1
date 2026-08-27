@@ -797,8 +797,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="tc-col-head">O que esse código faz + visual</div>
         <div class="tc-analysis" id="tc-analysis"></div>
         <div class="tc-preview-wrap">
-          <iframe class="tc-preview-frame" id="tc-preview" sandbox="allow-scripts"></iframe>
-          <div class="tc-preview-badge">preview isolado (sandbox)</div>
+          <iframe class="tc-preview-frame" id="tc-preview" sandbox="allow-scripts allow-same-origin"></iframe>
+          <div class="tc-preview-badge" id="tc-preview-badge">clique num elemento pra selecionar no código</div>
           <button class="tc-preview-fs" onclick="tcMaximizarPreview()" title="Tela cheia">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M3 16v3a2 2 0 002 2h3"/></svg>
             Tela cheia
@@ -1498,8 +1498,58 @@ window.tcRender=()=>{
   const skipLogin=document.getElementById("tc-skip-login")?.checked;
   const code=skipLogin?tcForcarTelaPrincipal(raw):raw;
   const frame=document.getElementById("tc-preview");
-  frame.srcdoc=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f4f8;font-family:sans-serif}</style></head><body>${code}</body></html>`;
+  const clickStyle=`<style>*{cursor:pointer!important}*:hover{outline:1.5px dashed #6c63ff!important;outline-offset:1px!important}</style>`;
+  frame.onload=tcAttachClickSelect;
+  frame.srcdoc=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f4f8;font-family:sans-serif}</style>${clickStyle}</head><body>${code}</body></html>`;
 };
+
+// ── Clique no preview → seleciona o trecho correspondente no código ──
+function tcFindElementRange(rawCode,el){
+  const tagName=el.tagName.toLowerCase();
+  let marker=null;
+  if(el.id)marker=`id="${el.id}"`;
+  else if(typeof el.className==="string"&&el.className.trim())marker=`class="${el.className.trim().split(/\s+/)[0]}`;
+  let idx=marker?rawCode.indexOf(marker):-1;
+  if(idx===-1){
+    const txt=(el.textContent||"").trim().slice(0,40);
+    if(txt.length>3)idx=rawCode.indexOf(txt);
+  }
+  if(idx===-1)return null;
+  let tagStart=rawCode.lastIndexOf("<"+tagName,idx);
+  if(tagStart===-1)tagStart=rawCode.lastIndexOf("<",idx);
+  if(tagStart===-1)return null;
+  const firstCloseAngle=rawCode.indexOf(">",tagStart);
+  if(firstCloseAngle===-1)return{start:tagStart,end:tagStart+40};
+  if(rawCode[firstCloseAngle-1]==="/")return{start:tagStart,end:firstCloseAngle+1};
+  const scanner=new RegExp("<(/?)"+tagName+"(?=[\\s>/])","gi");
+  scanner.lastIndex=firstCloseAngle+1;
+  let depth=1,end=null,m;
+  while((m=scanner.exec(rawCode))){
+    if(m[1]==="/"){depth--;if(depth===0){end=rawCode.indexOf(">",m.index)+1;break;}}
+    else depth++;
+  }
+  return{start:tagStart,end:end===null?rawCode.length:end};
+}
+function tcAttachClickSelect(){
+  const frame=document.getElementById("tc-preview");
+  let doc;
+  try{doc=frame.contentDocument;}catch(e){return;}
+  if(!doc||!doc.body)return;
+  doc.body.addEventListener("click",e=>{
+    e.preventDefault();e.stopPropagation();
+    const el=e.target;
+    if(!el||el===doc.body||el===doc.documentElement)return;
+    const raw=document.getElementById("tc-code-in");
+    const range=tcFindElementRange(raw.value,el);
+    if(!range){showToast("Não encontrei esse elemento no código");return;}
+    raw.focus();
+    raw.setSelectionRange(range.start,range.end);
+    const before=raw.value.slice(0,range.start);
+    const linha=before.split("\n").length;
+    raw.scrollTop=Math.max(0,(linha-4)*17);
+    showToast(`✓ Trecho selecionado · linha ${linha}`);
+  },true);
+}
 function tcScopeCss(css,scopeId){
   css=css.replace(/\/\*[\s\S]*?\*\//g,"");
   return css.replace(/([^{}]+)\{/g,(m,sel)=>{
