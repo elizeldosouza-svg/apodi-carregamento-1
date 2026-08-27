@@ -531,6 +531,7 @@ function buildBase(){
     if(!marco)return false;
     const dia=marco.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     if(dia<dataIniVal||dia>dataFimVal)return false;
+    if(!passaFiltrosComuns(c))return false;
     if(MT==="geral")return true;
     // fila ainda sem NF -> classifica pelo turno do marco (não tem faturamento.ts ainda)
     const ft=c.faturamento?.ts?.toDate?.();
@@ -559,7 +560,8 @@ function render(){
     const marco=getMarcoTS(c);
     if(!marco)return false;
     const dia=marco.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-    return dia>=dataIniVal&&dia<=dataFimVal;
+    if(dia<dataIniVal||dia>dataFimVal)return false;
+    return passaFiltrosComuns(c);
   });
   document.getElementById("cnt-geral").textContent="("+todosPeriodo.length+")";
   ["A","B","C"].forEach(t=>{
@@ -673,6 +675,17 @@ function calcTMF2(c,agora){
 let FILTROS2={operador:"",cimento:"",carga:"",subtipo:"",placa:"",ac:""};
 let TMF_ATIVO=false;
 
+// filtros extras compartilhados (Operador/Cimento/Carga/Tipo de Carregamento/Placa/AC) — usados por Estado 1 e Estado 2
+function passaFiltrosComuns(c){
+  if(FILTROS2.operador&&c.entrada?.operador!==FILTROS2.operador)return false;
+  if(FILTROS2.cimento&&c.tipoCimento!==FILTROS2.cimento)return false;
+  if(FILTROS2.carga&&c.tipoCarga!==FILTROS2.carga)return false;
+  if(FILTROS2.subtipo&&c.subtipoCarga!==FILTROS2.subtipo)return false;
+  if(FILTROS2.placa&&!(c.placa||"").toUpperCase().includes(FILTROS2.placa))return false;
+  if(FILTROS2.ac&&!String(c.ac||"").includes(FILTROS2.ac))return false;
+  return true;
+}
+
 function popularOperadores(){
   const sel=document.getElementById("f2-operador");
   if(!sel)return;
@@ -696,12 +709,7 @@ function buildBaseEstado2(){
     const t=marco.getTime();
     if(t<tsIni||t>tsFim)return false;
     if(MT!=="geral"&&getTurno(marco)!==MT)return false;
-    if(FILTROS2.operador&&c.entrada?.operador!==FILTROS2.operador)return false;
-    if(FILTROS2.cimento&&c.tipoCimento!==FILTROS2.cimento)return false;
-    if(FILTROS2.carga&&c.tipoCarga!==FILTROS2.carga)return false;
-    if(FILTROS2.subtipo&&c.subtipoCarga!==FILTROS2.subtipo)return false;
-    if(FILTROS2.placa&&!(c.placa||"").toUpperCase().includes(FILTROS2.placa))return false;
-    if(FILTROS2.ac&&!String(c.ac||"").includes(FILTROS2.ac))return false;
+    if(!passaFiltrosComuns(c))return false;
     if(TMF_ATIVO){const mins=calcTMF2(c,new Date());if(mins==null||mins<TMF_LIMITE)return false;}
     return true;
   }).sort((a,b)=>(getMarcoTS(a)?.getTime()||0)-(getMarcoTS(b)?.getTime()||0));
@@ -745,13 +753,7 @@ function buildPeriodoEstado2(){
       const ft=c.faturamento?.ts?.toDate?.();
       if(getTurno(ft||marco)!==MT)return false;
     }
-    if(FILTROS2.operador&&c.entrada?.operador!==FILTROS2.operador)return false;
-    if(FILTROS2.cimento&&c.tipoCimento!==FILTROS2.cimento)return false;
-    if(FILTROS2.carga&&c.tipoCarga!==FILTROS2.carga)return false;
-    if(FILTROS2.subtipo&&c.subtipoCarga!==FILTROS2.subtipo)return false;
-    if(FILTROS2.placa&&!(c.placa||"").toUpperCase().includes(FILTROS2.placa))return false;
-    if(FILTROS2.ac&&!String(c.ac||"").includes(FILTROS2.ac))return false;
-    return true;
+    return passaFiltrosComuns(c);
   });
 }
 
