@@ -523,46 +523,64 @@ function calcTMF(c,agora){
   return(ref-marco)/60000;
 }
 
-function buildBase(){
+function buildFila(){
   const{dataIniVal,dataFimVal}=getFiltros();
-  // considera registros cujo marco de processo (Enlonamento Final ou Carregamento Final) caiu no período
+  // fila = ainda sem NF; precisa de um marco de processo válido (é o que define que já passou pela etapa e está aguardando)
   return TODOS.filter(c=>{
+    if(c.notaFiscal)return false;
     const marco=getMarcoTS(c);
     if(!marco)return false;
     const dia=marco.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     if(dia<dataIniVal||dia>dataFimVal)return false;
     if(!passaFiltrosComuns(c))return false;
     if(MT==="geral")return true;
-    // fila ainda sem NF -> classifica pelo turno do marco (não tem faturamento.ts ainda)
+    return getTurno(marco)===MT;
+  });
+}
+
+// já faturados: mesma regra da tela faturamento.html (buildRegistrosRel) — exige apenas faturamento.ts,
+// não exige marco de processo (Enlonamento/Carregamento Fim). Se o marco faltar, o TMF mostra "-" mas
+// o registro continua aparecendo, para não sumir com caminhões faturados por falha de gravação de outra etapa
+function buildFaturados(){
+  const{dataIniVal,dataFimVal}=getFiltros();
+  return TODOS.filter(c=>{
+    if(!c.notaFiscal)return false;
     const ft=c.faturamento?.ts?.toDate?.();
-    const refTurno=ft||marco;
-    return getTurno(refTurno)===MT;
+    if(!ft)return false;
+    if(!passaFiltrosComuns(c))return false;
+    if(MT==="A"){
+      // Turno A cruza a meia-noite: registro feito entre 23h-23h59 pertence ao Turno A do dia SEGUINTE
+      if(getTurno(ft)!=="A")return false;
+      let dataEfetiva=c.data;
+      if(ft.getHours()>=23){
+        const d=new Date(ft.getTime());
+        d.setDate(d.getDate()+1);
+        dataEfetiva=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+      }
+      return dataEfetiva>=dataIniVal&&dataEfetiva<=dataFimVal;
+    }
+    if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
+    if(MT==="geral")return true;
+    return getTurno(ft)===MT;
   });
 }
 
 function render(){
   const agora=new Date();
-  const base=buildBase();
-  const fila=base.filter(c=>!c.notaFiscal).sort((a,b)=>{
+  const fila=buildFila().sort((a,b)=>{
     const ea=getMarcoTS(a)?.getTime()||0;
     const eb=getMarcoTS(b)?.getTime()||0;
     return ea-eb;
   });
-  const faturados=base.filter(c=>c.notaFiscal).sort((a,b)=>{
+  const faturados=buildFaturados().sort((a,b)=>{
     const fa=a.faturamento?.ts?.toDate?.()?.getTime()||0;
     const fb=b.faturamento?.ts?.toDate?.()?.getTime()||0;
     return fa-fb;
   });
+  const base=[...fila,...faturados];
 
-  // contadores por turno (geral usa base completa do dia sem filtro de turno)
-  const{dataIniVal,dataFimVal}=getFiltros();
-  const todosPeriodo=TODOS.filter(c=>{
-    const marco=getMarcoTS(c);
-    if(!marco)return false;
-    const dia=marco.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
-    if(dia<dataIniVal||dia>dataFimVal)return false;
-    return passaFiltrosComuns(c);
-  });
+  // contadores por turno (geral usa base completa do dia sem filtro de turno) — mesmo universo das tabelas (fila + faturados)
+  const todosPeriodo=base;
   document.getElementById("cnt-geral").textContent="("+todosPeriodo.length+")";
   ["A","B","C"].forEach(t=>{
     const n=todosPeriodo.filter(c=>{
@@ -656,14 +674,24 @@ const CARGA_CLS={ensacado:"cc-ens",granel:"cc-gran",bigbag:"cc-bb"};
 const COL_CLS={ensacado:"h-ens",granel:"h-gran",bigbag:"h-bb"};
 const TMF_LIMITE=8; // minutos — limiar de alerta (item 2 da solicitação anterior)
 
-// item 5: marco que faz o cartão aparecer no Estado 2 — Paletizado/Caricamat = Enlonamento Final;
-// Container/Granel = Carregamento Final (não passam por Enlonamento)
+// marco que define quando o cartão "nasce" — Paletizado/Caricamat = Enlonamento Final;
+// Container/Granel = Carregamento Final (não passam por Enlonamento). Com fallback tolerante:
+// se o campo esperado pelo subtipo estiver vazio (falha de registro), tenta o outro,
+// igual ao comportamento já usado em faturamento.html (calcTMF), em vez de sumir com o registro.
 function usaCarregamento(subtipo){return subtipo==="Container"||subtipo==="Granel";}
 function getMarcoTS(c){
-  const ts=usaCarregamento(c.subtipoCarga)?c.carregamento?.fim:c.enlonamento?.fim;
+  const preferCarreg=usaCarregamento(c.subtipoCarga);
+  const primario=preferCarreg?c.carregamento?.fim:c.enlonamento?.fim;
+  const alternativo=preferCarreg?c.enlonamento?.fim:c.carregamento?.fim;
+  const ts=primario||alternativo;
   return ts?.toDate?.()||null;
 }
-function getMarcoLabel(c){return usaCarregamento(c.subtipoCarga)?"Carregamento fim":"Enlonamento fim";}
+function getMarcoLabel(c){
+  const preferCarreg=usaCarregamento(c.subtipoCarga);
+  const primario=preferCarreg?c.carregamento?.fim:c.enlonamento?.fim;
+  const usouPrimario=!!primario;
+  return(preferCarreg===usouPrimario)?"Carregamento fim":"Enlonamento fim";
+}
 function calcTMF2(c,agora){
   const marco=getMarcoTS(c);
   if(!marco)return null;
