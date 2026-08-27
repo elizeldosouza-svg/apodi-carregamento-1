@@ -286,7 +286,7 @@ tr:hover td{background:rgba(0,232,150,.04)}
     <table>
       <thead><tr>
         <th>Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Cimento</th><th>Turno</th>
-        <th>Enlonamento Fim</th><th>Tempo em Fila</th><th>Status</th>
+        <th>Processo Fim</th><th>Tempo em Fila</th><th>Status</th>
       </tr></thead>
       <tbody id="tb-fila"></tbody>
     </table>
@@ -297,7 +297,7 @@ tr:hover td{background:rgba(0,232,150,.04)}
     <table>
       <thead><tr>
         <th>Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th>
-        <th>Enlonamento Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+        <th>Processo Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
       </tr></thead>
       <tbody id="tb-fat"></tbody>
     </table>
@@ -513,28 +513,28 @@ function getFiltros(){
   return{dataIniVal,dataFimVal};
 }
 
-// TMF desta tela = faturamento.ts - enlonamento.fim (fila para emissão da NF)
-// Para quem ainda não foi faturado (sem notaFiscal), usa agora - enlonamento.fim como cronômetro ao vivo
+// TMF desta tela = faturamento.ts - marco de processo (Enlonamento Final ou Carregamento Final, conforme subtipo)
+// Para quem ainda não foi faturado (sem notaFiscal), usa agora - marco como cronômetro ao vivo
 function calcTMF(c,agora){
-  const enF=c.enlonamento?.fim?.toDate?.();
-  if(!enF)return null;
+  const marco=getMarcoTS(c);
+  if(!marco)return null;
   const ftTs=c.faturamento?.ts?.toDate?.();
   const ref=ftTs||agora;
-  return(ref-enF)/60000;
+  return(ref-marco)/60000;
 }
 
 function buildBase(){
   const{dataIniVal,dataFimVal}=getFiltros();
-  // considera registros cujo enlonamento.fim caiu no período (referência de entrada na fila do faturamento)
+  // considera registros cujo marco de processo (Enlonamento Final ou Carregamento Final) caiu no período
   return TODOS.filter(c=>{
-    const enF=c.enlonamento?.fim?.toDate?.();
-    if(!enF)return false;
-    const dia=enF.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+    const marco=getMarcoTS(c);
+    if(!marco)return false;
+    const dia=marco.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     if(dia<dataIniVal||dia>dataFimVal)return false;
     if(MT==="geral")return true;
-    // fila ainda sem NF -> classifica pelo turno do enlonamento.fim (não tem faturamento.ts ainda)
+    // fila ainda sem NF -> classifica pelo turno do marco (não tem faturamento.ts ainda)
     const ft=c.faturamento?.ts?.toDate?.();
-    const refTurno=ft||enF;
+    const refTurno=ft||marco;
     return getTurno(refTurno)===MT;
   });
 }
@@ -543,8 +543,8 @@ function render(){
   const agora=new Date();
   const base=buildBase();
   const fila=base.filter(c=>!c.notaFiscal).sort((a,b)=>{
-    const ea=a.enlonamento?.fim?.toDate?.()?.getTime()||0;
-    const eb=b.enlonamento?.fim?.toDate?.()?.getTime()||0;
+    const ea=getMarcoTS(a)?.getTime()||0;
+    const eb=getMarcoTS(b)?.getTime()||0;
     return ea-eb;
   });
   const faturados=base.filter(c=>c.notaFiscal).sort((a,b)=>{
@@ -556,17 +556,17 @@ function render(){
   // contadores por turno (geral usa base completa do dia sem filtro de turno)
   const{dataIniVal,dataFimVal}=getFiltros();
   const todosPeriodo=TODOS.filter(c=>{
-    const enF=c.enlonamento?.fim?.toDate?.();
-    if(!enF)return false;
-    const dia=enF.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+    const marco=getMarcoTS(c);
+    if(!marco)return false;
+    const dia=marco.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
     return dia>=dataIniVal&&dia<=dataFimVal;
   });
   document.getElementById("cnt-geral").textContent="("+todosPeriodo.length+")";
   ["A","B","C"].forEach(t=>{
     const n=todosPeriodo.filter(c=>{
       const ft=c.faturamento?.ts?.toDate?.();
-      const enF=c.enlonamento?.fim?.toDate?.();
-      return getTurno(ft||enF)===t;
+      const marco=getMarcoTS(c);
+      return getTurno(ft||marco)===t;
     }).length;
     document.getElementById("cnt-"+t).textContent="("+n+")";
   });
@@ -585,12 +585,12 @@ function render(){
   }
   const tmfGeral=tmfMedio(faturados.length?faturados:base);
   const cardsHtml=[
-    {lbl:"TMF Geral",val:tmfGeral,sub:"Enlonamento.fim → Faturamento.ts"},
+    {lbl:"TMF Geral",val:tmfGeral,sub:"Processo Fim → Faturamento.ts"},
     ...["A","B","C"].map(t=>{
       const lista=(faturados.length?faturados:base).filter(c=>{
         const ft=c.faturamento?.ts?.toDate?.();
-        const enF=c.enlonamento?.fim?.toDate?.();
-        return getTurno(ft||enF)===t;
+        const marco=getMarcoTS(c);
+        return getTurno(ft||marco)===t;
       });
       return{lbl:"TMF Turno "+t,val:tmfMedio(lista),sub:TURNO_LABELS[t]};
     })
@@ -603,7 +603,7 @@ function render(){
 
   // tabela fila
   document.getElementById("tb-fila").innerHTML=fila.length?fila.map((c,i)=>{
-    const enF=c.enlonamento?.fim?.toDate?.();
+    const marco=getMarcoTS(c);
     const mins=calcTMF(c,agora);
     return`<tr class="row-fila">
       <td>${i+1}</td>
@@ -612,8 +612,8 @@ function render(){
       <td>—</td>
       <td>${TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-"}</td>
       <td>${c.tipoCimento||c.tipoCimentoLabel||"-"}</td>
-      <td>${enF?(getTurno(enF)||"-"):"-"}</td>
-      <td>${fmtHora(c.enlonamento?.fim)}</td>
+      <td>${marco?(getTurno(marco)||"-"):"-"}</td>
+      <td>${fmtHora(marco)}</td>
       <td class="${tmfClass(mins)}">${fmtMin(mins)}</td>
       <td><span class="badge-fila">NA FILA</span></td>
     </tr>`;
@@ -632,7 +632,7 @@ function render(){
       <td>${c.subtipoCarga||"-"}</td>
       <td>${c.tipoCimento||c.tipoCimentoLabel||"-"}</td>
       <td>${ft?(getTurno(ft)||"-"):"-"}</td>
-      <td>${fmtHora(c.enlonamento?.fim)}</td>
+      <td>${fmtHora(getMarcoTS(c))}</td>
       <td>${fmtHora(c.faturamento?.ts)}</td>
       <td class="${tmfClass(mins)}">${fmtMin(mins)}</td>
       <td>${c.faturamento?.operador||"-"}</td>
@@ -831,7 +831,7 @@ function buildLinhasRel(registros,forPrint=false){
       <td style="${tdStyle}">${c.subtipoCarga||"-"}</td>
       <td style="${tdStyle}">${cimento}</td>
       <td style="${tdStyle}">${turno}</td>
-      <td style="${tdStyle}">${fmtDT(c.enlonamento?.fim)}</td>
+      <td style="${tdStyle}">${fmtDT(getMarcoTS(c))}</td>
       <td style="${tdStyle}">${fmtDT(c.faturamento?.ts)}</td>
       <td style="${tdStyle}">${fmtMin(mins)}</td>
       <td style="${tdStyle}">${c.faturamento?.operador||"-"}</td>
@@ -846,7 +846,7 @@ window.verRelatorio=()=>{
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
-        <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+        <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th><th>Processo Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
       </tr></thead>
       <tbody>${buildLinhasRel(registros)||'<tr><td colspan="12" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
     </table>`;
@@ -879,7 +879,7 @@ window.gerarPDF=()=>{
 <div class="hinfo">Período: ${periodoTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
-    <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th><th>Enlone Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
+    <th style="width:36px">Nº</th><th>Placa</th><th>AC</th><th>Nota Fiscal</th><th>Carga</th><th>Tipo de Carregamento</th><th>Cimento</th><th>Turno</th><th>Processo Fim</th><th>Faturamento</th><th>TMF</th><th>Operador</th>
   </tr></thead>
   <tbody>${linhas||'<tr><td colspan="12" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
@@ -902,7 +902,7 @@ window.exportExcel=()=>{
       "Tipo de Carregamento":c.subtipoCarga||"",
       "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
       "Turno":ft?(getTurno(ft)||""):"",
-      "Enlonamento Fim":fmtEx(c.enlonamento?.fim?.toDate?.()),
+      "Processo Fim":fmtEx(getMarcoTS(c)),
       "Faturamento":fmtEx(ft),
       "TMF (min)":mins!=null?Math.round(mins):"",
       "Operador":c.faturamento?.operador||"",
