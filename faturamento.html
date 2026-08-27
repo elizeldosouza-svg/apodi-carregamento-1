@@ -166,7 +166,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   </div>
   <div class="fg">
     <label>Nota Fiscal</label>
-    <input id="nf" type="text" inputmode="numeric" placeholder="Ex: 549366" maxlength="6" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);chk()" class="nf-inp"/>
+    <input id="nf" type="text" inputmode="numeric" placeholder="Ex: 549366,549367" autocomplete="off" oninput="maskNF(this);chk()" class="nf-inp"/>
   </div>
   <button class="go" id="go" onclick="confirmar()" disabled>🚀 Confirmar Saída</button>
 
@@ -355,11 +355,23 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   if(!reconnectTimer)reconnectTimer=setTimeout(forceReconnect,3000);
 });
 const RE_PLACA=/^[A-Z]{3}\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/;
+window.maskNF=(el)=>{
+  const digits=el.value.replace(/[^0-9]/g,"").slice(0,24); // 4 blocos de 6 = 24 dígitos
+  const groups=digits.match(/.{1,6}/g)||[];
+  el.value=groups.join(",");
+};
+function validNF(v){
+  // 1 a 4 notas fiscais, cada uma com exatamente 6 dígitos, separadas por vírgula
+  if(!v)return false;
+  const partes=v.split(",");
+  if(partes.length<1||partes.length>4)return false;
+  return partes.every(p=>/^\d{6}$/.test(p));
+}
 window.chk=()=>{
   const a=document.getElementById("ac").value.trim();
   const p=document.getElementById("pl").value.replace(/[^A-Z0-9]/gi,"");
   const nf=document.getElementById("nf").value.trim();
-  document.getElementById("go").disabled=!(a.length===6&&RE_PLACA.test(p)&&nf.length===6);
+  document.getElementById("go").disabled=!(a.length===6&&RE_PLACA.test(p)&&validNF(nf));
 };
 window.confirmar=async()=>{
   const ac=document.getElementById("ac").value.trim().toUpperCase();
@@ -367,7 +379,7 @@ window.confirmar=async()=>{
   const nfVal=document.getElementById("nf").value.trim();
   if(ac.length!==6){showMsg("er","A AC deve ter exatamente 6 números.");return;}
   if(!RE_PLACA.test(pl)){showMsg("er","Placa inválida. Use o formato ABC1234 ou ABC1D23.");return;}
-  if(nfVal.length!==6){showMsg("er","A Nota Fiscal deve ter exatamente 6 números.");return;}
+  if(!validNF(nfVal)){showMsg("er","Informe de 1 a 4 notas fiscais, cada uma com exatamente 6 números, separadas por vírgula.");return;}
   const c=HD.find(d=>d.placa===pl&&d.ac===ac&&d.setorAtual!=="concluido");
   if(!c){showMsg("er","AC/Placa não encontrada em processo hoje. Verifique os dados.");return;}
   document.getElementById("go").disabled=true;
