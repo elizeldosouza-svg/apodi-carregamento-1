@@ -625,6 +625,23 @@ function durStr(ms){
 
 function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
 
+// Elegibilidade de TMAC alinhada ao master.html: conta se setorAtual==="concluido"
+// OU se já existe faturamento.ts (mesmo sem o status ter virado "concluido" ainda).
+// Não confundir com "conc" (headcount de "Concluídos"), que continua exigindo setorAtual==="concluido".
+function tmacElegivel(c){return c.setorAtual==="concluido"||!!c.faturamento?.ts;}
+function calcTMAC(c){
+  if(!tmacElegivel(c))return null;
+  const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
+  return(en&&sa)?sa-en:null;
+}
+
+// Granel não passa por enlonamento (sem enlonamento.fim) — usa carregamento.fim como marco.
+// Mesmo padrão do getMarcoTS() em faturamento-fila.html.
+function getMarcoFimTS(c){
+  if(c.tipoCarga==="granel")return getTS(c,"carregamento","fim");
+  return getTS(c,"enlonamento","fim");
+}
+
 function getTurno(d){
   if(!d)return null;
   const h=d.getHours();
@@ -822,10 +839,7 @@ function render(){
   const conc=list.filter(c=>c.setorAtual==="concluido");
 
   // TMAC geral
-  const tmacs=conc.map(c=>{
-    const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
-    return(en&&sa)?sa-en:null;
-  }).filter(v=>v!=null);
+  const tmacs=list.map(calcTMAC).filter(v=>v!=null);
   const tmacMedio=avg(tmacs);
   const taxa=list.length?Math.round(conc.length/list.length*100):0;
 
@@ -843,7 +857,7 @@ function render(){
   ];
   // faturamento = tempo entre enlone_fim e faturamento
   const fatTimes=list.map(c=>{
-    const enF=getTS(c,"enlonamento","fim"),sa=getTS(c,"faturamento","ts");
+    const enF=getMarcoFimTS(c),sa=getTS(c,"faturamento","ts");
     return(enF&&sa)?sa-enF:null;
   }).filter(v=>v!=null);
   const fatAvg=avg(fatTimes);
@@ -909,10 +923,7 @@ function render(){
   document.getElementById("turno-grid").innerHTML=turnos.map(t=>{
     const tlist=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t.id);
     const tconc=tlist.filter(c=>c.setorAtual==="concluido");
-    const ttmacs=tconc.map(c=>{
-      const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
-      return(en&&sa)?sa-en:null;
-    }).filter(v=>v!=null);
+    const ttmacs=tlist.map(calcTMAC).filter(v=>v!=null);
     const ttmac=avg(ttmacs);
     return`<div class="tcrd ${t.cls}">
       <div class="tlb">${t.lb} · ${t.sub}</div>
@@ -928,8 +939,8 @@ function render(){
     if(!c.placa)return;
     if(!placaMap[c.placa])placaMap[c.placa]={count:0,tmacs:[]};
     placaMap[c.placa].count++;
-    const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
-    if(en&&sa&&c.setorAtual==="concluido")placaMap[c.placa].tmacs.push(sa-en);
+    const t=calcTMAC(c);
+    if(t!=null)placaMap[c.placa].tmacs.push(t);
   });
   const ranking=Object.entries(placaMap)
     .map(([pl,v])=>({pl,count:v.count,tmac:avg(v.tmacs)}))
@@ -958,8 +969,8 @@ function render(){
 
   // TMAC turno B desvio
   const tmacB=()=>{
-    const bl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))==="B"&&c.setorAtual==="concluido");
-    const bt=bl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const bl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))==="B");
+    const bt=bl.map(calcTMAC).filter(v=>v!=null);
     return avg(bt);
   };
 
@@ -998,8 +1009,8 @@ function render(){
   }).join("");
 
   const tipoTmacs=tipos.map(t=>{
-    const tl=list.filter(c=>c.tipoCarga===t.id&&c.setorAtual==="concluido");
-    const vals=tl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const tl=list.filter(c=>c.tipoCarga===t.id);
+    const vals=tl.map(calcTMAC).filter(v=>v!=null);
     return{...t,avg:avg(vals),count:vals.length};
   }).filter(t=>t.avg);
   const maxTipo=tipoTmacs.length?Math.max(...tipoTmacs.map(t=>t.avg)):1;
@@ -1017,27 +1028,27 @@ function render(){
     :`<div class="empty-state">Sem dados suficientes</div>`;
 
   const crossTurnos=[{id:"A",lb:"Turno A"},{id:"B",lb:"Turno B"},{id:"C",lb:"Turno C"}];
-  const crossList=ALL.filter(c=>{const{s,e}=periodDates(MP);return c.data>=s&&c.data<=e&&c.setorAtual==="concluido";});
+  const crossList=ALL.filter(c=>{const{s,e}=periodDates(MP);return c.data>=s&&c.data<=e&&tmacElegivel(c);});
   const crossCls={ensacado:"cv-ens",granel:"cv-gr",bigbag:"cv-bb"};
   let tbl=`<thead><tr><th class="row-hdr">Turno</th>${tipos.map(t=>`<th>${t.lb}</th>`).join("")}<th>Todos</th></tr></thead><tbody>`;
   crossTurnos.forEach(tr=>{
     const trl=crossList.filter(c=>getTurno(getTS(c,"entrada","ts"))===tr.id);
     tbl+=`<tr><td class="row-hdr">${tr.lb}</td>`;
     tipos.forEach(ti=>{
-      const vals=trl.filter(c=>c.tipoCarga===ti.id).map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+      const vals=trl.filter(c=>c.tipoCarga===ti.id).map(calcTMAC).filter(v=>v!=null);
       const a=avg(vals);
       tbl+=`<td><span class="cross-val ${crossCls[ti.id]}">${a?durStr(a):"—"}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${vals.length} veíc.</div></td>`;
     });
-    const allVals=trl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const allVals=trl.map(calcTMAC).filter(v=>v!=null);
     tbl+=`<td><span class="cross-val" style="color:var(--tm)">${avg(allVals)?durStr(avg(allVals)):"—"}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${allVals.length} veíc.</div></td></tr>`;
   });
   tbl+=`<tr style="border-top:1px solid var(--bd)"><td class="row-hdr" style="color:var(--t3)">Todos</td>`;
   tipos.forEach(ti=>{
-    const vals=crossList.filter(c=>c.tipoCarga===ti.id).map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const vals=crossList.filter(c=>c.tipoCarga===ti.id).map(calcTMAC).filter(v=>v!=null);
     const a=avg(vals);
     tbl+=`<td><span class="cross-val ${crossCls[ti.id]}">${a?durStr(a):"—"}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${vals.length} veíc.</div></td>`;
   });
-  const allV=crossList.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const allV=crossList.map(calcTMAC).filter(v=>v!=null);
   tbl+=`<td><span class="cross-val" style="color:var(--tm)">${avg(allV)?durStr(avg(allV)):"—"}</span></td></tr></tbody>`;
   const elCross=document.getElementById("cross-table");
   if(elCross) elCross.innerHTML=tbl;
@@ -1047,10 +1058,9 @@ function render(){
   const MOTIVOS=["Motivo 1","Motivo 2","Motivo 3","Motivo 4","Motivo 5","Motivo 6","Motivo 7","Outros"];
   const atrasados=ALL.filter(c=>{
     const{s,e}=periodDates(MP);
-    if(c.data<s||c.data>e||c.setorAtual!=="concluido")return false;
-    const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
-    if(!en||!sa)return false;
-    return(sa.getTime()-en.getTime())>LIMITE_MS;
+    if(c.data<s||c.data>e||!tmacElegivel(c))return false;
+    const t=calcTMAC(c);
+    return t!=null&&t>LIMITE_MS;
   });
   const comJust=atrasados.filter(c=>c.justificativa&&c.justificativa.motivo);
   const semJust=atrasados.filter(c=>!(c.justificativa&&c.justificativa.motivo));
@@ -1136,7 +1146,7 @@ function calcDelta(cur,prev,invert){
 function renderAvancados(){
   const list=getList();
   const conc=list.filter(c=>c.setorAtual==="concluido");
-  const tmacs=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const tmacs=list.map(calcTMAC).filter(v=>v!=null);
   const tmacMedio=avg(tmacs);
   const taxa=list.length?Math.round(conc.length/list.length*100):0;
 
@@ -1144,7 +1154,7 @@ function renderAvancados(){
   const{s:ps,e:pe}=getPrevRange();
   const prevList=applyNonDateFilters(ALL.filter(c=>c.data>=ps&&c.data<=pe));
   const prevConc=prevList.filter(c=>c.setorAtual==="concluido");
-  const prevTmacs=prevConc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const prevTmacs=prevList.map(calcTMAC).filter(v=>v!=null);
   const prevTmacMedio=avg(prevTmacs);
   const prevTaxa=prevList.length?Math.round(prevConc.length/prevList.length*100):0;
 
@@ -1181,11 +1191,11 @@ function renderAvancados(){
     }
   }
 
-  // Tendência diária (só concluídos, agrupados por data)
+  // Tendência diária (agrupados por data, alinhado ao critério de elegibilidade do TMAC)
   const porDia={};
-  conc.forEach(c=>{
-    const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
-    if(en&&sa&&c.data)(porDia[c.data]=porDia[c.data]||[]).push(sa-en);
+  list.forEach(c=>{
+    const t=calcTMAC(c);
+    if(t!=null&&c.data)(porDia[c.data]=porDia[c.data]||[]).push(t);
   });
   const diasOrdenados=Object.keys(porDia).sort();
   const diaAvg=diasOrdenados.map(d=>avg(porDia[d]));
@@ -1209,8 +1219,8 @@ function renderAvancados(){
   // Comparação por dia da semana (dentro do período filtrado)
   const diasSemanaLbl=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
   const porSemana=diasSemanaLbl.map((lbl,idx)=>{
-    const itens=conc.filter(c=>{const en=getTS(c,"entrada","ts");return en&&en.getDay()===idx;});
-    const tt=itens.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return sa-en;});
+    const itens=list.filter(c=>{const en=getTS(c,"entrada","ts");return en&&en.getDay()===idx&&tmacElegivel(c);});
+    const tt=itens.map(calcTMAC).filter(v=>v!=null);
     return{lbl,avg:avg(tt),count:itens.length};
   });
   const elDiaSem=document.getElementById("dia-semana-chart");
@@ -1315,8 +1325,8 @@ function renderExecutivo(ctx){
     });
     return{prod:avg(prods),ocio:avg(ocios)};
   }
-  const{prod:tProdutivo,ocio:tOcioso}=prodOcioso(conc);
-  const{prod:tProdutivoPrev,ocio:tOciosoPrev}=prodOcioso(prevConc);
+  const{prod:tProdutivo,ocio:tOcioso}=prodOcioso(list);
+  const{prod:tProdutivoPrev,ocio:tOciosoPrev}=prodOcioso(prevList);
 
   const metaSLA=90,metaTMAC=SLA_MS,metaProd=4;
   const diasHistAll=new Set(ALL.map(c=>c.data)).size||1;
@@ -1400,12 +1410,12 @@ function renderExecutivo(ctx){
     bullets.push(`${empresaData[0].etapa} (${empresaData[0].lbl}) representa ${pctEtapa}% do tempo total do TMAC — maior gargalo do processo.`);
   }
   const piorTurno=["A","B","C"].map(t=>{
-    const tl=conc.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
-    const tt=tl.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return sa-en;});
-    return{t,avg:avg(tt),count:tl.length};
+    const tl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
+    const tt=tl.map(calcTMAC).filter(v=>v!=null);
+    return{t,avg:avg(tt),count:tt.length};
   }).filter(x=>x.count>0).sort((a,b)=>(b.avg||0)-(a.avg||0))[0];
   if(piorTurno)bullets.push(`Turno ${piorTurno.t} apresentou o maior TMAC médio (${durStr(piorTurno.avg)}) — menor produtividade relativa.`);
-  const tFatArr=conc.map(c=>{const f=getTS(c,"enlonamento","fim"),sa=getTS(c,"faturamento","ts");return(f&&sa)?sa-f:null;}).filter(v=>v!=null);
+  const tFatArr=list.map(c=>{const f=getMarcoFimTS(c),sa=getTS(c,"faturamento","ts");return(f&&sa)?sa-f:null;}).filter(v=>v!=null);
   const tFatAvg=avg(tFatArr);
   if(tFatAvg&&tmacMedio){
     const pctFat=Math.round(tFatAvg/tmacMedio*100);
@@ -1447,7 +1457,7 @@ function renderForecast(){
   const valores=dias.map(d=>{
     const itens=porDia[d];
     const conc=itens.filter(c=>c.setorAtual==="concluido");
-    const tmacsArr=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const tmacsArr=itens.map(calcTMAC).filter(v=>v!=null);
     if(FORECASTMET==="tmac")return tmacsArr.length?avg(tmacsArr):null;
     if(FORECASTMET==="sla")return tmacsArr.length?Math.round(tmacsArr.filter(t=>t<=SLA_MS).length/tmacsArr.length*100):null;
     if(FORECASTMET==="volume")return itens.length;
@@ -1523,7 +1533,6 @@ function renderForecast(){
 
 function renderSimulador(){
   const list=getList();
-  const conc=list.filter(c=>c.setorAtual==="concluido");
   const el=document.getElementById("sim-resultado");
   if(!el)return;
 
@@ -1533,7 +1542,7 @@ function renderSimulador(){
   const reducaoMs=SIMREDUCAO*60*1000;
 
   const atuais=[],simulados=[];
-  conc.forEach(c=>{
+  list.forEach(c=>{
     const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
     if(!en||!sa)return;
     const tmacAtual=sa-en;
@@ -1563,7 +1572,6 @@ function renderSimulador(){
 // ── Módulo 6: Pareto e Causas ────────────────────────────────────────────────
 function renderCausas(){
   const list=getList();
-  const conc=list.filter(c=>c.setorAtual==="concluido");
   const SLA_MS=2*60*60*1000+10*60*1000;
 
   // Pareto de motivos
@@ -1612,7 +1620,7 @@ function renderCausas(){
   if(elTA){
     const STAGES_TA=[["portaria","inicio","fim"],["triagem","inicio","fim"],["carregamento","inicio","fim"],["enlonamento","inicio","fim"]];
     const prods=[],ocios=[];
-    conc.forEach(c=>{
+    list.forEach(c=>{
       const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
       if(!en||!sa)return;
       let prod=0;
@@ -1641,7 +1649,7 @@ function renderCausas(){
   // Painel de Justificativas
   const elJ=document.getElementById("painel-justificativas");
   if(elJ){
-    const atrasados=conc.filter(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return en&&sa&&(sa-en)>SLA_MS;});
+    const atrasados=list.filter(c=>{const t=calcTMAC(c);return t!=null&&t>SLA_MS;});
     const registradas=atrasados.filter(c=>c.justificativa&&c.justificativa.motivo);
     const pendentes=atrasados.filter(c=>!(c.justificativa&&c.justificativa.motivo));
     const resolucoes=registradas.map(c=>{
@@ -1681,8 +1689,7 @@ function moda(arr,binMs){
 
 function renderEstatistica(){
   const list=getList();
-  const conc=list.filter(c=>c.setorAtual==="concluido");
-  const tmacs=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null).sort((a,b)=>a-b);
+  const tmacs=list.map(calcTMAC).filter(v=>v!=null).sort((a,b)=>a-b);
 
   const elG=document.getElementById("stats-grid");
   const elB=document.getElementById("boxplot-chart");
@@ -1782,10 +1789,9 @@ function renderEstatistica(){
 // e SLA/Qtd/Prod. referem-se aos caminhões que passaram por aquela etapa.
 function perfGrupos(list){
   const SLA_MS=2*60*60*1000+10*60*1000;
-  const conc=list.filter(c=>c.setorAtual==="concluido");
   function statsCiclo(itens){
     const cc=itens.filter(c=>c.setorAtual==="concluido");
-    const tt=cc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const tt=itens.map(calcTMAC).filter(v=>v!=null);
     const sla=tt.length?Math.round(tt.filter(t=>t<=SLA_MS).length/tt.length*100):null;
     return{qtd:itens.length,tmac:avg(tt),sla,prod:+(cc.length/24).toFixed(2)};
   }
@@ -1798,7 +1804,7 @@ function perfGrupos(list){
     ].map(e=>{
       const itens=list.filter(c=>getTS(c,e.sn,"inicio"));
       const times=itens.map(c=>{const i=getTS(c,e.sn,"inicio"),f=getTS(c,e.sn,"fim");return(i&&f)?f-i:null;}).filter(v=>v!=null);
-      const cicloT=itens.filter(c=>c.setorAtual==="concluido").map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+      const cicloT=itens.map(calcTMAC).filter(v=>v!=null);
       const sla=cicloT.length?Math.round(cicloT.filter(t=>t<=SLA_MS).length/cicloT.length*100):null;
       return{lbl:e.lbl+" ("+e.etapa+")",qtd:itens.length,tmac:avg(times),sla,prod:+(itens.length/24).toFixed(2)};
     }).filter(g=>g.qtd>0);
@@ -1890,14 +1896,14 @@ const GARGALO_STAGES=[
   {key:"triagem",lbl:"Triagem",calc:c=>{const i=getTS(c,"triagem","inicio"),f=getTS(c,"triagem","fim");return(i&&f)?f-i:null;}},
   {key:"carregamento",lbl:"Carregamento",calc:c=>{const i=getTS(c,"carregamento","inicio"),f=getTS(c,"carregamento","fim");return(i&&f)?f-i:null;}},
   {key:"enlonamento",lbl:"Enlonamento",calc:c=>{const i=getTS(c,"enlonamento","inicio"),f=getTS(c,"enlonamento","fim");return(i&&f)?f-i:null;}},
-  {key:"faturamento",lbl:"Faturamento",calc:c=>{const f=getTS(c,"enlonamento","fim"),sa=getTS(c,"faturamento","ts");return(f&&sa)?sa-f:null;}},
+  {key:"faturamento",lbl:"Faturamento",calc:c=>{const f=getMarcoFimTS(c),sa=getTS(c,"faturamento","ts");return(f&&sa)?sa-f:null;}},
 ];
 const GARGALO_CORES=["#00d4ff","#00e896","#ffd000","#a78bfa","#fb923c"];
 
 function renderGargalos(){
   const list=getList();
   const conc=list.filter(c=>c.setorAtual==="concluido");
-  const tmacsArr=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const tmacsArr=list.map(calcTMAC).filter(v=>v!=null);
   const tmacMedio=avg(tmacsArr);
 
   const dados=GARGALO_STAGES.map(s=>{
@@ -1996,7 +2002,7 @@ function renderEvolucao(){
   const valores=dias.map(d=>{
     const itens=porDia[d];
     const conc=itens.filter(c=>c.setorAtual==="concluido");
-    const tmacsArr=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const tmacsArr=itens.map(calcTMAC).filter(v=>v!=null);
     if(EVOMET==="tmac")return tmacsArr.length?avg(tmacsArr):null;
     if(EVOMET==="sla")return tmacsArr.length?Math.round(tmacsArr.filter(t=>t<=SLA_MS).length/tmacsArr.length*100):null;
     if(EVOMET==="volume")return itens.length;
@@ -2070,8 +2076,7 @@ function renderHeatmap(){
     valores[d]=[];
     for(let h=0;h<24;h++){
       const itens=cells[d][h];
-      const conc=itens.filter(c=>c.setorAtual==="concluido");
-      const tmacsArr=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+      const tmacsArr=itens.map(calcTMAC).filter(v=>v!=null);
       let v=null;
       if(HMMET==="quantidade")v=itens.length||null;
       else if(HMMET==="tmac")v=tmacsArr.length?avg(tmacsArr):null;
@@ -2128,7 +2133,7 @@ window.exportExcel=()=>{
 
   // Sumário
   const conc=list.filter(c=>c.setorAtual==="concluido");
-  const tmacs=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const tmacs=list.map(calcTMAC).filter(v=>v!=null);
   const tmacMedio=tmacs.length?tmacs.reduce((a,b)=>a+b,0)/tmacs.length:null;
 
   const etapasEx=[
@@ -2141,7 +2146,7 @@ window.exportExcel=()=>{
   const rows=list.map(c=>{
     const en=getTS(c,"entrada","ts");
     const sa=getTS(c,"faturamento","ts");
-    const tmac=(en&&sa&&c.setorAtual==="concluido")?sa-en:null;
+    const tmac=calcTMAC(c);
     const row={"Placa":c.placa,"Turno":getTurno(en)||"","AC":c.ac,"Data":c.data||"","Entrada":fmtEx(en),"Setor":c.setorAtual||""};
     etapasEx.forEach(e=>{
       const i=getTS(c,e.sn,e.ini),f=getTS(c,e.sn,e.fim);
@@ -2165,8 +2170,7 @@ window.exportExcel=()=>{
   const exportTurnos=["A","B","C"];
   exportTurnos.forEach(t=>{
     const tl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
-    const tc=tl.filter(c=>c.setorAtual==="concluido");
-    const tt=tc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const tt=tl.map(calcTMAC).filter(v=>v!=null);
     const ta=tt.length?tt.reduce((a,b)=>a+b,0)/tt.length:null;
     sumRows.push({"Métrica":`Turno ${t} — caminhões`,"Valor":tl.length});
     sumRows.push({"Métrica":`Turno ${t} — TMAC`,"Valor":ta?durStr(ta):"—"});
@@ -2191,7 +2195,7 @@ window.exportPDF=()=>{
   const list=getList();
   if(!list.length){alert("Nenhum dado para exportar.");return;}
   const conc=list.filter(c=>c.setorAtual==="concluido");
-  const tmacs=conc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+  const tmacs=list.map(calcTMAC).filter(v=>v!=null);
   const tmacMedio=avg(tmacs);
   const taxa=list.length?Math.round(conc.length/list.length*100):0;
 
@@ -2207,8 +2211,7 @@ window.exportPDF=()=>{
 
   const turnoRows=["A","B","C"].map(t=>{
     const tl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
-    const tc=tl.filter(c=>c.setorAtual==="concluido");
-    const tt=tc.map(c=>{const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");return(en&&sa)?sa-en:null;}).filter(v=>v!=null);
+    const tt=tl.map(calcTMAC).filter(v=>v!=null);
     const ta=avg(tt);
     return`<tr><td>Turno ${t}</td><td>${tl.length}</td><td>${ta?durStr(ta):"—"}</td></tr>`;
   }).join("");
