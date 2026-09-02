@@ -15,6 +15,32 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .back-btn:hover{border-color:var(--bl);color:var(--bl)}
 .export-btn{padding:6px 14px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
 .export-btn:hover{background:rgba(0,232,150,.15)}
+.filter-toggle-btn{padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+.filter-toggle-btn:hover{border-color:var(--bl);color:var(--bl)}
+.filter-toggle-btn.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.08)}
+.view-btn{padding:6px 14px;border:1px solid rgba(255,159,67,.4);border-radius:20px;background:rgba(255,159,67,.07);color:var(--tm);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+.view-btn:hover{background:rgba(255,159,67,.15)}
+#filters-panel{max-height:0;overflow:hidden;opacity:0;transition:max-height .3s ease,opacity .25s ease,margin .3s ease}
+#filters-panel.open{max-height:900px;opacity:1}
+.scope-divider{display:flex;align-items:center;gap:10px;margin:26px 0 14px}
+.scope-divider .line{flex:1;height:1px;background:var(--bd)}
+.scope-divider .lbl{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:800;letter-spacing:.5px;padding:5px 14px;border-radius:20px;white-space:nowrap}
+.scope-d1 .lbl{color:var(--bl);border:1px solid rgba(0,212,255,.35);background:rgba(0,212,255,.06)}
+.scope-week .lbl{color:var(--gr);border:1px solid rgba(0,232,150,.35);background:rgba(0,232,150,.06)}
+.scope-note{font-size:10px;color:var(--t3);margin:-8px 0 14px 2px}
+#preview-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:900;align-items:center;justify-content:center;padding:30px}
+#preview-overlay.open{display:flex}
+#preview-modal{background:#f4f4f4;color:#111;width:100%;max-width:1000px;max-height:90vh;overflow:auto;border-radius:8px;padding:28px 34px;font-family:Arial,sans-serif;position:relative}
+#preview-modal h1{font-size:20px;margin-bottom:4px}
+#preview-modal .sub{font-size:11px;color:#555;margin-bottom:16px}
+#preview-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#222;color:#fff;font-size:14px;cursor:pointer}
+.preview-kpis{display:flex;gap:14px;margin-bottom:16px}
+.preview-kpis .kpi{border:1px solid #ccc;border-radius:6px;padding:10px 16px;text-align:center;flex:1;background:#fff}
+.preview-kpis .kpi .v{font-size:20px;font-weight:700}
+.preview-kpis .kpi .l{font-size:10px;color:#666;text-transform:uppercase}
+#preview-modal table{width:100%;border-collapse:collapse;margin-bottom:18px}
+#preview-modal th,#preview-modal td{border:1px solid #ccc;padding:6px 10px;font-size:11px;text-align:left}
+#preview-modal th{background:#eee}
 .wrap{max-width:1300px;margin:0 auto;padding:20px 16px}
 .filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
 .row-label{font-size:10px;color:var(--t3);font-weight:600;padding:0 4px;white-space:nowrap;min-width:60px}
@@ -162,16 +188,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 <body>
 <div class="top">
   <div class="logo">📊 ANÁLISE — RASTREIO</div>
-  <a href="/analise" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">📊 Análise</a>
-  <a href="/placas" style="padding:6px 14px;border:1px solid rgba(167,139,250,.4);border-radius:20px;background:rgba(167,139,250,.07);color:var(--pu);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,.15)'" onmouseout="this.style.background='rgba(167,139,250,.07)'">🔍 Placas</a>
-  <a href="/justificativas" style="padding:6px 14px;border:1px solid rgba(255,68,102,.4);border-radius:20px;background:rgba(255,68,102,.07);color:var(--rd);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,68,102,.15)'" onmouseout="this.style.background='rgba(255,68,102,.07)'">⚠️ Justificativas</a>
-  <a href="/patio" style="padding:6px 14px;border:1px solid rgba(0,232,150,.4);border-radius:20px;background:rgba(0,232,150,.07);color:var(--gr);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,232,150,.15)'" onmouseout="this.style.background='rgba(0,232,150,.07)'">🏭 Pátio</a>
-  <a href="/master" style="padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,.07)';this.style.color='var(--bl)'" onmouseout="this.style.background='transparent';this.style.color='var(--t2)'">← Master</a>
+  <button class="filter-toggle-btn on" id="btn-filters" onclick="toggleFilters()">🎛️ <span id="filters-label">Ocultar Filtros</span></button>
+  <button class="view-btn" onclick="openPreview()">👁️ Visualizar</button>
   <button class="export-btn" onclick="exportExcel()">📥 Exportar Excel</button>
   <button class="export-btn" style="border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.08)" onclick="exportPDF()">📄 Exportar PDF</button>
 </div>
 <div class="wrap">
 
+  <div id="filters-panel" class="open">
   <div class="filter-row">
     <span class="row-label">📅 Período:</span>
     <button class="pb pb-periodo on" onclick="setPeriod('hoje',this)">Hoje</button>
@@ -266,6 +290,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
     </select>
     <input class="fi" id="f-busca" type="text" placeholder="🔍 Placa ou AC..." oninput="render()" style="flex:1"/>
   </div>
+  </div>
 
   <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando dados...</div></div>
   <div id="content" style="display:none">
@@ -290,23 +315,6 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
       </div>
     </div>
 
-    <!-- Turno -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🕐 Comparativo por Turno</div>
-      <div class="turno-grid" id="turno-grid"></div>
-    </div>
-
-    <!-- Ranking + Gargalo -->
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">🏆 Placas Mais Frequentes</div>
-        <div id="ranking-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">🔥 Gargalo por Etapa</div>
-        <div id="gargalo-chart"></div>
-      </div>
-    </div>
     <!-- Tipo de Carga -->
     <div class="grid2" style="margin-bottom:12px">
       <div class="card">
@@ -318,6 +326,13 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
         <div id="tipo-tmac-chart"></div>
       </div>
     </div>
+
+    <!-- Turno -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🕐 Comparativo por Turno</div>
+      <div class="turno-grid" id="turno-grid"></div>
+    </div>
+
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">🔀 Tipo de Carga × Turno — TMAC médio</div>
       <div style="overflow-x:auto"><table class="cross-table" id="cross-table"></table></div>
@@ -334,19 +349,33 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
       </div>
     </div>
 
-    <!-- Indicadores Avançados -->
-    <div style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--pu);letter-spacing:.5px">📈 INDICADORES AVANÇADOS</span>
-    </div>
+    <!-- Comparação com Ontem (D-1) — fixo, não segue o filtro de período do topo -->
+    <div class="scope-divider scope-d1"><div class="line"></div><div class="lbl">📊 COMPARAÇÃO COM ONTEM (D-1)</div><div class="line"></div></div>
 
     <div class="grid2" style="margin-bottom:12px">
       <div class="card">
-        <div class="card-title">📊 Comparação com Período Anterior</div>
+        <div class="card-title">📊 Hoje × Ontem (D-1)</div>
         <div id="comp-anterior"></div>
       </div>
       <div class="card">
         <div class="card-title">📉 Distribuição TMAC — Percentis</div>
         <div id="percentis-chart"></div>
+      </div>
+    </div>
+
+    <!-- A partir daqui: sempre semana atual (dom–hoje), não segue o filtro de período do topo -->
+    <div class="scope-divider scope-week"><div class="line"></div><div class="lbl">📅 SEMANA ATUAL (DOM – HOJE)</div><div class="line"></div></div>
+    <div class="scope-note">Os cartões daqui até o fim da página usam sempre a semana corrente até hoje, mesmo que você mude o filtro de período lá em cima.</div>
+
+    <!-- Ranking + Gargalo -->
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="card-title">🏆 Placas Mais Frequentes</div>
+        <div id="ranking-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔥 Gargalo por Etapa</div>
+        <div id="gargalo-chart"></div>
       </div>
     </div>
 
@@ -567,6 +596,20 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
   </div>
 </div>
 
+<!-- Modal do botão "Visualizar" — prévia do relatório sem download -->
+<div id="preview-overlay" onclick="if(event.target===this)closePreview()">
+  <div id="preview-modal">
+    <button id="preview-close" onclick="closePreview()">✕</button>
+    <h1>Relatório de Análise — TMAC Online</h1>
+    <div class="sub" id="preview-sub">Apodi Cimentos</div>
+    <div class="preview-kpis" id="preview-kpis"></div>
+    <table>
+      <thead><tr><th>Turno</th><th>Caminhões</th><th>TMAC Médio</th></tr></thead>
+      <tbody id="preview-turnos"></tbody>
+    </table>
+  </div>
+</div>
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import{getFirestore,collection,onSnapshot,query,orderBy,getDocs}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -687,6 +730,52 @@ window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.clas
 window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setEmpresa=(v,el)=>{MEMP=v;document.querySelectorAll(".pb-emp").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setStatus=(v,el)=>{MSTATUS=v;document.querySelectorAll(".pb-status").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+
+// ── Toggle de filtros e prévia (Visualizar) ─────────────────────────────
+window.toggleFilters=()=>{
+  const p=document.getElementById("filters-panel");
+  const btn=document.getElementById("btn-filters");
+  const lbl=document.getElementById("filters-label");
+  const open=p.classList.toggle("open");
+  btn.classList.toggle("on",open);
+  lbl.textContent=open?"Ocultar Filtros":"Mostrar Filtros";
+};
+window.openPreview=()=>{
+  const list=getList();
+  if(!list.length){alert("Nenhum dado para pré-visualizar.");return;}
+  const conc=list.filter(c=>c.setorAtual==="concluido");
+  const tmacs=list.map(calcTMAC).filter(v=>v!=null);
+  const tmacMedio=avg(tmacs);
+  const taxa=list.length?Math.round(conc.length/list.length*100):0;
+
+  const empresaLbl={apodi:"Apodi",seguro:"Seguro Segurança",sousa:"Sousa Clean",ambipar:"Ambipar",reforme:"Reforme Paletes"};
+  const filtrosTxt=[
+    MDATA?(MDATA_FIM&&MDATA_FIM!==MDATA?`${MDATA} a ${MDATA_FIM}`:MDATA):MP,
+    MDIA!=="t"?"Dia: "+["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][+MDIA]:null,
+    MT!=="t"?"Turno "+MT:null,
+    MTC!=="t"?"Carga: "+MTC:null,
+    MEMP!=="t"?"Empresa: "+(empresaLbl[MEMP]||MEMP):null,
+    MSTATUS!=="t"?(MSTATUS==="a"?"Em Processo":"Concluídos"):null,
+  ].filter(Boolean).join(" · ");
+
+  const turnoRows=["A","B","C"].map(t=>{
+    const tl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
+    const tt=tl.map(calcTMAC).filter(v=>v!=null);
+    const ta=avg(tt);
+    return`<tr><td>Turno ${t}</td><td>${tl.length}</td><td>${ta?durStr(ta):"—"}</td></tr>`;
+  }).join("");
+
+  document.getElementById("preview-sub").textContent=`Apodi Cimentos · Filtros: ${filtrosTxt||"Nenhum"}`;
+  document.getElementById("preview-kpis").innerHTML=`
+    <div class="kpi"><div class="v">${list.length}</div><div class="l">Caminhões</div></div>
+    <div class="kpi"><div class="v">${conc.length}</div><div class="l">Concluídos</div></div>
+    <div class="kpi"><div class="v">${tmacMedio?durStr(tmacMedio):"—"}</div><div class="l">TMAC Médio</div></div>
+    <div class="kpi"><div class="v">${taxa}%</div><div class="l">Taxa Conclusão</div></div>`;
+  document.getElementById("preview-turnos").innerHTML=turnoRows;
+  document.getElementById("preview-overlay").classList.add("open");
+};
+window.closePreview=()=>{document.getElementById("preview-overlay").classList.remove("open");};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closePreview();});
 window.setEvoMetrica=(m,el)=>{EVOMET=m;document.querySelectorAll("#evo-toggle .metric-btn").forEach(b=>b.classList.remove("on"));el.classList.add("on");renderEvolucao();};
 window.setHmMetrica=(m,el)=>{HMMET=m;document.querySelectorAll("#hm-toggle .metric-btn").forEach(b=>b.classList.remove("on"));el.classList.add("on");renderHeatmap();};
 window.setGargOrdem=(v,el)=>{GARGORDEM=v;document.querySelectorAll("#garg-toggle .metric-btn").forEach(b=>b.classList.remove("on"));el.classList.add("on");renderGargalos();};
@@ -789,16 +878,6 @@ function getPeriodRange(){
   if(MDATA)return{s:MDATA,e:MDATA};
   return periodDates(MP);
 }
-function getPrevRange(){
-  const{s,e}=getPeriodRange();
-  const pad=n=>String(n).padStart(2,"0");
-  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  const sd=new Date(s+"T00:00:00"),ed=new Date(e+"T00:00:00");
-  const days=Math.round((ed-sd)/86400000)+1;
-  const prevEnd=new Date(sd);prevEnd.setDate(sd.getDate()-1);
-  const prevStart=new Date(prevEnd);prevStart.setDate(prevEnd.getDate()-(days-1));
-  return{s:fmt(prevStart),e:fmt(prevEnd)};
-}
 function applyNonDateFilters(list){
   const hIni=document.getElementById("f-h-ini")?.value||"00:00";
   const hFim=document.getElementById("f-h-fim")?.value||"23:59";
@@ -833,6 +912,46 @@ function getList(){
   return applyNonDateFilters(base);
 }
 
+// Escopos fixos (não seguem os botões de Período/Data lá em cima):
+// - getWeekList(): semana atual (dom–hoje), usada em tudo a partir do card de Percentis
+// - getHojeList()/getOntemList(): usadas só no card de comparação D-1
+function getWeekList(){
+  const{s,e}=periodDates("semana");
+  return applyNonDateFilters(ALL.filter(c=>c.data>=s&&c.data<=e));
+}
+function getHojeList(){
+  const{s,e}=periodDates("hoje");
+  return applyNonDateFilters(ALL.filter(c=>c.data>=s&&c.data<=e));
+}
+function getOntemList(){
+  const{s,e}=periodDates("ontem");
+  return applyNonDateFilters(ALL.filter(c=>c.data>=s&&c.data<=e));
+}
+
+// Tempo médio por etapa (Triagem/Carga/Enlonamento/Faturamento) — sem Portaria.
+// Compartilhado entre o card do topo (segue o período filtrado) e o card
+// "Gargalo por Etapa" (semana atual), que usam populações diferentes.
+function computeEtapaData(list){
+  const etapas=[
+    {lb:"Triagem",sn:"triagem",ini:"inicio",fim:"fim",cor:"#ffd000"},
+    {lb:"Carga",sn:"carregamento",ini:"inicio",fim:"fim",cor:"#ff6644"},
+    {lb:"Enlonamento",sn:"enlonamento",ini:"inicio",fim:"fim",cor:"#a78bfa"},
+  ];
+  const fatTimes=list.map(c=>{
+    const enF=getMarcoFimTS(c),sa=getTS(c,"faturamento","ts");
+    return(enF&&sa)?sa-enF:null;
+  }).filter(v=>v!=null);
+  const etapaData=etapas.map(e=>{
+    const times=list.map(c=>{
+      const i=getTS(c,e.sn,e.ini),f=getTS(c,e.sn,e.fim);
+      return(i&&f)?f-i:null;
+    }).filter(v=>v!=null);
+    return{...e,avg:avg(times),count:times.length};
+  });
+  etapaData.push({lb:"Faturamento",cor:"#00d4ff",avg:avg(fatTimes),count:fatTimes.length});
+  return etapaData;
+}
+
 // ── Render ────────────────────────────────────────────────────────────────
 function render(){
   const list=getList();
@@ -850,26 +969,7 @@ function render(){
   document.getElementById("k-taxa").textContent=taxa+"%";
 
   // ── Tempo médio por etapa ─────────────────────────────────────────────
-  const etapas=[
-    {lb:"Triagem",sn:"triagem",ini:"inicio",fim:"fim",cor:"#ffd000"},
-    {lb:"Carga",sn:"carregamento",ini:"inicio",fim:"fim",cor:"#ff6644"},
-    {lb:"Enlonamento",sn:"enlonamento",ini:"inicio",fim:"fim",cor:"#a78bfa"},
-  ];
-  // faturamento = tempo entre enlone_fim e faturamento
-  const fatTimes=list.map(c=>{
-    const enF=getMarcoFimTS(c),sa=getTS(c,"faturamento","ts");
-    return(enF&&sa)?sa-enF:null;
-  }).filter(v=>v!=null);
-  const fatAvg=avg(fatTimes);
-
-  const etapaData=etapas.map(e=>{
-    const times=list.map(c=>{
-      const i=getTS(c,e.sn,e.ini),f=getTS(c,e.sn,e.fim);
-      return(i&&f)?f-i:null;
-    }).filter(v=>v!=null);
-    return{...e,avg:avg(times),count:times.length};
-  });
-  etapaData.push({lb:"Faturamento",cor:"#00d4ff",avg:fatAvg,count:fatTimes.length});
+  const etapaData=computeEtapaData(list);
 
   const maxEtapa=Math.max(...etapaData.map(e=>e.avg||0),1);
   document.getElementById("etapas-chart").innerHTML=etapaData.map(e=>{
@@ -933,60 +1033,8 @@ function render(){
     </div>`;
   }).join("");
 
-  // ── Ranking placas ────────────────────────────────────────────────────
-  const placaMap={};
-  list.forEach(c=>{
-    if(!c.placa)return;
-    if(!placaMap[c.placa])placaMap[c.placa]={count:0,tmacs:[]};
-    placaMap[c.placa].count++;
-    const t=calcTMAC(c);
-    if(t!=null)placaMap[c.placa].tmacs.push(t);
-  });
-  const ranking=Object.entries(placaMap)
-    .map(([pl,v])=>({pl,count:v.count,tmac:avg(v.tmacs)}))
-    .sort((a,b)=>b.count-a.count)
-    .slice(0,8);
-
-  document.getElementById("ranking-list").innerHTML=ranking.length
-    ?ranking.map((r,i)=>`<div class="rank-row">
-        <span class="rank-n">${i+1}</span>
-        <span class="rank-pl">${r.pl}</span>
-        <span class="rank-ct">${r.count} visit${r.count!==1?"as":"a"}</span>
-        <span class="rank-v">${r.tmac?durStr(r.tmac):"—"}</span>
-      </div>`).join("")
-    :`<div class="empty-state">Sem dados no período</div>`;
-
-  // ── Gargalo ───────────────────────────────────────────────────────────
-  const gargData=[
-    {lb:"Carga",icon:"🏗️",cor:"#ff6644",avg:etapaData.find(e=>e.lb==="Carga")?.avg},
-    {lb:"Enlonamento",icon:"🪢",cor:"#a78bfa",avg:etapaData.find(e=>e.lb==="Enlonamento")?.avg},
-    {lb:"Triagem",icon:"📦",cor:"#ffd000",avg:etapaData.find(e=>e.lb==="Triagem")?.avg},
-    {lb:"Faturamento",icon:"🧾",cor:"#00d4ff",avg:etapaData.find(e=>e.lb==="Faturamento")?.avg},
-  ].filter(g=>g.avg).sort((a,b)=>b.avg-a.avg);
-
-  const maxG=gargData.length?gargData[0].avg:1;
-  const worst=gargData[0];
-
-  // TMAC turno B desvio
-  const tmacB=()=>{
-    const bl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))==="B");
-    const bt=bl.map(calcTMAC).filter(v=>v!=null);
-    return avg(bt);
-  };
-
-  document.getElementById("gargalo-chart").innerHTML=(gargData.length
-    ?gargData.map(g=>`<div class="garg-row">
-        <span class="garg-icon">${g.icon}</span>
-        <span class="garg-label">${g.lb}</span>
-        <div class="garg-track"><div class="garg-fill" style="width:${Math.round(g.avg/maxG*100)}%;background:${g.cor}"></div></div>
-        <span class="garg-val">${durStr(g.avg)}</span>
-      </div>`).join("")
-    :`<div class="empty-state">Sem dados suficientes</div>`)
-    +(worst?`<div class="worst-box">
-      <div class="worst-label">Maior gargalo do período</div>
-      <div class="worst-val">${worst.icon} ${worst.lb} · ${durStr(worst.avg)}</div>
-      ${(()=>{const tb=tmacB();const diff=tb&&tmacMedio?tb-tmacMedio:null;return diff&&diff>0?`<div class="worst-sub">Turno B tem o maior desvio (+${durStr(diff)})</div>`:"";})()}
-    </div>`:"");
+  // (Ranking de Placas e Gargalo por Etapa foram movidos para a seção
+  // "Semana Atual" — ver renderRankingEGargalo(), chamada por renderAvancados())
 
   // ── Tipo de Carga ─────────────────────────────────────────────────────
   const tipos=[
@@ -1120,6 +1168,62 @@ function render(){
   renderAvancados();
 }
 
+// ── Ranking de Placas + Gargalo por Etapa (seção "Semana Atual") ──────────
+function renderRankingEGargalo(list,tmacMedio){
+  const placaMap={};
+  list.forEach(c=>{
+    if(!c.placa)return;
+    if(!placaMap[c.placa])placaMap[c.placa]={count:0,tmacs:[]};
+    placaMap[c.placa].count++;
+    const t=calcTMAC(c);
+    if(t!=null)placaMap[c.placa].tmacs.push(t);
+  });
+  const ranking=Object.entries(placaMap)
+    .map(([pl,v])=>({pl,count:v.count,tmac:avg(v.tmacs)}))
+    .sort((a,b)=>b.count-a.count)
+    .slice(0,8);
+
+  const elRank=document.getElementById("ranking-list");
+  if(elRank)elRank.innerHTML=ranking.length
+    ?ranking.map((r,i)=>`<div class="rank-row">
+        <span class="rank-n">${i+1}</span>
+        <span class="rank-pl">${r.pl}</span>
+        <span class="rank-ct">${r.count} visit${r.count!==1?"as":"a"}</span>
+        <span class="rank-v">${r.tmac?durStr(r.tmac):"—"}</span>
+      </div>`).join("")
+    :`<div class="empty-state">Sem dados na semana atual</div>`;
+
+  const etapaData=computeEtapaData(list);
+  const gargData=[
+    {lb:"Carga",icon:"🏗️",cor:"#ff6644",avg:etapaData.find(e=>e.lb==="Carga")?.avg},
+    {lb:"Enlonamento",icon:"🪢",cor:"#a78bfa",avg:etapaData.find(e=>e.lb==="Enlonamento")?.avg},
+    {lb:"Triagem",icon:"📦",cor:"#ffd000",avg:etapaData.find(e=>e.lb==="Triagem")?.avg},
+    {lb:"Faturamento",icon:"🧾",cor:"#00d4ff",avg:etapaData.find(e=>e.lb==="Faturamento")?.avg},
+  ].filter(g=>g.avg).sort((a,b)=>b.avg-a.avg);
+
+  const maxG=gargData.length?gargData[0].avg:1;
+  const worst=gargData[0];
+
+  const bl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))==="B");
+  const bt=bl.map(calcTMAC).filter(v=>v!=null);
+  const tmacB=avg(bt);
+
+  const elGarg=document.getElementById("gargalo-chart");
+  if(elGarg)elGarg.innerHTML=(gargData.length
+    ?gargData.map(g=>`<div class="garg-row">
+        <span class="garg-icon">${g.icon}</span>
+        <span class="garg-label">${g.lb}</span>
+        <div class="garg-track"><div class="garg-fill" style="width:${Math.round(g.avg/maxG*100)}%;background:${g.cor}"></div></div>
+        <span class="garg-val">${durStr(g.avg)}</span>
+      </div>`).join("")
+    :`<div class="empty-state">Sem dados suficientes</div>`)
+    +(worst?`<div class="worst-box">
+      <div class="worst-label">Maior gargalo da semana</div>
+      <div class="worst-val">${worst.icon} ${worst.lb} · ${durStr(worst.avg)}</div>
+      ${(()=>{const diff=tmacB&&tmacMedio?tmacB-tmacMedio:null;return diff&&diff>0?`<div class="worst-sub">Turno B tem o maior desvio (+${durStr(diff)})</div>`:"";})()}
+    </div>`:"");
+}
+
 // ── Indicadores Avançados ────────────────────────────────────────────────
 function percentil(arr,p){
   if(!arr.length)return null;
@@ -1144,37 +1248,44 @@ function calcDelta(cur,prev,invert){
 }
 
 function renderAvancados(){
-  const list=getList();
+  // A partir daqui (Percentis em diante) o escopo é sempre "semana atual até
+  // hoje" — não segue os botões de Período/Data do topo da página.
+  const list=getWeekList();
   const conc=list.filter(c=>c.setorAtual==="concluido");
   const tmacs=list.map(calcTMAC).filter(v=>v!=null);
   const tmacMedio=avg(tmacs);
   const taxa=list.length?Math.round(conc.length/list.length*100):0;
 
-  // Período anterior (mesma duração, dia(s) imediatamente anterior(es))
-  const{s:ps,e:pe}=getPrevRange();
-  const prevList=applyNonDateFilters(ALL.filter(c=>c.data>=ps&&c.data<=pe));
-  const prevConc=prevList.filter(c=>c.setorAtual==="concluido");
-  const prevTmacs=prevList.map(calcTMAC).filter(v=>v!=null);
-  const prevTmacMedio=avg(prevTmacs);
-  const prevTaxa=prevList.length?Math.round(prevConc.length/prevList.length*100):0;
+  // Comparação D-1: sempre Hoje × Ontem, fixo, independente do filtro de período
+  const hojeList=getHojeList();
+  const ontemList=getOntemList();
+  const hojeConc=hojeList.filter(c=>c.setorAtual==="concluido");
+  const ontemConc=ontemList.filter(c=>c.setorAtual==="concluido");
+  const hojeTmacs=hojeList.map(calcTMAC).filter(v=>v!=null);
+  const ontemTmacs=ontemList.map(calcTMAC).filter(v=>v!=null);
+  const hojeTmacMedio=avg(hojeTmacs);
+  const ontemTmacMedio=avg(ontemTmacs);
+  const hojeTaxa=hojeList.length?Math.round(hojeConc.length/hojeList.length*100):0;
+  const ontemTaxa=ontemList.length?Math.round(ontemConc.length/ontemList.length*100):0;
 
   const elComp=document.getElementById("comp-anterior");
   if(elComp){
+    const{s:so}=periodDates("ontem");
     elComp.innerHTML=`
-      <div style="font-size:9px;color:var(--t3);margin-bottom:10px">Comparado com: ${ps===pe?ps:ps+" a "+pe}</div>
+      <div style="font-size:9px;color:var(--t3);margin-bottom:10px">Hoje comparado com ontem: ${so}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        ${compCard("Caminhões",list.length,calcDelta(list.length,prevList.length,true))}
-        ${compCard("TMAC Médio",tmacMedio?durStr(tmacMedio):"—",calcDelta(tmacMedio,prevTmacMedio,false))}
-        ${compCard("Taxa Conclusão",taxa+"%",calcDelta(taxa,prevTaxa,true))}
+        ${compCard("Caminhões",hojeList.length,calcDelta(hojeList.length,ontemList.length,true))}
+        ${compCard("TMAC Médio",hojeTmacMedio?durStr(hojeTmacMedio):"—",calcDelta(hojeTmacMedio,ontemTmacMedio,false))}
+        ${compCard("Taxa Conclusão",hojeTaxa+"%",calcDelta(hojeTaxa,ontemTaxa,true))}
       </div>`;
   }
 
-  // Percentis
+  // Percentis (semana atual)
   const p50=percentil(tmacs,50),p90=percentil(tmacs,90);
   const elPerc=document.getElementById("percentis-chart");
   if(elPerc){
     if(!tmacs.length){
-      elPerc.innerHTML=`<div class="empty-state">Sem dados no período</div>`;
+      elPerc.innerHTML=`<div class="empty-state">Sem dados na semana atual</div>`;
     }else{
       elPerc.innerHTML=`
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
@@ -1187,11 +1298,11 @@ function renderAvancados(){
             <div style="font-size:9px;color:var(--t2);text-transform:uppercase;margin-top:2px">P90</div>
           </div>
         </div>
-        <div style="font-size:10px;color:var(--t3)">Média: ${durStr(tmacMedio)} — o P90 mostra o "pior caso" que afeta 10% dos caminhões, mais confiável que a média para medir SLA.</div>`;
+        <div style="font-size:10px;color:var(--t3)">Base: semana atual (dom–hoje). Média: ${durStr(tmacMedio)} — o P90 mostra o "pior caso" que afeta 10% dos caminhões, mais confiável que a média para medir SLA.</div>`;
     }
   }
 
-  // Tendência diária (agrupados por data, alinhado ao critério de elegibilidade do TMAC)
+  // Tendência diária (semana atual, alinhado ao critério de elegibilidade do TMAC)
   const porDia={};
   list.forEach(c=>{
     const t=calcTMAC(c);
@@ -1204,7 +1315,7 @@ function renderAvancados(){
   const elTendLbl=document.getElementById("tendencia-labels");
   if(elTend&&elTendLbl){
     if(diasOrdenados.length<2){
-      elTend.innerHTML=`<div class="empty-state" style="padding:14px 0">Selecione um período com mais de 1 dia (Semana, Mês etc.) para ver a tendência diária.</div>`;
+      elTend.innerHTML=`<div class="empty-state" style="padding:14px 0">Ainda não há dias suficientes na semana atual para ver a tendência diária.</div>`;
       elTendLbl.innerHTML="";
     }else{
       elTend.innerHTML=diasOrdenados.map((d,i)=>{
@@ -1216,7 +1327,7 @@ function renderAvancados(){
     }
   }
 
-  // Comparação por dia da semana (dentro do período filtrado)
+  // Comparação por dia da semana (dentro da semana atual)
   const diasSemanaLbl=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
   const porSemana=diasSemanaLbl.map((lbl,idx)=>{
     const itens=list.filter(c=>{const en=getTS(c,"entrada","ts");return en&&en.getDay()===idx&&tmacElegivel(c);});
@@ -1239,9 +1350,8 @@ function renderAvancados(){
     }).join("");
   }
 
-  // Ranking por empresa responsável (mesmo mapeamento do admin.html)
+  // Ranking por empresa responsável (semana atual) — sem Portaria/Seguro Segurança
   const empresaEtapas=[
-    {lbl:"Seguro Segurança",etapa:"Portaria",sn:"portaria",ini:"inicio",fim:"fim"},
     {lbl:"Reforme Paletes",etapa:"Triagem",sn:"triagem",ini:"inicio",fim:"fim"},
     {lbl:"Ambipar",etapa:"Carregamento",sn:"carregamento",ini:"inicio",fim:"fim"},
     {lbl:"Sousa Clean",etapa:"Enlonamento",sn:"enlonamento",ini:"inicio",fim:"fim"},
@@ -1253,7 +1363,7 @@ function renderAvancados(){
   const elRankEmp=document.getElementById("ranking-empresa");
   if(elRankEmp){
     if(!empresaData.length){
-      elRankEmp.innerHTML=`<div class="empty-state">Sem dados no período</div>`;
+      elRankEmp.innerHTML=`<div class="empty-state">Sem dados na semana atual</div>`;
     }else{
       elRankEmp.innerHTML=empresaData.map((e,i)=>`
         <div class="rank-row">
@@ -1265,6 +1375,9 @@ function renderAvancados(){
     }
   }
 
+  // Ranking de Placas + Gargalo por Etapa (semana atual)
+  renderRankingEGargalo(list,tmacMedio);
+
   // Insights automáticos
   const SLA_MS=2*60*60*1000+10*60*1000; // 2h10 (regra de negócio do sistema)
   const acimaSLA=tmacs.filter(t=>t>SLA_MS).length;
@@ -1275,24 +1388,24 @@ function renderAvancados(){
   if(empresaData.length){
     insights.push(`🔴 Maior gargalo: <b>${empresaData[0].lbl}</b> (${empresaData[0].etapa}), tempo médio de ${durStr(empresaData[0].avg)}.`);
   }
-  if(tmacMedio&&prevTmacMedio){
-    const pct=Math.round((tmacMedio-prevTmacMedio)/prevTmacMedio*100);
-    insights.push(pct<=0?`✅ TMAC melhorou ${Math.abs(pct)}% em relação ao período anterior (${ps===pe?ps:ps+" a "+pe}).`:`⚠️ TMAC piorou ${pct}% em relação ao período anterior (${ps===pe?ps:ps+" a "+pe}).`);
+  if(tmacMedio&&ontemTmacMedio){
+    const pct=Math.round((tmacMedio-ontemTmacMedio)/ontemTmacMedio*100);
+    insights.push(pct<=0?`✅ TMAC melhorou ${Math.abs(pct)}% em relação a ontem.`:`⚠️ TMAC piorou ${pct}% em relação a ontem.`);
   }
   if(piorDia&&piorDia.avg){
-    insights.push(`📆 <b>${piorDia.lbl}</b> é o dia com maior TMAC médio dentro do período (${durStr(piorDia.avg)}).`);
+    insights.push(`📆 <b>${piorDia.lbl}</b> é o dia com maior TMAC médio dentro da semana atual (${durStr(piorDia.avg)}).`);
   }
   if(tmacs.length){
-    insights.push(pctSLA>0?`⏱ ${pctSLA}% dos caminhões concluídos ultrapassaram o SLA de 2h10 (${acimaSLA} de ${tmacs.length}).`:`✅ Nenhum caminhão concluído ultrapassou o SLA de 2h10 no período.`);
+    insights.push(pctSLA>0?`⏱ ${pctSLA}% dos caminhões concluídos na semana ultrapassaram o SLA de 2h10 (${acimaSLA} de ${tmacs.length}).`:`✅ Nenhum caminhão concluído ultrapassou o SLA de 2h10 na semana atual.`);
   }
   const elIns=document.getElementById("insights-box");
   if(elIns){
     elIns.innerHTML=insights.length
       ?insights.map(t=>`<div style="padding:8px 0;border-bottom:1px solid var(--bg3);font-size:12px;color:var(--tx)">${t}</div>`).join("")
-      :`<div class="empty-state">Sem dados suficientes para gerar insights neste período.</div>`;
+      :`<div class="empty-state">Sem dados suficientes para gerar insights na semana atual.</div>`;
   }
 
-  renderExecutivo({list,conc,tmacs,tmacMedio,taxa,ps,pe,prevList,prevConc,prevTmacs,prevTmacMedio,prevTaxa,empresaData,porSemana});
+  renderExecutivo({list,conc,tmacs,tmacMedio,taxa,ontemList,ontemConc,ontemTmacs,ontemTmacMedio,ontemTaxa,empresaData,porSemana});
 }
 
 // ── Módulo 1: Resumo Executivo ──────────────────────────────────────────────
@@ -1302,16 +1415,17 @@ function renderAvancados(){
 //  - Produtividade meta: 4 caminhões/hora
 //  - Volume meta: média histórica diária x dias do período filtrado
 function renderExecutivo(ctx){
-  const{list,conc,tmacs,tmacMedio,ps,pe,prevList,prevConc,prevTmacs,prevTmacMedio,empresaData}=ctx;
+  const{list,conc,tmacs,tmacMedio,ontemList,ontemConc,ontemTmacs,ontemTmacMedio,empresaData}=ctx;
   const SLA_MS=2*60*60*1000+10*60*1000;
 
   const dentroSLA=tmacs.length?Math.round(tmacs.filter(t=>t<=SLA_MS).length/tmacs.length*100):0;
-  const prevDentroSLA=prevTmacs.length?Math.round(prevTmacs.filter(t=>t<=SLA_MS).length/prevTmacs.length*100):0;
+  const ontemDentroSLA=ontemTmacs.length?Math.round(ontemTmacs.filter(t=>t<=SLA_MS).length/ontemTmacs.length*100):0;
 
-  const diasPeriodo=Math.max(1,Math.round((new Date(pe+"T00:00:00")-new Date(ps+"T00:00:00"))/86400000)+1);
+  const{s:ws,e:we}=periodDates("semana");
+  const diasPeriodo=Math.max(1,Math.round((new Date(we+"T00:00:00")-new Date(ws+"T00:00:00"))/86400000)+1);
   const horasPeriodo=diasPeriodo*24;
   const prodHora=+(conc.length/horasPeriodo).toFixed(2);
-  const prodHoraPrev=+(prevConc.length/horasPeriodo).toFixed(2);
+  const prodHoraOntem=+(ontemConc.length/24).toFixed(2);
 
   const STAGES=[["portaria","inicio","fim"],["triagem","inicio","fim"],["carregamento","inicio","fim"],["enlonamento","inicio","fim"]];
   function prodOcioso(lst){
@@ -1326,7 +1440,7 @@ function renderExecutivo(ctx){
     return{prod:avg(prods),ocio:avg(ocios)};
   }
   const{prod:tProdutivo,ocio:tOcioso}=prodOcioso(list);
-  const{prod:tProdutivoPrev,ocio:tOciosoPrev}=prodOcioso(prevList);
+  const{prod:tProdutivoOntem,ocio:tOciosoOntem}=prodOcioso(ontemList);
 
   const metaSLA=90,metaTMAC=SLA_MS,metaProd=4;
   const diasHistAll=new Set(ALL.map(c=>c.data)).size||1;
@@ -1335,9 +1449,9 @@ function renderExecutivo(ctx){
   function trendPct(cur,prev,invert){
     if(prev==null||prev===0||cur==null)return{txt:"—",cls:""};
     const pct=Math.round((cur-prev)/prev*100);
-    if(pct===0)return{txt:"■ estável vs período anterior",cls:""};
+    if(pct===0)return{txt:"■ estável vs ontem",cls:""};
     const bom=invert?pct<0:pct>0;
-    return{txt:`${pct>0?"▲":"▼"} ${Math.abs(pct)}% vs período anterior`,cls:bom?"cor-gr":"cor-rd"};
+    return{txt:`${pct>0?"▲":"▼"} ${Math.abs(pct)}% vs ontem`,cls:bom?"cor-gr":"cor-rd"};
   }
   function ekCard(lbl,val,meta,trend,pctMeta){
     const barColor=pctMeta==null?"":(pctMeta>=100?"var(--gr)":pctMeta>=70?"var(--bl)":pctMeta>=40?"var(--ye)":"var(--rd)");
@@ -1352,13 +1466,13 @@ function renderExecutivo(ctx){
   const elK=document.getElementById("exec-kpis");
   if(elK){
     elK.innerHTML=
-      ekCard("Caminhões Recebidos",list.length,metaVolume,trendPct(list.length,prevList.length,false),metaVolume?Math.round(list.length/metaVolume*100):null)+
-      ekCard("Caminhões Concluídos",conc.length,"—",trendPct(conc.length,prevConc.length,false),null)+
-      ekCard("TMAC Médio",tmacMedio?durStr(tmacMedio):"—",durStr(metaTMAC),trendPct(tmacMedio,prevTmacMedio,true),tmacMedio?Math.round(metaTMAC/tmacMedio*100):null)+
-      ekCard("SLA (dentro de 2h10)",dentroSLA+"%",metaSLA+"%",trendPct(dentroSLA,prevDentroSLA,false),Math.round(dentroSLA/metaSLA*100))+
-      ekCard("Produtividade/Hora",prodHora,metaProd+"/h",trendPct(prodHora,prodHoraPrev,false),metaProd?Math.round(prodHora/metaProd*100):null)+
-      ekCard("Tempo Produtivo Médio",tProdutivo?durStr(tProdutivo):"—","—",trendPct(tProdutivo,tProdutivoPrev,false),null)+
-      ekCard("Tempo Ocioso Médio",tOcioso?durStr(tOcioso):"—","—",trendPct(tOcioso,tOciosoPrev,true),null);
+      ekCard("Caminhões Recebidos",list.length,metaVolume,trendPct(list.length,ontemList.length,false),metaVolume?Math.round(list.length/metaVolume*100):null)+
+      ekCard("Caminhões Concluídos",conc.length,"—",trendPct(conc.length,ontemConc.length,false),null)+
+      ekCard("TMAC Médio",tmacMedio?durStr(tmacMedio):"—",durStr(metaTMAC),trendPct(tmacMedio,ontemTmacMedio,true),tmacMedio?Math.round(metaTMAC/tmacMedio*100):null)+
+      ekCard("SLA (dentro de 2h10)",dentroSLA+"%",metaSLA+"%",trendPct(dentroSLA,ontemDentroSLA,false),Math.round(dentroSLA/metaSLA*100))+
+      ekCard("Produtividade/Hora",prodHora,metaProd+"/h",trendPct(prodHora,prodHoraOntem,false),metaProd?Math.round(prodHora/metaProd*100):null)+
+      ekCard("Tempo Produtivo Médio",tProdutivo?durStr(tProdutivo):"—","—",trendPct(tProdutivo,tProdutivoOntem,false),null)+
+      ekCard("Tempo Ocioso Médio",tOcioso?durStr(tOcioso):"—","—",trendPct(tOcioso,tOciosoOntem,true),null);
   }
 
   // IGP — Índice Geral de Performance
@@ -1400,11 +1514,11 @@ function renderExecutivo(ctx){
 
   // Executive Summary
   const bullets=[];
-  if(tmacMedio&&prevTmacMedio){
-    const pct=Math.round((tmacMedio-prevTmacMedio)/prevTmacMedio*100);
-    bullets.push(pct>0?`TMAC aumentou ${pct}% em relação ao período anterior.`:pct<0?`TMAC caiu ${Math.abs(pct)}% em relação ao período anterior.`:`TMAC estável em relação ao período anterior.`);
+  if(tmacMedio&&ontemTmacMedio){
+    const pct=Math.round((tmacMedio-ontemTmacMedio)/ontemTmacMedio*100);
+    bullets.push(pct>0?`TMAC aumentou ${pct}% em relação a ontem.`:pct<0?`TMAC caiu ${Math.abs(pct)}% em relação a ontem.`:`TMAC estável em relação a ontem.`);
   }
-  bullets.push(prevDentroSLA?(dentroSLA<prevDentroSLA?`SLA caiu para ${dentroSLA}% (era ${prevDentroSLA}%).`:dentroSLA>prevDentroSLA?`SLA subiu para ${dentroSLA}% (era ${prevDentroSLA}%).`:`SLA estável em ${dentroSLA}%.`):`SLA atual: ${dentroSLA}% dos caminhões concluídos dentro de 2h10.`);
+  bullets.push(ontemDentroSLA?(dentroSLA<ontemDentroSLA?`SLA caiu para ${dentroSLA}% (era ${ontemDentroSLA}% ontem).`:dentroSLA>ontemDentroSLA?`SLA subiu para ${dentroSLA}% (era ${ontemDentroSLA}% ontem).`:`SLA estável em ${dentroSLA}%.`):`SLA atual: ${dentroSLA}% dos caminhões concluídos dentro de 2h10.`);
   if(empresaData.length&&tmacMedio){
     const pctEtapa=Math.round(empresaData[0].avg/tmacMedio*100);
     bullets.push(`${empresaData[0].etapa} (${empresaData[0].lbl}) representa ${pctEtapa}% do tempo total do TMAC — maior gargalo do processo.`);
@@ -1532,7 +1646,7 @@ function renderForecast(){
 }
 
 function renderSimulador(){
-  const list=getList();
+  const list=getWeekList();
   const el=document.getElementById("sim-resultado");
   if(!el)return;
 
@@ -1571,7 +1685,7 @@ function renderSimulador(){
 
 // ── Módulo 6: Pareto e Causas ────────────────────────────────────────────────
 function renderCausas(){
-  const list=getList();
+  const list=getWeekList();
   const SLA_MS=2*60*60*1000+10*60*1000;
 
   // Pareto de motivos
@@ -1688,7 +1802,7 @@ function moda(arr,binMs){
 }
 
 function renderEstatistica(){
-  const list=getList();
+  const list=getWeekList();
   const tmacs=list.map(calcTMAC).filter(v=>v!=null).sort((a,b)=>a-b);
 
   const elG=document.getElementById("stats-grid");
@@ -1797,7 +1911,6 @@ function perfGrupos(list){
   }
   if(PERFDIM==="empresa"){
     return[
-      {lbl:"Seguro Segurança",etapa:"Portaria",sn:"portaria"},
       {lbl:"Reforme Paletes",etapa:"Triagem",sn:"triagem"},
       {lbl:"Ambipar",etapa:"Carregamento",sn:"carregamento"},
       {lbl:"Sousa Clean",etapa:"Enlonamento",sn:"enlonamento"},
@@ -1830,7 +1943,7 @@ function perfGrupos(list){
 }
 
 function renderPerformance(){
-  const list=getList();
+  const list=getWeekList();
   const grupos=perfGrupos(list);
   const elT=document.getElementById("perf-table");
   const elS=document.getElementById("scatter-chart");
@@ -1892,7 +2005,6 @@ function renderPerformance(){
 
 // ── Módulo 3: Gargalos Operacionais ─────────────────────────────────────────
 const GARGALO_STAGES=[
-  {key:"portaria",lbl:"Portaria",calc:c=>{const i=getTS(c,"portaria","inicio"),f=getTS(c,"portaria","fim");return(i&&f)?f-i:null;}},
   {key:"triagem",lbl:"Triagem",calc:c=>{const i=getTS(c,"triagem","inicio"),f=getTS(c,"triagem","fim");return(i&&f)?f-i:null;}},
   {key:"carregamento",lbl:"Carregamento",calc:c=>{const i=getTS(c,"carregamento","inicio"),f=getTS(c,"carregamento","fim");return(i&&f)?f-i:null;}},
   {key:"enlonamento",lbl:"Enlonamento",calc:c=>{const i=getTS(c,"enlonamento","inicio"),f=getTS(c,"enlonamento","fim");return(i&&f)?f-i:null;}},
@@ -1901,7 +2013,7 @@ const GARGALO_STAGES=[
 const GARGALO_CORES=["#00d4ff","#00e896","#ffd000","#a78bfa","#fb923c"];
 
 function renderGargalos(){
-  const list=getList();
+  const list=getWeekList();
   const conc=list.filter(c=>c.setorAtual==="concluido");
   const tmacsArr=list.map(calcTMAC).filter(v=>v!=null);
   const tmacMedio=avg(tmacsArr);
@@ -1983,7 +2095,7 @@ function renderRankingGargalos(dados){
 function legendLabelEvo(m){return{tmac:"TMAC médio",sla:"SLA (%)",volume:"Volume",produtividade:"Produtividade/h"}[m]||m;}
 
 function renderEvolucao(){
-  const list=getList();
+  const list=getWeekList();
   const elChart=document.getElementById("evo-chart");
   const elLeg=document.getElementById("evo-legend");
   if(!elChart)return;
@@ -2058,7 +2170,7 @@ function renderEvolucao(){
 function legendHm(m){return{quantidade:"Quantidade",tmac:"TMAC médio",sla:"SLA",congestionamento:"Congestionamento"}[m]||m;}
 
 function renderHeatmap(){
-  const list=getList();
+  const list=getWeekList();
   const grid=document.getElementById("heatmap-grid");
   if(!grid)return;
   const SLA_MS=2*60*60*1000+10*60*1000;
