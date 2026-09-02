@@ -28,19 +28,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .scope-d1 .lbl{color:var(--bl);border:1px solid rgba(0,212,255,.35);background:rgba(0,212,255,.06)}
 .scope-week .lbl{color:var(--gr);border:1px solid rgba(0,232,150,.35);background:rgba(0,232,150,.06)}
 .scope-note{font-size:10px;color:var(--t3);margin:-8px 0 14px 2px}
-#preview-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:900;align-items:center;justify-content:center;padding:30px}
+#preview-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;align-items:center;justify-content:center;padding:30px}
 #preview-overlay.open{display:flex}
-#preview-modal{background:#f4f4f4;color:#111;width:100%;max-width:1000px;max-height:90vh;overflow:auto;border-radius:8px;padding:28px 34px;font-family:Arial,sans-serif;position:relative}
-#preview-modal h1{font-size:20px;margin-bottom:4px}
-#preview-modal .sub{font-size:11px;color:#555;margin-bottom:16px}
-#preview-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#222;color:#fff;font-size:14px;cursor:pointer}
-.preview-kpis{display:flex;gap:14px;margin-bottom:16px}
-.preview-kpis .kpi{border:1px solid #ccc;border-radius:6px;padding:10px 16px;text-align:center;flex:1;background:#fff}
-.preview-kpis .kpi .v{font-size:20px;font-weight:700}
-.preview-kpis .kpi .l{font-size:10px;color:#666;text-transform:uppercase}
-#preview-modal table{width:100%;border-collapse:collapse;margin-bottom:18px}
-#preview-modal th,#preview-modal td{border:1px solid #ccc;padding:6px 10px;font-size:11px;text-align:left}
-#preview-modal th{background:#eee}
+#preview-modal{background:var(--bg2);color:var(--tx);width:100%;max-width:1200px;max-height:92vh;overflow:auto;border-radius:var(--r);border:1px solid var(--bd);padding:28px 34px;position:relative}
+#preview-modal h1{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--pu);margin-bottom:4px}
+#preview-modal .sub{font-size:11px;color:var(--t2);margin-bottom:20px}
+#preview-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:1px solid var(--bd);background:var(--bg3);color:var(--tx);font-size:14px;cursor:pointer}
+#preview-close:hover{border-color:var(--rd);color:var(--rd)}
+#preview-body .scope-divider{margin:22px 0 12px}
 .wrap{max-width:1300px;margin:0 auto;padding:20px 16px}
 .filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
 .row-label{font-size:10px;color:var(--t3);font-weight:600;padding:0 4px;white-space:nowrap;min-width:60px}
@@ -602,11 +597,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
     <button id="preview-close" onclick="closePreview()">✕</button>
     <h1>Relatório de Análise — TMAC Online</h1>
     <div class="sub" id="preview-sub">Apodi Cimentos</div>
-    <div class="preview-kpis" id="preview-kpis"></div>
-    <table>
-      <thead><tr><th>Turno</th><th>Caminhões</th><th>TMAC Médio</th></tr></thead>
-      <tbody id="preview-turnos"></tbody>
-    </table>
+    <div id="preview-body"></div>
   </div>
 </div>
 
@@ -740,16 +731,10 @@ window.toggleFilters=()=>{
   btn.classList.toggle("on",open);
   lbl.textContent=open?"Ocultar Filtros":"Mostrar Filtros";
 };
-window.openPreview=()=>{
-  const list=getList();
-  if(!list.length){alert("Nenhum dado para pré-visualizar.");return;}
-  const conc=list.filter(c=>c.setorAtual==="concluido");
-  const tmacs=list.map(calcTMAC).filter(v=>v!=null);
-  const tmacMedio=avg(tmacs);
-  const taxa=list.length?Math.round(conc.length/list.length*100):0;
-
+// ── Helpers compartilhados pelos 3 relatórios (Visualizar/Excel/PDF) ────────
+function buildFiltrosTxt(){
   const empresaLbl={apodi:"Apodi",seguro:"Seguro Segurança",sousa:"Sousa Clean",ambipar:"Ambipar",reforme:"Reforme Paletes"};
-  const filtrosTxt=[
+  return[
     MDATA?(MDATA_FIM&&MDATA_FIM!==MDATA?`${MDATA} a ${MDATA_FIM}`:MDATA):MP,
     MDIA!=="t"?"Dia: "+["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][+MDIA]:null,
     MT!=="t"?"Turno "+MT:null,
@@ -757,21 +742,29 @@ window.openPreview=()=>{
     MEMP!=="t"?"Empresa: "+(empresaLbl[MEMP]||MEMP):null,
     MSTATUS!=="t"?(MSTATUS==="a"?"Em Processo":"Concluídos"):null,
   ].filter(Boolean).join(" · ");
+}
+// Clona o dashboard já renderizado (todos os cartões/gráficos com os dados
+// atuais) pra reusar em Visualizar e Exportar PDF, em vez de reconstruir cada
+// visual na mão. Remove botões/selects (não fazem sentido num relatório
+// estático) e ids (evita ids duplicados no documento).
+function buildReportContent(){
+  const original=document.getElementById("content");
+  if(!original||!original.children.length)return null;
+  const clone=original.cloneNode(true);
+  clone.style.display="block";
+  clone.removeAttribute("id");
+  clone.querySelectorAll("button,select").forEach(el=>el.remove());
+  clone.querySelectorAll("[id]").forEach(el=>el.removeAttribute("id"));
+  return clone;
+}
 
-  const turnoRows=["A","B","C"].map(t=>{
-    const tl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
-    const tt=tl.map(calcTMAC).filter(v=>v!=null);
-    const ta=avg(tt);
-    return`<tr><td>Turno ${t}</td><td>${tl.length}</td><td>${ta?durStr(ta):"—"}</td></tr>`;
-  }).join("");
-
-  document.getElementById("preview-sub").textContent=`Apodi Cimentos · Filtros: ${filtrosTxt||"Nenhum"}`;
-  document.getElementById("preview-kpis").innerHTML=`
-    <div class="kpi"><div class="v">${list.length}</div><div class="l">Caminhões</div></div>
-    <div class="kpi"><div class="v">${conc.length}</div><div class="l">Concluídos</div></div>
-    <div class="kpi"><div class="v">${tmacMedio?durStr(tmacMedio):"—"}</div><div class="l">TMAC Médio</div></div>
-    <div class="kpi"><div class="v">${taxa}%</div><div class="l">Taxa Conclusão</div></div>`;
-  document.getElementById("preview-turnos").innerHTML=turnoRows;
+window.openPreview=()=>{
+  const clone=buildReportContent();
+  if(!clone){alert("Nenhum dado para pré-visualizar.");return;}
+  document.getElementById("preview-sub").textContent=`Apodi Cimentos · Filtros: ${buildFiltrosTxt()||"Nenhum"}`;
+  const body=document.getElementById("preview-body");
+  body.innerHTML="";
+  body.appendChild(clone);
   document.getElementById("preview-overlay").classList.add("open");
 };
 window.closePreview=()=>{document.getElementById("preview-overlay").classList.remove("open");};
@@ -2314,13 +2307,88 @@ window.exportExcel=()=>{
     sumRows.push({"Métrica":`Turno ${t} — TMAC`,"Valor":ta?durStr(ta):"—"});
   });
 
+  // Aba 3: Etapas (Tempo médio por etapa, mesmo período filtrado do topo)
+  const etapaDataEx=computeEtapaData(list);
+  const etapaRows=etapaDataEx.map(e=>({"Etapa":e.lb,"Tempo Médio":e.avg?durStr(e.avg):"—","Amostras":e.count}));
+
+  // Aba 4: Tipo de Carga (volume + TMAC por tipo, mesmo período filtrado do topo)
+  const tiposEx=[{id:"ensacado",lb:"Ensacado"},{id:"granel",lb:"Granel"},{id:"bigbag",lb:"Big Bag"}];
+  const allPeriodEx=ALL.filter(c=>{const{s,e}=periodDates(MP);const dr=dataRef(c);return dr&&dr>=s&&dr<=e;});
+  const tipoRows=tiposEx.map(t=>{
+    const tl=allPeriodEx.filter(c=>c.tipoCarga===t.id);
+    const tc=tl.filter(c=>c.setorAtual==="concluido");
+    const tmacVals=list.filter(c=>c.tipoCarga===t.id).map(calcTMAC).filter(v=>v!=null);
+    return{"Tipo":t.lb,"Total":tl.length,"Concluídos":tc.length,"TMAC Médio":avg(tmacVals)?durStr(avg(tmacVals)):"—"};
+  });
+
+  // Aba 5: Tipo de Carga × Turno (mesmo cruzamento do card, período filtrado do topo)
+  const crossListEx=ALL.filter(c=>{const{s,e}=periodDates(MP);const dr=dataRef(c);return dr&&dr>=s&&dr<=e&&tmacElegivel(c);});
+  const crossRows=["A","B","C"].map(tr=>{
+    const trl=crossListEx.filter(c=>getTurno(getTS(c,"entrada","ts"))===tr);
+    const row={"Turno":"Turno "+tr};
+    tiposEx.forEach(ti=>{
+      const vals=trl.filter(c=>c.tipoCarga===ti.id).map(calcTMAC).filter(v=>v!=null);
+      row[ti.lb]=avg(vals)?durStr(avg(vals)):"—";
+    });
+    const allVals=trl.map(calcTMAC).filter(v=>v!=null);
+    row["Todos"]=avg(allVals)?durStr(avg(allVals)):"—";
+    return row;
+  });
+
+  // Aba 6: Semana Atual — Gargalos e Rankings (escopo fixo, igual à tela)
+  const weekListEx=getWeekList();
+  const etapaWeekEx=computeEtapaData(weekListEx);
+  const gargRows=["Carga","Enlonamento","Triagem","Faturamento"].map(lb=>{
+    const et=etapaWeekEx.find(x=>x.lb===lb);
+    return{"Etapa":lb,"Tempo Médio (semana atual)":et&&et.avg?durStr(et.avg):"—"};
+  });
+  const placaMapEx={};
+  weekListEx.forEach(c=>{
+    if(!c.placa)return;
+    if(!placaMapEx[c.placa])placaMapEx[c.placa]={count:0,tmacs:[]};
+    placaMapEx[c.placa].count++;
+    const t=calcTMAC(c);
+    if(t!=null)placaMapEx[c.placa].tmacs.push(t);
+  });
+  const rankingPlacasRows=Object.entries(placaMapEx)
+    .map(([pl,v])=>({"Placa":pl,"Visitas":v.count,"TMAC Médio":avg(v.tmacs)?durStr(avg(v.tmacs)):"—"}))
+    .sort((a,b)=>b.Visitas-a.Visitas).slice(0,8);
+  const empresaEtapasEx=[
+    {lbl:"Reforme Paletes",etapa:"Triagem",sn:"triagem"},
+    {lbl:"Ambipar",etapa:"Carregamento",sn:"carregamento"},
+    {lbl:"Sousa Clean",etapa:"Enlonamento",sn:"enlonamento"},
+  ];
+  const rankingEmpresaRows=empresaEtapasEx.map(e=>{
+    const times=weekListEx.map(c=>{const i=getTS(c,e.sn,"inicio"),f=getTS(c,e.sn,"fim");return(i&&f)?f-i:null;}).filter(v=>v!=null);
+    return{lbl:e.lbl,etapa:e.etapa,avgMs:avg(times),count:times.length};
+  }).filter(r=>r.count>0).sort((a,b)=>b.avgMs-a.avgMs)
+    .map(r=>({"Empresa":r.lbl,"Etapa":r.etapa,"Tempo Médio":durStr(r.avgMs),"Registros":r.count}));
+
   const wb=XLSX.utils.book_new();
   const ws1=XLSX.utils.json_to_sheet(rows);
   const ws2=XLSX.utils.json_to_sheet(sumRows);
+  const ws3=XLSX.utils.json_to_sheet(etapaRows);
+  const ws4=XLSX.utils.json_to_sheet(tipoRows);
+  const ws5=XLSX.utils.json_to_sheet(crossRows);
+  const ws6a=XLSX.utils.json_to_sheet(gargRows);
+  const ws6b=XLSX.utils.json_to_sheet(rankingPlacasRows.length?rankingPlacasRows:[{"Placa":"—","Visitas":"","TMAC Médio":""}]);
+  const ws6c=XLSX.utils.json_to_sheet(rankingEmpresaRows.length?rankingEmpresaRows:[{"Empresa":"—","Etapa":"","Tempo Médio":"","Registros":""}]);
   ws1["!cols"]=[{wch:10},{wch:7},{wch:10},{wch:12},{wch:20},{wch:16},{wch:18},{wch:18},{wch:12},{wch:18},{wch:18},{wch:12},{wch:18},{wch:18},{wch:12},{wch:20},{wch:14}];
   ws2["!cols"]=[{wch:30},{wch:20}];
+  ws3["!cols"]=[{wch:16},{wch:16},{wch:12}];
+  ws4["!cols"]=[{wch:14},{wch:10},{wch:12},{wch:14}];
+  ws5["!cols"]=[{wch:12},{wch:14},{wch:14},{wch:14},{wch:14}];
+  ws6a["!cols"]=[{wch:16},{wch:22}];
+  ws6b["!cols"]=[{wch:14},{wch:10},{wch:14}];
+  ws6c["!cols"]=[{wch:18},{wch:16},{wch:14},{wch:12}];
   XLSX.utils.book_append_sheet(wb,ws1,"Detalhe");
   XLSX.utils.book_append_sheet(wb,ws2,"Sumário");
+  XLSX.utils.book_append_sheet(wb,ws3,"Etapas");
+  XLSX.utils.book_append_sheet(wb,ws4,"Tipo de Carga");
+  XLSX.utils.book_append_sheet(wb,ws5,"Turno x Tipo");
+  XLSX.utils.book_append_sheet(wb,ws6a,"Sem.Atual-Gargalos");
+  XLSX.utils.book_append_sheet(wb,ws6b,"Sem.Atual-Placas");
+  XLSX.utils.book_append_sheet(wb,ws6c,"Sem.Atual-Empresas");
 
   const{s,e}=periodDates(MP);
   const turnoSuffix=MT!=="t"?`_turno${MT}`:"";
@@ -2330,56 +2398,28 @@ window.exportExcel=()=>{
 
 // ── Export PDF ────────────────────────────────────────────────────────────
 window.exportPDF=()=>{
-  const list=getList();
-  if(!list.length){alert("Nenhum dado para exportar.");return;}
-  const conc=list.filter(c=>c.setorAtual==="concluido");
-  const tmacs=list.map(calcTMAC).filter(v=>v!=null);
-  const tmacMedio=avg(tmacs);
-  const taxa=list.length?Math.round(conc.length/list.length*100):0;
-
-  const empresaLbl={apodi:"Apodi",seguro:"Seguro Segurança",sousa:"Sousa Clean",ambipar:"Ambipar",reforme:"Reforme Paletes"};
-  const filtrosTxt=[
-    MDATA?(MDATA_FIM&&MDATA_FIM!==MDATA?`${MDATA} a ${MDATA_FIM}`:MDATA):MP,
-    MDIA!=="t"?"Dia: "+["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][+MDIA]:null,
-    MT!=="t"?"Turno "+MT:null,
-    MTC!=="t"?"Carga: "+MTC:null,
-    MEMP!=="t"?"Empresa: "+(empresaLbl[MEMP]||MEMP):null,
-    MSTATUS!=="t"?(MSTATUS==="a"?"Em Processo":"Concluídos"):null,
-  ].filter(Boolean).join(" · ");
-
-  const turnoRows=["A","B","C"].map(t=>{
-    const tl=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t);
-    const tt=tl.map(calcTMAC).filter(v=>v!=null);
-    const ta=avg(tt);
-    return`<tr><td>Turno ${t}</td><td>${tl.length}</td><td>${ta?durStr(ta):"—"}</td></tr>`;
-  }).join("");
+  const clone=buildReportContent();
+  if(!clone){alert("Nenhum dado para exportar.");return;}
 
   const dtNow=new Date().toLocaleString("pt-BR",{timeZone:"America/Fortaleza"});
+  const appCSS=document.querySelector("style")?.textContent||"";
+  const printOverride=`
+    :root{--bg:#f7f7f7;--bg2:#ffffff;--bg3:#f2f2f2;--bg4:#e9e9e9;--tx:#161616;--t2:#555;--t3:#888;--bd:#ddd;--b2:#ccc}
+    @page{size:A4 landscape;margin:12mm}
+    body{background:#f7f7f7;padding:20px 24px}
+    .card,.kpi,.tcrd,.tipo-crd{box-shadow:none}
+    .hr-tooltip{display:none}
+    .empty-state{padding:10px 0}
+    h1.report-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:#5a3fae;margin-bottom:2px}
+    .report-sub{font-size:11px;color:#666;margin-bottom:18px}
+    .report-footer{margin-top:24px;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:8px}
+  `;
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatório de Análise</title>
-  <style>
-    @page{size:A4 landscape;margin:14mm}
-    body{font-family:Arial,sans-serif;color:#111;font-size:12px}
-    h1{font-size:18px;margin:0 0 4px}
-    .sub{font-size:11px;color:#555;margin-bottom:16px}
-    .kpis{display:flex;gap:14px;margin-bottom:18px}
-    .kpi{border:1px solid #ccc;border-radius:6px;padding:10px 16px;text-align:center;flex:1}
-    .kpi .v{font-size:20px;font-weight:700}
-    .kpi .l{font-size:10px;color:#666;text-transform:uppercase}
-    table{width:100%;border-collapse:collapse;margin-bottom:18px}
-    th,td{border:1px solid #ccc;padding:6px 10px;font-size:11px;text-align:left}
-    th{background:#f0f0f0}
-    .footer{margin-top:24px;font-size:10px;color:#777;border-top:1px solid #ccc;padding-top:8px}
-  </style></head><body>
-    <h1>Relatório de Análise — TMAC Online</h1>
-    <div class="sub">Apodi Cimentos · Filtros: ${filtrosTxt||"Nenhum"}</div>
-    <div class="kpis">
-      <div class="kpi"><div class="v">${list.length}</div><div class="l">Caminhões</div></div>
-      <div class="kpi"><div class="v">${conc.length}</div><div class="l">Concluídos</div></div>
-      <div class="kpi"><div class="v">${tmacMedio?durStr(tmacMedio):"—"}</div><div class="l">TMAC Médio</div></div>
-      <div class="kpi"><div class="v">${taxa}%</div><div class="l">Taxa Conclusão</div></div>
-    </div>
-    <table><thead><tr><th>Turno</th><th>Caminhões</th><th>TMAC Médio</th></tr></thead><tbody>${turnoRows}</tbody></table>
-    <div class="footer">Gerado em ${dtNow} · Sistema de Rastreio de Carregamento · Apodi Cimentos</div>
+  <style>${appCSS}\n${printOverride}</style></head><body>
+    <h1 class="report-title">Relatório de Análise — TMAC Online</h1>
+    <div class="report-sub">Apodi Cimentos · Filtros: ${buildFiltrosTxt()||"Nenhum"}</div>
+    ${clone.outerHTML}
+    <div class="report-footer">Gerado em ${dtNow} · Sistema de Rastreio de Carregamento · Apodi Cimentos</div>
   </body></html>`;
 
   const w=window.open("","_blank");
