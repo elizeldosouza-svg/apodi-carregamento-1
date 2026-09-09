@@ -11,7 +11,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .top{background:var(--bg2);border-bottom:2px solid var(--tm);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:12px}
 .logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--tm);flex:1;letter-spacing:1px}
 .live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--gr)}
+.live.err{color:var(--rd)}
 .dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pu 1.4s ease-in-out infinite}
+.live.err .dot{background:var(--rd);animation:none}
 @keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 .wrap{max-width:1700px;margin:0 auto;padding:18px 16px 60px}
 
@@ -35,7 +37,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .thead-bar{padding:12px 18px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:6px}
 .thead-bar small{color:var(--t2);font-weight:400;font-size:11px;font-family:'Inter',sans-serif}
 .tscroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
-table{border-collapse:collapse;width:100%;min-width:2300px}
+table{border-collapse:collapse;width:100%;min-width:2500px}
 th{background:var(--bg3);color:var(--t2);font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:3}
 td{padding:7px 10px;font-size:12px;text-align:center;white-space:nowrap;border-top:1px solid var(--bd)}
 tbody tr:hover{background:var(--bg3);cursor:pointer}
@@ -46,6 +48,7 @@ tbody tr:hover{background:var(--bg3);cursor:pointer}
 .tag.gr{background:rgba(0,232,150,.12);color:var(--gr)}
 .tag.ye{background:rgba(255,208,0,.12);color:var(--ye)}
 .tag.rd{background:rgba(255,68,102,.12);color:var(--rd)}
+.turno-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;display:inline-block;background:rgba(122,159,212,.15);color:var(--t2)}
 .col-fixed{position:sticky;left:0;background:var(--bg2);z-index:2}
 th.col-fixed{z-index:4}
 .empty{padding:40px;text-align:center;color:var(--t2);font-size:13px}
@@ -73,7 +76,7 @@ th.col-fixed{z-index:4}
 
 <div class="top">
   <div class="logo">📊 RELATÓRIOS — VISÃO COMPLETA</div>
-  <div class="live"><span class="dot"></span>AO VIVO</div>
+  <div class="live" id="live-status"><span class="dot"></span>AO VIVO</div>
 </div>
 
 <div class="wrap">
@@ -88,10 +91,39 @@ th.col-fixed{z-index:4}
         <option value="Sousa Clean">Sousa Clean</option>
       </select>
     </div>
+    <div class="ff"><label>Turno</label>
+      <select id="f-turno" onchange="aplicarFiltros()">
+        <option value="">Todos</option>
+        <option value="A">A · 23h–07h</option>
+        <option value="B">B · 07h–15h</option>
+        <option value="C">C · 15h–23h</option>
+      </select>
+    </div>
+    <div class="ff"><label>Tipo Carga</label>
+      <select id="f-carga" onchange="aplicarFiltros()">
+        <option value="">Todas</option>
+        <option value="ensacado">Ensacado</option>
+        <option value="granel">Granel</option>
+        <option value="bigbag">Big Bag</option>
+      </select>
+    </div>
+    <div class="ff"><label>Tipo Cimento</label>
+      <select id="f-cimentotipo" onchange="aplicarFiltros()">
+        <option value="">Todos</option>
+        <option value="CP II F">CP II F</option>
+        <option value="CP III">CP III</option>
+        <option value="CP V">CP V</option>
+      </select>
+    </div>
     <div class="ff"><label>Data início</label><input type="date" id="f-ini" onchange="aplicarFiltros()"></div>
     <div class="ff"><label>Data fim</label><input type="date" id="f-fim" onchange="aplicarFiltros()"></div>
     <div class="ff"><label>Placa</label><input id="f-placa" placeholder="ABC1234" oninput="renderDebounced()"></div>
     <div class="ff"><label>AC</label><input id="f-ac" placeholder="AC-001" oninput="renderDebounced()"></div>
+    <div class="ff"><label>Operador</label>
+      <select id="f-operador" onchange="aplicarFiltros()">
+        <option value="">Todos</option>
+      </select>
+    </div>
     <div class="ff"><label>Status</label>
       <select id="f-status" onchange="aplicarFiltros()">
         <option value="">Todos</option>
@@ -121,13 +153,14 @@ th.col-fixed{z-index:4}
       <table>
         <thead><tr>
           <th class="col-fixed">Nº</th><th class="col-fixed">Placa</th>
-          <th>AC</th><th>Empresa Atual</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Data</th><th>Setor Atual</th>
+          <th>AC</th><th>Empresa Atual</th><th>Turno</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Data</th><th>Setor Atual</th>
           <th>Entrada</th><th>Portaria Ini</th><th>Portaria Fim</th>
           <th>Triagem Ini</th><th>Triagem Fim</th>
           <th>Carreg. Ini</th><th>Carreg. Fim</th>
           <th>Enlon. Ini</th><th>Enlon. Fim</th>
           <th>Faturamento</th><th>Nota Fiscal</th>
           <th>TMAC</th><th>TME</th><th>TMC</th><th>TMF</th><th>TMTI</th><th>TMCI</th><th>TMEI</th>
+          <th>Operador(es)</th>
           <th>Status</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
@@ -182,6 +215,18 @@ const diffMs=(a,b)=>{
   const dbb=b.toDate?b.toDate():b;
   return dbb-da;
 };
+function getTurno(d){
+  if(!d)return null;
+  const h=d.getHours();
+  if(h>=23||h<7)return"A";
+  if(h>=7&&h<15)return"B";
+  return"C";
+}
+function operadoresDoRegistro(c){
+  return[c.entrada?.operador,c.portaria?.operador,c.triagem?.operadorInicio,c.triagem?.operadorFim,
+    c.carregamento?.operadorInicio,c.carregamento?.operadorFim,c.enlonamento?.operadorInicio,
+    c.enlonamento?.operadorFim,c.faturamento?.operador].filter(Boolean);
+}
 
 function empresaAtual(c){
   if(c.setorAtual==="concluido")return"Apodi";
@@ -219,16 +264,24 @@ function statusInfo(c,m){
 
 function passaFiltros(c){
   const fe=document.getElementById("f-empresa").value;
+  const ft=document.getElementById("f-turno").value;
+  const fca=document.getElementById("f-carga").value;
+  const fci=document.getElementById("f-cimentotipo").value;
   const fi=document.getElementById("f-ini").value;
   const ff=document.getElementById("f-fim").value;
   const fp=document.getElementById("f-placa").value.trim().toUpperCase();
   const fac=document.getElementById("f-ac").value.trim().toUpperCase();
+  const fop=document.getElementById("f-operador").value;
   const fs=document.getElementById("f-status").value;
   if(fe&&c._empresa!==fe)return false;
+  if(ft&&c._turno!==ft)return false;
+  if(fca&&c.tipoCarga!==fca)return false;
+  if(fci&&c.tipoCimento!==fci)return false;
   if(fi&&c.data<fi)return false;
   if(ff&&c.data>ff)return false;
   if(fp&&(c.placa||"").toUpperCase().indexOf(fp)===-1)return false;
   if(fac&&(c.ac||"").toUpperCase().indexOf(fac)===-1)return false;
+  if(fop&&c._operadores.indexOf(fop)===-1)return false;
   if(fs&&c._st.key!==fs)return false;
   return true;
 }
@@ -245,10 +298,14 @@ window.renderDebounced=()=>{
 
 window.limparFiltros=()=>{
   document.getElementById("f-empresa").value="";
+  document.getElementById("f-turno").value="";
+  document.getElementById("f-carga").value="";
+  document.getElementById("f-cimentotipo").value="";
   document.getElementById("f-ini").value="";
   document.getElementById("f-fim").value="";
   document.getElementById("f-placa").value="";
   document.getElementById("f-ac").value="";
+  document.getElementById("f-operador").value="";
   document.getElementById("f-status").value="";
   paginaAtual=1;
   render();
@@ -259,6 +316,15 @@ window.irPagina=(delta)=>{
   render();
 };
 
+function popularOperadores(){
+  const sel=document.getElementById("f-operador");
+  if(!sel)return;
+  const atual=sel.value;
+  const nomes=Array.from(new Set(HD.flatMap(c=>c._operadores))).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  sel.innerHTML='<option value="">Todos</option>'+nomes.map(n=>"<option value='"+n+"'>"+n+"</option>").join("");
+  if(nomes.includes(atual))sel.value=atual;
+}
+
 function getFiltrados(){
   const filtrados=[];
   HD.forEach((c,idx)=>{
@@ -268,11 +334,11 @@ function getFiltrados(){
   return filtrados;
 }
 
-const CABECALHO=["Nº","Placa","AC","Empresa Atual","Tipo Carga","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","Nota Fiscal","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Status"];
+const CABECALHO=["Nº","Placa","AC","Empresa Atual","Turno","Tipo Carga","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","Nota Fiscal","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Operador(es)","Status"];
 
 function linhaCells(c,n){
   const m=c._m,st=c._st;
-  return[n,c.placa||"—",c.ac||"—",c._empresa,c.tipoCargaLabel||"—",c.tipoCimentoLabel||"—",fmtData(c.data),(c.setorAtual||"—").replace(/_/g," "),fmtT(m.tEntrada),fmtT(m.tPortI),fmtT(m.tPortF),fmtT(m.tTriI),fmtT(m.tTriF),fmtT(m.tCarI),fmtT(m.tCarF),fmtT(m.tEnlI),fmtT(m.tEnlF),fmtT(m.tFat),c.notaFiscal||"—",fmtDur(m.TMAC),fmtDur(m.TME),fmtDur(m.TMC),fmtDur(m.TMF),fmtDur(m.TMTI),fmtDur(m.TMCI),fmtDur(m.TMEI),st.label];
+  return[n,c.placa||"—",c.ac||"—",c._empresa,c._turno||"—",c.tipoCargaLabel||"—",c.tipoCimentoLabel||"—",fmtData(c.data),(c.setorAtual||"—").replace(/_/g," "),fmtT(m.tEntrada),fmtT(m.tPortI),fmtT(m.tPortF),fmtT(m.tTriI),fmtT(m.tTriF),fmtT(m.tCarI),fmtT(m.tCarF),fmtT(m.tEnlI),fmtT(m.tEnlF),fmtT(m.tFat),c.notaFiscal||"—",fmtDur(m.TMAC),fmtDur(m.TME),fmtDur(m.TMC),fmtDur(m.TMF),fmtDur(m.TMTI),fmtDur(m.TMCI),fmtDur(m.TMEI),c._operadores.join(", ")||"—",st.label];
 }
 
 window.render=()=>{
@@ -316,6 +382,7 @@ window.render=()=>{
       "<td class='col-fixed placa'>"+(c.placa||"—")+"</td>"+
       "<td>"+(c.ac||"—")+"</td>"+
       "<td>"+c._empresa+"</td>"+
+      "<td>"+(c._turno?"<span class='turno-pill'>"+c._turno+"</span>":"—")+"</td>"+
       "<td>"+(c.tipoCargaLabel||"—")+"</td>"+
       "<td>"+(c.tipoCimentoLabel||"—")+"</td>"+
       "<td>"+fmtData(c.data)+"</td>"+
@@ -338,6 +405,7 @@ window.render=()=>{
       "<td>"+fmtDur(m.TMTI)+"</td>"+
       "<td>"+fmtDur(m.TMCI)+"</td>"+
       "<td>"+fmtDur(m.TMEI)+"</td>"+
+      "<td>"+(c._operadores.join(", ")||"—")+"</td>"+
       "<td><span class='tag "+st.cls+"'>"+st.label+"</span></td>"+
       "</tr>"
     );
@@ -351,28 +419,30 @@ window.abrirDrawer=(id)=>{
   const m=c._m;
   const st=c._st;
   const drw=document.getElementById("drw");
+  const opTxt=(campo)=>campo?" · "+campo:"";
   drw.innerHTML=
     "<div class='drawer-head'>"+
       "<div><div class='dpl'>"+(c.placa||"—")+"</div>"+
-      "<div style='font-size:11px;color:var(--t2)'>"+(c.ac||"—")+" · "+(c.tipoCargaLabel||"—")+" · "+(c.tipoCimentoLabel||"—")+"</div></div>"+
+      "<div style='font-size:11px;color:var(--t2)'>"+(c.ac||"—")+" · "+(c.tipoCargaLabel||"—")+" · "+(c.tipoCimentoLabel||"—")+(c._turno?" · Turno "+c._turno:"")+"</div></div>"+
       "<button class='dclose' onclick='fecharDrawer()'>✕</button>"+
     "</div>"+
     "<div class='dsec'><h4>Identificação</h4>"+
       "<div class='drow'><span>Placa</span><span>"+(c.placa||"—")+"</span></div>"+
       "<div class='drow'><span>AC</span><span>"+(c.ac||"—")+"</span></div>"+
       "<div class='drow'><span>Data</span><span>"+fmtData(c.data)+"</span></div>"+
+      "<div class='drow'><span>Turno</span><span>"+(c._turno||"—")+"</span></div>"+
       "<div class='drow'><span>Setor atual</span><span>"+(c.setorAtual||"—").replace(/_/g," ")+"</span></div>"+
       "<div class='drow'><span>Empresa responsável</span><span>"+c._empresa+"</span></div>"+
       "<div class='drow'><span>Nota fiscal</span><span>"+(c.notaFiscal||"—")+"</span></div>"+
       "<div class='drow'><span>Status</span><span class='tag "+st.cls+"'>"+st.label+"</span></div>"+
     "</div>"+
     "<div class='dsec'><h4>Linha do tempo por etapa</h4>"+
-      "<div class='drow'><span>Entrada (Posto 1)</span><span>"+fmtT(m.tEntrada)+(c.entrada&&c.entrada.operador?" · "+c.entrada.operador:"")+"</span></div>"+
-      "<div class='drow'><span>Portaria início / fim</span><span>"+fmtT(m.tPortI)+" → "+fmtT(m.tPortF)+"</span></div>"+
-      "<div class='drow'><span>Triagem início / fim</span><span>"+fmtT(m.tTriI)+" → "+fmtT(m.tTriF)+"</span></div>"+
-      "<div class='drow'><span>Carregamento início / fim</span><span>"+fmtT(m.tCarI)+" → "+fmtT(m.tCarF)+"</span></div>"+
-      "<div class='drow'><span>Enlonamento início / fim</span><span>"+fmtT(m.tEnlI)+" → "+fmtT(m.tEnlF)+"</span></div>"+
-      "<div class='drow'><span>Faturamento</span><span>"+fmtT(m.tFat)+"</span></div>"+
+      "<div class='drow'><span>Entrada (Posto 1)</span><span>"+fmtT(m.tEntrada)+opTxt(c.entrada&&c.entrada.operador)+"</span></div>"+
+      "<div class='drow'><span>Portaria início / fim</span><span>"+fmtT(m.tPortI)+" → "+fmtT(m.tPortF)+opTxt(c.portaria&&c.portaria.operador)+"</span></div>"+
+      "<div class='drow'><span>Triagem início / fim</span><span>"+fmtT(m.tTriI)+" → "+fmtT(m.tTriF)+opTxt(c.triagem&&(c.triagem.operadorInicio||c.triagem.operadorFim))+"</span></div>"+
+      "<div class='drow'><span>Carregamento início / fim</span><span>"+fmtT(m.tCarI)+" → "+fmtT(m.tCarF)+opTxt(c.carregamento&&(c.carregamento.operadorInicio||c.carregamento.operadorFim))+"</span></div>"+
+      "<div class='drow'><span>Enlonamento início / fim</span><span>"+fmtT(m.tEnlI)+" → "+fmtT(m.tEnlF)+opTxt(c.enlonamento&&(c.enlonamento.operadorInicio||c.enlonamento.operadorFim))+"</span></div>"+
+      "<div class='drow'><span>Faturamento</span><span>"+fmtT(m.tFat)+opTxt(c.faturamento&&c.faturamento.operador)+"</span></div>"+
     "</div>"+
     "<div class='dsec'><h4>Métricas calculadas</h4>"+
       "<div class='drow'><span>TMAC (meta ≤2h10)</span><span class='"+(st.key==="fora"?"badv":"okv")+"'>"+fmtDur(m.TMAC)+"</span></div>"+
@@ -411,8 +481,9 @@ window.exportarExcel=async(ev)=>{
   const txtOriginal=btn?btn.textContent:null;
   if(btn){btn.textContent="⏳ Preparando...";btn.disabled=true;}
   try{
-    await carregarXLSX();
     const filtrados=getFiltrados();
+    if(!filtrados.length){alert("Nenhum registro para exportar com os filtros atuais.");return;}
+    await carregarXLSX();
     const linhas=[CABECALHO];
     filtrados.forEach(r=>linhas.push(linhaCells(r.c,r.n)));
     const ws=XLSX.utils.aoa_to_sheet(linhas);
@@ -428,17 +499,35 @@ window.exportarExcel=async(ev)=>{
 
 window.exportarPDF=()=>{
   const filtrados=getFiltrados();
+  if(!filtrados.length){alert("Nenhum registro para gerar PDF com os filtros atuais.");return;}
   const thead="<tr>"+CABECALHO.map(h=>"<th>"+h+"</th>").join("")+"</tr>";
   const corpo=filtrados.map(r=>"<tr>"+linhaCells(r.c,r.n).map(v=>"<td>"+v+"</td>").join("")+"</tr>").join("");
-  const w=window.open("","_blank");
-  w.document.write("<html><head><title>Relatório TMAC</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:8pt;padding:14px;color:#000}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:4px 6px;text-align:center;white-space:nowrap}th{background:#eee}</style></head><body><h3>Relatório TMAC Online — "+new Date().toLocaleString("pt-BR")+" · "+filtrados.length+" registros</h3><br><table><thead>"+thead+"</thead><tbody>"+corpo+"</tbody></table></body></html>");
-  w.document.close();
-  setTimeout(()=>w.print(),300);
+  const partes=[];
+  partes.push("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Relatório TMAC</title>");
+  partes.push("<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:8pt;padding:14px;color:#000}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:4px 6px;text-align:center;white-space:nowrap}th{background:#eee}@media print{@page{size:A4 landscape;margin:1cm}}</style>");
+  partes.push("</head><body>");
+  partes.push("<h3>Relatório TMAC Online — "+new Date().toLocaleString("pt-BR")+" · "+filtrados.length+" registros</h3><br>");
+  partes.push("<table><thead>"+thead+"</thead><tbody>"+corpo+"</tbody></table>");
+  partes.push("<scr"+"ipt>window.onload=()=>window.print();</scr"+"ipt>");
+  partes.push("</body></html>");
+  const html=partes.join("");
+  const blob=new Blob([html],{type:"text/html;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.target="_blank";a.rel="noopener";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},5000);
 };
 
 const PERIODO_DIAS=30;
 let modoTudo=false;
 let unsub=null;
+
+function setLiveStatus(ok,msg){
+  const el=document.getElementById("live-status");
+  if(ok){el.classList.remove("err");el.innerHTML="<span class='dot'></span>AO VIVO";}
+  else{el.classList.add("err");el.innerHTML="<span class='dot'></span>"+(msg||"Erro de conexão");}
+}
 
 function iniciarListener(){
   if(unsub)unsub();
@@ -456,11 +545,19 @@ function iniciarListener(){
       c._m=metrics(c);
       c._st=statusInfo(c,c._m);
       c._empresa=empresaAtual(c);
+      c._turno=getTurno(c._m.tEntrada?(c._m.tEntrada.toDate?c._m.tEntrada.toDate():c._m.tEntrada):null);
+      c._operadores=operadoresDoRegistro(c);
       return c;
     });
     HD_BY_ID=new Map(HD.map(c=>[c.id,c]));
+    setLiveStatus(true);
+    popularOperadores();
     paginaAtual=1;
     render();
+  },(err)=>{
+    console.error("Firestore error:",err);
+    setLiveStatus(false,"Erro ao carregar dados");
+    document.getElementById("rescount").textContent="erro ao carregar";
   });
 }
 
