@@ -309,8 +309,8 @@ function metrics(c){
   return{
     tEntrada,tPortI,tPortF,tTriI,tTriF,tCarI,tCarF,tEnlI,tEnlF,tFat,
     TMAC:diffMs(tEntrada,tFat),
-    TME:diffMs(tEntrada,tPortI),
-    TMC:diffMs(tCarI,tCarF),
+    TME:diffMs(tEntrada,tPortI||tTriI),
+    TMC:diffMs(tTriI,tEnlF),
     TMF:diffMs(tEnlF,tFat),
     TMTI:diffMs(tTriI,tTriF),
     TMCI:diffMs(tCarI,tCarF),
@@ -509,7 +509,7 @@ window.abrirDrawer=(id)=>{
     "<div class='dsec'><h4>Métricas calculadas</h4>"+
       "<div class='drow'><span>TMAC (meta ≤2h10)</span><span class='"+(st.key==="fora"?"badv":"okv")+"'>"+fmtDur(m.TMAC)+"</span></div>"+
       "<div class='drow'><span>TME</span><span>"+fmtDur(m.TME)+"</span></div>"+
-      "<div class='drow'><span>TMC</span><span>"+fmtDur(m.TMC)+"</span></div>"+
+      "<div class='drow'><span>TMC (armazém: triagem → enlonamento)</span><span>"+fmtDur(m.TMC)+"</span></div>"+
       "<div class='drow'><span>TMF (meta ≤8min)</span><span>"+fmtDur(m.TMF)+"</span></div>"+
       "<div class='drow'><span>TMTI (meta ≤5min)</span><span>"+fmtDur(m.TMTI)+"</span></div>"+
       "<div class='drow'><span>TMCI (meta ≤20min)</span><span>"+fmtDur(m.TMCI)+"</span></div>"+
@@ -1035,7 +1035,7 @@ function renderGraficoAtivo(){
 
     const sm=document.createElement("div");sm.className="small-mult";grid.appendChild(sm);
     [["TME","Tempo médio de espera (entrada → 1ª etapa)",null],
-     ["TMC","Tempo médio de carregamento",null],
+     ["TMC","Tempo médio do armazém (triagem início → enlonamento fim)",null],
      ["TMF","Tempo médio de fila até faturar · meta ≤8min",META_TEMPOS.TMF]].forEach(([k,sub,meta],i)=>{
       const holder=mkCard(sm,k,sub);
       renderLineChart(holder,k,dailyAvgMinutesSeries(arr,k,dias),{color:RAMP_HEX[i+1],meta,metaLabel:meta+"min",xLabels,tipFmt:fmtMin});
