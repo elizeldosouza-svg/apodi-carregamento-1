@@ -6,7 +6,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--pu:#a78bfa;--or:#fb923c;--tm:#ff9f43;--r:12px;--rs:8px}
+:root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--pu:#a78bfa;--or:#fb923c;--tm:#ff9f43;--r:12px;--rs:8px;--c1:#3987e5;--c2:#199e70;--c3:#d95926;--c4:#9085e9;--c5:#d55181}
 body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
 .top{background:var(--bg2);border-bottom:2px solid var(--tm);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:12px}
 .logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--tm);flex:1;letter-spacing:1px}
@@ -26,6 +26,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .btn-tm{background:var(--tm);color:#2a1400}
 .btn-out{background:transparent;border:1px solid var(--b2);color:var(--t2)}
 .btn-out:hover{border-color:var(--t2);color:var(--tx)}
+.btn-charts{background:linear-gradient(135deg,var(--c1),var(--c4));color:#fff}
+.btn-charts.active{background:var(--bg3);color:var(--c1);border:1px solid var(--c1)}
 
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
 .kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px}
@@ -70,6 +72,51 @@ th.col-fixed{z-index:4}
 .drow:last-child{border-bottom:none}
 .drow span:first-child{color:var(--t2)}
 .drow span:last-child{text-align:right}
+
+/* ---- graficos panel ---- */
+.charts-panel{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);display:none;overflow:hidden}
+.charts-panel.show{display:flex}
+.ctop{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ctop h2{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;letter-spacing:.5px}
+.cbody{display:flex;width:100%}
+.tabs-rail{width:220px;flex:0 0 220px;border-right:1px solid var(--bd);padding:10px;display:flex;flex-direction:column;gap:2px}
+.tab-item{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:8px;border:none;background:transparent;color:var(--t2);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;text-align:left;cursor:pointer;transition:background .12s,color .12s}
+.tab-item .ti-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);width:16px;flex:0 0 auto}
+.tab-item:hover{background:var(--bg3);color:var(--tx)}
+.tab-item.active{background:var(--bg4);color:var(--tx);box-shadow:inset 3px 0 0 var(--c1)}
+.tab-item.active .ti-n{color:var(--c1)}
+.cmain{flex:1;padding:20px 24px;min-width:0}
+.chart-intro{font-size:12px;color:var(--t2);margin-bottom:16px;line-height:1.5;max-width:70ch}
+.chart-intro b{color:var(--tx);font-weight:600}
+.chart-grid{display:grid;gap:16px}
+.chart-grid.g2{grid-template-columns:1fr 1fr}
+.chart-card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:14px 16px}
+.chart-card h3{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:2px}
+.chart-card .chart-sub{font-size:10.5px;color:var(--t3);margin-bottom:10px}
+svg.chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.bar-lbl{fill:var(--t2);font-family:'Inter',sans-serif;font-size:12px}
+.bar-val{fill:var(--tx);font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px}
+.axis-lbl{fill:var(--t3);font-family:'Inter',sans-serif;font-size:10.5px}
+.grid-line{stroke:var(--bd);stroke-width:1}
+.zero-line{stroke:var(--b2);stroke-width:1}
+.meta-line{stroke:var(--t3);stroke-width:1.5;stroke-dasharray:4 4}
+.meta-lbl{fill:var(--t3);font-family:'Inter',sans-serif;font-size:9.5px;font-style:italic}
+.hit{fill:transparent;cursor:pointer}
+.bar-fill{cursor:pointer;transition:filter .1s}
+.bar-fill:hover,.bar-fill.hover{filter:brightness(1.22)}
+.small-mult{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+#ctt{position:fixed;pointer-events:none;background:var(--bg4);border:1px solid var(--b2);border-radius:8px;padding:8px 11px;font-size:11.5px;color:var(--tx);box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:900;opacity:0;transition:opacity .08s;max-width:220px}
+#ctt.show{opacity:1}
+#ctt .ttl{font-weight:700;margin-bottom:4px;font-family:'Inter',sans-serif}
+#ctt .row{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace}
+#ctt .sw{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+
+@media (max-width:980px){
+  .cbody{flex-direction:column}
+  .tabs-rail{width:100%;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--bd)}
+  .chart-grid.g2,.small-mult{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -134,6 +181,7 @@ th.col-fixed{z-index:4}
     </div>
     <button class="btn btn-out" id="btn-periodo" onclick="toggleModoTudo()">🕐 Ver histórico completo</button>
     <button class="btn btn-out" onclick="limparFiltros()">Limpar</button>
+    <button class="btn btn-charts" id="btn-graficos" onclick="toggleGraficos()">📈 Gráficos</button>
     <button class="btn btn-tm" onclick="exportarPDF()">📄 PDF</button>
     <button class="btn btn-out" onclick="exportarExcel(event)">📊 Excel</button>
   </div>
@@ -147,7 +195,7 @@ th.col-fixed{z-index:4}
     <div class="kpi"><div class="lb">SLA cumprido</div><div class="vl" id="k-sla">—</div></div>
   </div>
 
-  <div class="tcard">
+  <div class="tcard" id="view-table">
     <div class="thead-bar">Registros <small id="rescount">carregando…</small></div>
     <div class="tscroll">
       <table>
@@ -173,10 +221,24 @@ th.col-fixed{z-index:4}
       <button class="btn btn-out" id="pg-next" onclick="irPagina(1)">Próxima ▶</button>
     </div>
   </div>
+
+  <div class="charts-panel" id="view-charts">
+    <div style="width:100%">
+      <div class="ctop">
+        <h2>📈 Análise gráfica</h2>
+        <span style="font-size:11px;color:var(--t2)" id="periodo-graficos"></span>
+      </div>
+      <div class="cbody">
+        <div class="tabs-rail" id="tabs-rail"></div>
+        <div class="cmain" id="cmain"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="drawer-overlay" id="ov" onclick="fecharDrawer()"></div>
 <div class="drawer" id="drw"></div>
+<div id="ctt"></div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -565,6 +627,474 @@ window.toggleModoTudo=()=>{
   modoTudo=!modoTudo;
   document.getElementById("btn-periodo").textContent=modoTudo?"🕐 Ver últimos 30 dias":"🕐 Ver histórico completo";
   iniciarListener();
+};
+
+// ==================================================================
+// GRAFICOS — analise grafica com base nos MESMOS registros filtrados
+// acima (getFiltrados). Nenhuma consulta extra ao Firestore: reaproveita
+// o HD ja carregado pelo listener principal.
+// ==================================================================
+const SVGNS="http://www.w3.org/2000/svg";
+const RAMP=["var(--c1)","var(--c2)","var(--c3)","var(--c4)","var(--c5)"];
+const RAMP_HEX=["#3987e5","#199e70","#d95926","#9085e9","#d55181"];
+const EMPRESA_ORDER=["Ambipar","Apodi","Seguro Segurança","Reforme Paletes","Sousa Clean"];
+const TURNO_LETTERS=["A","B","C"];
+const TURNO_LABELS={A:"Turno A · 23h–07h",B:"Turno B · 07h–15h",C:"Turno C · 15h–23h"};
+const CARGA_ORDER=["Ensacado","Granel","Big Bag"];
+const CIMENTO_ORDER=["CP II F","CP III","CP V"];
+const MES_ABREV=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const META_TEMPOS={TMAC:130,TMF:8,TMTI:5,TMCI:20,TMEI:15};
+
+let graficosVisiveis=false;
+let abaAtiva="empresa";
+
+function empresaColor(name){
+  const i=EMPRESA_ORDER.indexOf(name);
+  return RAMP[i>=0?i%RAMP.length:0];
+}
+function turnoColor(label){
+  const letter=TURNO_LETTERS.find(l=>TURNO_LABELS[l]===label);
+  const i=TURNO_LETTERS.indexOf(letter);
+  return RAMP[i>=0?i%RAMP.length:0];
+}
+function corPorOrdemFixa(label,ordem){
+  const i=ordem.indexOf(label);
+  return RAMP[i>=0?i%RAMP.length:0];
+}
+function fmtMin(v){
+  if(v===null||v===undefined)return"—";
+  return v<60?v+"min":(Math.floor(v/60)+"h"+String(v%60).padStart(2,"0"));
+}
+function niceMax(v){
+  if(!v||v<=0)return 1;
+  const mag=Math.pow(10,Math.floor(Math.log10(v)));
+  const n=v/mag;
+  const step=n<=1?1:n<=2?2:n<=5?5:10;
+  return step*mag;
+}
+
+function showTip(evt,titleText,rows){
+  const ctt=document.getElementById("ctt");
+  ctt.innerHTML="";
+  const t=document.createElement("div");t.className="ttl";t.textContent=titleText;ctt.appendChild(t);
+  rows.forEach(r=>{
+    const row=document.createElement("div");row.className="row";
+    if(r.color){const sw=document.createElement("span");sw.className="sw";sw.style.background=r.color;row.appendChild(sw);}
+    const txt=document.createElement("span");txt.textContent=r.text;row.appendChild(txt);
+    ctt.appendChild(row);
+  });
+  ctt.classList.add("show");
+  moveTip(evt);
+}
+function moveTip(evt){
+  const ctt=document.getElementById("ctt");
+  const pad=16;
+  let x=evt.clientX+pad,y=evt.clientY+pad;
+  if(x+230>window.innerWidth)x=evt.clientX-230-pad;
+  if(y+80>window.innerHeight)y=evt.clientY-80;
+  ctt.style.left=x+"px";ctt.style.top=y+"px";
+}
+function hideTip(){document.getElementById("ctt").classList.remove("show");}
+function corResolvida(color){
+  return color.startsWith("var(")?getComputedStyle(document.documentElement).getPropertyValue(color.slice(4,-1)).trim():color;
+}
+
+function renderBarChart(container,items,opts){
+  opts=opts||{};
+  if(!items.length){
+    container.innerHTML="<div class='axis-lbl' style='padding:30px;text-align:center'>Sem dados no período/filtros atuais.</div>";
+    return;
+  }
+  const W=1000,rowH=40,padTop=8,padBottom=8;
+  const H=items.length*rowH+padTop+padBottom;
+  const labelW=opts.labelW||210;
+  const trackX0=labelW+14, trackX1=W-70;
+  const maxVal=niceMax(Math.max(...items.map(i=>i[1]))*1.12);
+  const svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.classList.add("chart-svg");
+  container.innerHTML="";container.appendChild(svg);
+
+  for(let g=0;g<=4;g++){
+    const gx=trackX0+(trackX1-trackX0)*(g/4);
+    const line=document.createElementNS(SVGNS,"line");
+    line.setAttribute("x1",gx);line.setAttribute("x2",gx);
+    line.setAttribute("y1",padTop-2);line.setAttribute("y2",H-padBottom+2);
+    line.setAttribute("class",g===0?"zero-line":"grid-line");
+    svg.appendChild(line);
+    const val=Math.round(maxVal*(g/4));
+    const t=document.createElementNS(SVGNS,"text");
+    t.setAttribute("x",gx);t.setAttribute("y",H-2);t.setAttribute("text-anchor","middle");
+    t.setAttribute("class","axis-lbl");t.textContent=opts.fmt?opts.fmt(val):val;
+    svg.appendChild(t);
+  }
+
+  items.forEach((it,i)=>{
+    const [label,val]=it;
+    const cy=padTop+i*rowH+rowH/2;
+    const barH=22;
+    const bw=(trackX1-trackX0)*(val/maxVal);
+    const color=opts.colorFor?opts.colorFor(label,i):RAMP[i%RAMP.length];
+
+    const lbl=document.createElementNS(SVGNS,"text");
+    lbl.setAttribute("x",labelW);lbl.setAttribute("y",cy+4);lbl.setAttribute("text-anchor","end");
+    lbl.setAttribute("class","bar-lbl");lbl.textContent=label;
+    svg.appendChild(lbl);
+
+    const rect=document.createElementNS(SVGNS,"rect");
+    rect.setAttribute("x",trackX0);rect.setAttribute("y",cy-barH/2);
+    rect.setAttribute("width",Math.max(bw,2));rect.setAttribute("height",barH);
+    rect.setAttribute("rx",4);rect.setAttribute("ry",4);
+    rect.setAttribute("fill",color);rect.classList.add("bar-fill");
+    svg.appendChild(rect);
+
+    const val_t=document.createElementNS(SVGNS,"text");
+    val_t.setAttribute("x",trackX0+bw+8);val_t.setAttribute("y",cy+4);
+    val_t.setAttribute("class","bar-val");
+    val_t.textContent=opts.fmt?opts.fmt(val):val;
+    svg.appendChild(val_t);
+
+    const hit=document.createElementNS(SVGNS,"rect");
+    hit.setAttribute("x",trackX0);hit.setAttribute("y",cy-rowH/2);
+    hit.setAttribute("width",trackX1-trackX0+80);hit.setAttribute("height",rowH);
+    hit.setAttribute("class","hit");
+    const swatch=corResolvida(color);
+    hit.addEventListener("mouseenter",e=>{rect.classList.add("hover");showTip(e,label,[{color:swatch,text:opts.fmt?opts.fmt(val):String(val)}]);});
+    hit.addEventListener("mousemove",moveTip);
+    hit.addEventListener("mouseleave",()=>{rect.classList.remove("hover");hideTip();});
+    svg.appendChild(hit);
+  });
+}
+
+function renderLineChart(container,label,values,opts){
+  opts=opts||{};
+  const xLabels=opts.xLabels||[];
+  const n=values.length;
+  const validVals=values.filter(v=>v!==null&&v!==undefined);
+  if(!n||!validVals.length){
+    container.innerHTML="<div class='axis-lbl' style='padding:30px;text-align:center'>Sem dados no período/filtros atuais.</div>";
+    return;
+  }
+  const W=520,H=186,padL=34,padR=14,padT=14,padB=40;
+  const maxRaw=Math.max(...validVals,opts.meta||0);
+  const maxVal=niceMax((maxRaw||1)*1.2);
+  const x=i=>padL+(W-padL-padR)*(n<=1?0:i/(n-1));
+  const y=v=>padT+(H-padT-padB)*(1-v/maxVal);
+  const color=opts.color||RAMP_HEX[0];
+
+  const svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);svg.classList.add("chart-svg");
+  container.innerHTML="";container.appendChild(svg);
+
+  for(let g=0;g<=3;g++){
+    const gy=padT+(H-padT-padB)*(g/3);
+    const val=Math.round(maxVal*(1-g/3));
+    const line=document.createElementNS(SVGNS,"line");
+    line.setAttribute("x1",padL);line.setAttribute("x2",W-padR);line.setAttribute("y1",gy);line.setAttribute("y2",gy);
+    line.setAttribute("class","grid-line");svg.appendChild(line);
+    const t=document.createElementNS(SVGNS,"text");
+    t.setAttribute("x",padL-6);t.setAttribute("y",gy+3);t.setAttribute("text-anchor","end");
+    t.setAttribute("class","axis-lbl");t.textContent=val;svg.appendChild(t);
+  }
+
+  const maxTicks=Math.min(n,W<600?6:12);
+  const everyN=Math.max(1,Math.ceil(n/maxTicks));
+  const baseY=H-padB;
+  const axisLine=document.createElementNS(SVGNS,"line");
+  axisLine.setAttribute("x1",padL);axisLine.setAttribute("x2",W-padR);
+  axisLine.setAttribute("y1",baseY);axisLine.setAttribute("y2",baseY);
+  axisLine.setAttribute("class","zero-line");svg.appendChild(axisLine);
+  for(let i=0;i<n;i++){
+    const isLast=i===n-1;
+    if(i%everyN!==0&&!isLast)continue;
+    const tx=document.createElementNS(SVGNS,"text");
+    tx.setAttribute("x",x(i));tx.setAttribute("y",baseY+16);
+    tx.setAttribute("text-anchor",i===0?"start":(isLast?"end":"middle"));
+    tx.setAttribute("class","axis-lbl");tx.textContent=xLabels[i]||"";
+    svg.appendChild(tx);
+  }
+
+  if(opts.meta){
+    const my=y(opts.meta);
+    const ml=document.createElementNS(SVGNS,"line");
+    ml.setAttribute("x1",padL);ml.setAttribute("x2",W-padR);ml.setAttribute("y1",my);ml.setAttribute("y2",my);
+    ml.setAttribute("class","meta-line");svg.appendChild(ml);
+    const mt=document.createElementNS(SVGNS,"text");
+    mt.setAttribute("x",W-padR);mt.setAttribute("y",my-4);mt.setAttribute("text-anchor","end");
+    mt.setAttribute("class","meta-lbl");mt.textContent="meta "+opts.metaLabel;svg.appendChild(mt);
+  }
+
+  const runs=[];let cur=[];
+  values.forEach((v,i)=>{
+    if(v===null||v===undefined){if(cur.length)runs.push(cur);cur=[];}
+    else cur.push(i);
+  });
+  if(cur.length)runs.push(cur);
+
+  runs.forEach(run=>{
+    if(run.length>1){
+      const pts=run.map(i=>x(i)+","+y(values[i])).join(" ");
+      const area=document.createElementNS(SVGNS,"polygon");
+      area.setAttribute("points",x(run[0])+","+y(0)+" "+pts+" "+x(run[run.length-1])+","+y(0));
+      area.setAttribute("fill",color);area.setAttribute("opacity","0.1");svg.appendChild(area);
+      const poly=document.createElementNS(SVGNS,"polyline");
+      poly.setAttribute("points",pts);poly.setAttribute("fill","none");
+      poly.setAttribute("stroke",color);poly.setAttribute("stroke-width","2");
+      poly.setAttribute("stroke-linejoin","round");poly.setAttribute("stroke-linecap","round");
+      svg.appendChild(poly);
+    }
+    run.forEach(i=>{
+      const cx=x(i),cy=y(values[i]);
+      const ring=document.createElementNS(SVGNS,"circle");
+      ring.setAttribute("cx",cx);ring.setAttribute("cy",cy);ring.setAttribute("r",5);
+      ring.setAttribute("fill","#0b1524");svg.appendChild(ring);
+      const dot=document.createElementNS(SVGNS,"circle");
+      dot.setAttribute("cx",cx);dot.setAttribute("cy",cy);dot.setAttribute("r",3.5);
+      dot.setAttribute("fill",color);svg.appendChild(dot);
+      const hit=document.createElementNS(SVGNS,"circle");
+      hit.setAttribute("cx",cx);hit.setAttribute("cy",cy);hit.setAttribute("r",13);
+      hit.setAttribute("class","hit");
+      hit.addEventListener("mouseenter",e=>showTip(e,label+" · "+(xLabels[i]||""),[{color:color,text:opts.tipFmt?opts.tipFmt(values[i]):fmtMin(values[i])}]));
+      hit.addEventListener("mousemove",moveTip);
+      hit.addEventListener("mouseleave",hideTip);
+      svg.appendChild(hit);
+    });
+  });
+
+  const lastRun=runs[runs.length-1];
+  if(lastRun){
+    const li=lastRun[lastRun.length-1];
+    const endLbl=document.createElementNS(SVGNS,"text");
+    endLbl.setAttribute("x",x(li));endLbl.setAttribute("y",y(values[li])-10);endLbl.setAttribute("text-anchor","end");
+    endLbl.setAttribute("class","bar-val");endLbl.setAttribute("font-size","11");
+    endLbl.textContent=opts.tipFmt?opts.tipFmt(values[li]):fmtMin(values[li]);
+    svg.appendChild(endLbl);
+  }
+}
+
+function groupCount(arr,keyFn){
+  const m=new Map();
+  arr.forEach(c=>{const k=keyFn(c);if(k)m.set(k,(m.get(k)||0)+1);});
+  return m;
+}
+function groupAvgTmacMin(arr,keyFn){
+  const sums=new Map(),counts=new Map();
+  arr.forEach(c=>{
+    const k=keyFn(c);
+    if(!k)return;
+    if(c.setorAtual==="concluido"&&c._m.TMAC!==null){
+      sums.set(k,(sums.get(k)||0)+c._m.TMAC);
+      counts.set(k,(counts.get(k)||0)+1);
+    }
+  });
+  const out=new Map();
+  sums.forEach((s,k)=>out.set(k,Math.round(s/counts.get(k)/60000)));
+  return out;
+}
+function countFlat(arr,keyFn){
+  const m=new Map();
+  arr.forEach(c=>{(keyFn(c)||[]).forEach(k=>{if(k)m.set(k,(m.get(k)||0)+1);});});
+  return m;
+}
+function topNComOutros(entries,n,outrosLabel){
+  const sorted=entries.slice().sort((a,b)=>b[1]-a[1]);
+  const top=sorted.slice(0,n);
+  const resto=sorted.slice(n);
+  if(resto.length){
+    const soma=resto.reduce((s,[,v])=>s+v,0);
+    top.push([outrosLabel(resto.length),soma]);
+  }
+  return top;
+}
+function dailyAvgMinutesSeries(arr,metricKey,dias){
+  const sums=new Map(),counts=new Map();
+  arr.forEach(c=>{
+    const v=c._m[metricKey];
+    if(v===null||v===undefined||!c.data)return;
+    sums.set(c.data,(sums.get(c.data)||0)+v);
+    counts.set(c.data,(counts.get(c.data)||0)+1);
+  });
+  return dias.map(d=>counts.has(d)?Math.round(sums.get(d)/counts.get(d)/60000):null);
+}
+function monthKey(dataStr){
+  return dataStr&&dataStr.length>=7?dataStr.slice(0,7):null;
+}
+function monthLabel(key){
+  const [y,mo]=key.split("-");
+  return MES_ABREV[Number(mo)-1]+"/"+y.slice(2);
+}
+
+const TABS=[
+  {id:"empresa",label:"Por Empresa"},
+  {id:"turno",label:"Por Turno"},
+  {id:"operador",label:"Por Operador"},
+  {id:"carregamento",label:"Tipo de Carregamento"},
+  {id:"carga",label:"Por Carga"},
+  {id:"cimento",label:"Por Cimento"},
+  {id:"tempos",label:"Tempos Médios"},
+  {id:"etapas",label:"Tempos por Etapa"},
+  {id:"justificativas",label:"Justificativas"},
+  {id:"mensal",label:"TMAC Acumulado por Mês"}
+];
+
+function montarAbas(){
+  const rail=document.getElementById("tabs-rail");
+  if(!rail||rail.childElementCount)return;
+  TABS.forEach((t,i)=>{
+    const b=document.createElement("button");
+    b.className="tab-item"+(t.id===abaAtiva?" active":"");
+    b.dataset.id=t.id;
+    const n=document.createElement("span");n.className="ti-n";n.textContent=String(i+1).padStart(2,"0");
+    const l=document.createElement("span");l.textContent=t.label;
+    b.appendChild(n);b.appendChild(l);
+    b.addEventListener("click",()=>{abaAtiva=t.id;renderGraficoAtivo();});
+    rail.appendChild(b);
+  });
+}
+
+function mkCard(grid,title,sub){
+  const card=document.createElement("div");card.className="chart-card";
+  card.innerHTML="<h3>"+title+"</h3><div class='chart-sub'>"+sub+"</div>";
+  const holder=document.createElement("div");card.appendChild(holder);
+  grid.appendChild(card);
+  return holder;
+}
+
+function atualizarPeriodoLabel(){
+  const el=document.getElementById("periodo-graficos");
+  if(!el)return;
+  const fi=document.getElementById("f-ini").value,ff=document.getElementById("f-fim").value;
+  let txt=modoTudo?"Histórico completo":"Últimos 30 dias";
+  if(fi||ff)txt="Data: "+(fi?fmtData(fi):"início")+" – "+(ff?fmtData(ff):"hoje");
+  el.textContent=txt+" · mesmos filtros da tabela";
+}
+
+function renderGraficoAtivo(){
+  if(!graficosVisiveis)return;
+  atualizarPeriodoLabel();
+  document.querySelectorAll(".tab-item").forEach(b=>b.classList.toggle("active",b.dataset.id===abaAtiva));
+  const cmain=document.getElementById("cmain");
+  if(!cmain)return;
+  cmain.innerHTML="";
+  const intro=document.createElement("div");intro.className="chart-intro";cmain.appendChild(intro);
+  const grid=document.createElement("div");cmain.appendChild(grid);
+
+  const arr=getFiltrados().map(r=>r.c);
+  const id=abaAtiva;
+
+  if(id==="empresa"){
+    intro.innerHTML="Volume e <b>TMAC médio</b> por empresa responsável pela etapa atual, no período/filtros selecionados. A cor de cada empresa é fixa em todos os gráficos da tela.";
+    grid.className="chart-grid g2";
+    const vol=[...groupCount(arr,c=>c._empresa).entries()].sort((a,b)=>b[1]-a[1]);
+    const tmac=[...groupAvgTmacMin(arr,c=>c._empresa).entries()].sort((a,b)=>b[1]-a[1]);
+    renderBarChart(mkCard(grid,"Volume de veículos","contagem no período/filtros"),vol,{colorFor:empresaColor});
+    renderBarChart(mkCard(grid,"TMAC médio","minutos, meta ≤2h10 · só concluídos"),tmac,{colorFor:empresaColor,fmt:fmtMin});
+  }
+  if(id==="turno"){
+    intro.innerHTML="Volume e <b>TMAC médio</b> por turno de entrada (A · 23h–07h, B · 07h–15h, C · 15h–23h).";
+    grid.className="chart-grid g2";
+    const vol=[...groupCount(arr,c=>TURNO_LABELS[c._turno]).entries()].sort((a,b)=>b[1]-a[1]);
+    const tmac=[...groupAvgTmacMin(arr,c=>TURNO_LABELS[c._turno]).entries()].sort((a,b)=>b[1]-a[1]);
+    renderBarChart(mkCard(grid,"Volume de veículos","contagem no período/filtros"),vol,{colorFor:turnoColor});
+    renderBarChart(mkCard(grid,"TMAC médio","minutos, meta ≤2h10 · só concluídos"),tmac,{colorFor:turnoColor,fmt:fmtMin});
+  }
+  if(id==="operador"){
+    intro.innerHTML="Ranking de operadores por volume de registros (soma de todas as etapas: entrada, portaria, triagem, carregamento, enlonamento, faturamento). Top 8 + agrupamento dos demais.";
+    grid.className="chart-grid";
+    const items=topNComOutros([...countFlat(arr,c=>c._operadores).entries()],8,n=>"Outros ("+n+" operadores)");
+    renderBarChart(mkCard(grid,"Volume por operador","top 8 no período/filtros, demais agrupados"),items,{labelW:190,colorFor:(l)=>l.startsWith("Outros")?"var(--t3)":RAMP_HEX[0]});
+  }
+  if(id==="carregamento"){
+    intro.innerHTML="Distribuição por <b>tipo de carregamento</b> (subtipo registrado no Posto 1).";
+    grid.className="chart-grid";
+    const items=[...groupCount(arr,c=>c.subtipoCarga).entries()].sort((a,b)=>b[1]-a[1]);
+    renderBarChart(mkCard(grid,"Registros por tipo de carregamento","contagem no período/filtros"),items,{colorFor:(l,i)=>RAMP[i%RAMP.length]});
+  }
+  if(id==="carga"){
+    intro.innerHTML="Distribuição por <b>tipo de carga</b>: Ensacado, Granel ou Big Bag.";
+    grid.className="chart-grid";
+    const items=[...groupCount(arr,c=>c.tipoCargaLabel||c.tipoCarga).entries()].sort((a,b)=>b[1]-a[1]);
+    renderBarChart(mkCard(grid,"Registros por tipo de carga","contagem no período/filtros"),items,{colorFor:(l)=>corPorOrdemFixa(l,CARGA_ORDER)});
+  }
+  if(id==="cimento"){
+    intro.innerHTML="Distribuição por <b>tipo de cimento</b>: CP II F, CP III ou CP V.";
+    grid.className="chart-grid";
+    const items=[...groupCount(arr,c=>c.tipoCimentoLabel||c.tipoCimento).entries()].sort((a,b)=>b[1]-a[1]);
+    renderBarChart(mkCard(grid,"Registros por tipo de cimento","contagem no período/filtros"),items,{colorFor:(l)=>corPorOrdemFixa(l,CIMENTO_ORDER)});
+  }
+  if(id==="tempos"){
+    intro.innerHTML="<b>TMAC</b> é o tempo total do ciclo (entrada → faturamento) e é o indicador principal — meta ≤2h10. TME, TMC e TMF são componentes com escalas bem diferentes entre si, por isso cada um ganha o próprio eixo (nunca dois eixos no mesmo gráfico).";
+    grid.className="";
+    const dias=[...new Set(arr.map(c=>c.data).filter(Boolean))].sort();
+    const xLabels=dias.map(fmtData);
+    const headline=document.createElement("div");headline.className="chart-card";headline.style.marginBottom="16px";
+    headline.innerHTML="<h3>TMAC — tempo médio de atendimento ao caminhão</h3><div class='chart-sub'>minutos por dia · meta ≤2h10 (130min) · só concluídos</div>";
+    const hc=document.createElement("div");headline.appendChild(hc);
+    grid.appendChild(headline);
+    renderLineChart(hc,"TMAC",dailyAvgMinutesSeries(arr,"TMAC",dias),{color:RAMP_HEX[0],meta:META_TEMPOS.TMAC,metaLabel:"2h10",xLabels,tipFmt:fmtMin});
+
+    const sm=document.createElement("div");sm.className="small-mult";grid.appendChild(sm);
+    [["TME","Tempo médio de espera (entrada → 1ª etapa)",null],
+     ["TMC","Tempo médio de carregamento",null],
+     ["TMF","Tempo médio de fila até faturar · meta ≤8min",META_TEMPOS.TMF]].forEach(([k,sub,meta],i)=>{
+      const holder=mkCard(sm,k,sub);
+      renderLineChart(holder,k,dailyAvgMinutesSeries(arr,k,dias),{color:RAMP_HEX[i+1],meta,metaLabel:meta+"min",xLabels,tipFmt:fmtMin});
+    });
+  }
+  if(id==="etapas"){
+    intro.innerHTML="Tempos médios por etapa operacional — <b>TMTI</b> (triagem), <b>TMCI</b> (carregamento) e <b>TMEI</b> (enlonamento) — cada um com sua própria meta e escala.";
+    grid.className="small-mult";
+    const dias=[...new Set(arr.map(c=>c.data).filter(Boolean))].sort();
+    const xLabels=dias.map(fmtData);
+    [["TMTI","Meta ≤5min"],["TMCI","Meta ≤20min"],["TMEI","Meta ≤15min"]].forEach(([k,sub],i)=>{
+      const holder=mkCard(grid,k,sub);
+      renderLineChart(holder,k,dailyAvgMinutesSeries(arr,k,dias),{color:RAMP_HEX[i],meta:META_TEMPOS[k],metaLabel:META_TEMPOS[k]+"min",xLabels,tipFmt:fmtMin});
+    });
+  }
+  if(id==="justificativas"){
+    intro.innerHTML="Ranking dos motivos de justificativa mais registrados no período/filtros. Top 7 + agrupamento dos demais.";
+    grid.className="chart-grid";
+    const items=topNComOutros([...groupCount(arr,c=>c.justificativa&&c.justificativa.motivo).entries()],7,n=>"Outros ("+n+" motivos)");
+    renderBarChart(mkCard(grid,"Ocorrências por motivo","contagem no período/filtros"),items,{labelW:230,colorFor:(l)=>l.startsWith("Outros")?"var(--t3)":RAMP_HEX[2]});
+  }
+  if(id==="mensal"){
+    intro.innerHTML="Visão consolidada mês a mês: <b>total de registros</b> e <b>TMAC médio</b>, lado a lado no mesmo eixo de meses para comparar volume com desempenho. Sem \"Ver histórico completo\" ativado, só os últimos 30 dias entram na conta — pouco para uma leitura mensal.";
+    grid.className="chart-grid g2";
+    const meses=[...new Set(arr.map(c=>monthKey(c.data)).filter(Boolean))].sort();
+    const xLabels=meses.map(monthLabel);
+    const totalPorMes=meses.map(mk=>arr.filter(c=>monthKey(c.data)===mk).length);
+    const tmacSum=new Map(),tmacCount=new Map();
+    arr.forEach(c=>{
+      const mk=monthKey(c.data);
+      if(!mk)return;
+      if(c.setorAtual==="concluido"&&c._m.TMAC!==null){
+        tmacSum.set(mk,(tmacSum.get(mk)||0)+c._m.TMAC);
+        tmacCount.set(mk,(tmacCount.get(mk)||0)+1);
+      }
+    });
+    const tmacPorMes=meses.map(mk=>tmacCount.has(mk)?Math.round(tmacSum.get(mk)/tmacCount.get(mk)/60000):null);
+    renderLineChart(mkCard(grid,"Total de registros por mês","veículos no período/filtros, consolidado mensal"),"Total",totalPorMes,{color:RAMP_HEX[0],xLabels,tipFmt:v=>v.toLocaleString("pt-BR")});
+    renderLineChart(mkCard(grid,"TMAC médio por mês","minutos, meta ≤2h10 · só concluídos"),"TMAC médio",tmacPorMes,{color:RAMP_HEX[2],meta:META_TEMPOS.TMAC,metaLabel:"2h10",xLabels,tipFmt:fmtMin});
+  }
+}
+
+window.toggleGraficos=()=>{
+  graficosVisiveis=!graficosVisiveis;
+  document.getElementById("view-table").style.display=graficosVisiveis?"none":"";
+  document.getElementById("view-charts").classList.toggle("show",graficosVisiveis);
+  const btn=document.getElementById("btn-graficos");
+  btn.classList.toggle("active",graficosVisiveis);
+  btn.textContent=graficosVisiveis?"📋 Ver tabela":"📈 Gráficos";
+  if(graficosVisiveis){
+    montarAbas();
+    renderGraficoAtivo();
+  }
+};
+
+const _origRender=window.render;
+window.render=()=>{
+  _origRender();
+  renderGraficoAtivo();
 };
 
 iniciarListener();
