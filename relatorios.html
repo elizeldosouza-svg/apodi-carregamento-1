@@ -290,6 +290,22 @@ function operadoresDoRegistro(c){
     c.enlonamento?.operadorFim,c.faturamento?.operador].filter(Boolean);
 }
 
+// Data de referencia para os filtros de periodo — mesma logica do master.html:
+// concluido usa a data do faturamento (saida); em andamento usa a data de entrada.
+// Isso garante que um caminhao concluido apos virar o dia apareca no dia em que
+// realmente saiu, nao no dia em que entrou.
+function tsRef(c){
+  const m=c._m;
+  const toDate=v=>v?(v.toDate?v.toDate():v):null;
+  if(c.setorAtual==="concluido")return toDate(m.tFat)||toDate(m.tEntrada);
+  return toDate(m.tEntrada);
+}
+function dataRef(c){
+  const ts=tsRef(c);
+  if(!ts)return c.data||null;
+  return ts.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+}
+
 function empresaAtual(c){
   if(c.setorAtual==="concluido")return"Apodi";
   if(c.setorAtual&&c.setorAtual.startsWith("enlonamento"))return"Sousa Clean";
@@ -339,8 +355,9 @@ function passaFiltros(c){
   if(ft&&c._turno!==ft)return false;
   if(fca&&c.tipoCarga!==fca)return false;
   if(fci&&c.tipoCimento!==fci)return false;
-  if(fi&&c.data<fi)return false;
-  if(ff&&c.data>ff)return false;
+  if((fi||ff)&&!c._dataRef)return false;
+  if(fi&&c._dataRef<fi)return false;
+  if(ff&&c._dataRef>ff)return false;
   if(fp&&(c.placa||"").toUpperCase().indexOf(fp)===-1)return false;
   if(fac&&(c.ac||"").toUpperCase().indexOf(fac)===-1)return false;
   if(fop&&c._operadores.indexOf(fop)===-1)return false;
@@ -609,6 +626,7 @@ function iniciarListener(){
       c._empresa=empresaAtual(c);
       c._turno=getTurno(c._m.tEntrada?(c._m.tEntrada.toDate?c._m.tEntrada.toDate():c._m.tEntrada):null);
       c._operadores=operadoresDoRegistro(c);
+      c._dataRef=dataRef(c);
       return c;
     });
     HD_BY_ID=new Map(HD.map(c=>[c.id,c]));
@@ -910,9 +928,9 @@ function dailyAvgMinutesSeries(arr,metricKey,dias){
   const sums=new Map(),counts=new Map();
   arr.forEach(c=>{
     const v=c._m[metricKey];
-    if(v===null||v===undefined||!c.data)return;
-    sums.set(c.data,(sums.get(c.data)||0)+v);
-    counts.set(c.data,(counts.get(c.data)||0)+1);
+    if(v===null||v===undefined||!c._dataRef)return;
+    sums.set(c._dataRef,(sums.get(c._dataRef)||0)+v);
+    counts.set(c._dataRef,(counts.get(c._dataRef)||0)+1);
   });
   return dias.map(d=>counts.has(d)?Math.round(sums.get(d)/counts.get(d)/60000):null);
 }
@@ -1025,7 +1043,7 @@ function renderGraficoAtivo(){
   if(id==="tempos"){
     intro.innerHTML="<b>TMAC</b> é o tempo total do ciclo (entrada → faturamento) e é o indicador principal — meta ≤2h10. TME, TMC e TMF são componentes com escalas bem diferentes entre si, por isso cada um ganha o próprio eixo (nunca dois eixos no mesmo gráfico).";
     grid.className="";
-    const dias=[...new Set(arr.map(c=>c.data).filter(Boolean))].sort();
+    const dias=[...new Set(arr.map(c=>c._dataRef).filter(Boolean))].sort();
     const xLabels=dias.map(fmtData);
     const headline=document.createElement("div");headline.className="chart-card";headline.style.marginBottom="16px";
     headline.innerHTML="<h3>TMAC — tempo médio de atendimento ao caminhão</h3><div class='chart-sub'>minutos por dia · meta ≤2h10 (130min) · só concluídos</div>";
@@ -1044,7 +1062,7 @@ function renderGraficoAtivo(){
   if(id==="etapas"){
     intro.innerHTML="Tempos médios por etapa operacional — <b>TMTI</b> (triagem), <b>TMCI</b> (carregamento) e <b>TMEI</b> (enlonamento) — cada um com sua própria meta e escala.";
     grid.className="small-mult";
-    const dias=[...new Set(arr.map(c=>c.data).filter(Boolean))].sort();
+    const dias=[...new Set(arr.map(c=>c._dataRef).filter(Boolean))].sort();
     const xLabels=dias.map(fmtData);
     [["TMTI","Meta ≤5min"],["TMCI","Meta ≤20min"],["TMEI","Meta ≤15min"]].forEach(([k,sub],i)=>{
       const holder=mkCard(grid,k,sub);
@@ -1060,12 +1078,12 @@ function renderGraficoAtivo(){
   if(id==="mensal"){
     intro.innerHTML="Visão consolidada mês a mês: <b>total de registros</b> e <b>TMAC médio</b>, lado a lado no mesmo eixo de meses para comparar volume com desempenho. Sem \"Ver histórico completo\" ativado, só os últimos 30 dias entram na conta — pouco para uma leitura mensal.";
     grid.className="chart-grid g2";
-    const meses=[...new Set(arr.map(c=>monthKey(c.data)).filter(Boolean))].sort();
+    const meses=[...new Set(arr.map(c=>monthKey(c._dataRef)).filter(Boolean))].sort();
     const xLabels=meses.map(monthLabel);
-    const totalPorMes=meses.map(mk=>arr.filter(c=>monthKey(c.data)===mk).length);
+    const totalPorMes=meses.map(mk=>arr.filter(c=>monthKey(c._dataRef)===mk).length);
     const tmacSum=new Map(),tmacCount=new Map();
     arr.forEach(c=>{
-      const mk=monthKey(c.data);
+      const mk=monthKey(c._dataRef);
       if(!mk)return;
       if(c.setorAtual==="concluido"&&c._m.TMAC!==null){
         tmacSum.set(mk,(tmacSum.get(mk)||0)+c._m.TMAC);
