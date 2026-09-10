@@ -355,9 +355,17 @@ function passaFiltros(c){
   if(ft&&c._turno!==ft)return false;
   if(fca&&c.tipoCarga!==fca)return false;
   if(fci&&c.tipoCimento!==fci)return false;
-  if((fi||ff)&&!c._dataRef)return false;
-  if(fi&&c._dataRef<fi)return false;
-  if(ff&&c._dataRef>ff)return false;
+  if(fi||ff){
+    // Mesma regra de carry-over do master.html: caminhao NAO concluido que comecou
+    // antes do inicio do periodo filtrado continua aparecendo (nao "some" da tela
+    // enquanto ainda esta em andamento). So concluidos respeitam o intervalo estrito.
+    const emAndamentoAntesDoPeriodo=c.setorAtual!=="concluido"&&fi&&c.data&&c.data<fi;
+    if(!emAndamentoAntesDoPeriodo){
+      if(!c._dataRef)return false;
+      if(fi&&c._dataRef<fi)return false;
+      if(ff&&c._dataRef>ff)return false;
+    }
+  }
   if(fp&&(c.placa||"").toUpperCase().indexOf(fp)===-1)return false;
   if(fac&&(c.ac||"").toUpperCase().indexOf(fac)===-1)return false;
   if(fop&&c._operadores.indexOf(fop)===-1)return false;
