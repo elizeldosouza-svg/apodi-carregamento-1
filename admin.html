@@ -235,6 +235,29 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .op-search:focus{border-color:var(--rd)}
 .op-filtro-tela{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:8px 12px;font-size:11px;cursor:pointer;min-width:180px}
 .op-count{font-size:11px;color:var(--t3);white-space:nowrap}
+
+/* Config. Paradas (Situação/Setor/Status) */
+.pc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:0 16px 16px}
+@media(max-width:800px){.pc-grid{grid-template-columns:1fr}}
+.pc-card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:14px}
+.pc-card h3{font-size:11.5px;font-weight:800;color:var(--tx);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.pc-count{font-size:10px;color:var(--t3);font-weight:600}
+.pc-item{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:6px;background:var(--bg2)}
+.pc-item.inativo{opacity:.4}
+.pc-item .pc-lbl{flex:1;font-size:12px}
+.pc-item.pc-editing .pc-lbl{display:none}
+.pc-item input.pc-edit-inp{flex:1;background:var(--bg);border:1px solid var(--rd);border-radius:6px;color:var(--tx);padding:4px 7px;font-size:12px;display:none}
+.pc-item.pc-editing input.pc-edit-inp{display:block}
+.pc-ic-btn{background:transparent;border:none;color:var(--t2);cursor:pointer;font-size:12px;padding:2px 4px;border-radius:4px}
+.pc-ic-btn:hover{color:var(--tx);background:var(--bg)}
+.pc-toggle{width:30px;height:17px;border-radius:20px;background:var(--bd);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.pc-toggle.on{background:var(--gr)}
+.pc-toggle::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left .2s}
+.pc-toggle.on::after{left:15px}
+.pc-add-row{display:flex;gap:6px;margin-top:8px}
+.pc-add-row input{flex:1;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 9px;font-size:12px;outline:none}
+.pc-add-row input:focus{border-color:var(--rd)}
+.pc-add-btn{padding:7px 12px;border:none;border-radius:var(--rs);background:var(--rd);color:#fff;font-size:10.5px;font-weight:800;cursor:pointer;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -273,6 +296,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <a class="nav-btn" href="/acs-excluidas" target="_blank">🗑️ Excluídas</a>
     <a class="nav-btn" href="/senha" target="_blank">📺 TV</a>
     <button class="nav-btn" onclick="abrirOperadores()" style="cursor:pointer">👤 Operadores</button>
+    <button class="nav-btn" onclick="abrirConfigParadas()" style="cursor:pointer">⚙️ Config. Paradas</button>
     <button class="sair-btn" onclick="doLogout()">Sair</button>
   </div>
   <div class="wrap">
@@ -510,6 +534,36 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     </div>
   </div>
 
+  <div id="config-paradas-screen" style="display:none">
+    <div class="wrap">
+      <div class="tcard">
+        <div class="thead-bar">⚙️ Configurações — Paradas / Ocorrências
+          <div class="totais-bar">
+            <button class="pb" onclick="voltarConfigParadas()">← Voltar</button>
+          </div>
+        </div>
+        <div style="padding:14px 16px;font-size:11px;color:var(--t3)">Controla as opções dos dropdowns de Situação, Setor e Status na tela de Faturamento. Alterações aqui refletem em tempo real. Sem exclusão — apenas ativar/desativar (histórico nunca quebra).</div>
+        <div class="pc-grid">
+          <div class="pc-card">
+            <h3>Situação <span class="pc-count" id="pc-cnt-situacoes">—</span></h3>
+            <div id="pc-lista-situacoes"></div>
+            <div class="pc-add-row"><input id="pc-novo-situacoes" placeholder="Nova situação..." onkeydown="if(event.key==='Enter')pcAdd('situacoes')"><button class="pc-add-btn" onclick="pcAdd('situacoes')">+ Add</button></div>
+          </div>
+          <div class="pc-card">
+            <h3>Setor <span class="pc-count" id="pc-cnt-setores">—</span></h3>
+            <div id="pc-lista-setores"></div>
+            <div class="pc-add-row"><input id="pc-novo-setores" placeholder="Novo setor..." onkeydown="if(event.key==='Enter')pcAdd('setores')"><button class="pc-add-btn" onclick="pcAdd('setores')">+ Add</button></div>
+          </div>
+          <div class="pc-card">
+            <h3>Status <span class="pc-count" id="pc-cnt-status">—</span></h3>
+            <div id="pc-lista-status"></div>
+            <div class="pc-add-row"><input id="pc-novo-status" placeholder="Novo status..." onkeydown="if(event.key==='Enter')pcAdd('status')"><button class="pc-add-btn" onclick="pcAdd('status')">+ Add</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- DRAWER -->
@@ -697,7 +751,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,query,orderBy,where,addDoc,getDocs,updateDoc,deleteDoc,deleteField,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,query,orderBy,where,addDoc,getDocs,updateDoc,deleteDoc,deleteField,doc,getDoc,setDoc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 const CREDS={user:"administrador",pwd:"admin2026"};
@@ -1894,6 +1948,79 @@ window.voltarTabela=()=>{
     updateCalBtnLabel();calRender();calRenderExtras();
     render();
   }
+};
+// ── Config. Paradas (Situação/Setor/Status) ─────────────────────────────
+const PC_DEFAULT={
+  situacoes:[{id:"sistema",label:"SISTEMA",ativo:true},{id:"energia",label:"ENERGIA",ativo:true},{id:"equipamento",label:"EQUIPAMENTO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
+  setores:[{id:"ti",label:"TI",ativo:true},{id:"operacional",label:"OPERACIONAL",ativo:true},{id:"manutencao",label:"MANUTENÇÃO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
+  status:[{id:"sistema_inoperante",label:"Sistema inoperante",ativo:true},{id:"manutencao_concluida",label:"Manutenção concluída",ativo:true},{id:"falha_energia",label:"Falha de energia resolvida",ativo:true},{id:"falha_equipamento",label:"Falha de equipamento resolvida",ativo:true},{id:"outro",label:"Outro",ativo:true}],
+};
+let PC_DATA=PC_DEFAULT;
+const pcRef=doc(db,"configuracoes","parada_opcoes");
+async function pcGarantir(){
+  try{
+    const snap=await getDoc(pcRef);
+    if(!snap.exists())await setDoc(pcRef,PC_DEFAULT);
+  }catch(e){console.error("Erro ao inicializar configuracoes/parada_opcoes:",e);}
+}
+onSnapshot(pcRef,snap=>{
+  if(snap.exists()){PC_DATA=snap.data();pcRenderTudo();}
+  else{pcGarantir();}
+});
+function pcRenderTudo(){["situacoes","setores","status"].forEach(pcRender);}
+function pcRender(campo){
+  const el=document.getElementById("pc-lista-"+campo);
+  if(!el)return;
+  const itens=PC_DATA[campo]||[];
+  el.innerHTML=itens.map((it,i)=>`
+    <div class="pc-item ${it.ativo?"":"inativo"}" id="pc-${campo}-${i}">
+      <div class="pc-toggle ${it.ativo?"on":""}" onclick="pcToggle('${campo}',${i})"></div>
+      <span class="pc-lbl">${it.label}</span>
+      <input class="pc-edit-inp" value="${it.label}" onkeydown="if(event.key==='Enter')pcConfirmarEdit('${campo}',${i})">
+      <button class="pc-ic-btn" onclick="pcEditar('${campo}',${i})">🖊️</button>
+    </div>`).join("");
+  document.getElementById("pc-cnt-"+campo).textContent=itens.length+" itens";
+}
+async function pcSalvar(campo){
+  try{await updateDoc(pcRef,{[campo]:PC_DATA[campo]});}
+  catch(e){alert("Erro ao salvar: "+e.message);}
+}
+window.pcToggle=(campo,i)=>{
+  PC_DATA[campo][i].ativo=!PC_DATA[campo][i].ativo;
+  pcRender(campo);
+  pcSalvar(campo);
+};
+window.pcEditar=(campo,i)=>{
+  const item=document.getElementById("pc-"+campo+"-"+i);
+  item.classList.add("pc-editing");
+  const inp=item.querySelector(".pc-edit-inp");
+  inp.focus();inp.select();
+};
+window.pcConfirmarEdit=(campo,i)=>{
+  const item=document.getElementById("pc-"+campo+"-"+i);
+  const val=item.querySelector(".pc-edit-inp").value.trim();
+  if(val)PC_DATA[campo][i].label=val;
+  pcRender(campo);
+  pcSalvar(campo);
+};
+window.pcAdd=(campo)=>{
+  const inp=document.getElementById("pc-novo-"+campo);
+  const val=inp.value.trim();
+  if(!val)return;
+  const id=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+  PC_DATA[campo]=[...(PC_DATA[campo]||[]),{id:id||("item_"+Date.now()),label:val,ativo:true}];
+  inp.value="";
+  pcRender(campo);
+  pcSalvar(campo);
+};
+window.abrirConfigParadas=()=>{
+  document.querySelector(".wrap").style.display="none";
+  document.getElementById("config-paradas-screen").style.display="block";
+  pcRenderTudo();
+};
+window.voltarConfigParadas=()=>{
+  document.getElementById("config-paradas-screen").style.display="none";
+  document.querySelector(".wrap").style.display="block";
 };
 let EDIT_OPERADOR_ID=null;
 let OPERADORES_CACHE=[];
