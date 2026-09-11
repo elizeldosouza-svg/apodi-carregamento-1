@@ -2023,9 +2023,11 @@ window.voltarConfigParadas=()=>{
   document.querySelector(".wrap").style.display="block";
 };
 let EDIT_OPERADOR_ID=null;
+let EDIT_USUARIO_ORIGINAL=null;
 let OPERADORES_CACHE=[];
 window.abrirNovoOperador=()=>{
   EDIT_OPERADOR_ID=null;
+  EDIT_USUARIO_ORIGINAL=null;
   document.getElementById("op-form").classList.add("show");
   document.getElementById("op-nome-in").value="";
   document.getElementById("op-usuario-in").value="";
@@ -2041,11 +2043,13 @@ window.abrirNovoOperador=()=>{
 window.fecharNovoOperador=()=>{
   document.getElementById("op-form").classList.remove("show");
   EDIT_OPERADOR_ID=null;
+  EDIT_USUARIO_ORIGINAL=null;
 };
 window.editarOperador=(id)=>{
   const o=OPERADORES_CACHE.find(x=>x.id===id);
   if(!o)return;
   EDIT_OPERADOR_ID=id;
+  EDIT_USUARIO_ORIGINAL=(o.usuario||"").toLowerCase();
   document.getElementById("op-form").classList.add("show");
   document.getElementById("op-nome-in").value=o.nome||"";
   document.getElementById("op-usuario-in").value=o.usuario||"";
@@ -2081,10 +2085,20 @@ window.salvarNovoOperador=async()=>{
   if(!usuario){alert("Informe o usuário de acesso.");return;}
   if(telas.length===0){alert("Marque ao menos uma tela para o operador.");return;}
   // Valida usuário único no sistema (exceto o próprio registro em edição)
-  const duplicado=OPERADORES_CACHE.find(o=>o.usuario===usuario&&o.id!==EDIT_OPERADOR_ID);
-  if(duplicado){
-    usuarioInEl.classList.add("err");usuarioErrEl.classList.add("show");
-    return;
+  const duplicados=OPERADORES_CACHE.filter(o=>o.usuario===usuario&&o.id!==EDIT_OPERADOR_ID);
+  if(duplicados.length){
+    const consolidando=EDIT_OPERADOR_ID&&usuario===EDIT_USUARIO_ORIGINAL;
+    if(!consolidando){
+      // Usuário pertence a outra pessoa de verdade — bloqueia
+      usuarioInEl.classList.add("err");usuarioErrEl.classList.add("show");
+      return;
+    }
+    // Mesmo operador com documentos legados (1 doc por tela, de antes da migração multi-tela):
+    // funde as telas de todos eles no registro atual e remove os duplicados.
+    duplicados.forEach(dup=>telasDoOperador(dup).forEach(t=>{if(!telas.includes(t))telas.push(t);}));
+    try{
+      await Promise.all(duplicados.map(dup=>deleteDoc(doc(db,"operadores_acesso",dup.id))));
+    }catch(e){alert("Erro ao consolidar registros antigos: "+e.message);return;}
   }
   try{
     if(EDIT_OPERADOR_ID){
