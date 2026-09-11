@@ -118,6 +118,53 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .fatf-drow span:first-child{color:var(--t2)}
 .fatf-drow span:last-child{color:var(--tx);text-align:right;font-weight:600}
 .fatf-op{color:var(--t3);font-weight:400;font-size:10.5px}
+
+/* Registro de Parada / Ocorrência */
+.parada-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;background:rgba(255,208,0,.08);border:1.5px solid rgba(255,208,0,.35);border-radius:var(--rs);color:var(--ye,#ffd000);font-size:12.5px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px;margin-bottom:14px}
+.parada-btn:hover{background:rgba(255,208,0,.14)}
+.pd-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:998;display:none}
+.pd-overlay.show{display:block}
+.pd-drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:92vw;background:var(--c1);border-left:1px solid var(--bd);z-index:999;overflow-y:auto;box-shadow:-8px 0 30px rgba(0,0,0,.5);display:none}
+.pd-drawer.show{display:block}
+.pd-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--c1)}
+.pd-title{font-size:13px;font-weight:800;color:var(--ye,#ffd000);text-transform:uppercase;letter-spacing:.5px}
+.pd-close{background:transparent;border:none;color:var(--t3);font-size:18px;cursor:pointer}
+.pd-body{padding:18px 20px}
+.pd-fg{margin-bottom:14px}
+.pd-fg label{display:block;font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.pd-fg input,.pd-fg select,.pd-fg textarea{width:100%;background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:10px 12px;font-size:14px;outline:none;font-family:inherit}
+.pd-fg textarea{resize:vertical;min-height:60px}
+.pd-fg input:focus,.pd-fg select:focus,.pd-fg textarea:focus{border-color:var(--ac)}
+.pd-fg.pd-auto input{background:rgba(0,232,150,.06);border-color:rgba(0,232,150,.3);color:var(--ac);font-weight:700}
+.pd-fg.pd-auto label{color:var(--ac)}
+.pd-auto-tag{font-size:8px;background:rgba(0,232,150,.15);color:var(--ac);padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:800;letter-spacing:.3px}
+.pd-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pd-tt{background:rgba(255,208,0,.08);border:1.5px solid rgba(255,208,0,.3);border-radius:var(--rs);padding:10px 12px;text-align:center;margin-bottom:14px}
+.pd-tt .v{font-size:20px;font-weight:800;color:var(--ye,#ffd000);font-family:monospace}
+.pd-tt .l{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.pd-save{width:100%;padding:13px;border:none;border-radius:var(--rs);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer}
+.pd-save.ini{background:var(--ye,#ffd000);color:#2a1e00}
+.pd-save.fim{background:var(--ac);color:#052e22}
+.pd-tabs{display:flex;gap:6px;margin:0 20px 4px;background:var(--bg);border-radius:var(--rs);padding:4px;border:1px solid var(--bd)}
+.pd-tab{flex:1;padding:9px;border:none;background:transparent;color:var(--t2);font-size:11px;font-weight:700;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:.3px}
+.pd-tab.on{background:var(--ye,#ffd000);color:#2a1e00}
+.pd-tab.fim.on{background:var(--ac);color:#052e22}
+
+/* Alerta de parada aberta há mais de 3h */
+.pd-alerta-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1001;display:none;align-items:center;justify-content:center;padding:20px}
+.pd-alerta-overlay.show{display:flex}
+.pd-alerta-box{background:var(--c1);border:2px solid #ff4466;border-radius:14px;max-width:360px;width:100%;padding:24px;text-align:center}
+.pd-alerta-ico{font-size:32px;margin-bottom:8px}
+.pd-alerta-tit{font-size:14px;font-weight:800;color:#ff4466;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.pd-alerta-txt{font-size:12px;color:var(--t2);margin-bottom:18px;line-height:1.5}
+.pd-alerta-btns{display:flex;gap:8px}
+.pd-alerta-cont{flex:1;padding:11px;border-radius:var(--rs);border:1.5px solid var(--bd);background:transparent;color:var(--t2);font-size:11.5px;font-weight:700;cursor:pointer}
+.pd-alerta-enc{flex:1;padding:11px;border-radius:var(--rs);border:none;background:var(--ac);color:#052e22;font-size:11.5px;font-weight:800;cursor:pointer}
+
+/* Toggle modo relatório */
+.modo-rel-row{display:flex;gap:8px;margin-bottom:10px}
+.modo-btn{flex:1;padding:8px;border:1.5px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+.modo-btn.on{border-color:var(--ac);color:var(--ac);background:rgba(0,232,150,.1)}
 </style>
 </head>
 <body>
@@ -170,6 +217,8 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   </div>
   <button class="go" id="go" onclick="confirmar()" disabled>🚀 Confirmar Saída</button>
 
+  <button class="parada-btn" onclick="abrirDrawerParada()">⚠️ Registrar Parada / Ocorrência</button>
+
   <div class="filtro-rel">
     <div class="filtro-titulo">📅 Filtro para o relatório</div>
     <div class="filtro-row">
@@ -197,6 +246,10 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
         <option value="">Todos os operadores</option>
       </select>
     </div>
+  </div>
+  <div class="modo-rel-row">
+    <button class="modo-btn on" id="mr-cam" onclick="setModoRel('caminhoes')">📋 Caminhões</button>
+    <button class="modo-btn" id="mr-par" onclick="setModoRel('paradas')">⚠️ Paradas</button>
   </div>
   <div class="btn-row">
     <button class="exp-btn" onclick="verRelatorio()">👁️ Visualizar</button>
@@ -235,6 +288,92 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   </div>
 </div>
 
+<!-- REGISTRO DE PARADA / OCORRÊNCIA -->
+<div class="pd-overlay" id="pd-overlay" onclick="fecharDrawerParada()"></div>
+<div class="pd-drawer" id="pd-drawer">
+  <div class="pd-head">
+    <span class="pd-title">⚠️ Registrar Parada / Ocorrência</span>
+    <button class="pd-close" onclick="fecharDrawerParada()">✕</button>
+  </div>
+  <div class="pd-tabs">
+    <button class="pd-tab on" id="pd-tab-ini" onclick="pdShowTab('ini')">🔴 Abrir Parada</button>
+    <button class="pd-tab fim" id="pd-tab-fim" onclick="pdShowTab('fim')">🟢 Encerrar Parada</button>
+  </div>
+  <div class="pd-body" id="pd-painel-ini">
+    <div class="pd-fg pd-auto">
+      <label>Data da Sinalização <span class="pd-auto-tag">AUTO</span></label>
+      <input id="pd-i-data" readonly>
+    </div>
+    <div class="pd-row2">
+      <div class="pd-fg pd-auto">
+        <label>Turno <span class="pd-auto-tag">AUTO</span></label>
+        <input id="pd-i-turno" readonly>
+      </div>
+      <div class="pd-fg pd-auto">
+        <label>Operador <span class="pd-auto-tag">AUTO</span></label>
+        <input id="pd-i-operador" readonly>
+      </div>
+    </div>
+    <div class="pd-fg">
+      <label>Situação</label>
+      <select id="pd-i-situacao"></select>
+    </div>
+    <div class="pd-fg">
+      <label>Setor</label>
+      <select id="pd-i-setor"></select>
+    </div>
+    <div class="pd-fg">
+      <label>Horário Inicial Parada</label>
+      <input type="time" id="pd-i-hi">
+    </div>
+    <div id="pd-i-msg" class="msg"></div>
+    <button class="pd-save ini" onclick="abrirParada()">🔴 Iniciar Parada</button>
+  </div>
+  <div class="pd-body" id="pd-painel-fim" style="display:none">
+    <div class="pd-fg">
+      <label>Selecionar parada em aberto</label>
+      <select id="pd-f-select"></select>
+    </div>
+    <div class="pd-row2">
+      <div class="pd-fg">
+        <label>Data do Encerramento</label>
+        <input type="date" id="pd-f-data-enc">
+      </div>
+      <div class="pd-fg">
+        <label>Horário Final Parada</label>
+        <input type="time" id="pd-f-hf" oninput="pdCalcTempo()">
+      </div>
+    </div>
+    <div class="pd-tt">
+      <div class="v" id="pd-f-tt-v">00:00:00</div>
+      <div class="l">Tempo Total (calculado com base na abertura)</div>
+    </div>
+    <div class="pd-fg">
+      <label>Status</label>
+      <select id="pd-f-status"></select>
+    </div>
+    <div class="pd-fg">
+      <label>Observação</label>
+      <textarea id="pd-f-obs" placeholder="Detalhes adicionais sobre a ocorrência (opcional)"></textarea>
+    </div>
+    <div id="pd-f-msg" class="msg"></div>
+    <button class="pd-save fim" onclick="encerrarParada()">🟢 Encerrar Parada</button>
+  </div>
+</div>
+
+<!-- ALERTA DE PARADA ABERTA HÁ MAIS DE 3H -->
+<div class="pd-alerta-overlay" id="pd-alerta-overlay">
+  <div class="pd-alerta-box">
+    <div class="pd-alerta-ico">⚠️</div>
+    <div class="pd-alerta-tit">Parada em aberto há mais de 3 horas</div>
+    <div class="pd-alerta-txt" id="pd-alerta-txt"></div>
+    <div class="pd-alerta-btns">
+      <button class="pd-alerta-cont" onclick="pdAlertaContinuar()">Continua aberta</button>
+      <button class="pd-alerta-enc" onclick="pdAlertaEncerrar()">Encerrar agora</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL PREVIEW -->
 <div class="modal-prev" id="modal-prev">
   <div class="modal-box">
@@ -254,7 +393,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,updateDoc,doc,Timestamp,enableNetwork,disableNetwork}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,updateDoc,addDoc,doc,getDoc,setDoc,Timestamp,enableNetwork,disableNetwork}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import{verificarSessao,fazerLogin,salvarNovaSenha,fazerLogout}from"./auth-tela.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
@@ -331,7 +470,7 @@ window.doLogout=()=>{fazerLogout(TELA);location.reload();};
 if(SESSAO.logado){mostrarApp();}else{document.getElementById("login-screen").style.display="flex";}
 const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
-let HD=[],HD_REL=[];
+let HD=[],HD_REL=[],PARADAS=[];
 function atualizarFiltroOperador(){
   const sel=document.getElementById("f-operador");
   if(!sel)return;
@@ -344,10 +483,13 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   if(connState!=="online"){connState="online";setConnBanner("online","✅ Conexão restabelecida");}
   const hj=hoje();
   const todos=snap.docs.map(d=>{return{id:d.id,...d.data()}});
-  HD=todos.filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
-  HD_REL=todos; // relatório: olha TODOS os documentos, sem excluir concluído/dia anterior
+  const caminhoes=todos.filter(c=>c.tipo!=="parada_sistema");
+  PARADAS=todos.filter(c=>c.tipo==="parada_sistema");
+  HD=caminhoes.filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
+  HD_REL=caminhoes; // relatório: olha TODOS os documentos, sem excluir concluído/dia anterior
   renderFilaFat();
   atualizarFiltroOperador();
+  pdCheckAlertas();
 },err=>{
   console.error("Firestore listener error:",err);
   connState="offline";
@@ -596,7 +738,7 @@ function buildLinhasRel(registros,forPrint=false){
 }
 const TURNO_LABELS={geral:"Geral",A:"Turno A (23h–07h)",B:"Turno B (07h–15h)",C:"Turno C (15h–23h)"};
 function fmtDia(v){const [a,m,d]=v.split("-");return`${d}/${m}/${a}`;}
-window.verRelatorio=()=>{
+function verRelatorioCaminhoes(){
   const registros=buildRegistrosRel();
   const{dataIniVal,dataFimVal}=getFiltros();
   const periodoTxt=dataIniVal===dataFimVal?fmtDia(dataIniVal):`${fmtDia(dataIniVal)} a ${fmtDia(dataFimVal)}`;
@@ -613,7 +755,7 @@ window.verRelatorio=()=>{
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
-window.gerarPDF=()=>{
+function gerarPDFCaminhoes(){
   const registros=buildRegistrosRel();
   const{dataIniVal,dataFimVal}=getFiltros();
   const periodoTxt=dataIniVal===dataFimVal?fmtDia(dataIniVal):`${fmtDia(dataIniVal)} a ${fmtDia(dataFimVal)}`;
@@ -653,7 +795,7 @@ window.gerarPDF=()=>{
   setTimeout(()=>janela.print(),600);
 };
 
-window.exportExcel=()=>{
+function exportExcelCaminhoes(){
   const registros=buildRegistrosRel();
   if(!registros.length){alert("Nenhum dado para exportar no filtro selecionado.");return;}
   const rows=registros.map(c=>{
@@ -681,6 +823,352 @@ window.exportExcel=()=>{
   const fname=dataIniVal===dataFimVal?`faturamento_${dataIniVal}${turnoSuffix}.xlsx`:`faturamento_${dataIniVal}_a_${dataFimVal}${turnoSuffix}.xlsx`;
   XLSX.writeFile(wb,fname);
 };
+
+// ── Toggle de modo do relatório: Caminhões × Paradas ────────────────────
+let MODO_REL="caminhoes";
+window.setModoRel=(m)=>{
+  MODO_REL=m;
+  document.getElementById("mr-cam").classList.toggle("on",m==="caminhoes");
+  document.getElementById("mr-par").classList.toggle("on",m==="paradas");
+};
+window.verRelatorio=()=>MODO_REL==="paradas"?verRelatorioParadas():verRelatorioCaminhoes();
+window.gerarPDF=()=>MODO_REL==="paradas"?gerarPDFParadas():gerarPDFCaminhoes();
+window.exportExcel=()=>MODO_REL==="paradas"?exportExcelParadas():exportExcelCaminhoes();
+
+// ── Relatório de Paradas / Ocorrências ──────────────────────────────────
+function parseHMS(s){
+  if(!s)return 0;
+  const p=s.split(":").map(Number);
+  return(p[0]||0)*3600+(p[1]||0)*60+(p[2]||0);
+}
+function fmtHMSFromSec(total){
+  const h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
+  return h+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function fmtDiaFromDate(d){
+  return d?d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric"}):"-";
+}
+function buildRegistrosParadas(){
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const inicios=PARADAS.filter(c=>c.subtipo==="inicio"&&c.data&&c.data>=dataIniVal&&c.data<=dataFimVal);
+  const finsPorId={};
+  PARADAS.filter(c=>c.subtipo==="fim").forEach(f=>{finsPorId[f.paradaId]=f;});
+  let r=inicios.map(ini=>{
+    const fim=finsPorId[ini.paradaId]||null;
+    const dtIni=ini.ts?.toDate?.();
+    let tempoTotalSec=null;
+    if(fim&&ini.data&&ini.horarioInicialParada&&fim.dataEncerramento&&fim.horarioFinalParada){
+      const dtFimCompleto=new Date(`${fim.dataEncerramento}T${fim.horarioFinalParada}:00`);
+      const dtIniCompleto=new Date(`${ini.data}T${ini.horarioInicialParada}:00`);
+      tempoTotalSec=Math.max(0,Math.round((dtFimCompleto-dtIniCompleto)/1000));
+    }
+    return{
+      paradaId:ini.paradaId,
+      situacao:ini.situacao,setor:ini.setor,
+      horarioInicialParada:ini.horarioInicialParada,
+      dataSinalizacao:dtIni,
+      turno:ini.turno,
+      operadorIni:ini.operador,
+      dataEncerramento:fim?fim.dataEncerramento:null,
+      horarioFinalParada:fim?fim.horarioFinalParada:null,
+      status:fim?fim.status:null,
+      observacao:fim?fim.observacao:null,
+      operadorFim:fim?fim.operador:null,
+      tempoTotalSec,
+      aberta:!fim,
+    };
+  });
+  r.sort((a,b)=>(a.dataSinalizacao?.getTime()||0)-(b.dataSinalizacao?.getTime()||0));
+  return r;
+}
+function pdOperadorTxt(c){
+  if(!c.aberta&&c.operadorFim&&c.operadorFim!==c.operadorIni)return`${c.operadorIni} (abriu) / ${c.operadorFim} (encerrou)`;
+  return c.operadorIni||"-";
+}
+function buildTabelaParadas(registros){
+  const heads=["Data da Sinalização","Situação","Setor","Horário Inicial Parada","Data do Encerramento","Horário Final Parada","Tempo Total","Turno","Operador","Status","Observação"];
+  const thS="background:#ffff00;color:#000;padding:8px 10px;border:1px solid #000;font-weight:bold;text-align:center";
+  const tdS="padding:7px 10px;border:1px solid #000;text-align:center;color:#000";
+  let totalSec=0;
+  const linhas=registros.map(c=>{
+    const dSin=fmtDiaFromDate(c.dataSinalizacao);
+    if(!c.aberta)totalSec+=c.tempoTotalSec||0;
+    const tempoTxt=c.aberta?'<span style="font-size:9px;font-weight:800;color:#b45309;background:#fff3b0;padding:2px 6px;border-radius:4px">EM ABERTO</span>':fmtHMSFromSec(c.tempoTotalSec||0);
+    return`<tr style="background:${c.aberta?"#fff3b0":"#fff"}">
+      <td style="${tdS}">${dSin}</td>
+      <td style="${tdS}">${c.situacao||"-"}</td>
+      <td style="${tdS}">${c.setor||"-"}</td>
+      <td style="${tdS}">${c.horarioInicialParada||"-"}</td>
+      <td style="${tdS}">${c.aberta?"-":fmtDia(c.dataEncerramento)}</td>
+      <td style="${tdS}">${c.aberta?"-":(c.horarioFinalParada||"-")}</td>
+      <td style="${tdS}">${tempoTxt}</td>
+      <td style="${tdS}">${c.turno||"-"}</td>
+      <td style="${tdS}">${pdOperadorTxt(c)}</td>
+      <td style="${tdS}">${c.aberta?"-":(c.status||"-")}</td>
+      <td style="${tdS}">${c.aberta?"-":(c.observacao||"-")}</td>
+    </tr>`;
+  }).join("");
+  const totalStr=fmtHMSFromSec(totalSec);
+  return`<table style="border-collapse:collapse;width:100%;font-size:11px;background:#fff">
+    <thead><tr>${heads.map(h=>`<th style="${thS}">${h}</th>`).join("")}</tr></thead>
+    <tbody>${linhas||`<tr><td colspan="11" style="text-align:center;padding:16px;color:#666">Nenhuma parada registrada no período</td></tr>`}</tbody>
+  </table>
+  <div style="margin-top:10px;text-align:center">
+    <span style="font-weight:bold;background:#ffff00;color:#000;display:inline-block;padding:6px 16px;border:2px solid #000">Total de Horas: ${totalStr}</span>
+    <div style="font-size:9px;color:#666;margin-top:4px">Paradas em aberto (destacadas) não entram na soma</div>
+  </div>`;
+}
+function verRelatorioParadas(){
+  const registros=buildRegistrosParadas();
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const periodoTxt=dataIniVal===dataFimVal?fmtDia(dataIniVal):`${fmtDia(dataIniVal)} a ${fmtDia(dataFimVal)}`;
+  document.getElementById("prev-info").textContent=`Período: ${periodoTxt} · ${registros.length} parada${registros.length!==1?"s":""} registrada${registros.length!==1?"s":""}`;
+  document.getElementById("prev-body").innerHTML=buildTabelaParadas(registros);
+  document.getElementById("modal-prev").classList.add("show");
+}
+function gerarPDFParadas(){
+  const registros=buildRegistrosParadas();
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const periodoTxt=dataIniVal===dataFimVal?fmtDia(dataIniVal):`${fmtDia(dataIniVal)} a ${fmtDia(dataFimVal)}`;
+  const tabela=buildTabelaParadas(registros);
+  const janela=window.open("","_blank","width=1100,height=700");
+  janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"/>
+<title>Registro de Paradas — ${periodoTxt}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;font-size:11pt;padding:24px;color:#000}
+  h2{font-size:14pt;font-weight:bold;text-align:center;margin-bottom:14pt;text-transform:uppercase;letter-spacing:1px}
+  .hinfo{margin-bottom:16pt;border-bottom:2px solid #000;padding-bottom:10pt;font-size:11pt}
+  @media print{@page{margin:1.5cm;size:A4 landscape}}
+</style>
+</head><body>
+<h2>Registro de Paradas / Ocorrências</h2>
+<div class="hinfo">Período: ${periodoTxt}</div>
+${tabela}
+</body></html>`);
+  janela.document.close();janela.focus();
+  setTimeout(()=>janela.print(),600);
+}
+function exportExcelParadas(){
+  const registros=buildRegistrosParadas();
+  if(!registros.length){alert("Nenhuma parada para exportar no período selecionado.");return;}
+  const rows=registros.map(c=>({
+    "Data da Sinalização":fmtDiaFromDate(c.dataSinalizacao),
+    "Situação":c.situacao||"",
+    "Setor":c.setor||"",
+    "Horário Inicial Parada":c.horarioInicialParada||"",
+    "Data do Encerramento":c.aberta?"EM ABERTO":fmtDia(c.dataEncerramento),
+    "Horário Final Parada":c.aberta?"":(c.horarioFinalParada||""),
+    "Tempo Total":c.aberta?"EM ABERTO":fmtHMSFromSec(c.tempoTotalSec||0),
+    "Turno":c.turno||"",
+    "Operador":pdOperadorTxt(c),
+    "Status":c.aberta?"":(c.status||""),
+    "Observação":c.aberta?"":(c.observacao||""),
+  }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!cols"]=[{wch:16},{wch:12},{wch:10},{wch:16},{wch:16},{wch:16},{wch:12},{wch:8},{wch:30},{wch:24},{wch:30}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Paradas");
+  const{dataIniVal,dataFimVal}=getFiltros();
+  const fname=dataIniVal===dataFimVal?`paradas_${dataIniVal}.xlsx`:`paradas_${dataIniVal}_a_${dataFimVal}.xlsx`;
+  XLSX.writeFile(wb,fname);
+}
+
+// ── Config. de listas (Situação/Setor/Status) — editável pelo Admin ────
+const CONFIG_PARADA_DEFAULT={
+  situacoes:[{id:"sistema",label:"SISTEMA",ativo:true},{id:"energia",label:"ENERGIA",ativo:true},{id:"equipamento",label:"EQUIPAMENTO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
+  setores:[{id:"ti",label:"TI",ativo:true},{id:"operacional",label:"OPERACIONAL",ativo:true},{id:"manutencao",label:"MANUTENÇÃO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
+  status:[{id:"sistema_inoperante",label:"Sistema inoperante",ativo:true},{id:"manutencao_concluida",label:"Manutenção concluída",ativo:true},{id:"falha_energia",label:"Falha de energia resolvida",ativo:true},{id:"falha_equipamento",label:"Falha de equipamento resolvida",ativo:true},{id:"outro",label:"Outro",ativo:true}],
+};
+let CONFIG_PARADA=CONFIG_PARADA_DEFAULT;
+const configParadaRef=doc(db,"configuracoes","parada_opcoes");
+async function garantirConfigParada(){
+  try{
+    const snap=await getDoc(configParadaRef);
+    if(!snap.exists())await setDoc(configParadaRef,CONFIG_PARADA_DEFAULT);
+  }catch(e){console.error("Erro ao inicializar configuracoes/parada_opcoes:",e);}
+}
+function popularSelectParada(selectId,itens,valorAtual){
+  const sel=document.getElementById(selectId);
+  if(!sel)return;
+  const ativos=(itens||[]).filter(it=>it.ativo);
+  sel.innerHTML=ativos.map(it=>`<option value="${it.label}">${it.label}</option>`).join("");
+  if(valorAtual&&ativos.some(it=>it.label===valorAtual))sel.value=valorAtual;
+}
+function popularSelectsParada(){
+  popularSelectParada("pd-i-situacao",CONFIG_PARADA.situacoes,document.getElementById("pd-i-situacao")?.value);
+  popularSelectParada("pd-i-setor",CONFIG_PARADA.setores,document.getElementById("pd-i-setor")?.value);
+  popularSelectParada("pd-f-status",CONFIG_PARADA.status,document.getElementById("pd-f-status")?.value);
+}
+onSnapshot(configParadaRef,snap=>{
+  if(snap.exists()){
+    CONFIG_PARADA=snap.data();
+    popularSelectsParada();
+  }else{
+    garantirConfigParada();
+  }
+});
+
+// ── Drawer: Registrar Parada / Ocorrência (registros independentes) ────
+window.pdShowTab=(t)=>{
+  document.getElementById("pd-painel-ini").style.display=t==="ini"?"block":"none";
+  document.getElementById("pd-painel-fim").style.display=t==="fim"?"block":"none";
+  document.getElementById("pd-tab-ini").classList.toggle("on",t==="ini");
+  document.getElementById("pd-tab-fim").classList.toggle("on",t==="fim");
+  if(t==="fim"){pdPopularSelectAbertas();pdCalcTempo();}
+};
+window.abrirDrawerParada=()=>{
+  const agora=new Date();
+  document.getElementById("pd-i-data").value=fmtDiaFromDate(agora);
+  document.getElementById("pd-i-turno").value=getTurno(agora)||"-";
+  document.getElementById("pd-i-operador").value=SESSAO?.nome||"-";
+  popularSelectsParada();
+  document.getElementById("pd-i-hi").value="";
+  document.getElementById("pd-i-msg").className="msg";
+  document.getElementById("pd-f-data-enc").value=hoje();
+  document.getElementById("pd-f-hf").value="";
+  document.getElementById("pd-f-obs").value="";
+  document.getElementById("pd-f-tt-v").textContent="00:00:00";
+  document.getElementById("pd-f-msg").className="msg";
+  pdShowTab("ini");
+  document.getElementById("pd-overlay").classList.add("show");
+  document.getElementById("pd-drawer").classList.add("show");
+};
+window.fecharDrawerParada=()=>{
+  document.getElementById("pd-overlay").classList.remove("show");
+  document.getElementById("pd-drawer").classList.remove("show");
+};
+function pdAbertasList(){
+  const finsIds=new Set(PARADAS.filter(c=>c.subtipo==="fim").map(f=>f.paradaId));
+  return PARADAS.filter(c=>c.subtipo==="inicio"&&!finsIds.has(c.paradaId))
+    .sort((a,b)=>(a.ts?.toDate?.()?.getTime()||0)-(b.ts?.toDate?.()?.getTime()||0));
+}
+function pdPopularSelectAbertas(){
+  const sel=document.getElementById("pd-f-select");
+  if(!sel)return;
+  const valAtual=sel.value;
+  const abertas=pdAbertasList();
+  if(!abertas.length){sel.innerHTML='<option value="">Nenhuma parada em aberto</option>';return;}
+  sel.innerHTML=abertas.map(c=>{
+    const t=c.ts?.toDate?.();
+    const dt=t?fmtDiaFromDate(t)+" "+(c.horarioInicialParada||""):c.horarioInicialParada||"";
+    return`<option value="${c.paradaId}">🟡 ${dt} · ${c.situacao||"-"} · ${c.setor||"-"}</option>`;
+  }).join("");
+  if(abertas.some(a=>a.paradaId===valAtual))sel.value=valAtual;
+}
+window.pdCalcTempo=()=>{
+  const sel=document.getElementById("pd-f-select");
+  const ini=PARADAS.find(c=>c.subtipo==="inicio"&&c.paradaId===sel?.value);
+  const dataEnc=document.getElementById("pd-f-data-enc").value;
+  const hf=document.getElementById("pd-f-hf").value;
+  if(!ini||!dataEnc||!hf){document.getElementById("pd-f-tt-v").textContent="00:00:00";return;}
+  const dtIni=new Date(`${ini.data}T${ini.horarioInicialParada}:00`);
+  const dtFim=new Date(`${dataEnc}T${hf}:00`);
+  let segs=Math.round((dtFim-dtIni)/1000);
+  if(segs<0)segs=0;
+  document.getElementById("pd-f-tt-v").textContent=fmtHMSFromSec(segs);
+};
+document.getElementById("pd-f-select")?.addEventListener("change",pdCalcTempo);
+window.abrirParada=async()=>{
+  const hi=document.getElementById("pd-i-hi").value;
+  const msgEl=document.getElementById("pd-i-msg");
+  if(!hi){msgEl.className="msg on er";msgEl.textContent="Preencha o Horário Inicial da parada.";return;}
+  try{
+    const agora=new Date();
+    const paradaId="PD-"+Math.random().toString(16).slice(2,6).toUpperCase();
+    await addDoc(collection(db,"caminhoes_rastreio"),{
+      tipo:"parada_sistema",
+      subtipo:"inicio",
+      paradaId,
+      data:hoje(),
+      ts:Timestamp.fromDate(agora),
+      situacao:document.getElementById("pd-i-situacao").value,
+      setor:document.getElementById("pd-i-setor").value,
+      horarioInicialParada:hi,
+      turno:getTurno(agora)||"-",
+      operador:SESSAO?.nome||"-",
+    });
+    fecharDrawerParada();
+    showMsg("ok","🔴 Parada "+paradaId+" aberta às "+hi+".");
+  }catch(e){
+    msgEl.className="msg on er";
+    msgEl.textContent="Erro ao salvar: "+e.message;
+  }
+};
+window.encerrarParada=async()=>{
+  const sel=document.getElementById("pd-f-select");
+  const paradaId=sel?.value;
+  const dataEnc=document.getElementById("pd-f-data-enc").value;
+  const hf=document.getElementById("pd-f-hf").value;
+  const status=document.getElementById("pd-f-status").value;
+  const obs=document.getElementById("pd-f-obs").value.trim();
+  const msgEl=document.getElementById("pd-f-msg");
+  if(!paradaId){msgEl.className="msg on er";msgEl.textContent="Selecione a parada que deseja encerrar.";return;}
+  if(!dataEnc||!hf){msgEl.className="msg on er";msgEl.textContent="Preencha a Data do Encerramento e o Horário Final.";return;}
+  try{
+    const agora=new Date();
+    await addDoc(collection(db,"caminhoes_rastreio"),{
+      tipo:"parada_sistema",
+      subtipo:"fim",
+      paradaId,
+      data:hoje(),
+      ts:Timestamp.fromDate(agora),
+      dataEncerramento:dataEnc,
+      horarioFinalParada:hf,
+      status,
+      observacao:obs,
+      turno:getTurno(agora)||"-",
+      operador:SESSAO?.nome||"-",
+    });
+    delete PD_SNOOZE[paradaId];
+    fecharDrawerParada();
+    showMsg("ok","🟢 Parada "+paradaId+" encerrada.");
+  }catch(e){
+    msgEl.className="msg on er";
+    msgEl.textContent="Erro ao salvar: "+e.message;
+  }
+};
+
+// ── Alerta: parada em aberto há mais de 3h ──────────────────────────────
+let PD_SNOOZE={},PD_ALERTA_ID=null;
+const PD_LIMITE_MS=3*60*60*1000,PD_SNOOZE_MS=30*60*1000;
+function pdCheckAlertas(){
+  const overlay=document.getElementById("pd-alerta-overlay");
+  if(!overlay)return;
+  const agora=Date.now();
+  const candidata=pdAbertasList().find(ini=>{
+    const t=ini.ts?.toDate?.()?.getTime();
+    if(!t||agora-t<PD_LIMITE_MS)return false;
+    if(PD_SNOOZE[ini.paradaId]&&agora<PD_SNOOZE[ini.paradaId])return false;
+    return true;
+  });
+  if(candidata){
+    PD_ALERTA_ID=candidata.paradaId;
+    const t=candidata.ts.toDate();
+    const horas=((agora-t.getTime())/3600000).toFixed(1);
+    document.getElementById("pd-alerta-txt").textContent=`${candidata.paradaId} · ${candidata.situacao||"-"} · ${candidata.setor||"-"} · aberta desde ${fmtDiaFromDate(t)} ${candidata.horarioInicialParada||""} (${horas}h)`;
+    overlay.classList.add("show");
+  }else{
+    overlay.classList.remove("show");
+  }
+}
+window.pdAlertaContinuar=()=>{
+  if(PD_ALERTA_ID)PD_SNOOZE[PD_ALERTA_ID]=Date.now()+PD_SNOOZE_MS;
+  document.getElementById("pd-alerta-overlay").classList.remove("show");
+};
+window.pdAlertaEncerrar=()=>{
+  const id=PD_ALERTA_ID;
+  document.getElementById("pd-alerta-overlay").classList.remove("show");
+  abrirDrawerParada();
+  pdShowTab("fim");
+  setTimeout(()=>{
+    const sel=document.getElementById("pd-f-select");
+    if(sel&&id){sel.value=id;pdCalcTempo();}
+  },0);
+};
+setInterval(pdCheckAlertas,60000);
 </script>
 <!-- Badge Admin -->
 <script>
