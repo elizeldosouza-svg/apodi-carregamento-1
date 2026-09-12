@@ -297,6 +297,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <a class="nav-btn" href="/senha" target="_blank">📺 TV</a>
     <button class="nav-btn" onclick="abrirOperadores()" style="cursor:pointer">👤 Operadores</button>
     <button class="nav-btn" onclick="abrirConfigParadas()" style="cursor:pointer">⚙️ Config. Paradas</button>
+    <button class="nav-btn" onclick="abrirParadas()" style="cursor:pointer;border-color:var(--tm);color:var(--tm)">⚠️ Paradas</button>
     <button class="sair-btn" onclick="doLogout()">Sair</button>
   </div>
   <div class="wrap">
@@ -560,6 +561,49 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <div class="pc-add-row"><input id="pc-novo-status" placeholder="Novo status..." onkeydown="if(event.key==='Enter')pcAdd('status')"><button class="pc-add-btn" onclick="pcAdd('status')">+ Add</button></div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="paradas-screen" style="display:none">
+    <div class="wrap">
+      <div class="tcard">
+        <div class="thead-bar">⚠️ Paradas / Ocorrências
+          <div class="totais-bar">
+            <button class="pb" onclick="voltarParadas()">← Voltar</button>
+          </div>
+        </div>
+        <div class="op-list-toolbar">
+          <input class="op-search" id="pd-adm-ini" type="date" onchange="renderParadasList()"/>
+          <span style="color:var(--t3);font-size:11px">até</span>
+          <input class="op-search" id="pd-adm-fim" type="date" style="flex:none;width:150px" onchange="renderParadasList()"/>
+          <span class="op-count" id="pd-adm-count">—</span>
+        </div>
+        <div id="pd-adm-form" class="op-form" style="display:none">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;color:var(--ye);margin-bottom:14px" id="pd-adm-form-title">✏️ Editar Parada</div>
+          <div class="op-form-row">
+            <div class="fg2"><label>Situação</label><select class="dselect" id="pd-adm-situacao"></select></div>
+            <div class="fg2"><label>Setor</label><select class="dselect" id="pd-adm-setor"></select></div>
+          </div>
+          <div class="op-form-row">
+            <div class="fg2"><label>Data da Sinalização</label><input class="dinput" type="date" id="pd-adm-data"/></div>
+            <div class="fg2"><label>Horário Inicial</label><input class="dinput" type="time" id="pd-adm-hi"/></div>
+          </div>
+          <div class="telas-label" style="border-top:1px solid var(--bd);padding-top:12px;display:block">Encerramento (deixe em branco se a parada ainda está aberta)</div>
+          <div class="op-form-row">
+            <div class="fg2"><label>Data do Encerramento</label><input class="dinput" type="date" id="pd-adm-data-enc"/></div>
+            <div class="fg2"><label>Horário Final</label><input class="dinput" type="time" id="pd-adm-hf"/></div>
+          </div>
+          <div class="op-form-row">
+            <div class="fg2"><label>Status</label><select class="dselect" id="pd-adm-status"></select></div>
+            <div class="fg2"><label>Observação</label><input class="dinput" type="text" id="pd-adm-obs"/></div>
+          </div>
+          <div class="op-form-row">
+            <button class="btn-save" onclick="salvarParadaAdmin()">💾 Salvar Parada</button>
+            <button class="btn-reabrir" onclick="fecharFormParada()">Cancelar</button>
+          </div>
+        </div>
+        <div id="pd-adm-list"><div class="spin"></div></div>
       </div>
     </div>
   </div>
@@ -1967,6 +2011,135 @@ onSnapshot(pcRef,snap=>{
   if(snap.exists()){PC_DATA=snap.data();pcRenderTudo();}
   else{pcGarantir();}
 });
+// ── Tela Paradas / Ocorrências (Admin) ──────────────────────────────────
+let PARADAS_CACHE=[],PARADAS_REGISTROS=[],EDIT_PARADA_ID=null;
+onSnapshot(query(collection(db,"caminhoes_rastreio"),where("tipo","==","parada_sistema")),snap=>{
+  PARADAS_CACHE=snap.docs.map(d=>({id:d.id,...d.data()}));
+  const tela=document.getElementById("paradas-screen");
+  if(tela&&tela.style.display!=="none")renderParadasList();
+});
+function buildRegistrosParadasAdmin(){
+  const inicios=PARADAS_CACHE.filter(c=>c.subtipo==="inicio");
+  const fins={};
+  PARADAS_CACHE.filter(c=>c.subtipo==="fim").forEach(f=>{fins[f.paradaId]=f;});
+  return inicios.map(ini=>{
+    const fim=fins[ini.paradaId]||null;
+    let tempoMs=null;
+    if(fim&&ini.data&&ini.horarioInicialParada&&fim.dataEncerramento&&fim.horarioFinalParada){
+      tempoMs=new Date(`${fim.dataEncerramento}T${fim.horarioFinalParada}:00`)-new Date(`${ini.data}T${ini.horarioInicialParada}:00`);
+    }
+    return{
+      paradaId:ini.paradaId,iniId:ini.id,fimId:fim?fim.id:null,
+      data:ini.data||"",situacao:ini.situacao||"",setor:ini.setor||"",horarioInicialParada:ini.horarioInicialParada||"",
+      turno:ini.turno||"-",operadorIni:ini.operador||"-",
+      dataEncerramento:fim?.dataEncerramento||"",horarioFinalParada:fim?.horarioFinalParada||"",
+      status:fim?.status||"",observacao:fim?.observacao||"",operadorFim:fim?.operador||"",
+      tempoMs,aberta:!fim
+    };
+  }).sort((a,b)=>(b.data+(b.horarioInicialParada||"")).localeCompare(a.data+(a.horarioInicialParada||"")));
+}
+function durStrParadaAdmin(ms){
+  if(ms==null)return"—";
+  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+window.abrirParadas=()=>{
+  document.querySelector(".wrap").style.display="none";
+  document.getElementById("paradas-screen").style.display="block";
+  renderParadasList();
+};
+window.voltarParadas=()=>{
+  document.getElementById("paradas-screen").style.display="none";
+  document.querySelector(".wrap").style.display="block";
+};
+window.renderParadasList=function(){
+  PARADAS_REGISTROS=buildRegistrosParadasAdmin();
+  const ini=document.getElementById("pd-adm-ini")?.value||"";
+  const fim=document.getElementById("pd-adm-fim")?.value||"";
+  let lista=PARADAS_REGISTROS;
+  if(ini)lista=lista.filter(r=>r.data>=ini);
+  if(fim)lista=lista.filter(r=>r.data<=fim);
+  document.getElementById("pd-adm-count").textContent=lista.length+" parada"+(lista.length!==1?"s":"")+(ini||fim?" no período":"");
+  const wrapEl=document.getElementById("pd-adm-list");
+  if(lista.length===0){
+    wrapEl.innerHTML=`<div class="op-row" style="color:var(--t3)">Nenhuma parada encontrada.</div>`;
+    return;
+  }
+  wrapEl.innerHTML=lista.map(r=>{
+    const badge=r.aberta?'<span class="op-badge pend">Em aberto</span>':'<span class="op-badge ok">Encerrada</span>';
+    return`<div class="op-row">
+      <div class="op-nome-col"><b>${r.paradaId} · ${r.situacao||"—"} / ${r.setor||"—"}</b>
+        <div class="op-meta">${fmtDataBR(r.data)} ${r.horarioInicialParada||"—"} → ${r.aberta?"—":fmtDataBR(r.dataEncerramento)+" "+r.horarioFinalParada} · ${durStrParadaAdmin(r.tempoMs)} · Turno ${r.turno} ${badge}</div>
+        <div class="op-meta">Aberta por ${r.operadorIni}${r.operadorFim?" · Encerrada por "+r.operadorFim:""}${r.observacao?" · Obs: "+r.observacao:""}</div>
+      </div>
+      <div class="op-actions">
+        <button class="pb" onclick="editarParadaAdmin('${r.paradaId}')">✏️ Editar</button>
+        <button class="btn-excluir" onclick="excluirParadaAdmin('${r.paradaId}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join("");
+};
+function popularSelectParadaAdmin(selectId,itens,valorAtual){
+  const sel=document.getElementById(selectId);
+  const ativos=(itens||[]).filter(it=>it.ativo||it.label===valorAtual);
+  sel.innerHTML=`<option value="">— Selecione —</option>`+ativos.map(it=>`<option value="${it.label}">${it.label}</option>`).join("");
+  sel.value=valorAtual||"";
+}
+window.editarParadaAdmin=(paradaId)=>{
+  const r=PARADAS_REGISTROS.find(x=>x.paradaId===paradaId);
+  if(!r)return;
+  EDIT_PARADA_ID=paradaId;
+  popularSelectParadaAdmin("pd-adm-situacao",PC_DATA.situacoes,r.situacao);
+  popularSelectParadaAdmin("pd-adm-setor",PC_DATA.setores,r.setor);
+  popularSelectParadaAdmin("pd-adm-status",PC_DATA.status,r.status);
+  document.getElementById("pd-adm-data").value=r.data||"";
+  document.getElementById("pd-adm-hi").value=r.horarioInicialParada||"";
+  document.getElementById("pd-adm-data-enc").value=r.dataEncerramento||"";
+  document.getElementById("pd-adm-hf").value=r.horarioFinalParada||"";
+  document.getElementById("pd-adm-obs").value=r.observacao||"";
+  document.getElementById("pd-adm-form-title").textContent=`✏️ Editar Parada · ${paradaId}`;
+  document.getElementById("pd-adm-form").style.display="block";
+  document.getElementById("pd-adm-form").scrollIntoView({behavior:"smooth",block:"start"});
+};
+window.fecharFormParada=()=>{
+  document.getElementById("pd-adm-form").style.display="none";
+  EDIT_PARADA_ID=null;
+};
+window.salvarParadaAdmin=async()=>{
+  const r=PARADAS_REGISTROS.find(x=>x.paradaId===EDIT_PARADA_ID);
+  if(!r)return;
+  const situacao=document.getElementById("pd-adm-situacao").value;
+  const setor=document.getElementById("pd-adm-setor").value;
+  const data=document.getElementById("pd-adm-data").value;
+  const hi=document.getElementById("pd-adm-hi").value;
+  const dataEnc=document.getElementById("pd-adm-data-enc").value;
+  const hf=document.getElementById("pd-adm-hf").value;
+  const status=document.getElementById("pd-adm-status").value;
+  const obs=document.getElementById("pd-adm-obs").value.trim();
+  if(!situacao||!setor||!data||!hi){alert("Preencha Situação, Setor, Data e Horário Inicial.");return;}
+  try{
+    await updateDoc(doc(db,"caminhoes_rastreio",r.iniId),{situacao,setor,data,horarioInicialParada:hi});
+    if(r.fimId){
+      await updateDoc(doc(db,"caminhoes_rastreio",r.fimId),{dataEncerramento:dataEnc,horarioFinalParada:hf,status,observacao:obs});
+    }else if(dataEnc&&hf){
+      await addDoc(collection(db,"caminhoes_rastreio"),{
+        tipo:"parada_sistema",subtipo:"fim",paradaId:EDIT_PARADA_ID,
+        data,ts:Timestamp.fromDate(new Date()),dataEncerramento:dataEnc,horarioFinalParada:hf,
+        status,observacao:obs,turno:"-",operador:"Administrador"
+      });
+    }
+    fecharFormParada();
+  }catch(e){alert("Erro ao salvar parada: "+e.message);}
+};
+window.excluirParadaAdmin=async(paradaId)=>{
+  const r=PARADAS_REGISTROS.find(x=>x.paradaId===paradaId);
+  if(!r)return;
+  if(!confirm(`Excluir a parada ${paradaId} (${r.situacao} / ${r.setor})? Esta ação não pode ser desfeita.`))return;
+  try{
+    await deleteDoc(doc(db,"caminhoes_rastreio",r.iniId));
+    if(r.fimId)await deleteDoc(doc(db,"caminhoes_rastreio",r.fimId));
+  }catch(e){alert("Erro ao excluir: "+e.message);}
+};
 function pcRenderTudo(){["situacoes","setores","status"].forEach(pcRender);}
 function pcRender(campo){
   const el=document.getElementById("pc-lista-"+campo);
