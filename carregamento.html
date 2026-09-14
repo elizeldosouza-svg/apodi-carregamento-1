@@ -234,6 +234,12 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <button class="tg-btn" id="tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
     </div>
     <div class="filtro-row">
+      <span class="filtro-label">Operador:</span>
+      <select class="filtro-input" id="f-operador" style="flex:1" onchange="MOP=this.value">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filtro-row">
       <span class="filtro-label">Carga:</span>
       <button class="tg-btn cg-btn on" onclick="setCargaF('geral',this)">Geral</button>
       <button class="tg-btn cg-btn" onclick="setCargaF('ensacado',this)">Ensacado</button>
@@ -364,6 +370,7 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
   const todos=snap.docs.map(d=>{return{id:d.id,...d.data()}});
   HD=todos.filter(c=>c.data===hj||(c.data<hj&&c.setorAtual!=="concluido"));
   HD_REL=todos; // relatório: olha TODOS os documentos, sem excluir concluído/dia anterior
+  popularOperadoresCarregamento(HD_REL);
 },err=>{
   console.error("Firestore listener error:",err);
   connState="offline";
@@ -372,7 +379,15 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
 });
 function find(pl){return HD.find(d=>d.placa===pl&&d.setorAtual!=="concluido")||null;}
 // ── Filtro do relatório ──────────────────────────────────────────────
-let MT="geral",MC="geral",MCI="geral"; // turno, carga, cimento
+let MT="geral",MC="geral",MCI="geral",MOP=""; // turno, carga, cimento, operador
+function popularOperadoresCarregamento(lista){
+  const sel=document.getElementById("f-operador");
+  if(!sel)return;
+  const atual=sel.value;
+  const nomes=Array.from(new Set(lista.map(c=>c.carregamento?.operadorFim||c.carregamento?.operadorInicio).filter(Boolean))).sort();
+  sel.innerHTML='<option value="">Todos</option>'+nomes.map(n=>`<option value="${n}">${n}</option>`).join("");
+  sel.value=atual;
+}
 (()=>{
   const hj=hoje();
   const fdi=document.getElementById("f-data-ini");if(fdi)fdi.value=hj;
@@ -437,6 +452,7 @@ function buildRegistrosRel(){
     if(!fim)return false;
     if(MC!=="geral"&&c.tipoCarga!==MC)return false;
     if(MCI!=="geral"&&c.tipoCimento!==MCI)return false;
+    if(MOP&&(c.carregamento?.operadorFim||c.carregamento?.operadorInicio)!==MOP)return false;
     if(MT==="geral"){
       const min=fim.getHours()*60+fim.getMinutes();
       return min>=iniMin&&min<=fimMin;
@@ -473,6 +489,24 @@ function buildLinhasRel(registros,forPrint=false){
     </tr>`;
   }).join("");
 }
+function calcTotais(registros){
+  const durs=registros.map(c=>{
+    const ini=c.carregamento?.inicio?.toDate?.();
+    const fim=c.carregamento?.fim?.toDate?.();
+    return ini&&fim?(fim-ini):null;
+  }).filter(v=>v!=null);
+  const tmci=durs.length?durs.reduce((a,b)=>a+b,0)/durs.length:null;
+  return{total:registros.length,tmci};
+}
+function buildTotaisRow(registros,forPrint=false){
+  const{total,tmci}=calcTotais(registros);
+  const tdStyle=forPrint?"border:1px solid #ccc;padding:7px 10px;font-weight:bold":"border:1px solid #1e3558;padding:8px 10px;font-weight:bold;background:rgba(255,102,68,.08)";
+  return`<tr>
+    <td colspan="7" style="${tdStyle};text-align:right">Total de Veículos: ${total}</td>
+    <td colspan="2" style="${tdStyle};text-align:center">TMCI: ${tmci!=null?durStr(tmci):"-"}</td>
+    <td style="${tdStyle}"></td>
+  </tr>`;
+}
 const TURNO_LABELS={geral:"Geral",A:"Turno A (23h–07h)",B:"Turno B (07h–15h)",C:"Turno C (15h–23h)"};
 function fmtDia(v){const [a,m,d]=v.split("-");return`${d}/${m}/${a}`;}
 window.verRelatorio=()=>{
@@ -489,6 +523,7 @@ window.verRelatorio=()=>{
         <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Empilhador</th>
       </tr></thead>
       <tbody>${buildLinhasRel(registros)||'<tr><td colspan="10" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}</tbody>
+      <tfoot>${buildTotaisRow(registros)}</tfoot>
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
@@ -525,6 +560,7 @@ window.gerarPDF=()=>{
     <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Empilhador</th>
   </tr></thead>
   <tbody>${linhas||'<tr><td colspan="10" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+  <tfoot>${buildTotaisRow(registros,true)}</tfoot>
 </table>
 <div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
 </body></html>`);
@@ -551,6 +587,8 @@ window.exportExcel=()=>{
   });
   const ws=XLSX.utils.json_to_sheet(rows);
   ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:12},{wch:20},{wch:20},{wch:10},{wch:8},{wch:18}];
+  const{total,tmci}=calcTotais(registros);
+  XLSX.utils.sheet_add_aoa(ws,[[],["Total de Veículos:",total],["TMCI:",tmci!=null?durStr(tmci):"-"]],{origin:-1});
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Carregamento");
   const{dataIniVal,dataFimVal}=getFiltros();
