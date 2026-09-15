@@ -179,6 +179,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .badge-need{display:inline-block;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;background:rgba(255,68,102,.15);color:var(--rd);border:1px solid rgba(255,68,102,.3);margin-left:6px}
 .grupo-motivos-label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin:10px 0 6px}
 .rel-op{color:var(--pu);font-weight:600}
+.close-card-btn{display:block;margin-left:auto;padding:5px 14px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;margin-bottom:10px}
+.close-card-btn:hover{border-color:#ff4466;color:#ff4466}
 </style>
 </head>
 <body>
@@ -440,6 +442,22 @@ let ALL=[],MP="hoje",MF="pend",MT_J="t",MTC_J="t",MTCIM_J="t",MDATA_J=null;
 let CAL_Y_J=0,CAL_M_J=0;
 let MMODE="tmac"; // 'tmac' | 'etapas'
 let SBUSCA={placa:"",ac:"",nf:"",op:""};
+let OPEN_CARDS=new Set();
+
+function reaplicarAbertos(){
+  OPEN_CARDS.forEach(id=>{
+    const body=document.getElementById("body-"+id);
+    const chev=document.getElementById("chev-"+id);
+    if(body){body.classList.add("open");if(chev)chev.style.transform="rotate(180deg)";}
+  });
+}
+window.fecharCard=id=>{
+  OPEN_CARDS.delete(id);
+  const body=document.getElementById("body-"+id);
+  const chev=document.getElementById("chev-"+id);
+  if(body)body.classList.remove("open");
+  if(chev)chev.style.transform="";
+};
 
 window.setModo=(m)=>{
   MMODE=m;
@@ -670,6 +688,7 @@ function render(){
         <span class="chevron" id="chev-${c.id}">▼</span>
       </div>
       <div class="card-body" id="body-${c.id}">
+        <button class="close-card-btn" onclick="fecharCard('${c.id}')">✕ Fechar</button>
         <div class="kpis-sm">
           <div class="kpi-sm"><div class="kv">${fmtT(en)}</div><div class="kl">Entrada</div></div>
           <div class="kpi-sm"><div class="kv">${concluido?fmtT(sa):"em proc."}</div><div class="kl">Saída</div></div>
@@ -683,6 +702,7 @@ function render(){
       </div>
     </div>`;
   }).join("");
+  reaplicarAbertos();
 }
 
 // ── RENDER — Modo Metas por Etapa ──
@@ -738,10 +758,12 @@ function renderEtapas(){
         <span class="chevron" id="chev-${c.id}">▼</span>
       </div>
       <div class="card-body" id="body-${c.id}">
+        <button class="close-card-btn" onclick="fecharCard('${c.id}')">✕ Fechar</button>
         <div class="setores">${armazemBox}${faturamentoBox}</div>
       </div>
     </div>`;
   }).join("");
+  reaplicarAbertos();
 }
 
 function grupoArea(c,grupo,excedeu){
@@ -781,6 +803,11 @@ window.salvarGrupo=async(id,grupo)=>{
     await updateDoc(doc(db,"caminhoes_rastreio",id),{
       [`justificativa.${grupo}`]:{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
     });
+    const idx=ALL.findIndex(x=>x.id===id);
+    if(idx>-1){
+      ALL[idx]={...ALL[idx],justificativa:{...(ALL[idx].justificativa||{}),[grupo]:{motivo,descricao:desc,operador:SESSAO.nome||null}}};
+      if(!grupoPendente(ALL[idx],stageMetrics(ALL[idx])))OPEN_CARDS.delete(id);
+    }
   }catch(e){btn.disabled=false;btn.textContent="💾 Salvar Justificativa";alert("Erro: "+e.message);}
 };
 
@@ -810,6 +837,7 @@ window.toggleCard=id=>{
   const chev=document.getElementById("chev-"+id);
   const open=body.classList.toggle("open");
   chev.style.transform=open?"rotate(180deg)":"";
+  if(open)OPEN_CARDS.add(id);else OPEN_CARDS.delete(id);
 };
 
 window.selMotivo=id=>{
@@ -829,6 +857,7 @@ window.salvar=async(id)=>{
     await updateDoc(doc(db,"caminhoes_rastreio",id),{
       justificativa:{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
     });
+    OPEN_CARDS.delete(id);
   }catch(e){btn.disabled=false;btn.textContent="💾 Salvar Justificativa";alert("Erro: "+e.message);}
 };
 
