@@ -54,6 +54,8 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .go:disabled{opacity:.3;cursor:not-allowed}
 .msg{padding:12px 16px;border-radius:var(--rs);font-size:13px;margin-bottom:14px;display:none;text-align:center;font-weight:600;line-height:1.5}
 .msg.on{display:block}
+.msg-chamado{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-bottom:6px;text-align:center;font-weight:600;line-height:1.5;display:none}
+.msg-chamado.on{display:block}
 .ok{background:rgba(0,232,150,.1);border:1px solid rgba(0,232,150,.3);color:#00e896}
 .er{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:#ff4466}
 .wn{background:rgba(255,208,0,.1);border:1px solid rgba(255,208,0,.3);color:#ffd000}
@@ -284,6 +286,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
         <div class="tl">aguardando</div>
       </div>
     </div>
+    <div id="msg-chamado" class="msg-chamado"></div>
     <div class="ch-actions" id="ch-actions" style="display:none">
       <button class="btn-nao" onclick="abrirModalJust()">✕ Não veio</button>
       <button class="btn-recall" onclick="chamarNovamente()">🔁 Chamar de novo</button>
@@ -555,6 +558,11 @@ function showMsg(type,txt){
   const el=document.getElementById("msg");
   el.className="msg on "+type;el.textContent=txt;
   if(type==="ok")setTimeout(()=>{el.className="msg";el.textContent="";},5000);
+}
+function showMsgChamado(type,txt){
+  const el=document.getElementById("msg-chamado");
+  el.className="msg-chamado on "+type;el.textContent=txt;
+  setTimeout(()=>{el.className="msg-chamado";el.textContent="";},5000);
 }
 
 // ── Filtro do relatório ──────────────────────────────────────────────
@@ -873,7 +881,7 @@ window.chamarPlaca=async(id)=>{
   atualizarBadgeRecall();
   renderFila();
   await dispararChamada(v);
-  showMsg("ok","📢 "+v.placa+" chamado — Nº "+String(CONTADOR_CHAMADA).padStart(3,"0"));
+  showMsgChamado("ok","📢 "+v.placa+" chamado — Nº "+String(CONTADOR_CHAMADA).padStart(3,"0"));
 };
 
 window.chamarNovamente=async()=>{
@@ -887,7 +895,7 @@ window.chamarNovamente=async()=>{
   document.getElementById("ch-meta").textContent=(cim?cim+" · ":"")+tpL+" · "+v.ac+" · chamado "+hora;
   atualizarBadgeRecall();
   await dispararChamada(v);
-  showMsg("ok","🔁 "+v.placa+" chamado novamente ("+v._qtdChamadas+"ª vez) — Nº "+String(CONTADOR_CHAMADA).padStart(3,"0"));
+  showMsgChamado("ok","🔁 "+v.placa+" chamado novamente ("+v._qtdChamadas+"ª vez) — Nº "+String(CONTADOR_CHAMADA).padStart(3,"0"));
 };
 
 function limparChamadoAtual(){
@@ -933,7 +941,7 @@ window.cancelarChamada=async()=>{
   limparChamadoAtual();
   // Notifica senha.html para voltar ao idle
   BC.postMessage({tipo:"cancelar"});
-  showMsg("wn","⏹ Chamada cancelada");
+  showMsgChamado("wn","⏹ Chamada cancelada");
   if(v)await finalizarChamadasFila(v.id);
   renderFila();
 };
