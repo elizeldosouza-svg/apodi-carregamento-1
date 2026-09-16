@@ -1059,8 +1059,11 @@ window.exportExcel=()=>{
     const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
     const sa=getTS(c,"faturamento","ts");
     const tmac=calcTMAC(c);
+    const tml=calcTML(c),tma=calcTMA(c),tmf=calcTMF(c);
     return{
-      "Nº":i+1,"Placa":c.placa,"Turno":getTurno(en)||"","AC":c.ac,"Tipo de Carregamento":c.subtipoCarga||"","Data":fmtDataBR(c.data),
+      "Nº":i+1,"Placa":c.placa,"Turno":getTurno(en)||"","AC":c.ac,
+      "Carga":({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||""),
+      "Tipo de Carregamento":c.subtipoCarga||"","Cimento":c.tipoCimento||"","Data":fmtDataBR(c.data),
       "Entrada":fmtEx(en),"Setor Atual":c.setorAtual||"",
       "Portaria Início":fmtEx(getTS(c,"portaria","inicio")),"Portaria Fim":fmtEx(getTS(c,"portaria","fim")),"Duração Portaria":(()=>{const pi=getTS(c,"portaria","inicio"),pf=getTS(c,"portaria","fim");return pi&&pf?durStr(pf-pi):"";})(),
       "Triagem Início":fmtEx(trI),"Triagem Fim":fmtEx(trF),"Duração Triagem":trI&&trF?durStr(trF-trI):"",
@@ -1068,12 +1071,14 @@ window.exportExcel=()=>{
       "Enlone Início":fmtEx(enI),"Enlone Fim":fmtEx(enF),"Duração Enlone":enI&&enF?durStr(enF-enI):"",
       "Saída (Faturamento)":fmtEx(sa),"TMAC (Entrada→Saída)":tmac!=null?durStr(tmac):"",
       "Nota Fiscal":c.notaFiscal||"",
+      "TML":tml!=null?durStr(tml):"","TMA":tma!=null?durStr(tma):"","TMF":tmf!=null?durStr(tmf):"",
+      "Operador Posto1":c.entrada?.operador||"","Operador Fatur":c.faturamento?.operador||"",
     };
   });
   const ws=XLSX.utils.json_to_sheet(rows);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Rastreio");
-  ws["!cols"]=[{wch:6},{wch:10},{wch:7},{wch:10},{wch:16},{wch:12},{wch:20},{wch:18},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:18}];
+  ws["!cols"]=[{wch:6},{wch:10},{wch:7},{wch:10},{wch:10},{wch:16},{wch:8},{wch:12},{wch:20},{wch:18},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20},{wch:14},{wch:20},{wch:18},{wch:14},{wch:12},{wch:12},{wch:12},{wch:18},{wch:18}];
   const{s,e}=periodDates(MP);
   const turnoSuffix=MT!=="t"?`_turno${MT}`:"";
   const tipoSuffix=MTC!=="t"?`_${MTC}`:"";
@@ -1110,22 +1115,34 @@ function buildRelRows(list){
     const sa=getTS(c,"faturamento","ts");
     const tmacMs=sa&&en?sa-en:en?Date.now()-en:null;
     const over=tmacMs&&tmacMs>LIMITE_MS;
+    const tml=calcTML(c),tma=calcTMA(c),tmf=calcTMF(c);
+    const durPt=ptI&&ptF?durStr(ptF-ptI):"";
+    const durTrg=trI&&trF?durStr(trF-trI):"";
+    const durCa=caI&&caF?durStr(caF-caI):"";
+    const durEn=enI&&enF?durStr(enF-enI):"";
     return`<tr>
       <td style="text-align:center;color:#7a9fd4;font-size:8px">${i+1}</td>
       <td style="text-align:left;font-weight:700;color:#4da6ff;font-family:monospace">${c.placa||""}</td>
+      <td style="font-size:8px">${getTurno(en)||""}</td>
       <td>${c.ac||""}</td>
-      <td style="font-size:8px">${(c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"")}</td>
+      <td style="font-size:8px">${({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"")}</td>
       <td style="font-size:8px">${c.subtipoCarga||""}</td>
+      <td style="font-size:8px">${c.tipoCimento||""}</td>
       <td>${fmtDataBR(c.data)}</td>
       <td>${fmtRel(en)}</td>
       <td style="font-size:8px">${(c.setorAtual||"").replace(/_/g," ")}</td>
-      <td>${fmtRel(ptI)}</td><td>${fmtRel(ptF)}</td>
-      <td>${fmtRel(trI)}</td><td>${fmtRel(trF)}</td>
-      <td>${fmtRel(caI)}</td><td>${fmtRel(caF)}</td>
-      <td>${fmtRel(enI)}</td><td>${fmtRel(enF)}</td>
+      <td>${fmtRel(ptI)}</td><td>${fmtRel(ptF)}</td><td style="font-size:8px">${durPt}</td>
+      <td>${fmtRel(trI)}</td><td>${fmtRel(trF)}</td><td style="font-size:8px">${durTrg}</td>
+      <td>${fmtRel(caI)}</td><td>${fmtRel(caF)}</td><td style="font-size:8px">${durCa}</td>
+      <td>${fmtRel(enI)}</td><td>${fmtRel(enF)}</td><td style="font-size:8px">${durEn}</td>
       <td>${fmtRel(sa)}</td>
       <td style="font-weight:700;color:${over?"#ff4466":"#00e896"}">${tmacMs!=null?durStr(tmacMs):""}</td>
       <td style="font-size:9px;color:var(--t2)">${c.notaFiscal||""}</td>
+      <td style="font-size:8px">${tml!=null?durStr(tml):""}</td>
+      <td style="font-size:8px">${tma!=null?durStr(tma):""}</td>
+      <td style="font-size:8px">${tmf!=null?durStr(tmf):""}</td>
+      <td style="font-size:8px">${c.entrada?.operador||""}</td>
+      <td style="font-size:8px">${c.faturamento?.operador||""}</td>
       <td style="text-align:center">${c.setorAtual==="concluido"||c.faturamento?.ts?"✔":""}</td>
     </tr>`;
   }).join("");
@@ -1152,13 +1169,16 @@ window.abrirRelatorioMaster=()=>{
     :`<table class="mrel-table">
         <thead><tr>
           <th>Nº</th>
-          <th style="text-align:left">Placa</th><th>AC</th><th>Cim./Carga</th><th>Tipo<br>Carreg.</th><th>Data</th><th>Entrada</th><th>Setor<br>Atual</th>
-          <th>🏛️<br>Port.Ini</th><th>🏛️<br>Port.Fim</th>
-          <th>📦<br>Trg.Ini</th><th>📦<br>Trg.Fim</th>
-          <th>🏗️<br>Carga Ini</th><th>🏗️<br>Carga Fim</th>
-          <th>🪢<br>Enl.Ini</th><th>🪢<br>Enl.Fim</th>
+          <th style="text-align:left">Placa</th><th>Turno</th><th>AC</th><th>Carga</th><th>Tipo<br>Carreg.</th><th>Cimento</th><th>Data</th><th>Entrada</th><th>Setor<br>Atual</th>
+          <th>🏛️<br>Port.Ini</th><th>🏛️<br>Port.Fim</th><th>🏛️<br>Port.Dur</th>
+          <th>📦<br>Trg.Ini</th><th>📦<br>Trg.Fim</th><th>📦<br>Trg.Dur</th>
+          <th>🏗️<br>Carga Ini</th><th>🏗️<br>Carga Fim</th><th>🏗️<br>Carga Dur</th>
+          <th>🪢<br>Enl.Ini</th><th>🪢<br>Enl.Fim</th><th>🪢<br>Enl.Dur</th>
           <th>🧾<br>Saida</th><th>⏱️<br>TMAC</th>
-          <th>Nota<br>Fiscal</th><th>Status</th>
+          <th>Nota<br>Fiscal</th>
+          <th>⏱️<br>TML</th><th>⏱️<br>TMA</th><th>⏱️<br>TMF</th>
+          <th>Operador<br>Posto1</th><th>Operador<br>Fatur</th>
+          <th>Status</th>
         </tr></thead>
         <tbody>${buildRelRows(list)}</tbody>
       </table>`;
