@@ -805,7 +805,7 @@ function doSound(){
 // ── Voz automática da placa chamada ──
 function falarPlaca(placa){
   const placaFalada=placa.split("").join(" ");
-  const texto=`Atenção motorista proprietário do veículo de placa ${placaFalada}, comparecer ao Posto 1 com urgência para coletar A C, Autorização de Carregamento, e em seguida dirigir-se para Fábrica.`;
+  const texto=`Motorista do veículo placa ${placaFalada} comparecer ao Posto 1.`;
   document.getElementById("voice-txt").value=texto;
   setTimeout(()=>_falar(texto),1200);
 }
