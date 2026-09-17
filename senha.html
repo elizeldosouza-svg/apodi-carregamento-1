@@ -365,7 +365,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <!-- BARRA DE VOZ -->
 <div class="voice-bar">
   <span class="voice-label">🔊 Falar:</span>
-  <input class="voice-input" id="voice-txt" type="text" value="Motorista do veículo placa A B C 1 2 3 4 comparecer ao Posto 1" placeholder="Digite o texto para falar..."/>
+  <input class="voice-input" id="voice-txt" type="text" value="Atenção motorista proprietário do veículo de placa A B C 1 2 3 4, comparecer ao Posto 1 com urgência para coletar A C, Autorização de Carregamento, e em seguida dirigir-se para Fábrica." placeholder="Digite o texto para falar..."/>
   <button class="voice-btn" onclick="falarTexto()">▶ Falar</button>
 </div>
 
@@ -419,6 +419,13 @@ function iniciarCallTempo(tsPrimeiraMs){
   };
   tick();
   callTempoInterval=setInterval(tick,1000);
+}
+// Busca placa/AC sempre na fonte viva (caminhoes_rastreio) via veiculoId, em vez do
+// snapshot congelado gravado no momento da chamada — corrige sozinho se o cadastro
+// for editado (ex.: placa corrigida) enquanto a chamada ainda está na tela.
+function resolverAtual(veiculoId,fallbackPlaca,fallbackAc){
+  const r=veiculoId?rastreioPorId[veiculoId]:null;
+  return{placa:r?.placa||fallbackPlaca||"—",ac:r?.ac||fallbackAc||"—"};
 }
 function atualizarCallMeta(veiculoId){
   const cmEl=document.getElementById("call-meta");
@@ -492,8 +499,9 @@ BC.onmessage=(ev)=>{
   // Evita reprocessar se Firebase já chegou com o mesmo id
   if(msg.firebaseId&&msg.firebaseId===lastId)return;
   lastId=msg.firebaseId||null;
-  lastPlaca=msg.placa||null;
-  lastChamada={placa:msg.placa||"—",ac:msg.ac||"—",tp,num:msg.numero||null,qtd:msg.qtdChamadas||1,tsPrimeira:msg.tsPrimeiraChamada||null};
+  const atual=resolverAtual(msg.veiculoId,msg.placa,msg.ac);
+  lastPlaca=atual.placa;
+  lastChamada={placa:atual.placa,ac:atual.ac,tp,num:msg.numero||null,qtd:msg.qtdChamadas||1,tsPrimeira:msg.tsPrimeiraChamada||null,veiculoId:msg.veiculoId||null};
   document.getElementById("idle").style.display="none";
   const ca=document.getElementById("call-active");
   ca.style.display="flex";
@@ -501,15 +509,15 @@ BC.onmessage=(ev)=>{
   document.getElementById("tipo-pill").textContent=TLABEL[tp]||tp;
   const pb=document.getElementById("placa-box");
   pb.className="placa-box placa-size enter";
-  pb.textContent=msg.placa||"—";
+  pb.textContent=atual.placa;
   setTimeout(()=>{pb.classList.replace("enter","beat");},520);
   const acEl=document.getElementById("call-ac");
-  acEl.textContent="AC: "+(msg.ac||"—");
+  acEl.textContent="AC: "+atual.ac;
   acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
   atualizarInfoChamada(msg.qtdChamadas||1,msg.tsPrimeiraChamada||null);
   atualizarCallMeta(msg.veiculoId||null);
   ultimoAnuncioTs=Date.now();
-  doFlash();doSound();falarPlaca(msg.placa||"");
+  doFlash();doSound();falarPlaca(atual.placa!=="—"?atual.placa:"");
 };
 
 // ── Fila: veículos aguardando no posto1 ──
@@ -558,12 +566,13 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
     // Isso evita re-anunciar um caminhão antigo que "ressurgiu" no topo após outro ser excluído.
     const ehChamadaNova=lastTs>ultimoAnuncioTs;
     // BroadcastChannel ainda não processou (TV externa / rede diferente): executa tudo
-    const jaProcessadoBC=(lastId===null&&lastChamada&&lastChamada.placa===last.placa);
+    const jaProcessadoBC=(lastId===null&&lastChamada&&last.veiculoId&&lastChamada.veiculoId===last.veiculoId);
     lastId=last.id;
-    lastPlaca=last.placa||null;
+    const atual=resolverAtual(last.veiculoId,last.placa,last.ac);
+    lastPlaca=atual.placa;
     const tp=last.tipoCarga||"ensacado";
     const tsPrimeiraMs=last.tsPrimeiraChamada?.toDate?.()?.getTime()||null;
-    lastChamada={placa:last.placa||"—",ac:last.ac||"—",tp,num:last.numero||null,qtd:last.qtdChamadas||1,tsPrimeira:tsPrimeiraMs};
+    lastChamada={placa:atual.placa,ac:atual.ac,tp,num:last.numero||null,qtd:last.qtdChamadas||1,tsPrimeira:tsPrimeiraMs,veiculoId:last.veiculoId||null};
     document.getElementById("idle").style.display="none";
     const ca=document.getElementById("call-active");
     ca.style.display="flex";
@@ -571,17 +580,17 @@ onSnapshot(collection(db,"chamadas_fila"),snap=>{
     document.getElementById("tipo-pill").textContent=TLABEL[tp]||tp;
     const pb=document.getElementById("placa-box");
     pb.className="placa-box placa-size enter";
-    pb.textContent=last.placa||"—";
+    pb.textContent=atual.placa;
     setTimeout(()=>{pb.classList.replace("enter","beat");},520);
     const acEl=document.getElementById("call-ac");
-    acEl.textContent="AC: "+(last.ac||"—");
+    acEl.textContent="AC: "+atual.ac;
     acEl.style.color=tp==="granel"?"rgba(251,146,60,.75)":tp==="bigbag"?"rgba(0,232,150,.75)":"rgba(0,212,255,.75)";
     atualizarInfoChamada(last.qtdChamadas||1,tsPrimeiraMs);
     atualizarCallMeta(last.veiculoId||null);
     if(ehChamadaNova){
       ultimoAnuncioTs=lastTs;
       // Só dispara som/voz se o BroadcastChannel NÃO processou esta chamada (TV externa)
-      if(!jaProcessadoBC){doFlash();doSound();falarPlaca(last.placa||"");}
+      if(!jaProcessadoBC){doFlash();doSound();falarPlaca(atual.placa!=="—"?atual.placa:"");}
       else{doFlash();}
     }else{
       // Registro mais antigo que ressurgiu no topo (ex.: após exclusão do mais recente) — só atualiza visual, sem som
@@ -805,7 +814,7 @@ function doSound(){
 // ── Voz automática da placa chamada ──
 function falarPlaca(placa){
   const placaFalada=placa.split("").join(" ");
-  const texto=`Motorista do veículo placa ${placaFalada} comparecer ao Posto 1.`;
+  const texto=`Atenção motorista proprietário do veículo de placa ${placaFalada}, comparecer ao Posto 1 com urgência para coletar A C, Autorização de Carregamento, e em seguida dirigir-se para Fábrica.`;
   document.getElementById("voice-txt").value=texto;
   setTimeout(()=>_falar(texto),1200);
 }
