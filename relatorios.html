@@ -28,12 +28,40 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .btn-out:hover{border-color:var(--t2);color:var(--tx)}
 .btn-charts{background:linear-gradient(135deg,var(--c1),var(--c4));color:#fff}
 .btn-charts.active{background:var(--bg3);color:var(--c1);border:1px solid var(--c1)}
+.periodo-chips{display:flex;gap:4px;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);padding:3px}
+.pchip{border:none;background:transparent;color:var(--t2);font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif}
+.pchip.active{background:var(--tm);color:#2a1400}
 
-.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+.legend-toggle{margin-bottom:14px}
+.legend-panel{display:none;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 18px;margin-top:8px}
+.legend-panel.show{display:block}
+.legend-panel h3{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px}
+.legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.legend-row{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.legend-row span:first-child{color:var(--t2)}
+.legend-row span:last-child{font-weight:700}
+
+.section-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:800;letter-spacing:.5px;color:var(--t2);text-transform:uppercase;margin:18px 0 8px}
+
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:6px}
 .kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px}
 .kpi .lb{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .kpi .vl{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800}
 .kpi.ok .vl{color:var(--gr)}.kpi.warn .vl{color:var(--ye)}.kpi.bad .vl{color:var(--rd)}
+
+.emp-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:6px}
+.emp-kpi{background:var(--bg2);border:1px solid var(--bd);border-left:3px solid var(--c1);border-radius:var(--r);padding:12px 14px}
+.emp-kpi .lb{font-size:11px;font-weight:800;margin-bottom:6px;font-family:'Rajdhani',sans-serif;letter-spacing:.3px}
+.emp-kpi .row{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);padding:2px 0}
+.emp-kpi .row b{color:var(--tx);font-family:'JetBrains Mono',monospace}
+.emp-kpi .row b.ok{color:var(--gr)}.emp-kpi .row b.bad{color:var(--rd)}
+
+.ader-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.ader-kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;text-align:center}
+.ader-kpi .lb{font-size:10.5px;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.ader-kpi .vl{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:800}
+.ader-kpi .vl.ok{color:var(--gr)}.ader-kpi .vl.bad{color:var(--rd)}
+.ader-kpi .frac{font-size:10.5px;color:var(--t3);margin-top:2px;font-family:'JetBrains Mono',monospace}
 
 .tcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
 .thead-bar{padding:12px 18px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:6px}
@@ -72,6 +100,16 @@ th.col-fixed{z-index:4}
 .drow:last-child{border-bottom:none}
 .drow span:first-child{color:var(--t2)}
 .drow span:last-child{text-align:right}
+
+.stage-note{margin:14px 18px 4px;font-size:11px;color:var(--t2)}
+.stage-table{margin:0 18px 12px;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.stage-table .sthead{display:grid;grid-template-columns:1fr 1fr .8fr 1.15fr 1.3fr 1fr;background:var(--bg3);font-size:9.5px;color:var(--t2);text-transform:uppercase;letter-spacing:.3px;padding:7px 10px}
+.stage-table .strow{display:grid;grid-template-columns:1fr 1fr .8fr 1.15fr 1.3fr 1fr;padding:9px 10px;font-size:12px;align-items:center;border-top:1px solid var(--bd)}
+.stage-table .strow span:last-child{text-align:right}
+.stage-table .strow .co-txt{font-weight:700}
+.mini-legend{margin:0 18px 14px;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.mini-legend .row{display:flex;justify-content:space-between;padding:7px 12px;font-size:11.5px;border-top:1px solid var(--bd)}
+.mini-legend .row:first-child{border-top:none;background:var(--bg3);font-weight:700;color:var(--t2);font-size:10px;text-transform:uppercase}
 
 /* ---- graficos panel ---- */
 .charts-panel{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);display:none;overflow:hidden}
@@ -128,6 +166,16 @@ svg.chart-svg{width:100%;height:auto;display:block;overflow:visible}
 
 <div class="wrap">
   <div class="filters">
+    <div class="ff"><label>Período</label>
+      <div class="periodo-chips">
+        <button type="button" class="pchip" onclick="setPeriodo('hoje',this)">Hoje</button>
+        <button type="button" class="pchip" onclick="setPeriodo('semana',this)">Semana</button>
+        <button type="button" class="pchip" onclick="setPeriodo('mes',this)">Mês</button>
+        <button type="button" class="pchip" onclick="setPeriodo('ano',this)">Ano</button>
+      </div>
+    </div>
+    <div class="ff"><label>Data início</label><input type="date" id="f-ini" onchange="limparChipPeriodo();aplicarFiltros()"></div>
+    <div class="ff"><label>Data fim</label><input type="date" id="f-fim" onchange="limparChipPeriodo();aplicarFiltros()"></div>
     <div class="ff"><label>Empresa</label>
       <select id="f-empresa" onchange="aplicarFiltros()">
         <option value="">Todas</option>
@@ -146,12 +194,26 @@ svg.chart-svg{width:100%;height:auto;display:block;overflow:visible}
         <option value="C">C · 15h–23h</option>
       </select>
     </div>
+    <div class="ff"><label>Operador</label>
+      <select id="f-operador" onchange="aplicarFiltros()">
+        <option value="">Todos</option>
+      </select>
+    </div>
     <div class="ff"><label>Tipo Carga</label>
       <select id="f-carga" onchange="aplicarFiltros()">
         <option value="">Todas</option>
         <option value="ensacado">Ensacado</option>
         <option value="granel">Granel</option>
         <option value="bigbag">Big Bag</option>
+      </select>
+    </div>
+    <div class="ff"><label>Tipo Carregamento</label>
+      <select id="f-subtipo" onchange="aplicarFiltros()">
+        <option value="">Todos</option>
+        <option value="Paletizado">Paletizado</option>
+        <option value="Caricamat">Caricamat</option>
+        <option value="Container">Container</option>
+        <option value="Granel">Granel</option>
       </select>
     </div>
     <div class="ff"><label>Tipo Cimento</label>
@@ -162,15 +224,9 @@ svg.chart-svg{width:100%;height:auto;display:block;overflow:visible}
         <option value="CP V">CP V</option>
       </select>
     </div>
-    <div class="ff"><label>Data início</label><input type="date" id="f-ini" onchange="aplicarFiltros()"></div>
-    <div class="ff"><label>Data fim</label><input type="date" id="f-fim" onchange="aplicarFiltros()"></div>
     <div class="ff"><label>Placa</label><input id="f-placa" placeholder="ABC1234" oninput="renderDebounced()"></div>
     <div class="ff"><label>AC</label><input id="f-ac" placeholder="AC-001" oninput="renderDebounced()"></div>
-    <div class="ff"><label>Operador</label>
-      <select id="f-operador" onchange="aplicarFiltros()">
-        <option value="">Todos</option>
-      </select>
-    </div>
+    <div class="ff"><label>Nota Fiscal</label><input id="f-nf" placeholder="562968" oninput="renderDebounced()"></div>
     <div class="ff"><label>Status</label>
       <select id="f-status" onchange="aplicarFiltros()">
         <option value="">Todos</option>
@@ -186,6 +242,30 @@ svg.chart-svg{width:100%;height:auto;display:block;overflow:visible}
     <button class="btn btn-out" onclick="exportarExcel(event)">📊 Excel</button>
   </div>
 
+  <div class="legend-toggle">
+    <button class="btn btn-out" onclick="toggleLegenda()">ℹ️ Etapa × Empresa</button>
+    <div class="legend-panel" id="legenda">
+      <h3>Filtros por Etapa × Empresa</h3>
+      <div class="legend-grid">
+        <div>
+          <div class="legend-row"><span>Portaria Ini</span><span>Seguro Segurança</span></div>
+          <div class="legend-row"><span>Portaria Fim</span><span>Seguro Segurança</span></div>
+          <div class="legend-row"><span>Triagem Ini</span><span>Reforme Paletes</span></div>
+          <div class="legend-row"><span>Triagem Fim</span><span>Reforme Paletes</span></div>
+        </div>
+        <div>
+          <div class="legend-row"><span>Carreg. Ini</span><span>Ambipar</span></div>
+          <div class="legend-row"><span>Carreg. Fim</span><span>Ambipar</span></div>
+          <div class="legend-row"><span>Enlon. Ini</span><span>Sousa Clean</span></div>
+          <div class="legend-row"><span>Enlon. Fim</span><span>Sousa Clean</span></div>
+          <div class="legend-row"><span>Posto 1</span><span>Apodi</span></div>
+          <div class="legend-row"><span>Faturamento</span><span>Apodi</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Indicadores gerais</div>
   <div class="kpis">
     <div class="kpi"><div class="lb">Total registros</div><div class="vl" id="k-total">0</div></div>
     <div class="kpi ok"><div class="lb">Concluídos</div><div class="vl" id="k-conc">0</div></div>
@@ -195,20 +275,24 @@ svg.chart-svg{width:100%;height:auto;display:block;overflow:visible}
     <div class="kpi"><div class="lb">SLA cumprido</div><div class="vl" id="k-sla">—</div></div>
   </div>
 
+  <div class="section-title">Indicadores por Empresa</div>
+  <div class="emp-kpis" id="emp-kpis"></div>
+
+  <div class="section-title">Aderência por Etapa</div>
+  <div class="ader-kpis" id="ader-kpis"></div>
+
   <div class="tcard" id="view-table">
     <div class="thead-bar">Registros <small id="rescount">carregando…</small></div>
     <div class="tscroll">
       <table>
-        <thead><tr>
+        <thead><tr id="thead-row">
           <th class="col-fixed">Nº</th><th class="col-fixed">Placa</th>
-          <th>AC</th><th>Empresa Atual</th><th>Turno</th><th>Tipo Carga</th><th>Tipo Cimento</th><th>Data</th><th>Setor Atual</th>
-          <th>Entrada</th><th>Portaria Ini</th><th>Portaria Fim</th>
-          <th>Triagem Ini</th><th>Triagem Fim</th>
-          <th>Carreg. Ini</th><th>Carreg. Fim</th>
-          <th>Enlon. Ini</th><th>Enlon. Fim</th>
-          <th>Faturamento</th><th>Nota Fiscal</th>
-          <th>TMAC</th><th>TME</th><th>TMC</th><th>TMF</th><th>TMTI</th><th>TMCI</th><th>TMEI</th>
-          <th>Operador(es)</th>
+          <th>AC</th><th>Nota Fiscal</th><th>Empresa Atual</th><th>Turno</th>
+          <th>Tipo Carga</th><th>Tipo Carregamento</th><th>Tipo Cimento</th>
+          <th>Data</th><th>Setor Atual</th>
+          <th>Posto 1</th><th>Faturamento</th>
+          <th>TMAC</th><th>TME</th><th>TMC</th><th>TMF</th>
+          <th id="th-operador">Operador(es)</th>
           <th>Status</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
@@ -344,16 +428,19 @@ function passaFiltros(c){
   const fe=document.getElementById("f-empresa").value;
   const ft=document.getElementById("f-turno").value;
   const fca=document.getElementById("f-carga").value;
+  const fsub=document.getElementById("f-subtipo").value;
   const fci=document.getElementById("f-cimentotipo").value;
   const fi=document.getElementById("f-ini").value;
   const ff=document.getElementById("f-fim").value;
   const fp=document.getElementById("f-placa").value.trim().toUpperCase();
   const fac=document.getElementById("f-ac").value.trim().toUpperCase();
+  const fnf=document.getElementById("f-nf").value.trim().toUpperCase();
   const fop=document.getElementById("f-operador").value;
   const fs=document.getElementById("f-status").value;
   if(fe&&c._empresa!==fe)return false;
   if(ft&&c._turno!==ft)return false;
   if(fca&&c.tipoCarga!==fca)return false;
+  if(fsub&&c.subtipoCarga!==fsub)return false;
   if(fci&&c.tipoCimento!==fci)return false;
   if(fi||ff){
     // Mesma regra de carry-over do master.html: caminhao NAO concluido que comecou
@@ -368,6 +455,7 @@ function passaFiltros(c){
   }
   if(fp&&(c.placa||"").toUpperCase().indexOf(fp)===-1)return false;
   if(fac&&(c.ac||"").toUpperCase().indexOf(fac)===-1)return false;
+  if(fnf&&(c.notaFiscal||"").toUpperCase().indexOf(fnf)===-1)return false;
   if(fop&&c._operadores.indexOf(fop)===-1)return false;
   if(fs&&c._st.key!==fs)return false;
   return true;
@@ -387,15 +475,61 @@ window.limparFiltros=()=>{
   document.getElementById("f-empresa").value="";
   document.getElementById("f-turno").value="";
   document.getElementById("f-carga").value="";
+  document.getElementById("f-subtipo").value="";
   document.getElementById("f-cimentotipo").value="";
   document.getElementById("f-ini").value="";
   document.getElementById("f-fim").value="";
   document.getElementById("f-placa").value="";
   document.getElementById("f-ac").value="";
+  document.getElementById("f-nf").value="";
   document.getElementById("f-operador").value="";
   document.getElementById("f-status").value="";
+  limparChipPeriodo();
   paginaAtual=1;
   render();
+};
+
+window.limparChipPeriodo=()=>{
+  document.querySelectorAll(".pchip").forEach(b=>b.classList.remove("active"));
+};
+
+// Atalhos de periodo (Hoje/Semana/Mes/Ano) — preenchem Data inicio/fim usando o
+// fuso de Fortaleza (mesma logica do dataRef). Se o inicio do periodo for anterior
+// a janela de PERIODO_DIAS ja carregada do Firestore, liga automaticamente o modo
+// "historico completo" para nao deixar registros de fora por falta de dado carregado.
+function isoFortaleza(d){
+  return d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+}
+function addDias(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+
+window.setPeriodo=(tipo,btn)=>{
+  document.querySelectorAll(".pchip").forEach(b=>b.classList.remove("active"));
+  if(btn)btn.classList.add("active");
+  const agora=new Date();
+  let ini,fim=isoFortaleza(agora);
+  if(tipo==="hoje"){
+    ini=fim;
+  }else if(tipo==="semana"){
+    ini=isoFortaleza(addDias(agora,-6));
+  }else if(tipo==="mes"){
+    ini=fim.slice(0,7)+"-01";
+  }else{ // "ano"
+    ini=fim.slice(0,4)+"-01-01";
+  }
+  document.getElementById("f-ini").value=ini;
+  document.getElementById("f-fim").value=fim;
+  const limiteJanela=isoFortaleza(addDias(agora,-(PERIODO_DIAS-1)));
+  if(!modoTudo&&ini<limiteJanela){
+    modoTudo=true;
+    document.getElementById("btn-periodo").textContent="🕐 Ver últimos 30 dias";
+    iniciarListener(); // dispara render() sozinho quando os dados chegarem
+  }else{
+    aplicarFiltros();
+  }
+};
+
+window.toggleLegenda=()=>{
+  document.getElementById("legenda").classList.toggle("show");
 };
 
 window.irPagina=(delta)=>{
@@ -414,19 +548,51 @@ function popularOperadores(){
 
 function getFiltrados(){
   const filtrados=[];
-  HD.forEach((c,idx)=>{
+  HD.forEach(c=>{
     if(!passaFiltros(c))return;
-    filtrados.push({c,n:HD.length-idx});
+    filtrados.push({c});
   });
+  // Numeracao sequencial 1,2,3... na mesma ordem exibida (mais recente primeiro),
+  // continuando entre paginas (pagina 2 comeca em 51, nao reinicia em 1).
+  filtrados.forEach((r,i)=>{r.n=i+1;});
   return filtrados;
 }
 
-const CABECALHO=["Nº","Placa","AC","Empresa Atual","Turno","Tipo Carga","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","Nota Fiscal","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Operador(es)","Status"];
+const CABECALHO=["Nº","Placa","AC","Nota Fiscal","Empresa Atual","Turno","Tipo Carga","Tipo Carregamento","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Operador(es)","Status"];
 
 function linhaCells(c,n){
   const m=c._m,st=c._st;
-  return[n,c.placa||"—",c.ac||"—",c._empresa,c._turno||"—",c.tipoCargaLabel||"—",c.tipoCimentoLabel||"—",fmtData(c.data),(c.setorAtual||"—").replace(/_/g," "),fmtT(m.tEntrada),fmtT(m.tPortI),fmtT(m.tPortF),fmtT(m.tTriI),fmtT(m.tTriF),fmtT(m.tCarI),fmtT(m.tCarF),fmtT(m.tEnlI),fmtT(m.tEnlF),fmtT(m.tFat),c.notaFiscal||"—",fmtDur(m.TMAC),fmtDur(m.TME),fmtDur(m.TMC),fmtDur(m.TMF),fmtDur(m.TMTI),fmtDur(m.TMCI),fmtDur(m.TMEI),c._operadores.join(", ")||"—",st.label];
+  return[n,c.placa||"—",c.ac||"—",c.notaFiscal||"—",c._empresa,c._turno||"—",c.tipoCargaLabel||"—",c.subtipoCarga||"—",c.tipoCimentoLabel||"—",fmtData(c.data),(c.setorAtual||"—").replace(/_/g," "),fmtT(m.tEntrada),fmtT(m.tPortI),fmtT(m.tPortF),fmtT(m.tTriI),fmtT(m.tTriF),fmtT(m.tCarI),fmtT(m.tCarF),fmtT(m.tEnlI),fmtT(m.tEnlF),fmtT(m.tFat),fmtDur(m.TMAC),fmtDur(m.TME),fmtDur(m.TMC),fmtDur(m.TMF),fmtDur(m.TMTI),fmtDur(m.TMCI),fmtDur(m.TMEI),c._operadores.join(", ")||"—",st.label];
 }
+
+// Colunas dinamicas exibidas na tabela principal entre TMF e Operador(es),
+// conforme a Empresa selecionada no filtro do topo (mesma logica usada no drawer).
+function extraColsConfig(fe){
+  if(fe==="Sousa Clean")return{headers:["Enlon. Ini","Enlon. Fim","TMEI"],cells:m=>[fmtT(m.tEnlI),fmtT(m.tEnlF),fmtDur(m.TMEI)]};
+  if(fe==="Ambipar")return{headers:["Carreg. Ini","Carreg. Fim","TMCI"],cells:m=>[fmtT(m.tCarI),fmtT(m.tCarF),fmtDur(m.TMCI)]};
+  if(fe==="Reforme Paletes")return{headers:["Triagem Ini","Triagem Fim","TMTI"],cells:m=>[fmtT(m.tTriI),fmtT(m.tTriF),fmtDur(m.TMTI)]};
+  if(fe==="Seguro Segurança")return{headers:["Portaria Ini","Portaria Fim"],cells:m=>[fmtT(m.tPortI),fmtT(m.tPortF)]};
+  if(fe==="Apodi")return{headers:[],cells:()=>[]}; // Apodi ja aparece via Posto 1 / Faturamento
+  return{headers:["TMTI","TMCI","TMEI"],cells:m=>[fmtDur(m.TMTI),fmtDur(m.TMCI),fmtDur(m.TMEI)]}; // "" = Todas
+}
+
+// metaMs como funcao (nao valor direto) porque META_TEMPOS so e declarado mais
+// abaixo no arquivo (secao de graficos) — evita referenciar a constante antes
+// dela existir; e resolvida so quando render() de fato roda, no maximo depois.
+const EMPRESAS_KPI=[
+  {nome:"Apodi",etapa:"Posto 1 + Faturamento",vol:c=>true,label:"TMAC médio",val:c=>c.setorAtual==="concluido"?c._m.TMAC:null,metaMs:()=>LIMITE_TMAC_MS},
+  {nome:"Seguro Segurança",etapa:"Portaria",vol:c=>c._m.tPortI!=null,label:"Tempo médio portaria",val:c=>diffMs(c._m.tPortI,c._m.tPortF),metaMs:()=>null},
+  {nome:"Reforme Paletes",etapa:"Triagem (TMTI)",vol:c=>c._m.tTriI!=null,label:"TMTI médio",val:c=>c._m.TMTI,metaMs:()=>META_TEMPOS.TMTI*60000},
+  {nome:"Ambipar",etapa:"Carregamento (TMCI)",vol:c=>c._m.tCarI!=null,label:"TMCI médio",val:c=>c._m.TMCI,metaMs:()=>META_TEMPOS.TMCI*60000},
+  {nome:"Sousa Clean",etapa:"Enlonamento (TMEI)",vol:c=>c._m.tEnlI!=null,label:"TMEI médio",val:c=>c._m.TMEI,metaMs:()=>META_TEMPOS.TMEI*60000}
+];
+
+const ADERENCIA_CONFIG=[
+  {nome:"Portaria",empresa:"Seguro Segurança",ok:c=>c._m.tPortI!=null&&c._m.tPortF!=null},
+  {nome:"Triagem",empresa:"Reforme Paletes",ok:c=>c._m.tTriI!=null&&c._m.tTriF!=null},
+  {nome:"Carregamento",empresa:"Ambipar",ok:c=>c._m.tCarI!=null&&c._m.tCarF!=null},
+  {nome:"Enlonamento",empresa:"Sousa Clean",ok:c=>c._m.tEnlI!=null&&c._m.tEnlF!=null}
+];
 
 window.render=()=>{
   const tbody=document.getElementById("tbody");
@@ -449,6 +615,36 @@ window.render=()=>{
   document.getElementById("k-sla").textContent=conc?Math.round(slaOk/conc*100)+"%":"—";
   document.getElementById("empty").style.display=filtrados.length?"none":"block";
 
+  // Indicadores por Empresa
+  const arrFiltrado=filtrados.map(r=>r.c);
+  document.getElementById("emp-kpis").innerHTML=EMPRESAS_KPI.map(e=>{
+    const vol=arrFiltrado.filter(e.vol).length;
+    const vals=arrFiltrado.map(e.val).filter(v=>v!=null);
+    const mediaMs=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+    const metaMs=e.metaMs();
+    const dentroMeta=metaMs==null?null:(mediaMs!=null&&mediaMs<=metaMs);
+    return"<div class='emp-kpi' style='border-left-color:"+empresaColor(e.nome)+"'>"+
+      "<div class='lb' style='color:"+empresaColor(e.nome)+"'>"+e.nome+"</div>"+
+      "<div class='row'><span>Etapa</span><b>"+e.etapa+"</b></div>"+
+      "<div class='row'><span>Volume no período</span><b>"+vol+"</b></div>"+
+      "<div class='row'><span>"+e.label+"</span><b class='"+(dentroMeta==null?"":(dentroMeta?"ok":"bad"))+"'>"+(mediaMs!=null?fmtDur(mediaMs):"—")+"</b></div>"+
+      "</div>";
+  }).join("");
+
+  // Aderência por Etapa (sobre os registros CONCLUIDOS do filtro atual)
+  const concluidosArr=arrFiltrado.filter(c=>c.setorAtual==="concluido");
+  const totalConc=concluidosArr.length;
+  document.getElementById("ader-kpis").innerHTML=ADERENCIA_CONFIG.map(a=>{
+    const okN=concluidosArr.filter(a.ok).length;
+    const pct=totalConc?Math.round(okN/totalConc*100):null;
+    const cls=pct===100?"ok":"bad";
+    return"<div class='ader-kpi'>"+
+      "<div class='lb'>"+a.nome+" · "+a.empresa+"</div>"+
+      "<div class='vl "+cls+"'>"+(pct!=null?pct+"%":"—")+"</div>"+
+      "<div class='frac'>"+okN+" / "+totalConc+" concluídos</div>"+
+      "</div>";
+  }).join("");
+
   const totalPaginas=Math.max(1,Math.ceil(filtrados.length/PAGE_SIZE));
   if(paginaAtual>totalPaginas)paginaAtual=totalPaginas;
   if(paginaAtual<1)paginaAtual=1;
@@ -460,6 +656,18 @@ window.render=()=>{
   document.getElementById("pg-prev").disabled=paginaAtual<=1;
   document.getElementById("pg-next").disabled=paginaAtual>=totalPaginas;
 
+  // Cabecalho dinamico: colunas extra entre TMF e Operador(es), conforme Empresa selecionada
+  const feAtual=document.getElementById("f-empresa").value;
+  const extra=extraColsConfig(feAtual);
+  document.querySelectorAll("#thead-row .th-extra-dyn").forEach(el=>el.remove());
+  const thOperador=document.getElementById("th-operador");
+  extra.headers.forEach(h=>{
+    const th=document.createElement("th");
+    th.className="th-extra-dyn";
+    th.textContent=h;
+    thOperador.insertAdjacentElement("beforebegin",th);
+  });
+
   const rows=[];
   pagina.forEach(r=>{
     const c=r.c,m=c._m,st=c._st;
@@ -468,30 +676,21 @@ window.render=()=>{
       "<td class='col-fixed'>"+r.n+"</td>"+
       "<td class='col-fixed placa'>"+(c.placa||"—")+"</td>"+
       "<td>"+(c.ac||"—")+"</td>"+
+      "<td>"+(c.notaFiscal||"—")+"</td>"+
       "<td>"+c._empresa+"</td>"+
       "<td>"+(c._turno?"<span class='turno-pill'>"+c._turno+"</span>":"—")+"</td>"+
       "<td>"+(c.tipoCargaLabel||"—")+"</td>"+
+      "<td>"+(c.subtipoCarga||"—")+"</td>"+
       "<td>"+(c.tipoCimentoLabel||"—")+"</td>"+
       "<td>"+fmtData(c.data)+"</td>"+
       "<td>"+(c.setorAtual||"—").replace(/_/g," ")+"</td>"+
       "<td>"+fmtT(m.tEntrada)+"</td>"+
-      "<td>"+fmtT(m.tPortI)+"</td>"+
-      "<td>"+fmtT(m.tPortF)+"</td>"+
-      "<td>"+fmtT(m.tTriI)+"</td>"+
-      "<td>"+fmtT(m.tTriF)+"</td>"+
-      "<td>"+fmtT(m.tCarI)+"</td>"+
-      "<td>"+fmtT(m.tCarF)+"</td>"+
-      "<td>"+fmtT(m.tEnlI)+"</td>"+
-      "<td>"+fmtT(m.tEnlF)+"</td>"+
       "<td>"+fmtT(m.tFat)+"</td>"+
-      "<td>"+(c.notaFiscal||"—")+"</td>"+
       "<td class='"+(st.key==="fora"?"badv":(m.TMAC!==null?"okv":""))+"'>"+fmtDur(m.TMAC)+"</td>"+
       "<td>"+fmtDur(m.TME)+"</td>"+
       "<td>"+fmtDur(m.TMC)+"</td>"+
       "<td>"+fmtDur(m.TMF)+"</td>"+
-      "<td>"+fmtDur(m.TMTI)+"</td>"+
-      "<td>"+fmtDur(m.TMCI)+"</td>"+
-      "<td>"+fmtDur(m.TMEI)+"</td>"+
+      extra.cells(m).map(v=>"<td>"+v+"</td>").join("")+
       "<td>"+(c._operadores.join(", ")||"—")+"</td>"+
       "<td><span class='tag "+st.cls+"'>"+st.label+"</span></td>"+
       "</tr>"
@@ -499,6 +698,41 @@ window.render=()=>{
   });
   tbody.innerHTML=rows.join("");
 };
+
+// Tabelas de etapa do drawer (Portaria/Triagem/Carregamento/Enlonamento), no
+// padrao Ini | Fim | TM_x | Empresa | Operador(es) | Status. So aparecem etapas
+// com dado registrado, e respeitam os filtros de Empresa/Operador do topo —
+// selecionar uma empresa no filtro isola so a etapa dela; selecionar um operador
+// isola so as etapas feitas por ele.
+function montarStageTablesDrawer(c,m){
+  const feEmpresa=document.getElementById("f-empresa").value;
+  const feOperador=document.getElementById("f-operador").value;
+  const stages=[
+    {key:"Portaria",empresa:"Seguro Segurança",ini:m.tPortI,fim:m.tPortF,tm:null,tmLbl:null,op:c.portaria&&c.portaria.operador},
+    {key:"Triagem",empresa:"Reforme Paletes",ini:m.tTriI,fim:m.tTriF,tm:m.TMTI,tmLbl:"TMTI",op:c.triagem&&(c.triagem.operadorInicio||c.triagem.operadorFim)},
+    {key:"Carregamento",empresa:"Ambipar",ini:m.tCarI,fim:m.tCarF,tm:m.TMCI,tmLbl:"TMCI",op:c.carregamento&&(c.carregamento.operadorInicio||c.carregamento.operadorFim)},
+    {key:"Enlonamento",empresa:"Sousa Clean",ini:m.tEnlI,fim:m.tEnlF,tm:m.TMEI,tmLbl:"TMEI",op:c.enlonamento&&(c.enlonamento.operadorInicio||c.enlonamento.operadorFim)}
+  ].filter(s=>s.ini||s.fim)
+   .filter(s=>!feEmpresa||feEmpresa==="Apodi"||s.empresa===feEmpresa)
+   .filter(s=>!feOperador||s.op===feOperador);
+
+  if(!stages.length){
+    return"<div class='stage-note'>Nenhuma etapa corresponde aos filtros de Empresa/Operador selecionados.</div>";
+  }
+  const nota=(feEmpresa||feOperador)?
+    "<div class='stage-note'>Etapas por empresa"+(feEmpresa?" · filtrado em <b>"+feEmpresa+"</b>":"")+(feOperador?" · operador <b>"+feOperador+"</b>":"")+"</div>":
+    "<div class='stage-note'>Etapas por empresa</div>";
+
+  return nota+stages.map(s=>
+    "<div class='stage-table'>"+
+      "<div class='sthead'><span>"+s.key+" Ini</span><span>"+s.key+" Fim</span><span>"+(s.tmLbl||"—")+"</span><span>Empresa</span><span>Operador(es)</span><span>Status</span></div>"+
+      "<div class='strow'><span>"+fmtT(s.ini)+"</span><span>"+fmtT(s.fim)+"</span><span>"+(s.tm!=null?fmtDur(s.tm):"—")+"</span>"+
+        "<span class='co-txt' style='color:"+empresaColor(s.empresa)+"'>"+s.empresa+"</span>"+
+        "<span>"+(s.op||"—")+"</span>"+
+        "<span class='"+(s.ini&&s.fim?"okv":"badv")+"'>"+(s.ini&&s.fim?"Concluído":"Pendente")+"</span></div>"+
+    "</div>"
+  ).join("");
+}
 
 window.abrirDrawer=(id)=>{
   const c=HD_BY_ID.get(id);
@@ -523,22 +757,22 @@ window.abrirDrawer=(id)=>{
       "<div class='drow'><span>Nota fiscal</span><span>"+(c.notaFiscal||"—")+"</span></div>"+
       "<div class='drow'><span>Status</span><span class='tag "+st.cls+"'>"+st.label+"</span></div>"+
     "</div>"+
-    "<div class='dsec'><h4>Linha do tempo por etapa</h4>"+
+    "<div class='dsec'><h4>Entrada e faturamento (Apodi)</h4>"+
       "<div class='drow'><span>Entrada (Posto 1)</span><span>"+fmtT(m.tEntrada)+opTxt(c.entrada&&c.entrada.operador)+"</span></div>"+
-      "<div class='drow'><span>Portaria início / fim</span><span>"+fmtT(m.tPortI)+" → "+fmtT(m.tPortF)+opTxt(c.portaria&&c.portaria.operador)+"</span></div>"+
-      "<div class='drow'><span>Triagem início / fim</span><span>"+fmtT(m.tTriI)+" → "+fmtT(m.tTriF)+opTxt(c.triagem&&(c.triagem.operadorInicio||c.triagem.operadorFim))+"</span></div>"+
-      "<div class='drow'><span>Carregamento início / fim</span><span>"+fmtT(m.tCarI)+" → "+fmtT(m.tCarF)+opTxt(c.carregamento&&(c.carregamento.operadorInicio||c.carregamento.operadorFim))+"</span></div>"+
-      "<div class='drow'><span>Enlonamento início / fim</span><span>"+fmtT(m.tEnlI)+" → "+fmtT(m.tEnlF)+opTxt(c.enlonamento&&(c.enlonamento.operadorInicio||c.enlonamento.operadorFim))+"</span></div>"+
       "<div class='drow'><span>Faturamento</span><span>"+fmtT(m.tFat)+opTxt(c.faturamento&&c.faturamento.operador)+"</span></div>"+
     "</div>"+
+    montarStageTablesDrawer(c,m)+
     "<div class='dsec'><h4>Métricas calculadas</h4>"+
       "<div class='drow'><span>TMAC (meta ≤2h10)</span><span class='"+(st.key==="fora"?"badv":"okv")+"'>"+fmtDur(m.TMAC)+"</span></div>"+
       "<div class='drow'><span>TME</span><span>"+fmtDur(m.TME)+"</span></div>"+
       "<div class='drow'><span>TMC (armazém: triagem → enlonamento)</span><span>"+fmtDur(m.TMC)+"</span></div>"+
       "<div class='drow'><span>TMF (meta ≤8min)</span><span>"+fmtDur(m.TMF)+"</span></div>"+
-      "<div class='drow'><span>TMTI (meta ≤5min)</span><span>"+fmtDur(m.TMTI)+"</span></div>"+
-      "<div class='drow'><span>TMCI (meta ≤20min)</span><span>"+fmtDur(m.TMCI)+"</span></div>"+
-      "<div class='drow'><span>TMEI (meta ≤15min)</span><span>"+fmtDur(m.TMEI)+"</span></div>"+
+    "</div>"+
+    "<div class='mini-legend'>"+
+      "<div class='row'><span>Métrica</span><span>Empresa responsável</span></div>"+
+      "<div class='row'><span>TMTI</span><span>Reforme Paletes</span></div>"+
+      "<div class='row'><span>TMCI</span><span>Ambipar</span></div>"+
+      "<div class='row'><span>TMEI</span><span>Sousa Clean</span></div>"+
     "</div>"+
     "<div class='dsec'><h4>Observações / justificativa</h4>"+
       "<div class='drow'><span>Observação</span><span>"+(c.observacao||"—")+"</span></div>"+
