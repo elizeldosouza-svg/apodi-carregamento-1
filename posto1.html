@@ -82,7 +82,9 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .placa-row{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--rs);border:1.5px solid var(--bd);background:var(--c1);cursor:pointer;transition:all .2s}
 .placa-row:hover{border-color:var(--ac);background:rgba(0,212,255,.05)}
 .placa-row.ativo{border-color:#00e896;background:rgba(0,232,150,.05)}
-.p-data{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.3px}
+.p-data{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.p-data .sep{opacity:.5}
+.p-data .turno-tag{color:var(--ye)}
 .p-main{display:flex;align-items:center;gap:8px}
 .p-pos{font-family:monospace;font-size:11px;font-weight:700;color:var(--t3);min-width:18px}
 .p-num{font-family:monospace;font-size:16px;font-weight:700;letter-spacing:2px;color:var(--ac)}
@@ -239,7 +241,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   <button class="go" id="go" onclick="registrar()" disabled>✅ Registrar Entrada</button>
 
   <div class="filtro-rel">
-    <div class="filtro-titulo">📅 Filtro para o relatório</div>
+    <div class="filtro-titulo">📅 Filtro para o relatório do Posto 1</div>
     <div class="filtro-row">
       <span class="filtro-label">De:</span>
       <input class="filtro-input" type="date" id="f-data-ini" style="max-width:150px"/>
@@ -258,6 +260,39 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <button class="turno-btn" id="tb-a" onclick="setTurno('A',this)">A · 23h–07h</button>
       <button class="turno-btn" id="tb-b" onclick="setTurno('B',this)">B · 07h–15h</button>
       <button class="turno-btn" id="tb-c" onclick="setTurno('C',this)">C · 15h–23h</button>
+    </div>
+    <div class="filtro-row">
+      <span class="filtro-label">Carga:</span>
+      <select class="filtro-input" id="f-carga">
+        <option value="">Todas</option>
+        <option value="ensacado">Ensacado</option>
+        <option value="granel">Granel</option>
+        <option value="bigbag">Big Bag</option>
+      </select>
+    </div>
+    <div class="filtro-row">
+      <span class="filtro-label">Tipo Carreg.:</span>
+      <select class="filtro-input" id="f-carregamento">
+        <option value="">Todos</option>
+        <option value="Paletizado">Paletizado</option>
+        <option value="Caricamat">Caricamat</option>
+        <option value="Container">Container</option>
+        <option value="Granel">Granel</option>
+      </select>
+    </div>
+    <div class="filtro-row">
+      <span class="filtro-label">Cimento:</span>
+      <select class="filtro-input" id="f-cimento">
+        <option value="">Todos</option>
+        <option value="CP II F">CP II F</option>
+        <option value="CP III">CP III</option>
+        <option value="CP V">CP V</option>
+      </select>
+    </div>
+    <div class="filtro-row">
+      <span class="filtro-label" style="min-width:100%;margin-bottom:2px">Base do filtro:</span>
+      <button class="turno-btn on" id="tb-base-inc" onclick="setBaseFiltro('inclusao',this)" style="flex:1">📥 AC Incluída</button>
+      <button class="turno-btn" id="tb-base-lib" onclick="setBaseFiltro('liberacao',this)" style="flex:1">✅ Veículo Liberado</button>
     </div>
     <div class="filtro-row">
       <span class="filtro-label">Operador:</span>
@@ -350,8 +385,8 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       </div>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
-      <div class="rodape-label" style="margin:0">Fila · toque para chamar</div>
-      <span style="font-size:10px;color:var(--t3)" id="fila-count-r"></span>
+      <div class="rodape-label" style="margin:0;font-size:14px;font-weight:800;color:var(--ac)">Fila · toque para chamar</div>
+      <span style="font-size:14px;font-weight:800;color:var(--ac)" id="fila-count-r"></span>
     </div>
     <div class="fila-list-r" id="fila-list-r">
       <div style="text-align:center;padding:16px;color:var(--t3);font-size:12px;font-style:italic">Fila vazia</div>
@@ -437,6 +472,13 @@ window.doSalvarSenha=async()=>{
 window.doLogout=()=>{fazerLogout(TELA);location.reload();};
 if(SESSAO.logado){mostrarApp();}else{document.getElementById("login-screen").style.display="flex";}
 const hoje=()=>new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+const fmtISO=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+let BASE_FILTRO="inclusao"; // 'inclusao' (Hora Entrada) | 'liberacao' (Hora Liberação)
+window.setBaseFiltro=(val,el)=>{
+  BASE_FILTRO=val;
+  document.querySelectorAll("#tb-base-inc,#tb-base-lib").forEach(b=>b.classList.remove("on"));
+  el.classList.add("on");
+};
 const fmtT=d=>d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
 let HD=[],HD_REL=[],TIPO=null,TIPO_CIMENTO=null,TIPO_CIMENTO_LABEL=null,SUBTIPO=null;
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
@@ -621,23 +663,29 @@ function buildRegistrosRel(){
   const [hfH,hfM]=hFim.split(":").map(Number);
   const iniMin=hiH*60+hiM,fimMin=hfH*60+hfM;
   const opSel=document.getElementById("f-operador")?.value||"";
+  const cargaSel=document.getElementById("f-carga")?.value||"";
+  const carregSel=document.getElementById("f-carregamento")?.value||"";
+  const cimentoSel=document.getElementById("f-cimento")?.value||"";
+  const liberacao=BASE_FILTRO==="liberacao";
   let r=HD_REL.filter(c=>{
     if(opSel&&c.entrada?.operador!==opSel)return false;
-    const en=c.entrada?.ts?.toDate?.();
+    if(cargaSel&&c.tipoCarga!==cargaSel)return false;
+    if(carregSel&&c.subtipoCarga!==carregSel)return false;
+    if(cimentoSel&&c.tipoCimento!==cimentoSel)return false;
+    // Base do filtro: por Hora de Entrada (AC Incluída) ou Hora de Liberação (Veículo Liberado)
+    if(liberacao&&!c.posto1ConfirmadoEm)return false; // só entra quem já foi liberado
+    const en=liberacao?c.posto1ConfirmadoEm.toDate():c.entrada?.ts?.toDate?.();
     if(MT==="A"){
       // Turno A cruza a meia-noite: um registro feito entre 23:00–23:59 pertence
       // ao Turno A do dia SEGUINTE (ex.: 18/08 23h faz parte do Turno A de 19/08),
       // então compara pela data "efetiva" do turno, não pela data de cadastro.
       if(!en||getTurno(en)!=="A")return false;
-      let dataEfetiva=c.data;
-      if(en.getHours()>=23){
-        const d=new Date(en.getTime());
-        d.setDate(d.getDate()+1);
-        dataEfetiva=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-      }
+      let dataEfetiva=fmtISO(en);
+      if(en.getHours()>=23)dataEfetiva=fmtISO(new Date(en.getTime()+86400000));
       return dataEfetiva>=dataIniVal&&dataEfetiva<=dataFimVal;
     }
-    if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
+    const dataRef=en?fmtISO(en):c.data;
+    if(!dataRef||dataRef<dataIniVal||dataRef>dataFimVal)return false;
     if(!en)return true;
     if(MT==="geral"){
       const min=en.getHours()*60+en.getMinutes();
@@ -808,11 +856,14 @@ function renderFila(){
     const tp=c.tipoCarga||"";
     const ativo=CHAMADO_ATUAL&&CHAMADO_ATUAL.id===c.id?" ativo":"";
     const enMs=c.entrada?.ts?.toDate?.()?.getTime();
+    const enDate=c.entrada?.ts?.toDate?.();
     const tmeMs=enMs?agora-enMs:null;
     const tme=fmtTME(tmeMs);
     const emAlerta=tmeMs!=null&&tmeMs>=3600000; // ≥ 1h
+    const horaEntrada=enDate?String(enDate.getHours()).padStart(2,"0")+":"+String(enDate.getMinutes()).padStart(2,"0"):null;
+    const turnoEntrada=enDate?getTurno(enDate):null;
     return`<div class="placa-row${ativo}${emAlerta?" alerta":""}" onclick="chamarPlaca('${c.id}')">
-      <div class="p-data">📅 ${c.data?fmtDia(c.data):"-"}</div>
+      <div class="p-data">📅 ${c.data?fmtDia(c.data):"-"}${horaEntrada?` <span class="sep">·</span> Aguardando desde ${horaEntrada}`:""}${turnoEntrada?` <span class="sep">·</span> Turno <span class="turno-tag">${turnoEntrada}</span>`:""}</div>
       <div class="p-main">
         <span class="p-pos">${i+1}°</span>
         <div style="flex:1">
