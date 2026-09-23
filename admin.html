@@ -216,6 +216,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .op-form select,.op-form input{padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg3);color:var(--tx);font-size:12px;outline:none}
 .op-form select:focus,.op-form input:focus{border-color:var(--bl)}
 .op-form input.err{border-color:var(--rd);background:rgba(255,68,102,.06)}
+.op-form select.err{border-color:var(--rd);background:rgba(255,68,102,.06)}
 .op-err-msg{font-size:10px;color:var(--rd);font-weight:600;display:none}
 .op-err-msg.show{display:block}
 .telas-label{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;display:block}
@@ -250,6 +251,12 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .pc-item.pc-editing input.pc-edit-inp{display:block}
 .pc-ic-btn{background:transparent;border:none;color:var(--t2);cursor:pointer;font-size:12px;padding:2px 4px;border-radius:4px}
 .pc-ic-btn:hover{color:var(--tx);background:var(--bg)}
+.pc-ic-btn.pc-edit-trigger{display:inline-block}
+.pc-item.pc-editing .pc-ic-btn.pc-edit-trigger{display:none}
+.pc-ic-btn.pc-confirm-btn,.pc-ic-btn.pc-cancel-btn{display:none}
+.pc-item.pc-editing .pc-ic-btn.pc-confirm-btn,.pc-item.pc-editing .pc-ic-btn.pc-cancel-btn{display:inline-block}
+.pc-ic-btn.pc-confirm-btn{color:var(--gr)}
+.pc-ic-btn.pc-cancel-btn{color:var(--rd)}
 .pc-toggle{width:30px;height:17px;border-radius:20px;background:var(--bd);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
 .pc-toggle.on{background:var(--gr)}
 .pc-toggle::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left .2s}
@@ -496,6 +503,19 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
               <span class="op-err-msg" id="op-usuario-err">⚠️ Este usuário já existe — escolha outro (login é único no sistema)</span>
             </div>
           </div>
+          <div class="op-form-row">
+            <div class="fg2"><label>Empresa</label>
+              <select id="op-empresa-in">
+                <option value="">— Selecione —</option>
+                <option value="Apodi">Apodi</option>
+                <option value="Seguro Segurança">Seguro Segurança</option>
+                <option value="Reforme Paletes">Reforme Paletes</option>
+                <option value="Ambipar">Ambipar</option>
+                <option value="Sousa Clean">Sousa Clean</option>
+              </select>
+              <span class="op-err-msg" id="op-empresa-err">⚠️ Selecione a empresa do operador</span>
+            </div>
+          </div>
           <div class="op-form-row" style="flex-direction:column;align-items:stretch;gap:8px">
             <span class="telas-label">Telas com acesso (marque uma ou mais)</span>
             <div class="telas-grid" id="op-telas-grid">
@@ -527,6 +547,14 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <option value="enlonamento">Enlonamento — Sousa Clean</option>
             <option value="faturamento">Faturamento — Apodi</option>
             <option value="justificativas">Justificativas — Supervisão</option>
+          </select>
+          <select class="op-filtro-tela" id="op-filtro-empresa" onchange="renderOperadoresList()">
+            <option value="">— Filtrar por empresa —</option>
+            <option value="Apodi">Apodi</option>
+            <option value="Seguro Segurança">Seguro Segurança</option>
+            <option value="Reforme Paletes">Reforme Paletes</option>
+            <option value="Ambipar">Ambipar</option>
+            <option value="Sousa Clean">Sousa Clean</option>
           </select>
           <span class="op-count" id="op-count">—</span>
         </div>
@@ -570,6 +598,8 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
       <div class="tcard">
         <div class="thead-bar">⚠️ Paradas / Ocorrências
           <div class="totais-bar">
+            <button class="pb" onclick="visualizarPdfParadas()" style="cursor:pointer;border-color:var(--gr);color:var(--gr)">📋 Visualizar PDF</button>
+            <button class="pb" onclick="exportarExcelParadas()" style="cursor:pointer;border-color:var(--gr);color:var(--gr)">📊 Exportar Excel</button>
             <button class="pb" onclick="voltarParadas()">← Voltar</button>
           </div>
         </div>
@@ -789,6 +819,21 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <div class="mrel-foot">
       <button class="mrel-close" style="padding:8px 16px;width:auto" onclick="document.getElementById('mrel-overlay').classList.remove('show')">Fechar</button>
       <button class="pdf-btn-m" onclick="exportarPDFAdmin()">📄 Exportar PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="mrel-overlay" id="mrel-paradas-overlay">
+  <div class="mrel-box">
+    <div class="mrel-head">
+      <div class="mrel-title">⚠️ RELATÓRIO DE PARADAS — APODI CIMENTOS</div>
+      <button class="mrel-close" onclick="document.getElementById('mrel-paradas-overlay').classList.remove('show')">✕</button>
+      <div class="mrel-info" id="mrel-paradas-info"></div>
+    </div>
+    <div class="mrel-body"><div id="mrel-paradas-body"></div></div>
+    <div class="mrel-foot">
+      <button class="mrel-close" style="padding:8px 16px;width:auto" onclick="document.getElementById('mrel-paradas-overlay').classList.remove('show')">Fechar</button>
+      <button class="pdf-btn-m" onclick="exportarPDFParadas()">📄 Exportar PDF</button>
     </div>
   </div>
 </div>
@@ -2140,6 +2185,108 @@ window.excluirParadaAdmin=async(paradaId)=>{
     if(r.fimId)await deleteDoc(doc(db,"caminhoes_rastreio",r.fimId));
   }catch(e){alert("Erro ao excluir: "+e.message);}
 };
+// ── Relatórios (PDF/Excel) da tela Paradas ──────────────────────────────
+function listaParadasFiltrada(){
+  const ini=document.getElementById("pd-adm-ini")?.value||"";
+  const fim=document.getElementById("pd-adm-fim")?.value||"";
+  let lista=PARADAS_REGISTROS;
+  if(ini)lista=lista.filter(r=>r.data>=ini);
+  if(fim)lista=lista.filter(r=>r.data<=fim);
+  return lista;
+}
+function periodoLabelParadas(){
+  const ini=document.getElementById("pd-adm-ini")?.value||"";
+  const fim=document.getElementById("pd-adm-fim")?.value||"";
+  if(!ini&&!fim)return"Todo o histórico";
+  if(ini&&fim)return fmtDataBR(ini)+" até "+fmtDataBR(fim);
+  return fmtDataBR(ini||fim);
+}
+window.visualizarPdfParadas=()=>{
+  const lista=listaParadasFiltrada();
+  const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  document.getElementById("mrel-paradas-info").innerHTML=
+    "Período: <b>"+periodoLabelParadas()+"</b> &nbsp;· Total: <b>"+lista.length+" parada"+(lista.length!==1?"s":"")+"</b> &nbsp;· Gerado: <b>"+dtNow+"</b>";
+  if(!lista.length){
+    document.getElementById("mrel-paradas-body").innerHTML="<div style='text-align:center;padding:32px;color:var(--t3)'>Nenhuma parada com os filtros selecionados.</div>";
+  }else{
+    const rows=lista.map(r=>`<tr>
+      <td>${r.paradaId}</td><td>${r.situacao||""}</td><td>${r.setor||""}</td>
+      <td>${fmtDataBR(r.data)}</td><td>${r.horarioInicialParada||""}</td>
+      <td>${r.dataEncerramento?fmtDataBR(r.dataEncerramento):""}</td><td>${r.horarioFinalParada||""}</td>
+      <td>${durStrParadaAdmin(r.tempoMs)}</td><td>${r.turno}</td>
+      <td>${r.operadorIni}${r.operadorFim?" / "+r.operadorFim:""}</td>
+      <td>${r.aberta?"Em aberto":"Encerrada"}</td><td>${r.observacao||""}</td>
+    </tr>`).join("");
+    document.getElementById("mrel-paradas-body").innerHTML=
+      "<table class='mrel-table'><thead><tr>"+
+      "<th>Código</th><th>Situação</th><th>Setor</th><th>Data Sinal.</th><th>Hor.Inicial</th>"+
+      "<th>Data Encerr.</th><th>Hor.Final</th><th>Tempo Total</th><th>Turno</th><th>Operador</th><th>Status</th><th>Observação</th>"+
+      "</tr></thead><tbody>"+rows+"</tbody></table>";
+  }
+  document.getElementById("mrel-paradas-overlay").classList.add("show");
+};
+window.exportarPDFParadas=()=>{
+  const lista=listaParadasFiltrada();
+  const dtNow=new Date().toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"});
+  const hora=new Date().toLocaleTimeString("pt-BR",{timeZone:"America/Fortaleza",hour:"2-digit",minute:"2-digit"});
+  const td=(v,ex)=>"<td style='padding:4px 5px;border:1px solid #ccc;font-size:7.5pt;"+(ex||"")+"'>"+(v||"")+"</td>";
+  const linhas=lista.map((r,i)=>{
+    const bg=i%2===1?"#f5f8ff":"#fff";
+    return"<tr style='background:"+bg+"'>"+
+      td(r.paradaId,"font-weight:bold;color:#003399;font-family:monospace")+
+      td(r.situacao)+td(r.setor)+
+      td(fmtDataBR(r.data))+td(r.horarioInicialParada)+
+      td(r.dataEncerramento?fmtDataBR(r.dataEncerramento):"")+td(r.horarioFinalParada)+
+      td(durStrParadaAdmin(r.tempoMs))+td(r.turno)+
+      td(r.operadorIni+(r.operadorFim?" / "+r.operadorFim:""),"font-size:6.5pt")+
+      td(r.aberta?"Em aberto":"Encerrada")+td(r.observacao,"font-size:6.5pt")+
+      "</tr>";
+  }).join("");
+  const partes=[];
+  partes.push("<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>Paradas - "+dtNow+"</title>");
+  partes.push("<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:9pt;padding:14px;color:#000}");
+  partes.push("h2{font-size:12pt;font-weight:bold;text-align:center;margin-bottom:7pt;text-transform:uppercase;letter-spacing:1px}");
+  partes.push(".info{font-size:8pt;color:#444;margin-bottom:10pt;text-align:center;line-height:1.8}");
+  partes.push("table{border-collapse:collapse;width:100%}");
+  partes.push("th{background:#8a5a00;color:#fff;padding:5px 4px;font-size:7pt;text-align:center;border:1px solid #ccc;white-space:normal;word-break:break-word;line-height:1.3;vertical-align:bottom}");
+  partes.push(".footer{margin-top:12pt;font-size:7pt;color:#999;text-align:center;border-top:1pt solid #ccc;padding-top:5pt}");
+  partes.push("@page{margin:.8cm;size:A4 landscape}</style></head><body>");
+  partes.push("<h2>Relatório de Paradas / Ocorrências — Apodi Cimentos</h2>");
+  partes.push("<div class='info'>Período: <b>"+periodoLabelParadas()+"</b> &nbsp;· Total: <b>"+lista.length+" parada"+(lista.length!==1?"s":"")+"</b> &nbsp;· Gerado em: <b>"+dtNow+" às "+hora+"</b></div>");
+  partes.push("<table><thead><tr>");
+  partes.push("<th>Código</th><th>Situação</th><th>Setor</th><th>Data Sinal.</th><th>Hor.Inicial</th>");
+  partes.push("<th>Data Encerr.</th><th>Hor.Final</th><th>Tempo Total</th><th>Turno</th><th>Operador</th><th>Status</th><th>Observação</th>");
+  partes.push("</tr></thead><tbody>");
+  partes.push(linhas||"<tr><td colspan='12' style='text-align:center;padding:16px'>Nenhuma parada</td></tr>");
+  partes.push("</tbody></table>");
+  partes.push("<div class='footer'>Sistema Admin — Apodi Cimentos — "+dtNow+"</div>");
+  partes.push("<scr"+"ipt>window.onload=function(){setTimeout(function(){window.print();},500);}</scr"+"ipt>");
+  partes.push("</body></html>");
+  const blob=new Blob([partes.join("")],{type:"text/html;charset=utf-8"});
+  const blobUrl=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=blobUrl;a.target="_blank";a.rel="noopener noreferrer";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},4000);
+};
+window.exportarExcelParadas=()=>{
+  const lista=listaParadasFiltrada();
+  if(!lista.length){alert("Nenhuma parada para exportar.");return;}
+  const rows=lista.map(r=>({
+    "Código":r.paradaId,"Situação":r.situacao||"","Setor":r.setor||"",
+    "Data Sinalização":fmtDataBR(r.data),"Horário Inicial":r.horarioInicialParada||"",
+    "Data Encerramento":r.dataEncerramento?fmtDataBR(r.dataEncerramento):"",
+    "Horário Final":r.horarioFinalParada||"",
+    "Tempo Total":durStrParadaAdmin(r.tempoMs),
+    "Turno":r.turno,"Operador Abertura":r.operadorIni,"Operador Encerramento":r.operadorFim||"",
+    "Status":r.aberta?"Em aberto":"Encerrada","Observação":r.observacao||""
+  }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Paradas");
+  const ini=document.getElementById("pd-adm-ini")?.value||"";
+  const fim=document.getElementById("pd-adm-fim")?.value||"";
+  XLSX.writeFile(wb,ini||fim?`paradas_${ini||"ini"}_${fim||"fim"}.xlsx`:"paradas.xlsx");
+};
 function pcRenderTudo(){["situacoes","setores","status"].forEach(pcRender);}
 function pcRender(campo){
   const el=document.getElementById("pc-lista-"+campo);
@@ -2149,8 +2296,10 @@ function pcRender(campo){
     <div class="pc-item ${it.ativo?"":"inativo"}" id="pc-${campo}-${i}">
       <div class="pc-toggle ${it.ativo?"on":""}" onclick="pcToggle('${campo}',${i})"></div>
       <span class="pc-lbl">${it.label}</span>
-      <input class="pc-edit-inp" value="${it.label}" onkeydown="if(event.key==='Enter')pcConfirmarEdit('${campo}',${i})">
-      <button class="pc-ic-btn" onclick="pcEditar('${campo}',${i})">🖊️</button>
+      <input class="pc-edit-inp" value="${it.label}" onkeydown="if(event.key==='Enter')pcConfirmarEdit('${campo}',${i});if(event.key==='Escape')pcCancelarEdit('${campo}')">
+      <button class="pc-ic-btn pc-edit-trigger" onclick="pcEditar('${campo}',${i})">🖊️</button>
+      <button class="pc-ic-btn pc-confirm-btn" onclick="pcConfirmarEdit('${campo}',${i})">✓</button>
+      <button class="pc-ic-btn pc-cancel-btn" onclick="pcCancelarEdit('${campo}')">✕</button>
     </div>`).join("");
   document.getElementById("pc-cnt-"+campo).textContent=itens.length+" itens";
 }
@@ -2168,6 +2317,9 @@ window.pcEditar=(campo,i)=>{
   item.classList.add("pc-editing");
   const inp=item.querySelector(".pc-edit-inp");
   inp.focus();inp.select();
+};
+window.pcCancelarEdit=(campo)=>{
+  pcRender(campo);
 };
 window.pcConfirmarEdit=(campo,i)=>{
   const item=document.getElementById("pc-"+campo+"-"+i);
@@ -2206,6 +2358,9 @@ window.abrirNovoOperador=()=>{
   document.getElementById("op-usuario-in").value="";
   document.getElementById("op-usuario-in").classList.remove("err");
   document.getElementById("op-usuario-err").classList.remove("show");
+  document.getElementById("op-empresa-in").value="";
+  document.getElementById("op-empresa-in").classList.remove("err");
+  document.getElementById("op-empresa-err").classList.remove("show");
   document.getElementById("op-senha-preview").textContent="—";
   document.getElementById("op-save-btn").textContent="💾 Salvar Operador";
   document.querySelectorAll("#op-telas-grid .tela-chk").forEach(l=>{
@@ -2228,6 +2383,9 @@ window.editarOperador=(id)=>{
   document.getElementById("op-usuario-in").value=o.usuario||"";
   document.getElementById("op-usuario-in").classList.remove("err");
   document.getElementById("op-usuario-err").classList.remove("show");
+  document.getElementById("op-empresa-in").value=o.empresa||"";
+  document.getElementById("op-empresa-in").classList.remove("err");
+  document.getElementById("op-empresa-err").classList.remove("show");
   document.getElementById("op-senha-preview").textContent=o.senha||slugSenha(o.nome||"");
   document.getElementById("op-save-btn").textContent="💾 Atualizar Operador";
   const telasAtuais=telasDoOperador(o);
@@ -2250,12 +2408,17 @@ document.addEventListener("change",e=>{
 window.salvarNovoOperador=async()=>{
   const nome=document.getElementById("op-nome-in").value.trim();
   let usuario=document.getElementById("op-usuario-in").value.trim().toLowerCase();
+  const empresa=document.getElementById("op-empresa-in").value;
   const telas=[...document.querySelectorAll("#op-telas-grid .tela-chk input:checked")].map(i=>i.value);
   const usuarioInEl=document.getElementById("op-usuario-in");
   const usuarioErrEl=document.getElementById("op-usuario-err");
+  const empresaInEl=document.getElementById("op-empresa-in");
+  const empresaErrEl=document.getElementById("op-empresa-err");
   usuarioInEl.classList.remove("err");usuarioErrEl.classList.remove("show");
+  empresaInEl.classList.remove("err");empresaErrEl.classList.remove("show");
   if(!nome){alert("Informe o nome do operador.");return;}
   if(!usuario){alert("Informe o usuário de acesso.");return;}
+  if(!empresa){empresaInEl.classList.add("err");empresaErrEl.classList.add("show");return;}
   if(telas.length===0){alert("Marque ao menos uma tela para o operador.");return;}
   // Valida usuário único no sistema (exceto o próprio registro em edição)
   const duplicados=OPERADORES_CACHE.filter(o=>o.usuario===usuario&&o.id!==EDIT_OPERADOR_ID);
@@ -2276,12 +2439,12 @@ window.salvarNovoOperador=async()=>{
   try{
     if(EDIT_OPERADOR_ID){
       await updateDoc(doc(db,"operadores_acesso",EDIT_OPERADOR_ID),{
-        telas,usuario,nome,tela:deleteField(),empresa:deleteField()
+        telas,usuario,nome,empresa,tela:deleteField()
       });
     }else{
       const senha=slugSenha(nome);
       await addDoc(collection(db,"operadores_acesso"),{
-        telas,usuario,nome,senha,
+        telas,usuario,nome,empresa,senha,
         primeiroAcesso:true,ativo:true,criadoEm:Timestamp.fromDate(new Date())
       });
     }
@@ -2314,9 +2477,11 @@ window.renderOperadoresList=function(){
   const wrapEl=document.getElementById("op-list-wrap");
   const termo=(document.getElementById("op-search")?.value||"").trim().toLowerCase();
   const filtroTela=document.getElementById("op-filtro-tela")?.value||"";
+  const filtroEmpresa=document.getElementById("op-filtro-empresa")?.value||"";
   let lista=OPERADORES_CACHE;
   if(termo)lista=lista.filter(o=>(o.nome||"").toLowerCase().includes(termo)||(o.usuario||"").toLowerCase().includes(termo));
   if(filtroTela)lista=lista.filter(o=>telasDoOperador(o).includes(filtroTela));
+  if(filtroEmpresa)lista=lista.filter(o=>o.empresa===filtroEmpresa);
   document.getElementById("op-count").textContent=lista.length+" operador"+(lista.length!==1?"es":"");
   if(lista.length===0){
     wrapEl.innerHTML=`<div class="op-row" style="color:var(--t3)">Nenhum operador encontrado.</div>`;
@@ -2325,10 +2490,11 @@ window.renderOperadoresList=function(){
   wrapEl.innerHTML=lista.map(o=>{
     const statusBadge=o.ativo===false?'<span class="op-badge inativo">Inativo</span>':(o.primeiroAcesso?'<span class="op-badge pend">1º acesso pendente</span>':'<span class="op-badge ok">Ativo</span>');
     const chips=telasDoOperador(o).map(t=>`<span class="tchip">${(TELA_LABEL[t]||t).split(" — ")[0]}</span>`).join("");
+    const empresaChip=o.empresa?`<span class="tchip" style="color:var(--pu);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08)">🏢 ${o.empresa}</span>`:`<span class="tchip" style="color:var(--rd);border-color:rgba(255,68,102,.3);background:rgba(255,68,102,.08)">sem empresa</span>`;
     return`<div class="op-row">
       <div class="op-nome-col"><b>${o.nome||"—"}</b>
         <div class="op-meta">usuário: ${o.usuario||"—"} ${statusBadge}</div>
-        <div class="tela-chips">${chips||'<span class="tchip" style="color:var(--rd);border-color:rgba(255,68,102,.3);background:rgba(255,68,102,.08)">sem tela</span>'}</div>
+        <div class="tela-chips">${empresaChip}${chips||'<span class="tchip" style="color:var(--rd);border-color:rgba(255,68,102,.3);background:rgba(255,68,102,.08)">sem tela</span>'}</div>
       </div>
       <div class="op-actions">
         <button class="pb" onclick="editarOperador('${o.id}')">✏️ Editar telas</button>
