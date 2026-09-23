@@ -373,6 +373,19 @@ function operadoresDoRegistro(c){
     c.carregamento?.operadorInicio,c.carregamento?.operadorFim,c.enlonamento?.operadorInicio,
     c.enlonamento?.operadorFim,c.faturamento?.operador].filter(Boolean);
 }
+// Mesma lista acima, mas separada por empresa responsavel pela etapa — usada para
+// o filtro Operador respeitar a Empresa selecionada (sem isso, escolher uma Empresa
+// + um Operador podia casar o caminhao pelo operador de OUTRA etapa/empresa, e os
+// cartoes de Indicadores por Empresa/Aderencia saiam incoerentes com o filtro).
+function operadoresPorEmpresa(c){
+  return{
+    "Apodi":[c.entrada?.operador,c.faturamento?.operador].filter(Boolean),
+    "Seguro Segurança":[c.portaria?.operador].filter(Boolean),
+    "Reforme Paletes":[c.triagem?.operadorInicio,c.triagem?.operadorFim].filter(Boolean),
+    "Ambipar":[c.carregamento?.operadorInicio,c.carregamento?.operadorFim].filter(Boolean),
+    "Sousa Clean":[c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim].filter(Boolean)
+  };
+}
 
 // Data de referencia para os filtros de periodo — mesma logica do master.html:
 // concluido usa a data do faturamento (saida); em andamento usa a data de entrada.
@@ -424,7 +437,8 @@ function statusInfo(c,m){
   return{key:"concluido",label:"Concluído",cls:"gr"};
 }
 
-function passaFiltros(c){
+function passaFiltros(c,opts){
+  const ignorarEmpresa=opts&&opts.ignorarEmpresa;
   const fe=document.getElementById("f-empresa").value;
   const ft=document.getElementById("f-turno").value;
   const fca=document.getElementById("f-carga").value;
@@ -437,7 +451,7 @@ function passaFiltros(c){
   const fnf=document.getElementById("f-nf").value.trim().toUpperCase();
   const fop=document.getElementById("f-operador").value;
   const fs=document.getElementById("f-status").value;
-  if(fe&&c._empresa!==fe)return false;
+  if(!ignorarEmpresa&&fe&&c._empresa!==fe)return false;
   if(ft&&c._turno!==ft)return false;
   if(fca&&c.tipoCarga!==fca)return false;
   if(fsub&&c.subtipoCarga!==fsub)return false;
@@ -558,6 +572,15 @@ function getFiltrados(){
   return filtrados;
 }
 
+// Mesmo conjunto de getFiltrados(), mas ignorando o filtro Empresa — usado pelos
+// cartoes "Indicadores por Empresa" e "Aderencia por Etapa" para que as 5 empresas
+// continuem comparaveis entre si (Periodo/Turno/Tipo Carga/Operador/etc. continuam
+// valendo). Sem isso, selecionar uma Empresa no filtro do topo reduzia TODOS os
+// cartoes ao unico caminhao atualmente parado naquela etapa.
+function getRegistrosParaIndicadores(){
+  return HD.filter(c=>passaFiltros(c,{ignorarEmpresa:true}));
+}
+
 const CABECALHO=["Nº","Placa","AC","Nota Fiscal","Empresa Atual","Turno","Tipo Carga","Tipo Carregamento","Tipo Cimento","Data","Setor Atual","Entrada","Portaria Ini","Portaria Fim","Triagem Ini","Triagem Fim","Carreg Ini","Carreg Fim","Enlon Ini","Enlon Fim","Faturamento","TMAC","TME","TMC","TMF","TMTI","TMCI","TMEI","Operador(es)","Status"];
 
 function linhaCells(c,n){
@@ -615,11 +638,13 @@ window.render=()=>{
   document.getElementById("k-sla").textContent=conc?Math.round(slaOk/conc*100)+"%":"—";
   document.getElementById("empty").style.display=filtrados.length?"none":"block";
 
-  // Indicadores por Empresa
-  const arrFiltrado=filtrados.map(r=>r.c);
+  // Indicadores por Empresa e Aderencia por Etapa: usam um conjunto que ignora o
+  // filtro Empresa (mas respeita todos os outros), para as 5 empresas continuarem
+  // comparaveis entre si independente de qual Empresa esteja selecionada no topo.
+  const arrIndicadores=getRegistrosParaIndicadores();
   document.getElementById("emp-kpis").innerHTML=EMPRESAS_KPI.map(e=>{
-    const vol=arrFiltrado.filter(e.vol).length;
-    const vals=arrFiltrado.map(e.val).filter(v=>v!=null);
+    const vol=arrIndicadores.filter(e.vol).length;
+    const vals=arrIndicadores.map(e.val).filter(v=>v!=null);
     const mediaMs=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
     const metaMs=e.metaMs();
     const dentroMeta=metaMs==null?null:(mediaMs!=null&&mediaMs<=metaMs);
@@ -631,8 +656,8 @@ window.render=()=>{
       "</div>";
   }).join("");
 
-  // Aderência por Etapa (sobre os registros CONCLUIDOS do filtro atual)
-  const concluidosArr=arrFiltrado.filter(c=>c.setorAtual==="concluido");
+  // Aderência por Etapa (sobre os registros CONCLUIDOS do filtro atual, ignorando Empresa)
+  const concluidosArr=arrIndicadores.filter(c=>c.setorAtual==="concluido");
   const totalConc=concluidosArr.length;
   document.getElementById("ader-kpis").innerHTML=ADERENCIA_CONFIG.map(a=>{
     const okN=concluidosArr.filter(a.ok).length;
