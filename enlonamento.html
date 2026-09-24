@@ -69,6 +69,20 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .tg-btn{padding:6px 10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--t2);font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s}
 .tg-btn.on{border-color:#a78bfa;color:#a78bfa;background:rgba(167,139,250,.1)}
 .tg-btn:hover{border-color:#a78bfa}
+.tc-row{flex-wrap:nowrap;gap:5px}
+.tc-btn{padding:4px 6px;font-size:9.3px}
+.op-wrap{position:relative;flex:1;min-width:0}
+.op-trigger{width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);font-size:12px;font-family:monospace;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
+.op-trigger span{overflow:hidden;text-overflow:ellipsis}
+.op-trigger.open{border-color:var(--ac)}
+.op-trigger .arw{flex:none;font-size:9px;color:var(--t3)}
+.op-panel{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#132546;border:1px solid var(--ac);border-radius:var(--rs);z-index:30;display:none;max-height:150px;overflow-y:auto;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.op-panel.show{display:block}
+.op-clear{padding:8px 12px;font-size:11px;color:#ff8099;cursor:pointer;font-weight:700;border-bottom:1px solid var(--bd);position:sticky;top:0;background:#132546}
+.op-clear:hover{background:rgba(255,68,102,.1)}
+.op-item{display:flex;align-items:center;gap:8px;padding:7px 12px;font-size:11px;cursor:pointer;color:var(--tx)}
+.op-item:hover{background:rgba(167,139,250,.1)}
+.op-item input{accent-color:var(--ac);width:13px;height:13px;flex:none}
 .btn-row{display:flex;gap:8px;margin-top:8px}
 .exp-btn{flex:1;padding:12px;border:1px solid rgba(167,139,250,.4);border-radius:var(--rs);background:rgba(167,139,250,.07);color:#a78bfa;font-size:13px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
 .exp-btn:hover{background:rgba(167,139,250,.15)}
@@ -243,23 +257,32 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     </div>
     <div class="filtro-row">
       <span class="filtro-label">Operador:</span>
-      <select class="filtro-input" id="f-operador">
-        <option value="">Todos os operadores</option>
-      </select>
+      <div class="op-wrap" id="op-wrap">
+        <div class="op-trigger" id="op-trigger"><span id="op-trigger-txt">Todos os operadores</span><span class="arw">▾</span></div>
+        <div class="op-panel" id="op-panel"></div>
+      </div>
     </div>
     <div class="filtro-row">
       <span class="filtro-label">Carga:</span>
-      <button class="tg-btn cg-btn on" onclick="setCargaF('geral',this)">Geral</button>
-      <button class="tg-btn cg-btn" onclick="setCargaF('ensacado',this)">Ensacado</button>
-      <button class="tg-btn cg-btn" onclick="setCargaF('granel',this)">Granel</button>
-      <button class="tg-btn cg-btn" onclick="setCargaF('bigbag',this)">Big Bag</button>
+      <button class="tg-btn cg-btn on" data-v="geral" onclick="setCargaF('geral',this)">Geral</button>
+      <button class="tg-btn cg-btn" data-v="ensacado" onclick="setCargaF('ensacado',this)">Ensacado</button>
+      <button class="tg-btn cg-btn" data-v="granel" onclick="setCargaF('granel',this)">Granel</button>
+      <button class="tg-btn cg-btn" data-v="bigbag" onclick="setCargaF('bigbag',this)">Big Bag</button>
+    </div>
+    <div class="filtro-row tc-row">
+      <span class="filtro-label">Tipo Carreg:</span>
+      <button class="tg-btn tc-btn on" data-v="geral" onclick="setTipoCarregF('geral',this)">Geral</button>
+      <button class="tg-btn tc-btn" data-v="Paletizado" onclick="setTipoCarregF('Paletizado',this)">Paletizado</button>
+      <button class="tg-btn tc-btn" data-v="Caricamat" onclick="setTipoCarregF('Caricamat',this)">Caricamat</button>
+      <button class="tg-btn tc-btn" data-v="Container" onclick="setTipoCarregF('Container',this)">Container</button>
+      <button class="tg-btn tc-btn" data-v="Granel" onclick="setTipoCarregF('Granel',this)">Granel</button>
     </div>
     <div class="filtro-row">
       <span class="filtro-label">Cimento:</span>
-      <button class="tg-btn ci-btn on" onclick="setCimentoF('geral',this)">Geral</button>
-      <button class="tg-btn ci-btn" onclick="setCimentoF('CP II F',this)">CP II F</button>
-      <button class="tg-btn ci-btn" onclick="setCimentoF('CP III',this)">CP III</button>
-      <button class="tg-btn ci-btn" onclick="setCimentoF('CP V',this)">CP V</button>
+      <button class="tg-btn ci-btn on" data-v="geral" onclick="setCimentoF('geral',this)">Geral</button>
+      <button class="tg-btn ci-btn" data-v="CP II F" onclick="setCimentoF('CP II F',this)">CP II F</button>
+      <button class="tg-btn ci-btn" data-v="CP III" onclick="setCimentoF('CP III',this)">CP III</button>
+      <button class="tg-btn ci-btn" data-v="CP V" onclick="setCimentoF('CP V',this)">CP V</button>
     </div>
   </div>
   <div class="btn-row">
@@ -387,15 +410,65 @@ onSnapshot(collection(db,"caminhoes_rastreio"),snap=>{
 });
 function find(pl){return HD.find(d=>d.placa===pl&&d.setorAtual!=="concluido")||null;}
 function atualizarFiltroOperador(){
-  const sel=document.getElementById("f-operador");
-  if(!sel)return;
-  const valAtual=sel.value;
+  const panel=document.getElementById("op-panel");
+  if(!panel)return;
+  const marcados=new Set([...panel.querySelectorAll("input:checked")].map(i=>i.value));
   const nomes=[...new Set(HD_REL.map(c=>c.enlonamento?.operadorFim||c.enlonamento?.operadorInicio).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">Todos os operadores</option>'+nomes.map(n=>`<option value="${n}">${n}</option>`).join("");
-  if(nomes.includes(valAtual))sel.value=valAtual;
+  panel.innerHTML='<div class="op-clear" id="op-clear">✕ Limpar seleção</div>'+nomes.map(n=>`<label class="op-item"><input type="checkbox" value="${n}"${marcados.has(n)?" checked":""}/> ${n}</label>`).join("");
+  refreshOpLabel();
 }
+let MOP=new Set();
+function refreshOpLabel(){
+  const panel=document.getElementById("op-panel");
+  const txt=document.getElementById("op-trigger-txt");
+  if(!panel||!txt)return;
+  const checked=[...panel.querySelectorAll("input:checked")].map(i=>i.value);
+  MOP=new Set(checked);
+  if(checked.length===0)txt.textContent="Todos os operadores";
+  else if(checked.length===1)txt.textContent=checked[0];
+  else txt.textContent=checked.length+" operadores selecionados";
+}
+(()=>{
+  const opWrap=document.getElementById("op-wrap");
+  const opTrigger=document.getElementById("op-trigger");
+  const opPanel=document.getElementById("op-panel");
+  if(!opWrap||!opTrigger||!opPanel)return;
+  opTrigger.addEventListener("click",e=>{
+    e.stopPropagation();
+    opPanel.classList.toggle("show");
+    opTrigger.classList.toggle("open",opPanel.classList.contains("show"));
+  });
+  opPanel.addEventListener("click",e=>{
+    if(e.target&&e.target.id==="op-clear"){
+      opPanel.querySelectorAll("input:checked").forEach(i=>i.checked=false);
+      refreshOpLabel();
+    }
+  });
+  opPanel.addEventListener("change",e=>{
+    if(e.target&&e.target.type==="checkbox")refreshOpLabel();
+  });
+  document.addEventListener("click",e=>{
+    if(!opWrap.contains(e.target)){
+      opPanel.classList.remove("show");
+      opTrigger.classList.remove("open");
+    }
+  });
+})();
 // ── Filtro do relatório ──────────────────────────────────────────────
-let MT="geral",MC="geral",MCI="geral"; // turno, carga, cimento
+let MT="geral";
+const MC=new Set(["geral"]),MCI=new Set(["geral"]),MSC=new Set(["geral"]); // carga, cimento, tipo carregamento (multi-seleção)
+function toggleMulti(set,selectorClass,v,el){
+  if(v==="geral"){
+    set.clear();set.add("geral");
+  }else{
+    set.delete("geral");
+    if(set.has(v))set.delete(v);else set.add(v);
+    if(set.size===0)set.add("geral");
+  }
+  document.querySelectorAll(selectorClass).forEach(b=>{
+    b.classList.toggle("on",set.has(b.dataset.v));
+  });
+}
 (()=>{
   const hj=hoje();
   const fdi=document.getElementById("f-data-ini");if(fdi)fdi.value=hj;
@@ -431,16 +504,9 @@ window.setTurno=(t,el)=>{
   if(fhi)fhi.disabled=disable;
   if(fhf)fhf.disabled=disable;
 };
-window.setCargaF=(v,el)=>{
-  MC=v;
-  document.querySelectorAll(".cg-btn").forEach(b=>b.classList.remove("on"));
-  el.classList.add("on");
-};
-window.setCimentoF=(v,el)=>{
-  MCI=v;
-  document.querySelectorAll(".ci-btn").forEach(b=>b.classList.remove("on"));
-  el.classList.add("on");
-};
+window.setCargaF=(v,el)=>toggleMulti(MC,".cg-btn",v,el);
+window.setCimentoF=(v,el)=>toggleMulti(MCI,".ci-btn",v,el);
+window.setTipoCarregF=(v,el)=>toggleMulti(MSC,".tc-btn",v,el);
 function getFiltros(){
   const dataIniVal=document.getElementById("f-data-ini")?.value||hoje();
   const dataFimVal=document.getElementById("f-data-fim")?.value||dataIniVal;
@@ -454,14 +520,15 @@ function buildRegistrosRel(){
   const [hiH,hiM]=hIni.split(":").map(Number);
   const [hfH,hfM]=hFim.split(":").map(Number);
   const iniMin=hiH*60+hiM,fimMin=hfH*60+hfM;
-  const opSel=document.getElementById("f-operador")?.value||"";
   let r=HD_REL.filter(c=>{
     if(!c.data||c.data<dataIniVal||c.data>dataFimVal)return false;
     const fim=c.enlonamento?.fim?.toDate?.();
     if(!fim)return false;
-    if(opSel&&(c.enlonamento?.operadorFim||c.enlonamento?.operadorInicio)!==opSel)return false;
-    if(MC!=="geral"&&c.tipoCarga!==MC)return false;
-    if(MCI!=="geral"&&c.tipoCimento!==MCI)return false;
+    const op=c.enlonamento?.operadorFim||c.enlonamento?.operadorInicio;
+    if(MOP.size>0&&!MOP.has(op))return false;
+    if(!MC.has("geral")&&!MC.has(c.tipoCarga))return false;
+    if(!MCI.has("geral")&&!MCI.has(c.tipoCimento))return false;
+    if(!MSC.has("geral")&&!MSC.has(c.subtipoCarga))return false;
     if(MT==="geral"){
       const min=fim.getHours()*60+fim.getMinutes();
       return min>=iniMin&&min<=fimMin;
@@ -481,6 +548,7 @@ function buildLinhasRel(registros,forPrint=false){
     const ini=c.enlonamento?.inicio?.toDate?.();
     const fim=c.enlonamento?.fim?.toDate?.();
     const carga=TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"-";
+    const subtipo=c.subtipoCarga||"-";
     const cimento=c.tipoCimento||c.tipoCimentoLabel||"-";
     const dur=ini&&fim?durStr(fim-ini):"-";
     const turno=fim?(getTurno(fim)||"-"):"-";
@@ -489,6 +557,7 @@ function buildLinhasRel(registros,forPrint=false){
       <td style="${tdStyle};font-weight:bold;font-family:monospace;letter-spacing:1px${forPrint?"":" ;color:#a78bfa"}">${c.placa||"-"}</td>
       <td style="${tdStyle}">${c.ac||"-"}</td>
       <td style="${tdStyle}">${carga}</td>
+      <td style="${tdStyle}">${subtipo}</td>
       <td style="${tdStyle}">${cimento}</td>
       <td style="${tdStyle}">${ini?fmtDT(c.enlonamento.inicio):"-"}</td>
       <td style="${tdStyle}">${fim?fmtDT(c.enlonamento.fim):"-"}</td>
@@ -514,7 +583,7 @@ function buildTotaisRow(registros,forPrint=false){
   const tdStyle=forPrint
     ?"border:1px solid #ccc;padding:8px 10px;text-align:center;font-weight:bold;background:#e8edf7"
     :"border:1px solid #1e3558;padding:8px 10px;text-align:center;font-weight:bold;background:rgba(167,139,250,.12);color:#a78bfa";
-  return`<tr><td colspan="10" style="${tdStyle}">Total de Veículos: ${total} &nbsp;·&nbsp; TMEI: ${tmei!=null?durStr(tmei):"-"}</td></tr>`;
+  return`<tr><td colspan="11" style="${tdStyle}">Total de Veículos: ${total} &nbsp;·&nbsp; TMEI: ${tmei!=null?durStr(tmei):"-"}</td></tr>`;
 }
 const TURNO_LABELS={geral:"Geral",A:"Turno A (23h–07h)",B:"Turno B (07h–15h)",C:"Turno C (15h–23h)"};
 function fmtDia(v){const [a,m,d]=v.split("-");return`${d}/${m}/${a}`;}
@@ -529,9 +598,9 @@ window.verRelatorio=()=>{
   document.getElementById("prev-body").innerHTML=`
     <table class="prev-table">
       <thead><tr>
-        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Enlonador</th>
+        <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Tipo Carregamento</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Enlonador</th>
       </tr></thead>
-      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="10" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}${buildTotaisRow(registros)}</tbody>
+      <tbody>${buildLinhasRel(registros)||'<tr><td colspan="11" style="text-align:center;padding:16px;color:#3a6880">Nenhum registro</td></tr>'}${buildTotaisRow(registros)}</tbody>
     </table>`;
   document.getElementById("modal-prev").classList.add("show");
 };
@@ -565,9 +634,9 @@ window.gerarPDF=()=>{
 <div class="hinfo">Período: ${periodoTxt}${horarioTxt} &nbsp;·&nbsp; Turno: ${TURNO_LABELS[MT]}</div>
 <table class="reg">
   <thead><tr>
-    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Enlonador</th>
+    <th style="width:40px">Nº</th><th>Placa</th><th>AC</th><th>Carga</th><th>Tipo Carregamento</th><th>Cimento</th><th>Hora Início</th><th>Hora Fim</th><th>Duração</th><th>Turno</th><th>Enlonador</th>
   </tr></thead>
-  <tbody>${linhas||'<tr><td colspan="10" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
+  <tbody>${linhas||'<tr><td colspan="11" style="text-align:center;padding:16px">Nenhum registro</td></tr>'}</tbody>
 </table>
 <div class="footer">Gerado automaticamente — Sistema de Rastreio de Carregamento · Apodi Cimentos · ${periodoTxt}</div>
 </body></html>`);
@@ -584,6 +653,7 @@ window.exportExcel=()=>{
       "Placa":c.placa||"",
       "AC":c.ac||"",
       "Carga":TIPO_CARGA_LABELS[c.tipoCarga]||c.tipoCarga||"",
+      "Tipo Carregamento":c.subtipoCarga||"",
       "Cimento":c.tipoCimento||c.tipoCimentoLabel||"",
       "Hora Início":fmtEx(ini),
       "Hora Fim":fmtEx(fim),
@@ -593,9 +663,9 @@ window.exportExcel=()=>{
     };
   });
   const{total,tmei}=calcTotais(registros);
-  rows.push({"Placa":"TOTAL","AC":"","Carga":"","Cimento":"","Hora Início":"","Hora Fim":"","Duração":"","Turno":"","Enlonador":`Total de Veículos: ${total} · TMEI: ${tmei!=null?durStr(tmei):"-"}`});
+  rows.push({"Placa":"TOTAL","AC":"","Carga":"","Tipo Carregamento":"","Cimento":"","Hora Início":"","Hora Fim":"","Duração":"","Turno":"","Enlonador":`Total de Veículos: ${total} · TMEI: ${tmei!=null?durStr(tmei):"-"}`});
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:12},{wch:20},{wch:20},{wch:10},{wch:8},{wch:18}];
+  ws["!cols"]=[{wch:10},{wch:10},{wch:12},{wch:16},{wch:12},{wch:20},{wch:20},{wch:10},{wch:8},{wch:18}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Enlonamento");
   const{dataIniVal,dataFimVal}=getFiltros();
