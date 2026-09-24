@@ -54,6 +54,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .ttb-cp3.on{border-color:#ffd000;color:#ffd000;background:rgba(255,208,0,.10)}
 .ttb-cp5.on{border-color:#ffd000;color:#ffd000;background:rgba(255,208,0,.10)}
 .ttb-cim-todos.on{border-color:#ffd000;color:#ffd000;background:rgba(255,208,0,.07)}
+.ttb-sub-todos.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.ttb-sub-pal.on,.ttb-sub-car.on,.ttb-sub-con.on{border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,.07)}
+.ttb-sub-gra.on{border-color:#fb923c;color:#fb923c;background:rgba(251,146,60,.07)}
+.turno-frac-row{margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);font-size:11px;color:var(--t2);display:flex;align-items:center;justify-content:space-between;gap:6px}
+.turno-frac-row b{color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:800}
+.pct-badge{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:800;padding:1px 8px;border-radius:10px;background:rgba(58,88,128,.2);color:var(--t3);white-space:nowrap}
+.pct-badge.ok{background:rgba(0,232,150,.12);color:var(--gr)}
+.pct-badge.warn{background:rgba(255,208,0,.12);color:var(--ye)}
 .tmpo-btn{padding:6px 0;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.3px;min-width:110px;text-align:center}
 .tmpo-btn:hover:not(.on){border-color:var(--t2);color:var(--tx)}
 .tmpo-todos.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
@@ -321,20 +329,29 @@ tr.alerta .turno{opacity:.7}
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
-    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
-      <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno A · 23h–07h</div><div id="tma-turno-a" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
-      <div id="tma-turno-seta-a" style="font-size:22px">—</div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno A · 23h–07h</div><div id="tma-turno-a" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
+        <div id="tma-turno-seta-a" style="font-size:22px">—</div>
+      </div>
+      <div class="turno-frac-row"><span><b id="tma-turno-nfrac-a">0</b> no cálculo do TMA</span><span class="pct-badge" id="tma-turno-pct-a">0/0 · —</span></div>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
-      <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno B · 07h–15h</div><div id="tma-turno-b" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
-      <div id="tma-turno-seta-b" style="font-size:22px">—</div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno B · 07h–15h</div><div id="tma-turno-b" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
+        <div id="tma-turno-seta-b" style="font-size:22px">—</div>
+      </div>
+      <div class="turno-frac-row"><span><b id="tma-turno-nfrac-b">0</b> no cálculo do TMA</span><span class="pct-badge" id="tma-turno-pct-b">0/0 · —</span></div>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
-      <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno C · 15h–23h</div><div id="tma-turno-c" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
-      <div id="tma-turno-seta-c" style="font-size:22px">—</div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Turno C · 15h–23h</div><div id="tma-turno-c" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;margin-top:2px">—</div></div>
+        <div id="tma-turno-seta-c" style="font-size:22px">—</div>
+      </div>
+      <div class="turno-frac-row"><span><b id="tma-turno-nfrac-c">0</b> no cálculo do TMA</span><span class="pct-badge" id="tma-turno-pct-c">0/0 · —</span></div>
     </div>
   </div>
-  <div style="font-size:10px;color:var(--t3);margin:-10px 0 14px">Meta: 40min por turno · verde ↓ dentro da meta · vermelho ↑ acima da meta</div>
+  <div style="font-size:10px;color:var(--t3);margin:-10px 0 14px">Meta: 40min por turno · verde ↓ dentro da meta · vermelho ↑ acima da meta · "no cálculo do TMA" = carregamentos com Triagem+Carga+Enlonamento concluídos, usados na média · fração = desses ÷ total concluídos no turno</div>
 
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px 16px;margin-bottom:14px">
     <button id="filtros-toggle-btn" onclick="toggleFiltros()" style="display:flex;align-items:center;gap:8px;background:rgba(0,212,255,.08);border:1px solid var(--bl);color:var(--bl);font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;cursor:pointer;white-space:nowrap">
@@ -388,6 +405,15 @@ tr.alerta .turno{opacity:.7}
       <button class="export-btn" onclick="exportExcel()">📊 <span>Exportar Excel</span></button>
       <button class="rel-btn-m" onclick="abrirRelatorioMaster()">👁️ <span>Visualizar PDF</span></button>
     </div>
+  </div>
+
+  <div class="filter-row">
+    <span class="row-label">🚛 Carregto:</span>
+    <button class="ttb ttb-sub-todos on" onclick="setTipoCarregamento('t',this)">Todos (<span id="cnt-sub-t">0</span>)</button>
+    <button class="ttb ttb-sub-pal" onclick="setTipoCarregamento('Paletizado',this)">Paletizado (<span id="cnt-sub-pal">0</span>)</button>
+    <button class="ttb ttb-sub-car" onclick="setTipoCarregamento('Caricamat',this)">Caricamat (<span id="cnt-sub-car">0</span>)</button>
+    <button class="ttb ttb-sub-con" onclick="setTipoCarregamento('Container',this)">Container (<span id="cnt-sub-con">0</span>)</button>
+    <button class="ttb ttb-sub-gra" onclick="setTipoCarregamento('Granel',this)">Granel (<span id="cnt-sub-gra">0</span>)</button>
   </div>
 
   <div class="filter-row">
@@ -758,7 +784,7 @@ document.addEventListener("click",e=>{
   updateSortHeaders();render();
 });
 
-let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t",MDATA=null,MDATA_FIM=null,CAL_AGUARD_INI=false,MTEMPO="t";
+let ALL=[],MF="t",MP="hoje",MT="t",MTC="t",MTCIM="t",MSUB="t",MDATA=null,MDATA_FIM=null,CAL_AGUARD_INI=false,MTEMPO="t";
 let CAL_Y_M=0,CAL_M_M=0;
 
 function calInitM(){
@@ -944,6 +970,7 @@ window.setF=(f,el)=>{MF=f;document.querySelectorAll(".fb").forEach(b=>b.classLis
 window.setTurno=(t,el)=>{MT=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCarga=(t,el)=>{MTC=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCimento=(t,el)=>{MTCIM=t;document.querySelectorAll(".ttb-cim-todos,.ttb-cp2f,.ttb-cp3,.ttb-cp5").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTipoCarregamento=(t,el)=>{MSUB=t;document.querySelectorAll(".ttb-sub-todos,.ttb-sub-pal,.ttb-sub-car,.ttb-sub-con,.ttb-sub-gra").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTempo=(t,el)=>{MTEMPO=t;document.querySelectorAll(".tmpo-btn").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 
@@ -999,6 +1026,7 @@ function aplicaFiltrosBasicos(base){
   if(MT!=="t")list=list.filter(c=>getTurno(turnoTS(c))===MT);
   if(MTC!=="t")list=list.filter(c=>c.tipoCarga===MTC);
   if(MTCIM!=="t")list=list.filter(c=>c.tipoCimento===MTCIM);
+  if(MSUB!=="t")list=list.filter(c=>c.subtipoCarga===MSUB);
   return list;
 }
 function getFiltered(baseOverride){
@@ -1055,6 +1083,12 @@ window.render=()=>{
   document.getElementById("cnt-cp3").textContent=allP.filter(c=>c.tipoCimento==="CP III").length;
   document.getElementById("cnt-cp5").textContent=allP.filter(c=>c.tipoCimento==="CP V").length;
 
+  document.getElementById("cnt-sub-t").textContent=allP.length;
+  document.getElementById("cnt-sub-pal").textContent=allP.filter(c=>c.subtipoCarga==="Paletizado").length;
+  document.getElementById("cnt-sub-car").textContent=allP.filter(c=>c.subtipoCarga==="Caricamat").length;
+  document.getElementById("cnt-sub-con").textContent=allP.filter(c=>c.subtipoCarga==="Container").length;
+  document.getElementById("cnt-sub-gra").textContent=allP.filter(c=>c.subtipoCarga==="Granel").length;
+
   document.getElementById("cnt-turno-t").textContent=allP.length;
   document.getElementById("cnt-turno-a").textContent=allP.filter(c=>getTurno(turnoTS(c))==="A").length;
   document.getElementById("cnt-turno-b").textContent=allP.filter(c=>getTurno(turnoTS(c))==="B").length;
@@ -1072,6 +1106,17 @@ window.render=()=>{
     const setaEl=document.getElementById("tma-turno-seta-"+t.toLowerCase());
     if(valEl){valEl.textContent=avg!=null?durStr(avg):"—";valEl.style.color=cor;}
     if(setaEl){setaEl.textContent=seta;setaEl.style.color=cor;}
+
+    const nConcluidos=regs.filter(c=>c.setorAtual==="concluido").length;
+    const nNoTMA=vals.length;
+    const pct=nConcluidos?Math.round((nNoTMA/nConcluidos)*100):null;
+    const nfracEl=document.getElementById("tma-turno-nfrac-"+t.toLowerCase());
+    const pctEl=document.getElementById("tma-turno-pct-"+t.toLowerCase());
+    if(nfracEl)nfracEl.textContent=nNoTMA;
+    if(pctEl){
+      pctEl.textContent=nConcluidos?`${nNoTMA}/${nConcluidos} · ${pct}%`:"0/0 · —";
+      pctEl.className="pct-badge"+(pct==null?"":pct>=80?" ok":" warn");
+    }
   });
 
   document.getElementById("cnt-tmpo-t").textContent=period.length;
