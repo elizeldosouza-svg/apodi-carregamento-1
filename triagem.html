@@ -65,6 +65,9 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .filtro-input:focus{border-color:var(--ac)}
 .filtro-input:disabled{opacity:.35;cursor:not-allowed}
 .filtro-sep{font-size:12px;color:var(--t3)}
+.filtro-row-compact{gap:5px}
+.filtro-row-compact .filtro-label{min-width:62px;font-size:10px}
+.filtro-row-compact .tg-btn{padding:6px 6px;font-size:9.3px}
 .msel{position:relative;flex:1;min-width:180px}
 .msel-btn{width:100%;text-align:left;padding:7px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);font-size:12px;font-family:monospace;cursor:pointer}
 .msel-btn:focus{outline:none;border-color:var(--ac)}
@@ -256,7 +259,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <button class="tg-btn cg-btn" onclick="toggleCargaF('granel',this)">Granel</button>
       <button class="tg-btn cg-btn" onclick="toggleCargaF('bigbag',this)">Big Bag</button>
     </div>
-    <div class="filtro-row">
+    <div class="filtro-row filtro-row-compact">
       <span class="filtro-label">Tipo Carreg:</span>
       <button class="tg-btn sub-btn on" id="sub-geral" onclick="toggleSubF('geral',this)">Geral</button>
       <button class="tg-btn sub-btn" onclick="toggleSubF('Paletizado',this)">Paletizado</button>
