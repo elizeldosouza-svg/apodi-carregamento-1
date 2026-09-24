@@ -77,6 +77,11 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .msel-item:last-child{border-bottom:none}
 .msel-item:hover{background:rgba(255,102,68,.1)}
 .msel-item input[type=checkbox]{accent-color:#ff6644;width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.filtro-scroll{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--b2) var(--bg)}
+.filtro-scroll .tg-btn{flex-shrink:0}
+.filtro-scroll::-webkit-scrollbar{height:5px}
+.filtro-scroll::-webkit-scrollbar-track{background:var(--bg)}
+.filtro-scroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
 .tg-btn.on{border-color:#ff6644;color:#ff6644;background:rgba(255,102,68,.1)}
 .tg-btn:hover{border-color:#ff6644}
 .btn-row{display:flex;gap:8px;margin-top:8px}
@@ -259,11 +264,13 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     </div>
     <div class="filtro-row">
       <span class="filtro-label">Tipo Carreg.:</span>
-      <button class="tg-btn sb-btn on" id="sb-geral" onclick="toggleMSUB('geral',this)">Geral</button>
-      <button class="tg-btn sb-btn" onclick="toggleMSUB('Paletizado',this)">Paletizado</button>
-      <button class="tg-btn sb-btn" onclick="toggleMSUB('Caricamat',this)">Caricamat</button>
-      <button class="tg-btn sb-btn" onclick="toggleMSUB('Container',this)">Container</button>
-      <button class="tg-btn sb-btn" onclick="toggleMSUB('Granel',this)">Granel</button>
+      <div class="filtro-scroll">
+        <button class="tg-btn sb-btn on" id="sb-geral" onclick="toggleMSUB('geral',this)">Geral</button>
+        <button class="tg-btn sb-btn" onclick="toggleMSUB('Paletizado',this)">Paletizado</button>
+        <button class="tg-btn sb-btn" onclick="toggleMSUB('Caricamat',this)">Caricamat</button>
+        <button class="tg-btn sb-btn" onclick="toggleMSUB('Container',this)">Container</button>
+        <button class="tg-btn sb-btn" onclick="toggleMSUB('Granel',this)">Granel</button>
+      </div>
     </div>
     <div class="filtro-row">
       <span class="filtro-label">Cimento:</span>
