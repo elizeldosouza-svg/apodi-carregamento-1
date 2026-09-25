@@ -265,6 +265,73 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .pc-add-row input{flex:1;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 9px;font-size:12px;outline:none}
 .pc-add-row input:focus{border-color:var(--rd)}
 .pc-add-btn{padding:7px 12px;border:none;border-radius:var(--rs);background:var(--rd);color:#fff;font-size:10.5px;font-weight:800;cursor:pointer;white-space:nowrap}
+/* ═══ Backup & Exportação ═══ */
+.bk-grid{display:grid;grid-template-columns:400px 1fr;gap:14px;padding:16px}
+@media(max-width:1000px){.bk-grid{grid-template-columns:1fr}}
+.bk-card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.bk-card:last-child{margin-bottom:0}
+.bk-ct{font-size:11.5px;font-weight:800;color:var(--tx);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.bk-ct .sp{margin-left:auto;font-size:10px;color:var(--t3);font-weight:600;text-transform:none;letter-spacing:0}
+.bk-col{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--b2);border-radius:var(--rs);background:var(--bg2);margin-bottom:6px}
+.bk-col .ic{font-size:17px;width:22px;text-align:center}
+.bk-col .nm{font-family:monospace;font-size:12px;font-weight:700}
+.bk-col .ds{font-size:10px;color:var(--t3);margin-top:1px}
+.bk-col .qt{margin-left:auto;text-align:right}
+.bk-col .qt b{font-family:monospace;font-size:14px;color:var(--bl);display:block}
+.bk-col .qt small{font-size:9px;color:var(--t3)}
+.bk-bar{height:3px;background:var(--bd);border-radius:2px;margin-top:6px;overflow:hidden;display:none}
+.bk-bar i{display:block;height:100%;width:0;background:var(--gr);transition:width .35s}
+.bk-col.lendo{border-color:var(--bl)}
+.bk-col.ok{border-color:rgba(0,232,150,.45)}
+.bk-col.ok .qt b{color:var(--gr)}
+.bk-col.erro{border-color:rgba(255,68,102,.5)}
+.bk-tot{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);padding:6px 4px 0}
+.bk-tot b{font-family:monospace;color:var(--tx)}
+.bk-fmt{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bk-fbtn{padding:12px 10px;border:2px solid var(--b2);border-radius:var(--rs);background:var(--bg2);color:var(--t2);cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;font-family:'Inter',sans-serif;transition:all .2s}
+.bk-fbtn .fi2{font-size:20px}
+.bk-fbtn .ft{font-size:12.5px;font-weight:800}
+.bk-fbtn .fd{font-size:10px;color:var(--t3);line-height:1.4}
+.bk-fbtn.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.bk-fbtn.on.pbi{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.07)}
+.bk-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 2px;border-top:1px solid var(--bd);font-size:12px;cursor:pointer}
+.bk-opt input{margin-top:2px;accent-color:var(--bl);width:15px;height:15px}
+.bk-opt small{display:block;font-size:10px;color:var(--t3);margin-top:2px;line-height:1.45}
+.bk-opt code{font-family:monospace;color:var(--bl);font-size:10.5px}
+.bk-alert{padding:10px 12px;border-radius:var(--rs);font-size:11px;line-height:1.5;margin-top:10px;background:rgba(255,208,0,.08);border:1px solid rgba(255,208,0,.3);color:var(--ye)}
+.bk-go{width:100%;padding:14px;border:none;border-radius:var(--rs);font-size:14px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(135deg,var(--bl),#0099bb);color:#000;transition:all .2s}
+.bk-go:disabled{opacity:.35;cursor:not-allowed}
+.bk-gosub{font-size:10px;color:var(--t3);text-align:center;margin-top:7px}
+.bk-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.bk-tab{padding:6px 11px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:10.5px;font-weight:700;cursor:pointer;font-family:monospace}
+.bk-tab.on{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.08)}
+.bk-tab .k{font-size:8.5px;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:5px;font-family:'Inter',sans-serif}
+.bk-k-f{background:rgba(0,212,255,.15);color:var(--bl)}
+.bk-k-d{background:rgba(0,232,150,.15);color:var(--gr)}
+.bk-k-m{background:rgba(122,159,212,.15);color:var(--t2)}
+.bk-desc{font-size:11.5px;color:var(--t2);margin-bottom:10px;line-height:1.5}
+.bk-desc b{color:var(--tx)}
+.bk-tw{overflow-x:auto;border:1px solid var(--bd);border-radius:var(--rs)}
+.bk-tw table{width:100%;border-collapse:collapse;font-size:11px}
+.bk-tw th{text-align:left;padding:8px 10px;font-size:9px;font-weight:700;color:#fff;background:#003366;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.bk-tw td{padding:7px 10px;border-top:1px solid var(--bd);vertical-align:top}
+.bk-tw td.c{font-family:monospace;color:var(--bl);white-space:nowrap}
+.bk-tw td.t{font-family:monospace;font-size:10px;color:var(--t2);white-space:nowrap}
+.bk-tw td.o{color:var(--t3);font-size:10.5px}
+.bk-rel{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.bk-rel div{padding:9px 10px;border:1px dashed var(--b2);border-radius:var(--rs);font-size:10.5px;color:var(--t2);line-height:1.45}
+.bk-rel b{font-family:monospace;color:var(--tx)}
+.bk-hist{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg2);margin-bottom:5px;font-size:11px}
+.bk-hist .hd{font-family:monospace;font-weight:700}
+.bk-hist .hm{color:var(--t3);font-size:10px}
+.bk-hist .hb{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px}
+.bk-hist .hb:first-of-type{margin-left:auto}
+.bk-hb-x{background:rgba(255,208,0,.12);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
+.bk-hb-j{background:rgba(0,212,255,.12);color:var(--bl);border:1px solid rgba(0,212,255,.3)}
+.bk-vazio{font-size:11px;color:var(--t3);text-align:center;padding:14px}
+.bk-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--bg2);border:1.5px solid var(--gr);color:var(--gr);padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:700;transition:transform .3s;z-index:1000}
+.bk-toast.erro{border-color:var(--rd);color:var(--rd)}
+.bk-toast.show{transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -305,6 +372,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <button class="nav-btn" onclick="abrirOperadores()" style="cursor:pointer">👤 Operadores</button>
     <button class="nav-btn" onclick="abrirConfigParadas()" style="cursor:pointer">⚙️ Config. Paradas</button>
     <button class="nav-btn" onclick="abrirParadas()" style="cursor:pointer;border-color:var(--tm);color:var(--tm)">⚠️ Paradas</button>
+    <button class="nav-btn" onclick="abrirBackup()" style="cursor:pointer;border-color:var(--bl);color:var(--bl)">💾 Backup</button>
     <button class="sair-btn" onclick="doLogout()">Sair</button>
   </div>
   <div class="wrap">
@@ -638,6 +706,65 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     </div>
   </div>
 
+  <!-- BACKUP & EXPORTAÇÃO -->
+  <div id="backup-screen" style="display:none">
+    <div class="wrap">
+      <div class="tcard">
+        <div class="thead-bar">💾 Backup & Exportação — Firestore completo
+          <div class="totais-bar">
+            <button class="pb" onclick="voltarBackup()">← Voltar</button>
+          </div>
+        </div>
+        <div class="bk-grid">
+          <div>
+            <div class="bk-card">
+              <div class="bk-ct">Coleções incluídas <span class="sp">Backup completo — todas sempre</span></div>
+              <div id="bk-cols"></div>
+              <div class="bk-tot"><span>Total de documentos</span><b id="bk-tot-docs">—</b></div>
+              <div class="bk-tot"><span>Leituras estimadas no Firestore</span><b id="bk-tot-reads">—</b></div>
+            </div>
+            <div class="bk-card">
+              <div class="bk-ct">Formato do arquivo</div>
+              <div class="bk-fmt">
+                <button class="bk-fbtn on pbi" data-fmt="xlsx" onclick="bkTogFmt(this)"><span class="fi2">📊</span><span class="ft">Power BI (.xlsx)</span><span class="fd">Tabelas planas, datas reais e tempos em minutos</span></button>
+                <button class="bk-fbtn on" data-fmt="json" onclick="bkTogFmt(this)"><span class="fi2">🗄️</span><span class="ft">Backup bruto (.json)</span><span class="fd">Cópia fiel de todos os campos, para arquivo</span></button>
+              </div>
+              <div style="margin-top:10px">
+                <label class="bk-opt" style="border-top:none"><input type="checkbox" checked id="bk-nome-fixo" onchange="bkUpdNome()"><span>Nome fixo para o Power BI<small>Salva como <code id="bk-nome-arq">TMAC_PowerBI.xlsx</code>. Substitua o arquivo anterior na mesma pasta do OneDrive/SharePoint para a atualização do Power BI funcionar.</small></span></label>
+                <label class="bk-opt"><input type="checkbox" checked id="bk-calc"><span>Incluir tempos calculados<small>TML, TME, TMTI, TMCI, TMEI, TMA, TMF e TMAC com a regra do <code>master.html</code> (inclui exceção Granel).</small></span></label>
+                <label class="bk-opt"><input type="checkbox" checked disabled><span>Remover o campo <code>senha</code> dos operadores<small>A senha nunca é exportada — o restante do cadastro sai normalmente.</small></span></label>
+              </div>
+            </div>
+            <button class="bk-go" id="bk-go" onclick="gerarBackup()">Gerar backup</button>
+            <div class="bk-gosub" id="bk-gosub">Gera 2 arquivos · leitura completa de todas as coleções</div>
+            <div class="bk-alert">Cada backup lê todos os documentos. No plano gratuito do Firebase o limite é de 50 mil leituras por dia, compartilhado com as telas operacionais.</div>
+          </div>
+          <div>
+            <div class="bk-card">
+              <div class="bk-ct">Estrutura do arquivo Power BI <span class="sp">clique nas abas</span></div>
+              <div class="bk-tabs" id="bk-tabs"></div>
+              <div class="bk-desc" id="bk-desc"></div>
+              <div class="bk-tw"><table><thead><tr><th>Coluna</th><th>Tipo</th><th>Origem / regra</th></tr></thead><tbody id="bk-body"></tbody></table></div>
+            </div>
+            <div class="bk-card">
+              <div class="bk-ct">Relacionamentos sugeridos no Power BI</div>
+              <div class="bk-rel">
+                <div><b>fCaminhoes[id]</b> 1 → * <b>fEtapas[id]</b><br>Análise por etapa e empresa</div>
+                <div><b>dEtapas[etapa]</b> 1 → * <b>fEtapas[etapa]</b><br>Meta e empresa terceirizada</div>
+                <div><b>fCaminhoes[dataRef]</b> → <b>dCalendario</b><br>Criar no Power BI (DAX)</div>
+              </div>
+            </div>
+            <div class="bk-card">
+              <div class="bk-ct">Últimos backups <span class="sp">coleção backups_log</span></div>
+              <div id="bk-hist-list"><div class="bk-vazio">Carregando…</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bk-toast" id="bk-toast"></div>
+
 </div>
 
 <!-- DRAWER -->
@@ -840,7 +967,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,query,orderBy,where,addDoc,getDocs,updateDoc,deleteDoc,deleteField,doc,getDoc,setDoc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,query,orderBy,where,addDoc,getDocs,updateDoc,deleteDoc,deleteField,doc,getDoc,setDoc,Timestamp,getCountFromServer,limit}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 const CREDS={user:"administrador",pwd:"admin2026"};
@@ -2504,5 +2631,337 @@ window.renderOperadoresList=function(){
       </div>
     </div>`;
   }).join("");
+};
+// ── Backup & Exportação (Firestore completo → XLSX Power BI + JSON) ─────
+const BK_COLS=[
+ {nm:"caminhoes_rastreio",ic:"🚛",ds:"Caminhões + paradas de sistema"},
+ {nm:"caminhoes_excluidos",ic:"🗑️",ds:"ACs excluídas (soft-delete)"},
+ {nm:"justificativas",ic:"📝",ds:"Justificativas de atraso"},
+ {nm:"chamadas_fila",ic:"📺",ds:"Chamadas do painel de senha"},
+ {nm:"operadores_acesso",ic:"👤",ds:"Cadastro de operadores (sem senha)"},
+ {nm:"configuracoes",ic:"⚙️",ds:"Opções de Paradas (somente no JSON)"},
+ {nm:"backups_log",ic:"🕓",ds:"Histórico de backups"}
+];
+const BK_SHEETS=[
+ {nm:"fCaminhoes",k:"f",desc:"<b>1 linha por caminhão.</b> Tabela fato principal. <b>Paradas de sistema ficam de fora</b> (vão para fParadas). Datas saem como data/hora real (fuso Fortaleza), não como texto.",
+  cols:[["id","Texto","ID do documento no Firestore"],["placa / ac / notaFiscal","Texto","Campos diretos"],["tipoCarga / subtipoCarga / tipoCimento","Texto","Labels (Ensacado, Granel, Paletizado...)"],["setorAtual","Texto","Etapa atual"],["concluido","Sim/Não","setorAtual = concluido OU faturamento.ts existe"],["dataEntrada","Data","Campo data (entrada)"],["dataRef","Data","Data do faturamento para concluídos; senão entrada — mesmo dataRef(c)"],["turno / dataTurno","Texto/Data","A/B/C pela entrada — Turno A ancorado no dia em que termina"],["entrada_ts … faturamento_ts","Data/hora","Início e fim de cada etapa"],["operador_entrada … operador_faturamento","Texto","Operadores por etapa"],["TML / TME / TMTI / TMCI / TMEI","Minutos","Duração por etapa (decimal)"],["TMA / TMF / TMAC","Minutos","TMF usa carregamento.fim para Granel"]]},
+ {nm:"fEtapas",k:"f",desc:"<b>1 linha por caminhão × etapa</b> (formato longo). Ideal para comparar empresas, operadores e aderência à meta.",
+  cols:[["id","Texto","Liga com fCaminhoes[id]"],["placa","Texto","Repetido para facilitar filtros"],["etapa","Texto","Portaria, Triagem, Carregamento, Enlonamento, Faturamento"],["inicio / fim","Data/hora","Timestamps da etapa"],["duracao_min","Minutos","fim − inicio (vazio se incompleto)"],["operador_inicio / operador_fim","Texto","Quem registrou"],["completa","Sim/Não","Tem início e fim — base da aderência"]]},
+ {nm:"fParadas",k:"f",desc:"<b>1 linha por parada.</b> Une os documentos de início e fim (tipo = parada_sistema) pelo paradaId — mesma lógica da tela ⚠️ Paradas.",
+  cols:[["paradaId","Texto","Chave da parada"],["inicio","Data/hora","data + horarioInicialParada"],["fim","Data/hora","dataEncerramento + horarioFinalParada (vazio se aberta)"],["situacao / setor / status","Texto","Opções da Config. Paradas"],["turno","Texto","Turno do registro"],["operador_inicio / operador_fim","Texto","Quem abriu / encerrou"],["duracao_min","Minutos","fim − início (vazio se aberta)"],["aberta","Sim/Não","Sem documento de fim"],["observacao","Texto","Observação do encerramento"]]},
+ {nm:"dEtapas",k:"d",desc:"<b>Dimensão fixa</b> com empresa terceirizada e meta de cada etapa.",
+  cols:[["etapa","Texto","Chave"],["empresa","Texto","Reforme Paletes, Ambipar, Sousa Clean, Apodi..."],["indicador","Texto","TME, TMTI, TMCI, TMEI, TMF, TMA, TMAC"],["meta_min","Minutos","5 / 20 / 15 / 8 · TMA 40 · TMAC 130"]]},
+ {nm:"fExcluidos",k:"f",desc:"Mesmas colunas de <b>fCaminhoes</b> + dados da exclusão.",
+  cols:[["(colunas de fCaminhoes)","—","Mesma estrutura"],["idOriginal","Texto","ID antes da exclusão"],["excluidoMotivo","Texto","Motivo informado"],["excluidoPor","Texto","Quem excluiu"],["excluidoEm","Data/hora","Momento da exclusão"]]},
+ {nm:"fJustificativas",k:"f",desc:"1 linha por justificativa. Todos os campos do documento, achatados (campos internos viram coluna.subcampo).",
+  cols:[["id","Texto","ID do documento"],["(demais campos)","Automático","Datas convertidas para data/hora"]]},
+ {nm:"fChamadas",k:"f",desc:"Histórico de chamadas do painel TV (senha.html). Todos os campos, achatados.",
+  cols:[["id","Texto","ID do documento"],["(demais campos)","Automático","Datas convertidas para data/hora"]]},
+ {nm:"dOperadores",k:"d",desc:"Cadastro de operadores. <b>O campo senha é removido.</b>",
+  cols:[["id / nome / usuario","Texto","—"],["telas","Texto","Lista separada por “;”"],["ativo / primeiroAcesso","Sim/Não","—"],["criadoEm / atualizadoEm","Data/hora","—"]]},
+ {nm:"_Info",k:"m",desc:"Metadados do backup — útil para mostrar “Dados atualizados em” no relatório.",
+  cols:[["geradoEm","Data/hora","Momento da exportação"],["geradoPor","Texto","Usuário logado"],["colecao / documentos","Texto/Número","Contagem por coleção"],["versaoEstrutura","Texto","v1 — muda se colunas mudarem"]]}
+];
+const BK_KL={f:["FATO","bk-k-f"],d:["DIM","bk-k-d"],m:["INFO","bk-k-m"]};
+const BK_ETAPAS=[
+ {etapa:"Portaria",empresa:"Seguro Segurança",indicador:"TME",meta_min:null},
+ {etapa:"Triagem",empresa:"Reforme Paletes",indicador:"TMTI",meta_min:5},
+ {etapa:"Carregamento",empresa:"Ambipar",indicador:"TMCI",meta_min:20},
+ {etapa:"Enlonamento",empresa:"Sousa Clean",indicador:"TMEI",meta_min:15},
+ {etapa:"Faturamento",empresa:"Apodi",indicador:"TMF",meta_min:8},
+ {etapa:"Armazém",empresa:"—",indicador:"TMA",meta_min:40},
+ {etapa:"Ciclo total",empresa:"—",indicador:"TMAC",meta_min:130}
+];
+let BK_COUNTS={},BK_RODANDO=false;
+const bkFmtN=n=>Number(n||0).toLocaleString("pt-BR");
+function bkToast(m,erro){
+  const t=document.getElementById("bk-toast");
+  t.textContent=m;t.className="bk-toast show"+(erro?" erro":"");
+  setTimeout(()=>{t.className="bk-toast"+(erro?" erro":"");},3500);
+}
+function bkRenderCols(){
+  let h="";
+  BK_COLS.forEach((c,i)=>{
+    const q=BK_COUNTS[c.nm];
+    h+='<div class="bk-col" id="bk-cr'+i+'"><span class="ic">'+c.ic+'</span><div style="flex:1;min-width:0"><div class="nm">'+c.nm+'</div><div class="ds">'+c.ds+'</div><div class="bk-bar" id="bk-cb'+i+'"><i></i></div></div><div class="qt"><b>'+(q==null?"—":bkFmtN(q))+'</b><small>docs</small></div></div>';
+  });
+  document.getElementById("bk-cols").innerHTML=h;
+  const vals=Object.values(BK_COUNTS);
+  const tot=vals.reduce((a,b)=>a+b,0);
+  document.getElementById("bk-tot-docs").textContent=vals.length?bkFmtN(tot):"—";
+  document.getElementById("bk-tot-reads").textContent=vals.length?"≈ "+bkFmtN(tot):"—";
+}
+window.bkRenderTabs=function(sel){
+  let h="";
+  BK_SHEETS.forEach((s,i)=>{h+='<button class="bk-tab'+(i===sel?" on":"")+'" onclick="bkRenderTabs('+i+')">'+s.nm+'<span class="k '+BK_KL[s.k][1]+'">'+BK_KL[s.k][0]+'</span></button>';});
+  document.getElementById("bk-tabs").innerHTML=h;
+  const s=BK_SHEETS[sel];
+  document.getElementById("bk-desc").innerHTML=s.desc;
+  document.getElementById("bk-body").innerHTML=s.cols.map(c=>'<tr><td class="c">'+c[0]+'</td><td class="t">'+c[1]+'</td><td class="o">'+c[2]+'</td></tr>').join("");
+};
+window.bkTogFmt=function(b){
+  const on=document.querySelectorAll(".bk-fbtn.on").length;
+  if(b.classList.contains("on")&&on===1)return;
+  b.classList.toggle("on");
+  const n=document.querySelectorAll(".bk-fbtn.on").length;
+  document.getElementById("bk-gosub").textContent="Gera "+n+(n>1?" arquivos":" arquivo")+" · leitura completa de todas as coleções";
+};
+function bkStamp(){
+  const p=new Date().toLocaleString("sv-SE",{timeZone:"America/Fortaleza"}); // YYYY-MM-DD HH:MM:SS
+  return p.slice(0,10)+"_"+p.slice(11,13)+p.slice(14,16);
+}
+window.bkUpdNome=function(){
+  document.getElementById("bk-nome-arq").textContent=document.getElementById("bk-nome-fixo").checked?"TMAC_PowerBI.xlsx":"TMAC_PowerBI_"+bkStamp()+".xlsx";
+};
+async function bkContar(){
+  BK_COUNTS={};
+  await Promise.all(BK_COLS.map(async c=>{
+    try{const s=await getCountFromServer(collection(db,c.nm));BK_COUNTS[c.nm]=s.data().count;}
+    catch(e){console.error("Contagem "+c.nm,e);}
+  }));
+  bkRenderCols();
+}
+async function bkCarregarHistorico(){
+  const el=document.getElementById("bk-hist-list");
+  try{
+    const snap=await getDocs(query(collection(db,"backups_log"),orderBy("geradoEm","desc"),limit(5)));
+    if(snap.empty){el.innerHTML='<div class="bk-vazio">Nenhum backup registrado ainda.</div>';return;}
+    el.innerHTML=snap.docs.map(d=>{
+      const r=d.data();
+      const dt=r.geradoEm?.toDate?r.geradoEm.toDate().toLocaleString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}):"—";
+      const f=r.formatos||[];
+      return '<div class="bk-hist"><span class="hd">'+dt.replace(",","")+'</span><span class="hm">'+(r.geradoPor||"—")+" · "+bkFmtN(r.totalDocs)+' docs</span>'+
+        (f.includes("xlsx")?'<span class="hb bk-hb-x">XLSX</span>':"")+(f.includes("json")?'<span class="hb bk-hb-j">JSON</span>':"")+'</div>';
+    }).join("");
+  }catch(e){console.error("backups_log",e);el.innerHTML='<div class="bk-vazio">Não foi possível carregar o histórico.</div>';}
+}
+window.abrirBackup=()=>{
+  document.querySelector(".wrap").style.display="none";
+  document.getElementById("backup-screen").style.display="block";
+  bkRenderCols();bkRenderTabs(0);bkUpdNome();
+  bkContar();bkCarregarHistorico();
+};
+window.voltarBackup=()=>{
+  if(BK_RODANDO){bkToast("Aguarde o backup terminar.",true);return;}
+  document.getElementById("backup-screen").style.display="none";
+  document.querySelector(".wrap").style.display="block";
+};
+// Excel: data/hora em serial numérico no horário de Fortaleza (UTC-3, sem horário de verão)
+function bkSerial(d){return d?Math.round(((d.getTime()-3*3600000)/86400000+25569)*1e8)/1e8:null;}
+function bkSerialISO(iso,hhmm){
+  if(!iso)return null;
+  const[y,m,d]=iso.split("-").map(Number);
+  let h=0,mi=0;
+  if(hhmm){const t=hhmm.split(":").map(Number);h=t[0]||0;mi=t[1]||0;}
+  if(!y||!m||!d)return null;
+  return Date.UTC(y,m-1,d,h,mi)/86400000+25569;
+}
+function bkIsoFortaleza(d){return d?d.toLocaleDateString("sv-SE",{timeZone:"America/Fortaleza"}):null;}
+function bkHoraFortaleza(d){return d?Number(d.toLocaleString("en-US",{timeZone:"America/Fortaleza",hour:"2-digit",hour12:false}))%24:null;}
+const bkMin=ms=>(ms==null||ms<0)?null:Math.round(ms/600)/100;
+const bkSN=v=>v?"Sim":"Não";
+function bkIsGranel(c){
+  const s=(c.subtipoCarga||"").toLowerCase();
+  return s==="granel"||s==="container"||(c.tipoCarga||"").toLowerCase()==="granel";
+}
+function bkTurno(en){
+  if(!en)return{turno:null,dataTurno:null};
+  const h=bkHoraFortaleza(en);
+  const t=(h>=23||h<7)?"A":(h<15?"B":"C");
+  let dia=bkIsoFortaleza(en);
+  if(h>=23){const d=new Date(en.getTime()+3600000*2);dia=bkIsoFortaleza(d);} // Turno A: ancora no dia em que termina
+  return{turno:t,dataTurno:dia};
+}
+function bkLinhaCaminhao(c,calc){
+  const en=getTS(c,"entrada","ts"),lib=c.posto1ConfirmadoEm?.toDate?c.posto1ConfirmadoEm.toDate():null;
+  const ptI=getTS(c,"portaria","inicio"),ptF=getTS(c,"portaria","fim");
+  const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
+  const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
+  const elI=getTS(c,"enlonamento","inicio"),elF=getTS(c,"enlonamento","fim");
+  const sa=getTS(c,"faturamento","ts");
+  const concl=c.setorAtual==="concluido"||!!sa;
+  const tr=bkTurno(en);
+  const dRef=bkIsoFortaleza(concl&&sa?sa:en)||c.data||null;
+  const r={
+    id:c.id,placa:c.placa||"",ac:c.ac||"",notaFiscal:c.notaFiscal||"",
+    tipoCarga:c.tipoCargaLabel||c.tipoCarga||"",subtipoCarga:c.subtipoCarga||"",tipoCimento:c.tipoCimentoLabel||c.tipoCimento||"",
+    setorAtual:c.setorAtual||"",concluido:bkSN(concl),
+    dataEntrada:bkSerialISO(c.data),dataRef:bkSerialISO(dRef),turno:tr.turno||"",dataTurno:bkSerialISO(tr.dataTurno),
+    entrada_ts:bkSerial(en),posto1_confirmado:bkSerial(lib),
+    portaria_ini:bkSerial(ptI),portaria_fim:bkSerial(ptF),
+    triagem_ini:bkSerial(trI),triagem_fim:bkSerial(trF),
+    carregamento_ini:bkSerial(caI),carregamento_fim:bkSerial(caF),
+    enlonamento_ini:bkSerial(elI),enlonamento_fim:bkSerial(elF),
+    faturamento_ts:bkSerial(sa),
+    operador_entrada:c.entrada?.operador||"",
+    operador_triagem:c.triagem?.operadorFim||c.triagem?.operadorInicio||"",
+    operador_carregamento:c.carregamento?.operadorFim||c.carregamento?.operadorInicio||"",
+    operador_enlonamento:c.enlonamento?.operadorFim||c.enlonamento?.operadorInicio||"",
+    operador_faturamento:c.faturamento?.operador||"",
+    observacao:c.observacao||""
+  };
+  if(calc){
+    const tmti=(trI&&trF)?trF-trI:null,tmci=(caI&&caF)?caF-caI:null,tmei=(elI&&elF)?elF-elI:null;
+    const parts=[tmti,tmci,tmei].filter(v=>v!=null);
+    const marco=elF||(bkIsGranel(c)?caF:null);
+    const pIni=ptI||trI;
+    r.TML=bkMin((en&&lib)?lib-en:null);
+    r.TME=bkMin((en&&pIni)?pIni-en:null);
+    r.TMTI=bkMin(tmti);r.TMCI=bkMin(tmci);r.TMEI=bkMin(tmei);
+    r.TMA=bkMin(parts.length?parts.reduce((a,b)=>a+b,0):null);
+    r.TMF=bkMin((marco&&sa)?sa-marco:null);
+    r.TMAC=bkMin((concl&&en&&sa)?sa-en:null);
+  }
+  return r;
+}
+function bkLinhasEtapas(c){
+  const g=(s,f)=>getTS(c,s,f);
+  const en=g("entrada","ts"),sa=g("faturamento","ts"),granel=bkIsGranel(c);
+  const marco=g("enlonamento","fim")||(granel?g("carregamento","fim"):null);
+  const defs=[
+    ["Portaria","Seguro Segurança",en,g("portaria","inicio"),"",""],
+    ["Triagem","Reforme Paletes",g("triagem","inicio"),g("triagem","fim"),c.triagem?.operadorInicio,c.triagem?.operadorFim],
+    ["Carregamento","Ambipar",g("carregamento","inicio"),g("carregamento","fim"),c.carregamento?.operadorInicio,c.carregamento?.operadorFim],
+    ["Enlonamento","Sousa Clean",g("enlonamento","inicio"),g("enlonamento","fim"),c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim],
+    ["Faturamento","Apodi",marco,sa,"",c.faturamento?.operador]
+  ];
+  return defs.filter(d=>!(granel&&d[0]==="Enlonamento")).map(d=>({
+    id:c.id,placa:c.placa||"",etapa:d[0],empresa:d[1],
+    inicio:bkSerial(d[2]),fim:bkSerial(d[3]),
+    duracao_min:bkMin((d[2]&&d[3])?d[3]-d[2]:null),
+    operador_inicio:d[4]||"",operador_fim:d[5]||"",
+    completa:bkSN(d[2]&&d[3])
+  }));
+}
+function bkLinhasParadas(docs){
+  const inicios=docs.filter(c=>c.subtipo==="inicio"),fins={};
+  docs.filter(c=>c.subtipo==="fim").forEach(f=>{fins[f.paradaId]=f;});
+  return inicios.map(ini=>{
+    const fim=fins[ini.paradaId]||null;
+    const sIni=bkSerialISO(ini.data,ini.horarioInicialParada);
+    const sFim=fim?bkSerialISO(fim.dataEncerramento,fim.horarioFinalParada):null;
+    return{
+      paradaId:ini.paradaId||"",inicio:sIni,fim:sFim,
+      situacao:ini.situacao||"",setor:ini.setor||"",status:fim?.status||"",
+      turno:ini.turno||"",operador_inicio:ini.operador||"",operador_fim:fim?.operador||"",
+      duracao_min:(sIni!=null&&sFim!=null&&sFim>=sIni)?Math.round((sFim-sIni)*1440*100)/100:null,
+      aberta:bkSN(!fim),observacao:fim?.observacao||""
+    };
+  });
+}
+// Achata qualquer documento: objetos → coluna.subcampo; Timestamp → data/hora; arrays → texto "; "
+function bkAchatar(obj,pref,out,datas){
+  Object.keys(obj||{}).forEach(k=>{
+    const v=obj[k],key=pref?pref+"."+k:k;
+    if(v&&typeof v.toDate==="function"){out[key]=bkSerial(v.toDate());datas.add(key);}
+    else if(Array.isArray(v)){out[key]=v.map(x=>(x&&typeof x==="object")?JSON.stringify(bkSerializar(x)):String(x)).join("; ");}
+    else if(v&&typeof v==="object"){bkAchatar(v,key,out,datas);}
+    else if(typeof v==="boolean"){out[key]=bkSN(v);}
+    else out[key]=v;
+  });
+  return out;
+}
+// JSON: Timestamp → ISO 8601 (UTC)
+function bkSerializar(v){
+  if(v==null)return v;
+  if(typeof v.toDate==="function")return v.toDate().toISOString();
+  if(Array.isArray(v))return v.map(bkSerializar);
+  if(typeof v==="object"){const o={};Object.keys(v).forEach(k=>{o[k]=bkSerializar(v[k]);});return o;}
+  return v;
+}
+const BK_COLS_DATAHORA=["entrada_ts","posto1_confirmado","portaria_ini","portaria_fim","triagem_ini","triagem_fim","carregamento_ini","carregamento_fim","enlonamento_ini","enlonamento_fim","faturamento_ts","inicio","fim","excluidoEm","geradoEm"];
+const BK_COLS_DATA=["dataEntrada","dataRef","dataTurno"];
+function bkSheet(rows,datasExtra){
+  const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{"(sem registros)":""}]);
+  if(!ws["!ref"])return ws;
+  const rg=XLSX.utils.decode_range(ws["!ref"]);
+  for(let C=rg.s.c;C<=rg.e.c;C++){
+    const hd=ws[XLSX.utils.encode_cell({r:0,c:C})];
+    if(!hd)continue;
+    const nome=String(hd.v);
+    let z=null;
+    if(BK_COLS_DATA.includes(nome))z="dd/mm/yyyy";
+    else if(BK_COLS_DATAHORA.includes(nome)||(datasExtra&&datasExtra.has(nome)))z="dd/mm/yyyy hh:mm:ss";
+    if(!z)continue;
+    for(let R=1;R<=rg.e.r;R++){
+      const cell=ws[XLSX.utils.encode_cell({r:R,c:C})];
+      if(cell&&typeof cell.v==="number"){cell.t="n";cell.z=z;}
+    }
+  }
+  return ws;
+}
+function bkBaixar(conteudo,nome,tipo){
+  const blob=new Blob([conteudo],{type:tipo});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=nome;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+window.gerarBackup=async function(){
+  if(BK_RODANDO)return;
+  const formatos=[...document.querySelectorAll(".bk-fbtn.on")].map(b=>b.dataset.fmt);
+  const calc=document.getElementById("bk-calc").checked;
+  const btn=document.getElementById("bk-go");
+  BK_RODANDO=true;btn.disabled=true;btn.textContent="Lendo coleções…";
+  bkRenderCols();
+  const dados={};
+  try{
+    for(let i=0;i<BK_COLS.length;i++){
+      const c=BK_COLS[i],row=document.getElementById("bk-cr"+i),bar=document.getElementById("bk-cb"+i);
+      row.classList.add("lendo");bar.style.display="block";bar.firstChild.style.width="35%";
+      try{
+        const snap=await getDocs(collection(db,c.nm));
+        dados[c.nm]=snap.docs.map(d=>({id:d.id,...d.data()}));
+        if(c.nm==="operadores_acesso")dados[c.nm].forEach(o=>{delete o.senha;});
+        BK_COUNTS[c.nm]=dados[c.nm].length;
+        row.querySelector(".qt b").textContent=bkFmtN(dados[c.nm].length);
+        bar.firstChild.style.width="100%";row.classList.remove("lendo");row.classList.add("ok");
+      }catch(e){row.classList.remove("lendo");row.classList.add("erro");throw new Error("Falha ao ler "+c.nm+": "+e.message);}
+    }
+    btn.textContent="Montando arquivos…";
+    const agora=new Date(),stamp=bkStamp();
+    const porColecao={};Object.keys(dados).forEach(k=>{porColecao[k]=dados[k].length;});
+    const totalDocs=Object.values(porColecao).reduce((a,b)=>a+b,0);
+    if(formatos.includes("xlsx")){
+      const cam=dados.caminhoes_rastreio.filter(c=>c.tipo!=="parada_sistema");
+      const par=dados.caminhoes_rastreio.filter(c=>c.tipo==="parada_sistema");
+      const exc=dados.caminhoes_excluidos.filter(c=>c.tipo!=="parada_sistema");
+      const dJ=new Set(),dC=new Set(),dO=new Set();
+      const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,bkSheet(cam.map(c=>bkLinhaCaminhao(c,calc))),"fCaminhoes");
+      XLSX.utils.book_append_sheet(wb,bkSheet(cam.flatMap(bkLinhasEtapas)),"fEtapas");
+      XLSX.utils.book_append_sheet(wb,bkSheet(bkLinhasParadas(par)),"fParadas");
+      XLSX.utils.book_append_sheet(wb,bkSheet(BK_ETAPAS.map(e=>({...e}))),"dEtapas");
+      XLSX.utils.book_append_sheet(wb,bkSheet(exc.map(c=>{
+        const r=bkLinhaCaminhao(c,calc);
+        r.idOriginal=c.idOriginal||"";r.excluidoMotivo=c.excluidoMotivo||"";r.excluidoPor=c.excluidoPor||"";
+        r.excluidoEm=bkSerial(c.excluidoEm?.toDate?c.excluidoEm.toDate():null);
+        return r;
+      })),"fExcluidos");
+      XLSX.utils.book_append_sheet(wb,bkSheet(dados.justificativas.map(d=>bkAchatar(d,"",{},dJ)),dJ),"fJustificativas");
+      XLSX.utils.book_append_sheet(wb,bkSheet(dados.chamadas_fila.map(d=>bkAchatar(d,"",{},dC)),dC),"fChamadas");
+      XLSX.utils.book_append_sheet(wb,bkSheet(dados.operadores_acesso.map(d=>bkAchatar(d,"",{},dO)),dO),"dOperadores");
+      const info=[{colecao:"(backup)",documentos:totalDocs,geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1"}]
+        .concat(Object.keys(porColecao).map(k=>({colecao:k,documentos:porColecao[k],geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1"})));
+      XLSX.utils.book_append_sheet(wb,bkSheet(info),"_Info");
+      const nome=document.getElementById("bk-nome-fixo").checked?"TMAC_PowerBI.xlsx":"TMAC_PowerBI_"+stamp+".xlsx";
+      XLSX.writeFile(wb,nome);
+    }
+    if(formatos.includes("json")){
+      const pacote={geradoEm:agora.toISOString(),geradoPor:"Administrador",projeto:"cimento-6163b",versaoEstrutura:"v1",documentosPorColecao:porColecao,colecoes:bkSerializar(dados)};
+      bkBaixar(JSON.stringify(pacote,null,1),"TMAC_Backup_"+stamp+".json","application/json");
+    }
+    try{
+      await addDoc(collection(db,"backups_log"),{geradoEm:Timestamp.fromDate(agora),geradoPor:"Administrador",totalDocs,porColecao,formatos,calculados:calc});
+    }catch(e){console.error("backups_log (gravação)",e);}
+    bkRenderCols();
+    bkCarregarHistorico();
+    bkToast("✅ Backup gerado — "+bkFmtN(totalDocs)+" documentos exportados");
+  }catch(e){
+    console.error("Backup",e);
+    bkToast("❌ "+e.message,true);
+  }finally{
+    BK_RODANDO=false;btn.disabled=false;btn.textContent="Gerar backup";
+  }
 };
 </script>
