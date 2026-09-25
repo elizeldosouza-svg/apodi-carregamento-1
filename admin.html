@@ -332,6 +332,58 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .bk-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--bg2);border:1.5px solid var(--gr);color:var(--gr);padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:700;transition:transform .3s;z-index:1000}
 .bk-toast.erro{border-color:var(--rd);color:var(--rd)}
 .bk-toast.show{transform:translateX(-50%) translateY(0)}
+/* ═══ NOVO: filtro de período do Backup (padrão master.html, prefixo bk-) ═══ */
+.bk-head{flex-wrap:wrap;gap:10px;justify-content:flex-start}
+.bk-head .bk-titulo{white-space:nowrap}
+.bk-filtros{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;font-family:'Inter',sans-serif;padding-left:10px;border-left:1px solid var(--bd);margin-left:4px}
+.bk-rlabel{font-size:10px;color:var(--t2);font-weight:700;white-space:nowrap}
+.pb.bk-per.on{border-color:var(--ye);color:var(--ye);background:rgba(255,208,0,.08)}
+.pb.bk-per.bk-tudo.on{border-color:var(--gr);color:var(--gr);background:rgba(0,232,150,.08)}
+.bk-cal-toggle{position:relative}
+.bk-cal-btn{padding:5px 13px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px;font-family:'Inter',sans-serif}
+.bk-cal-btn:hover{border-color:var(--bl);color:var(--bl)}
+.bk-cal-btn.has-date{border-color:var(--rd);color:var(--rd);background:rgba(255,68,102,.08)}
+.bk-cal-popup{position:absolute;left:0;top:100%;margin-top:6px;z-index:500;display:none}
+.bk-cal-popup.show{display:block}
+.bk-cal-wrap{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:flex;gap:12px}
+.bk-cal-main{flex:1;min-width:200px}
+.bk-cal-side{width:108px;display:flex;flex-direction:column;gap:6px;border-left:1px solid var(--bd);padding-left:10px}
+.bk-cal-slabel{font-size:8px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.bk-cal-sscroll{max-height:180px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--b2) transparent;display:flex;flex-direction:column;gap:2px}
+.bk-cal-sbtn{padding:3px 6px;border:1px solid var(--bd);border-radius:5px;background:transparent;color:var(--t2);font-size:10px;cursor:pointer;transition:all .12s;text-align:left;white-space:nowrap;font-family:'Inter',sans-serif}
+.bk-cal-sbtn:hover,.bk-cal-sbtn.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.1)}
+.bk-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.bk-cal-nav button{width:26px;height:26px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer;font-size:14px}
+.bk-cal-nav button:hover{border-color:var(--bl);color:var(--bl)}
+.bk-cal-mes{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--tx);letter-spacing:.5px}
+.bk-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.bk-cal-dow{text-align:center;font-size:8px;font-weight:700;color:var(--t3);padding:2px 0;text-transform:uppercase}
+.bk-cal-day{text-align:center;font-size:11px;padding:5px 2px;border-radius:5px;cursor:pointer;color:var(--t2);user-select:none;position:relative;font-family:'Inter',sans-serif}
+.bk-cal-day:hover:not(.vazio){background:var(--bg4);color:var(--tx)}
+.bk-cal-day.vazio{cursor:default}
+.bk-cal-day.hoje{color:var(--bl);font-weight:700}
+.bk-cal-day.sel{background:var(--bl);color:var(--bg);font-weight:700}
+.bk-cal-day.faixa{background:rgba(0,212,255,.15);color:var(--tx)}
+.bk-cal-hoje{width:100%;padding:5px;border:1px solid var(--gr);border-radius:6px;background:rgba(0,232,150,.07);color:var(--gr);font-size:10px;font-weight:700;cursor:pointer;margin-top:8px;font-family:'Inter',sans-serif}
+.bk-cal-limpar{margin-top:6px;width:100%;padding:5px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t3);font-size:10px;cursor:pointer;font-family:'Inter',sans-serif}
+.bk-cal-limpar:hover{border-color:var(--rd);color:var(--rd)}
+.bk-cal-dica{font-size:9px;color:var(--t3);margin-top:6px;text-align:center;font-family:'Inter',sans-serif}
+.bk-deate{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.bk-deate-l{font-size:10px;color:var(--t2);font-weight:600}
+.bk-deate-i{background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--tx);padding:4px 8px;font-size:11px;font-family:'Inter',sans-serif;outline:none;width:80px}
+.bk-deate-i:focus{border-color:var(--bl)}
+.bk-deate-s{color:var(--t3);font-size:11px}
+.bk-resumo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--bd);font-size:11.5px;color:var(--t2);background:rgba(0,212,255,.03)}
+.bk-resumo b{color:var(--tx);font-family:monospace}
+.bk-resumo .bk-tag{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px}
+.bk-tag-tudo{background:rgba(0,232,150,.12);color:var(--gr);border:1px solid rgba(0,232,150,.3)}
+.bk-tag-per{background:rgba(255,208,0,.12);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
+.bk-col .bk-mode{display:inline-block;font-size:8px;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+.bk-mode-f{background:rgba(255,208,0,.12);color:var(--ye);border:1px solid rgba(255,208,0,.3)}
+.bk-mode-c{background:rgba(122,159,212,.12);color:var(--t2);border:1px solid rgba(122,159,212,.3)}
+.bk-opt.off{opacity:.45;cursor:not-allowed}
+.bk-hist .hp{font-size:9px;font-weight:700;color:var(--ye)}
+.bk-hist .hp.t{color:var(--gr)}
 </style>
 </head>
 <body>
@@ -710,15 +762,54 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
   <div id="backup-screen" style="display:none">
     <div class="wrap">
       <div class="tcard">
-        <div class="thead-bar">💾 Backup & Exportação — Firestore completo
+        <div class="thead-bar bk-head"><span class="bk-titulo">💾 Backup & Exportação — Firestore completo</span>
+          <div class="bk-filtros">
+            <span class="bk-rlabel">📅 Período:</span>
+            <button class="pb bk-per bk-tudo on" onclick="bkSetPer('tudo',this)">Tudo</button>
+            <button class="pb bk-per" onclick="bkSetPer('hoje',this)">Hoje</button>
+            <button class="pb bk-per" onclick="bkSetPer('ontem',this)">Ontem</button>
+            <button class="pb bk-per" onclick="bkSetPer('semana',this)">Essa Semana</button>
+            <button class="pb bk-per" onclick="bkSetPer('mes',this)">Esse Mês</button>
+            <button class="pb bk-per" onclick="bkSetPer('semana_passada',this)">Semana Passada</button>
+            <button class="pb bk-per" onclick="bkSetPer('mes_passado',this)">Mês Passado</button>
+            <button class="pb bk-per" onclick="bkSetPer('ano',this)">Esse Ano</button>
+            <div class="bk-cal-toggle">
+              <button class="bk-cal-btn" id="bk-cal-btn" onclick="bkCalToggle(event)">📅 <span id="bk-cal-txt">Data</span> ▾</button>
+              <div class="bk-cal-popup" id="bk-cal-popup" onclick="event.stopPropagation()">
+                <div class="bk-cal-wrap">
+                  <div class="bk-cal-main">
+                    <div class="bk-cal-nav"><button onclick="bkCalMove(-1)">‹</button><span class="bk-cal-mes" id="bk-cal-titulo"></span><button onclick="bkCalMove(1)">›</button></div>
+                    <div class="bk-cal-grid" id="bk-cal-grid"></div>
+                    <button class="bk-cal-hoje" onclick="bkCalHoje()">📅 Hoje</button>
+                    <button class="bk-cal-limpar" id="bk-cal-limpar" onclick="bkCalLimpar()" style="display:none">✕ Limpar</button>
+                    <div class="bk-cal-dica">Shift+Click para intervalo</div>
+                  </div>
+                  <div class="bk-cal-side">
+                    <div class="bk-cal-slabel">Semanas</div>
+                    <div class="bk-cal-sscroll" id="bk-cal-semanas"></div>
+                    <div class="bk-cal-slabel" style="margin-top:8px">Meses</div>
+                    <div class="bk-cal-sscroll" id="bk-cal-meses"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bk-deate">
+              <span class="bk-deate-l">⏰ De</span>
+              <input class="bk-deate-i" type="time" id="bk-hora-de" onchange="bkFiltroMudou()">
+              <span class="bk-deate-s">→</span>
+              <span class="bk-deate-l">Até</span>
+              <input class="bk-deate-i" type="time" id="bk-hora-ate" onchange="bkFiltroMudou()">
+            </div>
+          </div>
           <div class="totais-bar">
             <button class="pb" onclick="voltarBackup()">← Voltar</button>
           </div>
         </div>
+        <div class="bk-resumo" id="bk-resumo"></div>
         <div class="bk-grid">
           <div>
             <div class="bk-card">
-              <div class="bk-ct">Coleções incluídas <span class="sp">Backup completo — todas sempre</span></div>
+              <div class="bk-ct">Coleções incluídas <span class="sp" id="bk-cols-sp">Backup completo — todas sempre</span></div>
               <div id="bk-cols"></div>
               <div class="bk-tot"><span>Total de documentos</span><b id="bk-tot-docs">—</b></div>
               <div class="bk-tot"><span>Leituras estimadas no Firestore</span><b id="bk-tot-reads">—</b></div>
@@ -730,7 +821,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
                 <button class="bk-fbtn on" data-fmt="json" onclick="bkTogFmt(this)"><span class="fi2">🗄️</span><span class="ft">Backup bruto (.json)</span><span class="fd">Cópia fiel de todos os campos, para arquivo</span></button>
               </div>
               <div style="margin-top:10px">
-                <label class="bk-opt" style="border-top:none"><input type="checkbox" checked id="bk-nome-fixo" onchange="bkUpdNome()"><span>Nome fixo para o Power BI<small>Salva como <code id="bk-nome-arq">TMAC_PowerBI.xlsx</code>. Substitua o arquivo anterior na mesma pasta do OneDrive/SharePoint para a atualização do Power BI funcionar.</small></span></label>
+                <label class="bk-opt" id="bk-opt-nome" style="border-top:none"><input type="checkbox" checked id="bk-nome-fixo" onchange="bkUpdNome()"><span>Nome fixo para o Power BI<small id="bk-nome-small">Salva como <code id="bk-nome-arq">TMAC_PowerBI.xlsx</code>. Substitua o arquivo anterior na mesma pasta do OneDrive/SharePoint para a atualização do Power BI funcionar.</small></span></label>
                 <label class="bk-opt"><input type="checkbox" checked id="bk-calc"><span>Incluir tempos calculados<small>TML, TME, TMTI, TMCI, TMEI, TMA, TMF e TMAC com a regra do <code>master.html</code> (inclui exceção Granel).</small></span></label>
                 <label class="bk-opt"><input type="checkbox" checked disabled><span>Remover o campo <code>senha</code> dos operadores<small>A senha nunca é exportada — o restante do cadastro sai normalmente.</small></span></label>
               </div>
@@ -2634,10 +2725,10 @@ window.renderOperadoresList=function(){
 };
 // ── Backup & Exportação (Firestore completo → XLSX Power BI + JSON) ─────
 const BK_COLS=[
- {nm:"caminhoes_rastreio",ic:"🚛",ds:"Caminhões + paradas de sistema"},
- {nm:"caminhoes_excluidos",ic:"🗑️",ds:"ACs excluídas (soft-delete)"},
- {nm:"justificativas",ic:"📝",ds:"Justificativas de atraso"},
- {nm:"chamadas_fila",ic:"📺",ds:"Chamadas do painel de senha"},
+ {nm:"caminhoes_rastreio",ic:"🚛",ds:"Caminhões + paradas de sistema",f:true,regra:"dataRef + horário da entrada · paradas pela data/hora inicial"},
+ {nm:"caminhoes_excluidos",ic:"🗑️",ds:"ACs excluídas (soft-delete)",f:true,regra:"dataRef + horário da entrada (mesma regra dos caminhões)"},
+ {nm:"justificativas",ic:"📝",ds:"Justificativas de atraso",f:true,regra:"data e hora de registro"},
+ {nm:"chamadas_fila",ic:"📺",ds:"Chamadas do painel de senha",f:true,regra:"data e hora da chamada"},
  {nm:"operadores_acesso",ic:"👤",ds:"Cadastro de operadores (sem senha)"},
  {nm:"configuracoes",ic:"⚙️",ds:"Opções de Paradas (somente no JSON)"},
  {nm:"backups_log",ic:"🕓",ds:"Histórico de backups"}
@@ -2660,7 +2751,7 @@ const BK_SHEETS=[
  {nm:"dOperadores",k:"d",desc:"Cadastro de operadores. <b>O campo senha é removido.</b>",
   cols:[["id / nome / usuario","Texto","—"],["telas","Texto","Lista separada por “;”"],["ativo / primeiroAcesso","Sim/Não","—"],["criadoEm / atualizadoEm","Data/hora","—"]]},
  {nm:"_Info",k:"m",desc:"Metadados do backup — útil para mostrar “Dados atualizados em” no relatório.",
-  cols:[["geradoEm","Data/hora","Momento da exportação"],["geradoPor","Texto","Usuário logado"],["colecao / documentos","Texto/Número","Contagem por coleção"],["versaoEstrutura","Texto","v1 — muda se colunas mudarem"]]}
+  cols:[["geradoEm","Data/hora","Momento da exportação"],["geradoPor","Texto","Usuário logado"],["colecao / documentos","Texto/Número","Contagem por coleção"],["versaoEstrutura","Texto","v1 — muda se colunas mudarem"],["tipoBackup","Texto","Completo ou Por período"],["periodoInicio / periodoFim","Data","Intervalo exportado (vazio = todas as datas)"],["horaDe / horaAte","Texto","Faixa de horário aplicada"]]}
 ];
 const BK_KL={f:["FATO","bk-k-f"],d:["DIM","bk-k-d"],m:["INFO","bk-k-m"]};
 const BK_ETAPAS=[
@@ -2682,13 +2773,14 @@ function bkToast(m,erro){
 function bkRenderCols(){
   let h="";
   BK_COLS.forEach((c,i)=>{
-    const q=BK_COUNTS[c.nm];
-    h+='<div class="bk-col" id="bk-cr'+i+'"><span class="ic">'+c.ic+'</span><div style="flex:1;min-width:0"><div class="nm">'+c.nm+'</div><div class="ds">'+c.ds+'</div><div class="bk-bar" id="bk-cb'+i+'"><i></i></div></div><div class="qt"><b>'+(q==null?"—":bkFmtN(q))+'</b><small>docs</small></div></div>';
+    const q=BK_COUNTS[c.nm],flt=bkFiltro().ativo;
+    const selo=c.f?(flt?'<span class="bk-mode bk-mode-f">filtrado</span>':""):'<span class="bk-mode bk-mode-c">sempre completo</span>';
+    h+='<div class="bk-col" id="bk-cr'+i+'"><span class="ic">'+c.ic+'</span><div style="flex:1;min-width:0"><div class="nm">'+c.nm+selo+'</div><div class="ds">'+((c.f&&flt)?"Filtro: "+c.regra:c.ds)+'</div><div class="bk-bar" id="bk-cb'+i+'"><i></i></div></div><div class="qt"><b>'+(q==null?"—":bkFmtN(q))+'</b><small>docs</small></div></div>';
   });
   document.getElementById("bk-cols").innerHTML=h;
   const vals=Object.values(BK_COUNTS);
   const tot=vals.reduce((a,b)=>a+b,0);
-  document.getElementById("bk-tot-docs").textContent=vals.length?bkFmtN(tot):"—";
+  document.getElementById("bk-tot-docs").textContent=vals.length?(bkFiltro().ativo?"≈ ":"")+bkFmtN(tot):"—";
   document.getElementById("bk-tot-reads").textContent=vals.length?"≈ "+bkFmtN(tot):"—";
 }
 window.bkRenderTabs=function(sel){
@@ -2703,20 +2795,26 @@ window.bkTogFmt=function(b){
   const on=document.querySelectorAll(".bk-fbtn.on").length;
   if(b.classList.contains("on")&&on===1)return;
   b.classList.toggle("on");
-  const n=document.querySelectorAll(".bk-fbtn.on").length;
-  document.getElementById("bk-gosub").textContent="Gera "+n+(n>1?" arquivos":" arquivo")+" · leitura completa de todas as coleções";
+  bkGoSub();
 };
 function bkStamp(){
   const p=new Date().toLocaleString("sv-SE",{timeZone:"America/Fortaleza"}); // YYYY-MM-DD HH:MM:SS
   return p.slice(0,10)+"_"+p.slice(11,13)+p.slice(14,16);
 }
 window.bkUpdNome=function(){
-  document.getElementById("bk-nome-arq").textContent=document.getElementById("bk-nome-fixo").checked?"TMAC_PowerBI.xlsx":"TMAC_PowerBI_"+bkStamp()+".xlsx";
+  const F=bkFiltro(),op=document.getElementById("bk-opt-nome"),chk=document.getElementById("bk-nome-fixo"),sm=document.getElementById("bk-nome-small");
+  if(F.ativo){
+    op.classList.add("off");chk.disabled=true;
+    sm.innerHTML='Desativado em backup por período, para não sobrescrever a base completa do Power BI. Arquivo: <code>'+bkNomeXlsx(F)+'</code>';
+  }else{
+    op.classList.remove("off");chk.disabled=false;
+    sm.innerHTML='Salva como <code id="bk-nome-arq">'+bkNomeXlsx(F)+'</code>. Substitua o arquivo anterior na mesma pasta do OneDrive/SharePoint para a atualização do Power BI funcionar.';
+  }
 };
 async function bkContar(){
   BK_COUNTS={};
   await Promise.all(BK_COLS.map(async c=>{
-    try{const s=await getCountFromServer(collection(db,c.nm));BK_COUNTS[c.nm]=s.data().count;}
+    try{const s=await getCountFromServer(bkQueryColecao(c));BK_COUNTS[c.nm]=s.data().count;}
     catch(e){console.error("Contagem "+c.nm,e);}
   }));
   bkRenderCols();
@@ -2729,8 +2827,9 @@ async function bkCarregarHistorico(){
     el.innerHTML=snap.docs.map(d=>{
       const r=d.data();
       const dt=r.geradoEm?.toDate?r.geradoEm.toDate().toLocaleString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}):"—";
-      const f=r.formatos||[];
-      return '<div class="bk-hist"><span class="hd">'+dt.replace(",","")+'</span><span class="hm">'+(r.geradoPor||"—")+" · "+bkFmtN(r.totalDocs)+' docs</span>'+
+      const f=r.formatos||[],pr=r.periodo;
+      const pTxt=pr?((pr.inicio?(pr.inicio===pr.fim?bkBR(pr.inicio).slice(0,5):bkBR(pr.inicio).slice(0,5)+" → "+bkBR(pr.fim).slice(0,5)):"Todas as datas")+((pr.horaDe||pr.horaAte)?" · "+(pr.horaDe||"00:00")+"–"+(pr.horaAte||"23:59"):"")):"Tudo";
+      return '<div class="bk-hist"><span class="hd">'+dt.replace(",","")+'</span><span class="hm">'+(r.geradoPor||"—")+" · "+bkFmtN(r.totalDocs)+' docs</span><span class="hp'+(pr?"":" t")+'">'+pTxt+'</span>'+
         (f.includes("xlsx")?'<span class="hb bk-hb-x">XLSX</span>':"")+(f.includes("json")?'<span class="hb bk-hb-j">JSON</span>':"")+'</div>';
     }).join("");
   }catch(e){console.error("backups_log",e);el.innerHTML='<div class="bk-vazio">Não foi possível carregar o histórico.</div>';}
@@ -2738,7 +2837,8 @@ async function bkCarregarHistorico(){
 window.abrirBackup=()=>{
   document.querySelector(".wrap").style.display="none";
   document.getElementById("backup-screen").style.display="block";
-  bkRenderCols();bkRenderTabs(0);bkUpdNome();
+  if(BK_CAL_Y==null){const t=bkHojeFtz();BK_CAL_Y=t.getFullYear();BK_CAL_M=t.getMonth();}
+  bkRenderTabs(0);bkAtualizarFiltroUI();
   bkContar();bkCarregarHistorico();
 };
 window.voltarBackup=()=>{
@@ -2897,11 +2997,175 @@ function bkBaixar(conteudo,nome,tipo){
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
+// ── Backup: filtro de período (padrão master.html) ──────────────────────
+let BK_PER="tudo",BK_DINI=null,BK_DFIM=null,BK_CAL_Y=null,BK_CAL_M=null,BK_CONT_T=null;
+const BK_MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const bkPad=n=>String(n).padStart(2,"0");
+const bkIsoLocal=d=>d.getFullYear()+"-"+bkPad(d.getMonth()+1)+"-"+bkPad(d.getDate());
+const bkBR=s=>{if(!s)return"";const p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];};
+function bkHojeFtz(){return new Date(new Date().toLocaleString("en-US",{timeZone:"America/Fortaleza"}));}
+function bkDiaAnterior(iso){const[y,m,d]=iso.split("-").map(Number);return bkIsoLocal(new Date(y,m-1,d-1));}
+function bkFaixaPer(p){
+  const t=bkHojeFtz();let s,e;
+  if(p==="hoje"){s=e=t;}
+  else if(p==="ontem"){s=new Date(t);s.setDate(t.getDate()-1);e=s;}
+  else if(p==="semana"){s=new Date(t);s.setDate(t.getDate()-t.getDay());e=t;}
+  else if(p==="semana_passada"){e=new Date(t);e.setDate(t.getDate()-t.getDay()-1);s=new Date(e);s.setDate(e.getDate()-6);}
+  else if(p==="mes"){s=new Date(t.getFullYear(),t.getMonth(),1);e=t;}
+  else if(p==="mes_passado"){s=new Date(t.getFullYear(),t.getMonth()-1,1);e=new Date(t.getFullYear(),t.getMonth(),0);}
+  else if(p==="ano"){s=new Date(t.getFullYear(),0,1);e=t;}
+  else return null;
+  return{s:bkIsoLocal(s),e:bkIsoLocal(e)};
+}
+function bkFiltro(){
+  const faixa=BK_DINI?{s:BK_DINI,e:BK_DFIM||BK_DINI}:bkFaixaPer(BK_PER);
+  const de=document.getElementById("bk-hora-de")?.value||"",ate=document.getElementById("bk-hora-ate")?.value||"";
+  return{faixa,de,ate,ativo:!!faixa||!!de||!!ate};
+}
+function bkSufixoPeriodo(F){
+  let s=F.faixa?(F.faixa.s===F.faixa.e?F.faixa.s:F.faixa.s+"_a_"+F.faixa.e):"todas-datas";
+  if(F.de||F.ate)s+="_"+(F.de||"00:00").replace(":","h")+"-"+(F.ate||"23:59").replace(":","h");
+  return s;
+}
+function bkNomeXlsx(F,stamp){
+  if(F.ativo)return"TMAC_PowerBI_"+bkSufixoPeriodo(F)+".xlsx";
+  return document.getElementById("bk-nome-fixo").checked?"TMAC_PowerBI.xlsx":"TMAC_PowerBI_"+(stamp||bkStamp())+".xlsx";
+}
+function bkPeriodoLog(F){
+  if(!F.ativo)return null;
+  return{inicio:F.faixa?F.faixa.s:null,fim:F.faixa?F.faixa.e:null,horaDe:F.de||null,horaAte:F.ate||null};
+}
+// Consulta no Firestore: coleções de movimento usam o campo "data" (YYYY-MM-DD) para ler só o intervalo.
+// Caminhões/excluídos: 1 dia de margem antes (concluídos após a meia-noite têm dataRef = dia seguinte).
+function bkQueryColecao(c,F){
+  F=F||bkFiltro();
+  if(!c.f||!F.faixa)return collection(db,c.nm);
+  const ini=(c.nm==="caminhoes_rastreio"||c.nm==="caminhoes_excluidos")?bkDiaAnterior(F.faixa.s):F.faixa.s;
+  return query(collection(db,c.nm),where("data",">=",ini),where("data","<=",F.faixa.e));
+}
+function bkHHMM(d){return d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",timeZone:"America/Fortaleza"}).replace(/[^0-9:]/g,"").substring(0,5):null;}
+function bkNaHora(hh,F){
+  if(!F.de&&!F.ate)return true;
+  if(!hh)return false;
+  const de=F.de||"00:00",ate=F.ate||"23:59";
+  return de<=ate?(hh>=de&&hh<=ate):(hh>=de||hh<=ate); // faixa que cruza a meia-noite
+}
+const bkNoDia=(d,F)=>!F.faixa||(!!d&&d>=F.faixa.s&&d<=F.faixa.e);
+function bkDataRef(c){
+  const en=getTS(c,"entrada","ts"),sa=getTS(c,"faturamento","ts");
+  const concl=c.setorAtual==="concluido"||!!sa;
+  return bkIsoFortaleza(concl&&sa?sa:en)||c.data||null;
+}
+function bkTsQualquer(v){
+  if(!v)return null;
+  if(typeof v.toDate==="function")return v.toDate();
+  const d=new Date(v);return isNaN(d)?null:d;
+}
+function bkAplicarFiltro(nm,docs,F){
+  if(!F.ativo)return docs;
+  if(nm==="caminhoes_rastreio"||nm==="caminhoes_excluidos"){
+    const iniOk=new Set();
+    const out=docs.filter(c=>{
+      if(c.tipo==="parada_sistema"){
+        if(c.subtipo!=="inicio")return false;
+        const ok=bkNoDia(c.data,F)&&bkNaHora(c.horarioInicialParada||null,F);
+        if(ok)iniOk.add(c.paradaId);
+        return ok;
+      }
+      return bkNoDia(bkDataRef(c),F)&&bkNaHora(bkHHMM(getTS(c,"entrada","ts")),F);
+    });
+    // documentos de encerramento acompanham a parada selecionada
+    docs.forEach(c=>{if(c.tipo==="parada_sistema"&&c.subtipo==="fim"&&iniOk.has(c.paradaId))out.push(c);});
+    return out;
+  }
+  if(nm==="justificativas"||nm==="chamadas_fila"){
+    return docs.filter(c=>bkNoDia(c.data,F)&&bkNaHora(bkHHMM(bkTsQualquer(c.criadoEm)),F));
+  }
+  return docs;
+}
+function bkGoSub(){
+  const n=document.querySelectorAll(".bk-fbtn.on").length,F=bkFiltro();
+  document.getElementById("bk-gosub").textContent="Gera "+n+(n>1?" arquivos":" arquivo")+" · "+
+    (F.ativo?(F.faixa?"leitura apenas do período (+1 dia de margem para concluídos após a meia-noite)":"leitura completa, filtrada pelo horário"):"leitura completa de todas as coleções");
+}
+function bkAtualizarFiltroUI(){
+  const F=bkFiltro();
+  const cb=document.getElementById("bk-cal-btn"),ct=document.getElementById("bk-cal-txt");
+  if(BK_DINI){cb.classList.add("has-date");ct.textContent=(BK_DFIM&&BK_DFIM!==BK_DINI)?bkBR(BK_DINI).slice(0,5)+" → "+bkBR(BK_DFIM).slice(0,5):bkBR(BK_DINI);}
+  else{cb.classList.remove("has-date");ct.textContent="Data";}
+  document.getElementById("bk-cal-limpar").style.display=BK_DINI?"block":"none";
+  let h=F.ativo?'<span class="bk-tag bk-tag-per">Por período</span>':'<span class="bk-tag bk-tag-tudo">Completo</span>';
+  if(!F.ativo)h+="<span>Todos os registros de todas as coleções, sem filtro de data.</span>";
+  else{
+    h+="<span>Período: <b>"+(F.faixa?(F.faixa.s===F.faixa.e?bkBR(F.faixa.s):bkBR(F.faixa.s)+" → "+bkBR(F.faixa.e)):"todas as datas")+"</b></span>";
+    if(F.de||F.ate)h+="<span>Horário: <b>"+(F.de||"00:00")+" → "+(F.ate||"23:59")+"</b></span>";
+    h+='<span style="color:var(--t3)">Cadastros (operadores, configurações e histórico) saem sempre completos.</span>';
+  }
+  document.getElementById("bk-resumo").innerHTML=h;
+  document.getElementById("bk-cols-sp").textContent=F.ativo?"Coleções de movimento filtradas pelo período":"Backup completo — todas sempre";
+  bkUpdNome();bkGoSub();bkRenderCols();bkCalRender();
+}
+window.bkFiltroMudou=function(){
+  if(BK_RODANDO)return;
+  bkAtualizarFiltroUI();
+  BK_COUNTS={};bkRenderCols();
+  clearTimeout(BK_CONT_T);BK_CONT_T=setTimeout(bkContar,350);
+};
+window.bkSetPer=function(p,el){
+  if(BK_RODANDO)return;
+  BK_PER=p;BK_DINI=null;BK_DFIM=null;
+  document.querySelectorAll(".bk-per").forEach(b=>b.classList.remove("on"));
+  if(el)el.classList.add("on");
+  bkFiltroMudou();
+};
+window.bkCalToggle=function(e){e.stopPropagation();document.getElementById("bk-cal-popup").classList.toggle("show");};
+document.addEventListener("click",()=>{const p=document.getElementById("bk-cal-popup");if(p)p.classList.remove("show");});
+window.bkCalMove=function(d){BK_CAL_M+=d;if(BK_CAL_M<0){BK_CAL_M=11;BK_CAL_Y--;}if(BK_CAL_M>11){BK_CAL_M=0;BK_CAL_Y++;}bkCalRender();};
+window.bkCalHoje=function(){const t=bkHojeFtz();BK_CAL_Y=t.getFullYear();BK_CAL_M=t.getMonth();bkSelData(bkIsoLocal(t),false);};
+window.bkCalLimpar=function(){bkSetPer("tudo",document.querySelector(".bk-per.bk-tudo"));};
+function bkMarcarPersonalizado(){BK_PER=null;document.querySelectorAll(".bk-per").forEach(b=>b.classList.remove("on"));}
+window.bkSelData=function(d,shift){
+  if(BK_RODANDO)return;
+  if(shift&&BK_DINI){if(d<BK_DINI){BK_DFIM=BK_DINI;BK_DINI=d;}else BK_DFIM=d;}
+  else{BK_DINI=d;BK_DFIM=null;}
+  bkMarcarPersonalizado();bkFiltroMudou();
+};
+window.bkSelFaixa=function(s,e){if(BK_RODANDO)return;BK_DINI=s;BK_DFIM=e;bkMarcarPersonalizado();bkFiltroMudou();};
+function bkCalRender(){
+  if(BK_CAL_Y==null)return;
+  document.getElementById("bk-cal-titulo").textContent=BK_MESES[BK_CAL_M]+" "+BK_CAL_Y;
+  let h="";["D","S","T","Q","Q","S","S"].forEach(x=>{h+='<div class="bk-cal-dow">'+x+"</div>";});
+  const p=new Date(BK_CAL_Y,BK_CAL_M,1).getDay(),n=new Date(BK_CAL_Y,BK_CAL_M+1,0).getDate(),hj=bkIsoLocal(bkHojeFtz());
+  for(let i=0;i<p;i++)h+='<div class="bk-cal-day vazio"></div>';
+  for(let d=1;d<=n;d++){
+    const ds=BK_CAL_Y+"-"+bkPad(BK_CAL_M+1)+"-"+bkPad(d);let cl="bk-cal-day";
+    if(ds===hj)cl+=" hoje";
+    if(BK_DINI&&(ds===BK_DINI||ds===BK_DFIM))cl+=" sel";
+    else if(BK_DINI&&BK_DFIM&&ds>BK_DINI&&ds<BK_DFIM)cl+=" faixa";
+    h+='<div class="'+cl+'" onclick="bkSelData(\''+ds+'\',event.shiftKey)">'+d+"</div>";
+  }
+  document.getElementById("bk-cal-grid").innerHTML=h;
+  let sh="";const ini=new Date(BK_CAL_Y,BK_CAL_M,1);ini.setDate(1-ini.getDay());
+  for(let w=0;w<6;w++){
+    const a=new Date(ini);a.setDate(ini.getDate()+w*7);const b=new Date(a);b.setDate(a.getDate()+6);
+    if(a.getMonth()!==BK_CAL_M&&b.getMonth()!==BK_CAL_M)continue;
+    const as=bkIsoLocal(a),bs=bkIsoLocal(b);
+    sh+='<button class="bk-cal-sbtn'+((BK_DINI===as&&BK_DFIM===bs)?" on":"")+'" onclick="bkSelFaixa(\''+as+"','"+bs+'\')">'+bkPad(a.getDate())+"/"+bkPad(a.getMonth()+1)+" – "+bkPad(b.getDate())+"/"+bkPad(b.getMonth()+1)+"</button>";
+  }
+  document.getElementById("bk-cal-semanas").innerHTML=sh;
+  let mh="";
+  for(let m=0;m<12;m++){
+    const s=BK_CAL_Y+"-"+bkPad(m+1)+"-01",e=bkIsoLocal(new Date(BK_CAL_Y,m+1,0));
+    mh+='<button class="bk-cal-sbtn'+((BK_DINI===s&&BK_DFIM===e)?" on":"")+'" onclick="bkSelFaixa(\''+s+"','"+e+'\')">'+BK_MESES[m].slice(0,3)+" "+BK_CAL_Y+"</button>";
+  }
+  document.getElementById("bk-cal-meses").innerHTML=mh;
+}
 window.gerarBackup=async function(){
   if(BK_RODANDO)return;
   const formatos=[...document.querySelectorAll(".bk-fbtn.on")].map(b=>b.dataset.fmt);
   const calc=document.getElementById("bk-calc").checked;
   const btn=document.getElementById("bk-go");
+  const F=bkFiltro();
   BK_RODANDO=true;btn.disabled=true;btn.textContent="Lendo coleções…";
   bkRenderCols();
   const dados={};
@@ -2910,8 +3174,8 @@ window.gerarBackup=async function(){
       const c=BK_COLS[i],row=document.getElementById("bk-cr"+i),bar=document.getElementById("bk-cb"+i);
       row.classList.add("lendo");bar.style.display="block";bar.firstChild.style.width="35%";
       try{
-        const snap=await getDocs(collection(db,c.nm));
-        dados[c.nm]=snap.docs.map(d=>({id:d.id,...d.data()}));
+        const snap=await getDocs(bkQueryColecao(c,F));
+        dados[c.nm]=bkAplicarFiltro(c.nm,snap.docs.map(d=>({id:d.id,...d.data()})),F);
         if(c.nm==="operadores_acesso")dados[c.nm].forEach(o=>{delete o.senha;});
         BK_COUNTS[c.nm]=dados[c.nm].length;
         row.querySelector(".qt b").textContent=bkFmtN(dados[c.nm].length);
@@ -2941,22 +3205,23 @@ window.gerarBackup=async function(){
       XLSX.utils.book_append_sheet(wb,bkSheet(dados.justificativas.map(d=>bkAchatar(d,"",{},dJ)),dJ),"fJustificativas");
       XLSX.utils.book_append_sheet(wb,bkSheet(dados.chamadas_fila.map(d=>bkAchatar(d,"",{},dC)),dC),"fChamadas");
       XLSX.utils.book_append_sheet(wb,bkSheet(dados.operadores_acesso.map(d=>bkAchatar(d,"",{},dO)),dO),"dOperadores");
-      const info=[{colecao:"(backup)",documentos:totalDocs,geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1"}]
-        .concat(Object.keys(porColecao).map(k=>({colecao:k,documentos:porColecao[k],geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1"})));
+      const pInfo={periodoInicio:F.faixa?bkSerialISO(F.faixa.s):null,periodoFim:F.faixa?bkSerialISO(F.faixa.e):null,horaDe:F.de||"",horaAte:F.ate||"",tipoBackup:F.ativo?"Por período":"Completo"};
+      const info=[{colecao:"(backup)",documentos:totalDocs,geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1",...pInfo}]
+        .concat(Object.keys(porColecao).map(k=>({colecao:k,documentos:porColecao[k],geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1",...pInfo})));
       XLSX.utils.book_append_sheet(wb,bkSheet(info),"_Info");
-      const nome=document.getElementById("bk-nome-fixo").checked?"TMAC_PowerBI.xlsx":"TMAC_PowerBI_"+stamp+".xlsx";
+      const nome=bkNomeXlsx(F,stamp);
       XLSX.writeFile(wb,nome);
     }
     if(formatos.includes("json")){
-      const pacote={geradoEm:agora.toISOString(),geradoPor:"Administrador",projeto:"cimento-6163b",versaoEstrutura:"v1",documentosPorColecao:porColecao,colecoes:bkSerializar(dados)};
-      bkBaixar(JSON.stringify(pacote,null,1),"TMAC_Backup_"+stamp+".json","application/json");
+      const pacote={geradoEm:agora.toISOString(),geradoPor:"Administrador",projeto:"cimento-6163b",versaoEstrutura:"v1",periodo:bkPeriodoLog(F),documentosPorColecao:porColecao,colecoes:bkSerializar(dados)};
+      bkBaixar(JSON.stringify(pacote,null,1),"TMAC_Backup_"+stamp+(F.ativo?"_"+bkSufixoPeriodo(F):"")+".json","application/json");
     }
     try{
-      await addDoc(collection(db,"backups_log"),{geradoEm:Timestamp.fromDate(agora),geradoPor:"Administrador",totalDocs,porColecao,formatos,calculados:calc});
+      await addDoc(collection(db,"backups_log"),{geradoEm:Timestamp.fromDate(agora),geradoPor:"Administrador",totalDocs,porColecao,formatos,calculados:calc,periodo:bkPeriodoLog(F)});
     }catch(e){console.error("backups_log (gravação)",e);}
     bkRenderCols();
     bkCarregarHistorico();
-    bkToast("✅ Backup gerado — "+bkFmtN(totalDocs)+" documentos exportados");
+    bkToast("✅ "+(F.ativo?"Backup por período":"Backup")+" gerado — "+bkFmtN(totalDocs)+" documentos exportados");
   }catch(e){
     console.error("Backup",e);
     bkToast("❌ "+e.message,true);
