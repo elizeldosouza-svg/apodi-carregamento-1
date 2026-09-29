@@ -384,6 +384,65 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .bk-opt.off{opacity:.45;cursor:not-allowed}
 .bk-hist .hp{font-size:9px;font-weight:700;color:var(--ye)}
 .bk-hist .hp.t{color:var(--gr)}
+/* ═══ Backup diário incremental (OneDrive) ═══ */
+.bk-modo{display:flex;gap:8px;padding:12px 18px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.bk-modo-btn{flex:0 0 auto;padding:9px 16px;border:2px solid var(--b2);border-radius:var(--rs);background:var(--bg2);color:var(--t2);font-size:12px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:8px}
+.bk-modo-btn small{font-size:10px;font-weight:600;color:var(--t3)}
+.bk-modo-btn.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.07)}
+.bk-modo-btn.on.dia{border-color:var(--gr);color:var(--gr);background:rgba(0,232,150,.07)}
+.bd-grid{display:grid;grid-template-columns:420px 1fr;gap:14px;padding:16px}
+@media(max-width:1000px){.bd-grid{grid-template-columns:1fr}}
+.bd-uni{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid rgba(0,232,150,.4);color:var(--gr);background:rgba(0,232,150,.08);font-size:11px;font-weight:800}
+.bd-pasta{display:flex;align-items:center;gap:10px;padding:12px;border:1.5px dashed var(--b2);border-radius:var(--rs);background:var(--bg2);margin-top:10px}
+.bd-pasta.ok{border-style:solid;border-color:rgba(0,232,150,.45)}
+.bd-pasta .pi{font-size:22px}
+.bd-pasta .pt{font-size:12px;font-weight:700;word-break:break-all}
+.bd-pasta .ps{font-size:10px;color:var(--t3);margin-top:2px;font-family:monospace}
+.bd-pasta .pb{margin-left:auto}
+.bd-perm{display:none;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border-radius:var(--rs);background:rgba(255,208,0,.08);border:1px solid rgba(255,208,0,.3);color:var(--ye);font-size:11px}
+.bd-perm .pb{margin-left:auto;border-color:var(--ye);color:var(--ye)}
+.bd-acoes{display:flex;flex-direction:column;gap:8px}
+.bd-go{width:100%;padding:14px;border:none;border-radius:var(--rs);font-size:14px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:.8px;background:linear-gradient(135deg,var(--gr),#00a86b);color:#000;font-family:'Inter',sans-serif}
+.bd-go2{width:100%;padding:11px;border:1.5px solid var(--ye);border-radius:var(--rs);font-size:12px;font-weight:800;cursor:pointer;background:rgba(255,208,0,.07);color:var(--ye);font-family:'Inter',sans-serif}
+.bd-go3{width:100%;padding:10px;border:1px solid var(--b2);border-radius:var(--rs);font-size:11.5px;font-weight:700;cursor:pointer;background:transparent;color:var(--t2);font-family:'Inter',sans-serif}
+.bd-go:disabled,.bd-go2:disabled,.bd-go3:disabled{opacity:.35;cursor:not-allowed}
+.bd-serie{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t2);margin-top:10px;flex-wrap:wrap}
+.bd-serie input{background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--tx);padding:4px 8px;font-size:11px;font-family:'Inter',sans-serif}
+.bd-cal-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.bd-cal-head .m{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--tx);min-width:150px;text-align:center}
+.bd-cal-head button{width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--t2);cursor:pointer}
+.bd-leg{margin-left:auto;display:flex;gap:10px;font-size:10px;color:var(--t2);flex-wrap:wrap}
+.bd-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.bd-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.bd-dow{text-align:center;font-size:9px;font-weight:800;color:var(--t3);text-transform:uppercase;padding:2px 0}
+.bd-day{border:1px solid var(--bd);border-radius:8px;padding:6px 7px;min-height:58px;background:var(--bg2);cursor:pointer;display:flex;flex-direction:column;gap:2px;transition:all .15s;font-family:'Inter',sans-serif}
+.bd-day .n{font-size:12px;font-weight:800;color:var(--tx)}
+.bd-day .st{font-size:9px;font-weight:700}
+.bd-day .q{font-size:9px;color:var(--t3);font-family:monospace}
+.bd-day.vz{visibility:hidden}
+.bd-day.fut,.bd-day.antes{opacity:.3;cursor:default}
+.bd-day.ok{border-color:rgba(0,232,150,.45);background:rgba(0,232,150,.06)}
+.bd-day.ok .st{color:var(--gr)}
+.bd-day.falta{border-color:rgba(255,208,0,.5);background:rgba(255,208,0,.06)}
+.bd-day.falta .st{color:var(--ye)}
+.bd-day.aberta{border-color:rgba(255,140,0,.55);background:rgba(255,140,0,.07)}
+.bd-day.aberta .st{color:#ff9f40}
+.bd-day.hoje{border-color:var(--bl);background:rgba(0,212,255,.06)}
+.bd-day.hoje .st{color:var(--bl)}
+.bd-day.sel{box-shadow:0 0 0 2px var(--tx)}
+.bd-day.gerando{border-color:var(--bl);animation:bdpulse .8s ease-in-out infinite}
+@keyframes bdpulse{50%{background:rgba(0,212,255,.15)}}
+.bd-tree{font-family:monospace;font-size:11px;line-height:1.7;color:var(--t2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;max-height:230px;overflow:auto;white-space:pre}
+.bd-tree b{color:var(--tx)}
+.bd-tree .g{color:var(--gr)}
+.bd-tree .c{color:var(--t3)}
+.bd-conteudo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bd-conteudo div{padding:9px 10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg2);font-size:10.5px;color:var(--t2);line-height:1.5}
+.bd-conteudo b{color:var(--tx);font-family:monospace;font-size:11px}
+.bd-log{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg2);margin-bottom:5px;font-size:11px;flex-wrap:wrap}
+.bd-log .d{font-family:monospace;font-weight:700}
+.bd-log .i{color:var(--t3);font-size:10px}
+.bd-log .ok{margin-left:auto;color:var(--gr);font-weight:800;font-size:10px}
 </style>
 </head>
 <body>
@@ -763,7 +822,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <div class="wrap">
       <div class="tcard">
         <div class="thead-bar bk-head"><span class="bk-titulo">💾 Backup & Exportação — Firestore completo</span>
-          <div class="bk-filtros">
+          <div class="bk-filtros" id="bk-filtros">
             <span class="bk-rlabel">📅 Período:</span>
             <button class="pb bk-per bk-tudo on" onclick="bkSetPer('tudo',this)">Tudo</button>
             <button class="pb bk-per" onclick="bkSetPer('hoje',this)">Hoje</button>
@@ -805,6 +864,11 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <button class="pb" onclick="voltarBackup()">← Voltar</button>
           </div>
         </div>
+        <div class="bk-modo">
+          <button class="bk-modo-btn on" id="bm-manual" onclick="bdModo('manual')">📥 Exportação manual <small>download · como hoje</small></button>
+          <button class="bk-modo-btn" id="bm-dia" onclick="bdModo('dia')">📁 Backup diário OneDrive <small>incremental por dia</small></button>
+        </div>
+        <div id="bk-manual">
         <div class="bk-resumo" id="bk-resumo"></div>
         <div class="bk-grid">
           <div>
@@ -848,6 +912,58 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <div class="bk-card">
               <div class="bk-ct">Últimos backups <span class="sp">coleção backups_log</span></div>
               <div id="bk-hist-list"><div class="bk-vazio">Carregando…</div></div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div id="bk-diario" style="display:none">
+          <div class="bd-grid">
+            <div>
+              <div class="bk-card">
+                <div class="bk-ct">Destino <span class="sp">pasta sincronizada do OneDrive</span></div>
+                <span class="bd-uni">🏭 Unidade: Quixeré</span>
+                <div class="bd-pasta" id="bd-pasta"></div>
+                <div class="bd-perm" id="bd-perm">🔒 O Chrome pede permissão novamente a cada sessão.<button class="pb" onclick="bdPermitir()">Permitir acesso</button></div>
+                <div class="bd-serie">📌 Início da série: <input type="date" id="bd-serie" onchange="bdSerieMudou()"> <span style="color:var(--t3)">dias anteriores não são cobrados como faltantes</span></div>
+              </div>
+              <div class="bk-card">
+                <div class="bk-ct">Gerar</div>
+                <div class="bd-acoes">
+                  <button class="bd-go" id="bd-go-ontem" onclick="bdAcao('ontem')"></button>
+                  <button class="bd-go2" id="bd-go-falt" onclick="bdAcao('falt')"></button>
+                  <button class="bd-go3" id="bd-go-sel" onclick="bdAcao('sel')"></button>
+                </div>
+                <div class="bk-alert" style="margin-top:10px">Cada dia lê apenas os registros daquele dia (~300 a 600 leituras). Gerar um dia já existente <b>substitui</b> os arquivos — não duplica.</div>
+              </div>
+              <div class="bk-card">
+                <div class="bk-ct">Conteúdo de cada dia</div>
+                <div class="bd-conteudo">
+                  <div><b>TMAC_AAAA-MM-DD.xlsx</b><br>fCaminhoes · fEtapas → <b>só concluídos pela data do faturamento</b><br>fParadas → pela data de início<br>fExcluidos → pela data da exclusão<br>fJustificativas · fChamadas → pela data do registro<br>_Info → data, unidade, contagens</div>
+                  <div><b>TMAC_AAAA-MM-DD.json</b><br>Os mesmos documentos do dia, no formato bruto do Firestore (datas em ISO).<br><br><b>_Cadastros/</b><br>dOperadores (sem senha) · dEtapas — <b>substituído</b> a cada gravação</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="bk-card">
+                <div class="bd-cal-head">
+                  <button onclick="bdMes(-1)">‹</button><span class="m" id="bd-mes"></span><button onclick="bdMes(1)">›</button>
+                  <div class="bd-leg">
+                    <span><i style="background:rgba(0,232,150,.5)"></i>Gerado</span>
+                    <span><i style="background:rgba(255,208,0,.55)"></i>Faltando</span>
+                    <span><i style="background:rgba(255,140,0,.6)"></i>Parada aberta / parcial — gerar de novo</span>
+                    <span><i style="background:var(--bl)"></i>Hoje (parcial)</span>
+                  </div>
+                </div>
+                <div class="bd-cal" id="bd-cal"></div>
+              </div>
+              <div class="bk-card">
+                <div class="bk-ct">Estrutura no OneDrive <span class="sp">lida da própria pasta</span></div>
+                <div class="bd-tree" id="bd-tree"></div>
+              </div>
+              <div class="bk-card">
+                <div class="bk-ct">Últimas gravações <span class="sp">coleção backups_log</span></div>
+                <div id="bd-log"><div class="bk-vazio">Carregando…</div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -2840,6 +2956,7 @@ window.abrirBackup=()=>{
   if(BK_CAL_Y==null){const t=bkHojeFtz();BK_CAL_Y=t.getFullYear();BK_CAL_M=t.getMonth();}
   bkRenderTabs(0);bkAtualizarFiltroUI();
   bkContar();bkCarregarHistorico();
+  bdModo("manual");
 };
 window.voltarBackup=()=>{
   if(BK_RODANDO){bkToast("Aguarde o backup terminar.",true);return;}
@@ -3227,6 +3344,297 @@ window.gerarBackup=async function(){
     bkToast("❌ "+e.message,true);
   }finally{
     BK_RODANDO=false;btn.disabled=false;btn.textContent="Gerar backup";
+  }
+};
+// ── Backup diário incremental → OneDrive (File System Access API, Chrome/Edge) ──
+const BD_UNIDADE="Quixere",BD_PASTA="Faturamento_Quixere",BD_SERIE_PADRAO="2026-09-01";
+let BD_ROOT=null,BD_PERM=false,BD_SEL=null,BD_ST={},BD_CAD=false,BD_VY=null,BD_VM=null,BD_INIT=false,BD_GERANDO=null;
+const bdHoje=()=>bkIsoLocal(bkHojeFtz());
+function bdSomar(dia,n){const[y,m,d]=dia.split("-").map(Number);return bkIsoLocal(new Date(y,m-1,d+n));}
+const bdOntem=()=>bdSomar(bdHoje(),-1);
+const bdInicioDia=dia=>new Date(dia+"T00:00:00-03:00"); // Fortaleza = UTC-3 fixo
+const bdEsc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function bdSerie(){try{return localStorage.getItem("tmac_bk_serie")||BD_SERIE_PADRAO;}catch(e){return BD_SERIE_PADRAO;}}
+// Guarda a pasta escolhida (handle) no IndexedDB para não precisar escolher de novo
+function bdIDB(){return new Promise((res,rej)=>{const r=indexedDB.open("tmac_backup_diario",1);r.onupgradeneeded=()=>r.result.createObjectStore("handles");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function bdIDBGet(k){const idb=await bdIDB();return new Promise((res,rej)=>{const q=idb.transaction("handles").objectStore("handles").get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>rej(q.error);});}
+async function bdIDBSet(k,v){const idb=await bdIDB();return new Promise((res,rej)=>{const t=idb.transaction("handles","readwrite");t.objectStore("handles").put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
+async function bdVerificarPerm(){
+  if(!BD_ROOT){BD_PERM=false;return;}
+  try{BD_PERM=(await BD_ROOT.queryPermission({mode:"readwrite"}))==="granted";}catch(e){BD_PERM=false;}
+}
+window.bdPermitir=async function(){
+  try{BD_PERM=(await BD_ROOT.requestPermission({mode:"readwrite"}))==="granted";}catch(e){BD_PERM=false;}
+  if(BD_PERM){bkToast("🔓 Acesso liberado para esta sessão");await bdCarregarPasta();}
+  else bkToast("Permissão negada pelo navegador.",true);
+  bdRender();
+};
+window.bdEscolherPasta=async function(){
+  if(BK_RODANDO)return;
+  if(!window.showDirectoryPicker){bkToast("Este navegador não permite gravar em pasta. Use o Chrome ou Edge no computador.",true);return;}
+  try{
+    const h=await window.showDirectoryPicker({id:"tmac-faturamento-quixere",mode:"readwrite"});
+    if(h.name!==BD_PASTA&&!confirm('A pasta escolhida se chama "'+h.name+'" e não "'+BD_PASTA+'".\nUsar mesmo assim?'))return;
+    BD_ROOT=h;BD_PERM=true;
+    try{await bdIDBSet("root",h);}catch(e){console.warn("Pasta não persistida (será pedida de novo na próxima vez)",e);}
+    bkToast("📁 Pasta conectada: "+h.name);
+    await bdCarregarPasta();
+  }catch(e){if(!e||e.name!=="AbortError"){console.error(e);bkToast("Não foi possível abrir a pasta: "+(e&&e.message),true);}}
+  bdRender();
+};
+async function bdLerDia(h,dia){
+  const r={xlsx:false,json:false,resumo:null};
+  try{await h.getFileHandle("TMAC_"+dia+".xlsx");r.xlsx=true;}catch(e){}
+  try{
+    const fh=await h.getFileHandle("TMAC_"+dia+".json");r.json=true;
+    const head=await (await fh.getFile()).slice(0,2000).text();
+    const m=head.match(/^\{"resumo":(\{[^{}]*\})/);
+    if(m)r.resumo=JSON.parse(m[1]);
+  }catch(e){}
+  return r;
+}
+async function bdCarregarPasta(){
+  BD_ST={};BD_CAD=false;
+  if(!BD_ROOT||!BD_PERM){bdRender();return;}
+  const ini=bdSerie(),hoje=bdHoje(),meses=[];
+  let y=+ini.slice(0,4),m=+ini.slice(5,7);const yf=+hoje.slice(0,4),mf=+hoje.slice(5,7);
+  while(y<yf||(y===yf&&m<=mf)){meses.push(y+"-"+bkPad(m));m++;if(m>12){m=1;y++;}}
+  try{
+    for(const ym of meses){
+      let md;try{md=await BD_ROOT.getDirectoryHandle(ym);}catch(e){continue;}
+      for await(const[nome,h] of md.entries()){
+        if(h.kind!=="directory"||!/^\d{4}-\d{2}-\d{2}$/.test(nome))continue;
+        BD_ST[nome]=await bdLerDia(h,nome);
+      }
+    }
+    try{const c=await BD_ROOT.getDirectoryHandle("_Cadastros");await c.getFileHandle("TMAC_Cadastros.xlsx");BD_CAD=true;}catch(e){}
+  }catch(e){console.error("Leitura da pasta",e);bkToast("Não foi possível ler a pasta: "+e.message,true);}
+  bdRender();
+}
+function bdStatus(dia){
+  const hoje=bdHoje(),s=BD_ST[dia];
+  if(dia>hoje)return{k:"fut"};
+  if(dia<bdSerie())return{k:"antes"};
+  const ok=s&&s.xlsx&&s.json,r=(s&&s.resumo)||{};
+  if(dia===hoje)return{k:"hoje",txt:"parcial",q:ok?r.caminhoes:null};
+  if(!ok)return{k:"falta"};
+  if(r.parcial)return{k:"aberta",txt:"⏳ parcial — gerar de novo",q:r.caminhoes};
+  if(r.paradasAbertas>0)return{k:"aberta",txt:"⏳ parada aberta",q:r.caminhoes};
+  return{k:"ok",txt:"✓ xlsx + json",q:r.caminhoes};
+}
+function bdFaltantes(){
+  const r=[],ontem=bdOntem();
+  for(let d=bdSerie();d<=ontem;d=bdSomar(d,1)){const k=bdStatus(d).k;if(k==="falta"||k==="aberta")r.push(d);}
+  return r;
+}
+const BD_MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+window.bdMes=function(d){BD_VM+=d;if(BD_VM<0){BD_VM=11;BD_VY--;}if(BD_VM>11){BD_VM=0;BD_VY++;}bdRender();};
+window.bdClick=function(d){if(BK_RODANDO)return;BD_SEL=BD_SEL===d?null:d;bdRender();};
+window.bdSerieMudou=function(){
+  const v=document.getElementById("bd-serie").value;
+  if(v){try{localStorage.setItem("tmac_bk_serie",v);}catch(e){}}
+  bdCarregarPasta();
+};
+window.bdAcao=function(a){
+  if(a==="ontem")bdGerar([bdOntem()]);
+  else if(a==="falt")bdGerar(bdFaltantes());
+  else if(a==="sel"&&BD_SEL)bdGerar([BD_SEL]);
+};
+function bdRender(){
+  const pr=document.getElementById("bd-pasta");if(!pr)return;
+  const sup=!!window.showDirectoryPicker,pronto=!!(BD_ROOT&&BD_PERM&&!BK_RODANDO);
+  pr.className="bd-pasta"+(BD_ROOT&&BD_PERM?" ok":"");
+  if(!sup)pr.innerHTML='<span class="pi">🚫</span><div><div class="pt">Navegador sem suporte</div><div class="ps">Use o Chrome ou Edge no computador</div></div>';
+  else if(BD_ROOT)pr.innerHTML='<span class="pi">'+(BD_PERM?"✅":"🔒")+'</span><div><div class="pt">'+bdEsc(BD_ROOT.name)+'</div><div class="ps">'+(BD_PERM?"Pasta conectada · lida em tempo real":"Conectada — falta liberar o acesso nesta sessão")+'</div></div><button class="pb" onclick="bdEscolherPasta()">Trocar</button>';
+  else pr.innerHTML='<span class="pi">📁</span><div><div class="pt">Nenhuma pasta conectada</div><div class="ps">Escolha OneDrive › '+BD_PASTA+' (uma única vez)</div></div><button class="pb" onclick="bdEscolherPasta()" style="border-color:var(--gr);color:var(--gr)">Escolher pasta</button>';
+  document.getElementById("bd-perm").style.display=(BD_ROOT&&!BD_PERM)?"flex":"none";
+  const f=bdFaltantes(),o=bdOntem(),so=bdStatus(o);
+  const b1=document.getElementById("bd-go-ontem"),b2=document.getElementById("bd-go-falt"),b3=document.getElementById("bd-go-sel");
+  b1.textContent="Gerar ontem · "+bkBR(o).slice(0,5)+(so.k==="ok"?" (já gerado — substituir)":"");b1.disabled=!pronto;
+  b2.textContent="Gerar dias faltantes ("+f.length+")";b2.disabled=!pronto||!f.length;
+  b3.textContent=BD_SEL?"Gerar dia selecionado · "+bkBR(BD_SEL).slice(0,5):"Selecione um dia no calendário";b3.disabled=!pronto||!BD_SEL;
+  // calendário
+  document.getElementById("bd-mes").textContent=BD_MESES[BD_VM]+" "+BD_VY;
+  let h="";["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].forEach(x=>{h+='<div class="bd-dow">'+x+"</div>";});
+  const p=new Date(BD_VY,BD_VM,1).getDay(),n=new Date(BD_VY,BD_VM+1,0).getDate();
+  for(let i=0;i<p;i++)h+='<div class="bd-day vz"></div>';
+  for(let d=1;d<=n;d++){
+    const ds=BD_VY+"-"+bkPad(BD_VM+1)+"-"+bkPad(d),st=bdStatus(ds);
+    let cl="bd-day",txt="";
+    if(st.k==="fut")cl+=" fut";
+    else if(st.k==="antes"){cl+=" antes";txt="fora da série";}
+    else if(st.k==="hoje"){cl+=" hoje";txt=st.txt;}
+    else if(st.k==="falta"){cl+=" falta";txt="⚠ faltando";}
+    else if(st.k==="aberta"){cl+=" aberta";txt=st.txt;}
+    else{cl+=" ok";txt=st.txt;}
+    if(BD_SEL===ds)cl+=" sel";
+    if(BD_GERANDO===ds)cl+=" gerando";
+    const clk=(st.k==="fut"||st.k==="antes")?"":' onclick="bdClick(\''+ds+'\')"';
+    h+='<div class="'+cl+'"'+clk+'><span class="n">'+d+'</span><span class="st">'+txt+'</span><span class="q">'+(st.q!=null?st.q+" cam.":"")+"</span></div>";
+  }
+  document.getElementById("bd-cal").innerHTML=h;
+  // estrutura (lida da pasta)
+  let t="";
+  if(!BD_ROOT||!BD_PERM)t='<span class="c">(conecte a pasta para visualizar)</span>';
+  else{
+    const meses={};Object.keys(BD_ST).sort().forEach(k=>{(meses[k.slice(0,7)]=meses[k.slice(0,7)]||[]).push(k);});
+    t="<b>📁 "+bdEsc(BD_ROOT.name)+"/</b>\n";
+    const mk=Object.keys(meses).sort().reverse();
+    mk.forEach((m,mi)=>{
+      t+="├── <b>📁 "+m+"/</b>  <span class=\"c\">("+meses[m].length+" dia"+(meses[m].length!==1?"s":"")+")</span>\n";
+      const dd=meses[m].slice().reverse(),lim=mi===0?4:2;
+      dd.slice(0,lim).forEach(k=>{t+="│   ├── 📁 "+k+'/  <span class="g">TMAC_'+k+".xlsx · TMAC_"+k+".json</span>\n";});
+      if(dd.length>lim)t+='│   <span class="c">└── … +'+(dd.length-lim)+"</span>\n";
+    });
+    t+="└── <b>📁 _Cadastros/</b>  "+(BD_CAD?'<span class="g">TMAC_Cadastros.xlsx · TMAC_Cadastros.json</span>':'<span class="c">(criada na primeira gravação)</span>');
+  }
+  document.getElementById("bd-tree").innerHTML=t;
+}
+async function bdCarregarLog(){
+  const el=document.getElementById("bd-log");if(!el)return;
+  try{
+    const snap=await getDocs(query(collection(db,"backups_log"),orderBy("geradoEm","desc"),limit(20)));
+    const its=snap.docs.map(d=>d.data()).filter(r=>r.modo==="diario").slice(0,5);
+    el.innerHTML=its.length?its.map(r=>{
+      const dt=r.geradoEm?.toDate?r.geradoEm.toDate().toLocaleString("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).replace(",",""):"—";
+      const ds=r.dias||[];
+      return '<div class="bd-log"><span class="d">'+dt+'</span><span class="i">'+ds.length+" dia"+(ds.length!==1?"s":"")+(ds.length?" ("+bkBR(ds[0]).slice(0,5)+(ds.length>1?" → "+bkBR(ds[ds.length-1]).slice(0,5):"")+")":"")+" · "+bkFmtN(r.totalDocs)+' docs</span><span class="ok">✓ gravado</span></div>';
+    }).join(""):'<div class="bk-vazio">Nenhuma gravação diária registrada ainda.</div>';
+  }catch(e){console.error("backups_log (diário)",e);el.innerHTML='<div class="bk-vazio">Não foi possível carregar o histórico.</div>';}
+}
+async function bdInit(){
+  if(!BD_INIT){
+    BD_INIT=true;
+    try{BD_ROOT=await bdIDBGet("root");}catch(e){BD_ROOT=null;}
+    const t=bkHojeFtz();BD_VY=t.getFullYear();BD_VM=t.getMonth();
+    document.getElementById("bd-serie").value=bdSerie();
+  }
+  await bdVerificarPerm();
+  bdRender();
+  if(BD_ROOT&&BD_PERM)await bdCarregarPasta();
+  bdCarregarLog();
+}
+window.bdModo=function(m){
+  if(BK_RODANDO){bkToast("Aguarde o backup terminar.",true);return;}
+  document.getElementById("bm-manual").className="bk-modo-btn"+(m==="manual"?" on":"");
+  document.getElementById("bm-dia").className="bk-modo-btn"+(m==="dia"?" on dia":"");
+  document.getElementById("bk-manual").style.display=m==="manual"?"block":"none";
+  document.getElementById("bk-diario").style.display=m==="dia"?"block":"none";
+  document.getElementById("bk-filtros").style.visibility=m==="manual"?"visible":"hidden";
+  if(m==="dia")bdInit();
+};
+// ── Coleta do dia: cada consulta lê só os registros daquele dia (fuso Fortaleza) ──
+async function bdColetarDia(dia){
+  const ini=Timestamp.fromDate(bdInicioDia(dia)),fim=Timestamp.fromDate(bdInicioDia(bdSomar(dia,1)));
+  const docs=s=>s.docs.map(d=>({id:d.id,...d.data()}));
+  // concluídos: pela data do faturamento (mesma âncora do dataRef)
+  const cam=docs(await getDocs(query(collection(db,"caminhoes_rastreio"),where("faturamento.ts",">=",ini),where("faturamento.ts","<",fim)))).filter(c=>c.tipo!=="parada_sistema");
+  // paradas: documentos "inicio" do dia + documentos "fim" ligados pelo paradaId
+  let pIni;
+  try{pIni=docs(await getDocs(query(collection(db,"caminhoes_rastreio"),where("tipo","==","parada_sistema"),where("data","==",dia))));}
+  catch(e){console.warn("Consulta de paradas em modo alternativo",e);pIni=docs(await getDocs(query(collection(db,"caminhoes_rastreio"),where("data","==",dia)))).filter(c=>c.tipo==="parada_sistema");}
+  const inicios=pIni.filter(c=>c.subtipo==="inicio"),ids=[...new Set(inicios.map(c=>c.paradaId).filter(Boolean))];
+  let fins=[];
+  for(let i=0;i<ids.length;i+=30){
+    const r=docs(await getDocs(query(collection(db,"caminhoes_rastreio"),where("paradaId","in",ids.slice(i,i+30)))));
+    fins=fins.concat(r.filter(c=>c.subtipo==="fim"));
+  }
+  const exc=docs(await getDocs(query(collection(db,"caminhoes_excluidos"),where("excluidoEm",">=",ini),where("excluidoEm","<",fim)))).filter(c=>c.tipo!=="parada_sistema");
+  const jus=docs(await getDocs(query(collection(db,"justificativas"),where("data","==",dia))));
+  const cha=docs(await getDocs(query(collection(db,"chamadas_fila"),where("data","==",dia))));
+  return{cam,par:inicios.concat(fins),exc,jus,cha};
+}
+// Esquema fixo (o Power BI combina os arquivos da pasta pelas colunas do primeiro) — dia sem registro sai só com o cabeçalho
+const BD_H_JUS=["id","placa","ac","motivo","tipo","tipoCarga","tipoCimento","data","criadoEm"];
+const BD_H_CHA=["id","numero","placa","ac","tipoCarga","tipoCimento","veiculoId","data","qtdChamadas","tsPrimeiraChamada","criadoEm","status"];
+function bdFixo(d,headers,datas){
+  const flat=bkAchatar(d,"",{},datas),o={},extra={};
+  headers.forEach(h=>{o[h]=flat[h]==null?"":flat[h];});
+  Object.keys(flat).forEach(k=>{if(!headers.includes(k))extra[k]=flat[k];});
+  o.outros_campos=Object.keys(extra).length?JSON.stringify(extra):"";
+  return o;
+}
+function bdAba(rows,headers,datas){return rows.length?bkSheet(rows,datas):XLSX.utils.aoa_to_sheet([headers]);}
+function bdMontarXlsx(dia,D,agora,resumo){
+  const dJ=new Set(),dC=new Set(),wb=XLSX.utils.book_new();
+  const camRows=D.cam.map(c=>bkLinhaCaminhao(c,true));
+  const etRows=D.cam.flatMap(bkLinhasEtapas);
+  const parRows=bkLinhasParadas(D.par);
+  const excRows=D.exc.map(c=>{
+    const r=bkLinhaCaminhao(c,true);
+    r.idOriginal=c.idOriginal||"";r.excluidoMotivo=c.excluidoMotivo||"";r.excluidoPor=c.excluidoPor||"";
+    r.excluidoEm=bkSerial(c.excluidoEm?.toDate?c.excluidoEm.toDate():null);
+    return r;
+  });
+  const hCam=Object.keys(bkLinhaCaminhao({id:""},true));
+  const hEt=Object.keys(bkLinhasEtapas({id:""})[0]);
+  const hPar=Object.keys(bkLinhasParadas([{subtipo:"inicio",paradaId:""}])[0]);
+  const hExc=hCam.concat(["idOriginal","excluidoMotivo","excluidoPor","excluidoEm"]);
+  const jusRows=D.jus.map(d=>bdFixo(d,BD_H_JUS,dJ)),chaRows=D.cha.map(d=>bdFixo(d,BD_H_CHA,dC));
+  XLSX.utils.book_append_sheet(wb,bdAba(camRows,hCam),"fCaminhoes");
+  XLSX.utils.book_append_sheet(wb,bdAba(etRows,hEt),"fEtapas");
+  XLSX.utils.book_append_sheet(wb,bdAba(parRows,hPar),"fParadas");
+  XLSX.utils.book_append_sheet(wb,bdAba(excRows,hExc),"fExcluidos");
+  XLSX.utils.book_append_sheet(wb,bdAba(jusRows,BD_H_JUS.concat("outros_campos"),dJ),"fJustificativas");
+  XLSX.utils.book_append_sheet(wb,bdAba(chaRows,BD_H_CHA.concat("outros_campos"),dC),"fChamadas");
+  XLSX.utils.book_append_sheet(wb,bkSheet([{unidade:BD_UNIDADE,dia:dia,geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1-dia",tipoBackup:"Diário",
+    caminhoes:resumo.caminhoes,paradas:resumo.paradas,paradasAbertas:resumo.paradasAbertas,excluidos:resumo.excluidos,justificativas:resumo.justificativas,chamadas:resumo.chamadas,parcial:bkSN(resumo.parcial)}]),"_Info");
+  return new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+}
+async function bdEscrever(dir,nome,blob){
+  const fh=await dir.getFileHandle(nome,{create:true});
+  const w=await fh.createWritable();
+  try{await w.write(blob);await w.close();}catch(e){try{await w.abort();}catch(_){}throw e;}
+}
+async function bdGravarCadastros(agora){
+  const snap=await getDocs(collection(db,"operadores_acesso"));
+  const ops=snap.docs.map(d=>{const o={id:d.id,...d.data()};delete o.senha;return o;});
+  const dO=new Set(),wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,bkSheet(ops.map(o=>bkAchatar(o,"",{},dO)),dO),"dOperadores");
+  XLSX.utils.book_append_sheet(wb,bkSheet(BK_ETAPAS.map(e=>({...e}))),"dEtapas");
+  XLSX.utils.book_append_sheet(wb,bkSheet([{unidade:BD_UNIDADE,geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1-dia",operadores:ops.length}]),"_Info");
+  const dir=await BD_ROOT.getDirectoryHandle("_Cadastros",{create:true});
+  await bdEscrever(dir,"TMAC_Cadastros.xlsx",new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  const txt=JSON.stringify({resumo:{unidade:BD_UNIDADE,geradoEm:agora.toISOString(),geradoPor:"Administrador",operadores:ops.length,versaoEstrutura:"v1-dia"},dados:bkSerializar({operadores_acesso:ops,dEtapas:BK_ETAPAS})});
+  await bdEscrever(dir,"TMAC_Cadastros.json",new Blob([txt],{type:"application/json"}));
+  BD_CAD=true;
+  return ops.length;
+}
+window.bdGerar=async function(dias){
+  if(BK_RODANDO||!dias.length)return;
+  if(!BD_ROOT||!BD_PERM){bkToast("Conecte a pasta e libere o acesso primeiro.",true);return;}
+  dias=dias.slice().sort();
+  BK_RODANDO=true;bdRender();
+  const agora=new Date(),hoje=bdHoje(),feitos=[];let totalDocs=0,diaAtual=null;
+  try{
+    totalDocs+=await bdGravarCadastros(agora);
+    for(const dia of dias){
+      diaAtual=dia;BD_GERANDO=dia;BD_VY=+dia.slice(0,4);BD_VM=+dia.slice(5,7)-1;bdRender();
+      const D=await bdColetarDia(dia);
+      const abertas=D.par.filter(c=>c.subtipo==="inicio"&&!D.par.some(f=>f.subtipo==="fim"&&f.paradaId===c.paradaId)).length;
+      const resumo={unidade:BD_UNIDADE,dia,geradoEm:new Date().toISOString(),geradoPor:"Administrador",caminhoes:D.cam.length,
+        paradas:D.par.filter(c=>c.subtipo==="inicio").length,paradasAbertas:abertas,excluidos:D.exc.length,justificativas:D.jus.length,chamadas:D.cha.length,
+        parcial:dia>=hoje,versaoEstrutura:"v1-dia"};
+      const blobX=bdMontarXlsx(dia,D,new Date(),resumo);
+      const txt='{"resumo":'+JSON.stringify(resumo)+',"dados":'+JSON.stringify(bkSerializar({caminhoes:D.cam,paradas:D.par,excluidos:D.exc,justificativas:D.jus,chamadas_fila:D.cha}))+"}";
+      const mes=await BD_ROOT.getDirectoryHandle(dia.slice(0,7),{create:true});
+      const pd=await mes.getDirectoryHandle(dia,{create:true});
+      await bdEscrever(pd,"TMAC_"+dia+".xlsx",blobX);
+      await bdEscrever(pd,"TMAC_"+dia+".json",new Blob([txt],{type:"application/json"}));
+      BD_ST[dia]={xlsx:true,json:true,resumo};
+      totalDocs+=D.cam.length+D.par.length+D.exc.length+D.jus.length+D.cha.length;
+      feitos.push(dia);
+    }
+    bkToast("✅ "+feitos.length+(feitos.length>1?" dias gravados":" dia gravado")+" em "+BD_ROOT.name);
+  }catch(e){
+    console.error("Backup diário",e);
+    bkToast("❌ Falha"+(diaAtual?" no dia "+bkBR(diaAtual).slice(0,5):"")+": "+e.message+(feitos.length?" ("+feitos.length+" dia(s) já gravado(s))":""),true);
+  }finally{
+    if(feitos.length){
+      try{await addDoc(collection(db,"backups_log"),{geradoEm:Timestamp.fromDate(agora),geradoPor:"Administrador",modo:"diario",unidade:BD_UNIDADE,dias:feitos,totalDocs,formatos:["xlsx","json"],calculados:true,periodo:{inicio:feitos[0],fim:feitos[feitos.length-1],horaDe:null,horaAte:null}});}
+      catch(e){console.error("backups_log (gravação diária)",e);}
+    }
+    BK_RODANDO=false;BD_GERANDO=null;BD_SEL=null;bdRender();bdCarregarLog();
   }
 };
 </script>
