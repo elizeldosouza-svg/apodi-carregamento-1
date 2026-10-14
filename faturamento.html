@@ -122,6 +122,40 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .fatf-drow span:last-child{color:var(--tx);text-align:right;font-weight:600}
 .fatf-op{color:var(--t3);font-weight:400;font-size:10.5px}
 
+/* Busca AC/Placa em aberto + Retorna para Posto1 */
+.fg-row-ac{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.fg-row-ac label{margin-bottom:0}
+.ac-busca-btn{background:transparent;border:1px solid var(--bd);border-radius:7px;color:var(--t2);font-size:13px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.ac-busca-btn:hover{border-color:var(--ac);color:var(--ac);background:rgba(0,232,150,.08)}
+.ba-inp-row{display:flex;gap:8px;margin-bottom:14px}
+.ba-inp{flex:1;background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:11px 14px;font-size:14px;outline:none}
+.ba-inp:focus{border-color:var(--ac)}
+.ba-hint{font-size:10.5px;color:var(--t3);margin:-8px 0 14px}
+.ba-empty{text-align:center;padding:30px 10px;color:var(--t3);font-size:12px}
+.ba-card{border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);padding:12px 14px;margin-bottom:10px}
+.ba-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+.ba-placa{font-family:monospace;font-size:17px;font-weight:800;letter-spacing:1px;color:var(--ac)}
+.ba-etapa{display:inline-block;font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:12px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.ba-et-posto1,.ba-et-portaria_inicio,.ba-et-portaria_fim{background:rgba(255,208,0,.12);color:#ffd000;border:1px solid rgba(255,208,0,.3)}
+.ba-et-triagem_inicio,.ba-et-triagem_fim{background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.3)}
+.ba-et-carregamento_inicio,.ba-et-carregamento_fim{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
+.ba-et-enlonamento_inicio,.ba-et-enlonamento_fim{background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+.ba-et-faturamento_aguardando{background:rgba(0,232,150,.12);color:var(--ac);border:1px solid rgba(0,232,150,.3)}
+.ba-sub{font-size:11px;color:var(--t2);margin-bottom:10px}
+.ba-sub b{color:var(--tx)}
+.ba-actions{display:flex;justify-content:flex-end}
+.ba-btn-retorna{display:flex;align-items:center;gap:6px;background:rgba(251,146,60,.1);border:1.5px solid #fb923c;color:#fb923c;font-weight:800;font-size:11.5px;padding:8px 12px;border-radius:9px;cursor:pointer}
+.ba-btn-retorna:hover{background:rgba(251,146,60,.18)}
+.ba-motivo-wrap{margin-top:4px}
+.ba-motivo-lbl{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;display:block}
+.ba-motivo-inp{width:100%;background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:10px 12px;font-size:13px;outline:none;resize:vertical;min-height:54px;font-family:inherit}
+.ba-motivo-inp:focus{border-color:#fb923c}
+.ba-confirm-row{display:flex;gap:10px;margin-top:10px}
+.ba-confirm-row button{flex:1;padding:10px;border-radius:9px;font-weight:800;font-size:12px;cursor:pointer}
+.ba-c-cancel{background:transparent;border:1.5px solid var(--bd);color:var(--t2)}
+.ba-c-ok{background:#fb923c;border:none;color:#2a1403}
+.ba-c-ok:disabled{opacity:.45;cursor:not-allowed}
+
 /* Registro de Parada / Ocorrência */
 .parada-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;background:rgba(255,208,0,.08);border:1.5px solid rgba(255,208,0,.35);border-radius:var(--rs);color:var(--ye,#ffd000);font-size:12.5px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px;margin-bottom:14px}
 .parada-btn:hover{background:rgba(255,208,0,.14)}
@@ -215,7 +249,10 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   </div>
   <div id="msg" class="msg"></div>
   <div class="fg">
-    <label>Número da AC</label>
+    <div class="fg-row-ac">
+      <label>Número da AC</label>
+      <button type="button" class="ac-busca-btn" onclick="abrirBuscaAC()" title="Buscar AC/Placa em aberto">🔍</button>
+    </div>
     <input id="ac" type="text" inputmode="numeric" placeholder="Ex: 629308" maxlength="6" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);chk()"/>
   </div>
   <div class="fg">
@@ -320,6 +357,23 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <h4>Situação atual</h4>
       <div class="fatf-drow"><span>Aguardando faturamento há</span><span id="fatf-sh-espera">—</span></div>
     </div>
+  </div>
+</div>
+
+<!-- BUSCA AC/PLACA EM ABERTO -->
+<div class="fatf-modal" id="ba-modal">
+  <div class="fatf-sheet">
+    <div class="fatf-sh-head">
+      <div>
+        <div class="fatf-sh-placa" style="font-size:15px">🔍 Buscar AC / Placa em aberto</div>
+        <div class="fatf-sh-sub">Qualquer etapa em aberto, qualquer data</div>
+      </div>
+      <button class="fatf-sh-close" onclick="fecharBuscaAC()">✕</button>
+    </div>
+    <div class="ba-inp-row">
+      <input class="ba-inp" id="ba-inp" placeholder="Digite a AC ou a Placa..." oninput="buscarAC()">
+    </div>
+    <div id="ba-res"></div>
   </div>
 </div>
 
@@ -428,7 +482,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,updateDoc,addDoc,doc,getDoc,setDoc,Timestamp,enableNetwork,disableNetwork}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,updateDoc,addDoc,doc,getDoc,setDoc,Timestamp,enableNetwork,disableNetwork,arrayUnion}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import{verificarSessao,fazerLogin,salvarNovaSenha,fazerLogout}from"./auth-tela.js";
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
@@ -648,6 +702,99 @@ window.abrirFatSheet=(id)=>{
   const fim=fatfEnlOuCarFim(c);
   document.getElementById("fatf-sh-espera").textContent=fim?fatfDurStr(Date.now()-fim.getTime()):"-";
   document.getElementById("fatf-modal").classList.add("show");
+};
+
+// ── Busca AC/Placa em aberto + Retorna para Posto1 ──────────────────────
+function baEtapaLabel(s){
+  const map={
+    posto1:"Entrada",
+    portaria_inicio:"Em Portaria",
+    portaria_fim:"Portaria OK",
+    triagem_inicio:"Em Triagem",
+    triagem_fim:"Triagem OK",
+    carregamento_inicio:"Carregando",
+    carregamento_fim:"Carregado",
+    enlonamento_inicio:"Enlonando",
+    enlonamento_fim:"Enlonado",
+    faturamento_aguardando:"Ag. Faturamento",
+  };
+  return map[s||"posto1"]||s||"Entrada";
+}
+function baListaAberta(){
+  return HD_REL.filter(c=>c.setorAtual&&c.setorAtual!=="concluido")
+    .sort((a,b)=>(b.criadoEm?.toMillis?.()||0)-(a.criadoEm?.toMillis?.()||0));
+}
+function baRenderResultados(list){
+  const el=document.getElementById("ba-res");
+  if(!list.length){el.innerHTML='<div class="ba-empty">Nenhum registro em aberto encontrado.</div>';return;}
+  el.innerHTML=list.map(c=>{
+    const cim=c.tipoCimento||c.tipoCimentoLabel||"";
+    const tp=FATF_CARGA_LB[c.tipoCarga]||c.tipoCarga||"-";
+    const op=c.entrada?.operador||"-";
+    return`<div class="ba-card" id="ba-card-${c.id}">
+      <div class="ba-top">
+        <span class="ba-placa">${c.placa||"-"}</span>
+        <span class="ba-etapa ba-et-${c.setorAtual||"posto1"}">${baEtapaLabel(c.setorAtual)}</span>
+      </div>
+      <div class="ba-sub">AC <b>${c.ac||"-"}</b> · ${tp}${cim?" · "+cim:""} · Operador: ${op} · ${c.data||"-"}</div>
+      <div class="ba-actions" id="ba-actions-${c.id}">
+        <button class="ba-btn-retorna" onclick="baIniciarRetorno('${c.id}')">↩️ Retorna AC para Posto1</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+window.abrirBuscaAC=()=>{
+  const inp=document.getElementById("ba-inp");
+  if(inp)inp.value="";
+  document.getElementById("ba-modal").classList.add("show");
+  baRenderResultados(baListaAberta());
+  setTimeout(()=>inp&&inp.focus(),50);
+};
+window.fecharBuscaAC=()=>{
+  document.getElementById("ba-modal").classList.remove("show");
+};
+window.buscarAC=()=>{
+  const q=(document.getElementById("ba-inp").value||"").trim().toUpperCase();
+  const base=baListaAberta();
+  if(!q){baRenderResultados(base);return;}
+  baRenderResultados(base.filter(c=>(c.ac||"").toUpperCase().includes(q)||(c.placa||"").toUpperCase().includes(q)));
+};
+window.baIniciarRetorno=(id)=>{
+  const area=document.getElementById("ba-actions-"+id);
+  if(!area)return;
+  area.innerHTML=`<div class="ba-motivo-wrap">
+      <label class="ba-motivo-lbl">Motivo:</label>
+      <textarea class="ba-motivo-inp" id="ba-motivo-${id}" placeholder="Explique o motivo do retorno para o Posto 1..." oninput="document.getElementById('ba-ok-${id}').disabled=!this.value.trim()"></textarea>
+    </div>
+    <div class="ba-confirm-row">
+      <button class="ba-c-cancel" onclick="baCancelarRetorno()">Cancelar</button>
+      <button class="ba-c-ok" id="ba-ok-${id}" disabled onclick="baConfirmarRetorno('${id}')">Confirmar retorno</button>
+    </div>`;
+};
+window.baCancelarRetorno=()=>{buscarAC();};
+window.baConfirmarRetorno=async(id)=>{
+  const c=HD_REL.find(d=>d.id===id);if(!c)return;
+  const motivoEl=document.getElementById("ba-motivo-"+id);
+  const motivo=motivoEl?motivoEl.value.trim():"";
+  if(!motivo)return;
+  const btn=document.getElementById("ba-ok-"+id);
+  if(btn){btn.disabled=true;btn.textContent="Enviando...";}
+  try{
+    await updateDoc(doc(db,"caminhoes_rastreio",id),{
+      setorAtual:"posto1",
+      retornosPosto1:arrayUnion({
+        ts:Timestamp.fromDate(new Date()),
+        operador:SESSAO.nome||null,
+        motivo,
+        deEtapa:c.setorAtual||null
+      })
+    });
+    fecharBuscaAC();
+    showMsg("ok","↩️ "+(c.placa||"")+" retornada para o Posto 1.");
+  }catch(e){
+    showMsg("er","Erro ao retornar: "+e.message);
+    if(btn){btn.disabled=false;btn.textContent="Confirmar retorno";}
+  }
 };
 
 // ── Filtro do relatório ──────────────────────────────────────────────
