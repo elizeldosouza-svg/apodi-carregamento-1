@@ -357,6 +357,102 @@ const MOTIVOS=[
   "DataSul","Falta de cimento","Concentração de veículos","Dificuldade de extração",
   "Falha do equipamento","Falha de processo","Falta de mão obra","TMAC online teste"
 ];
+// ── Cadastro em cascata (Admin › Editar Justificativas): Área Responsável → Justificativa Padrão → Detalhamento.
+// Se o cadastro ainda não existir, a lista fixa MOTIVOS acima continua valendo (fallback).
+let JC=null;
+onSnapshot(doc(db,"configuracoes","justificativa_opcoes"),snap=>{
+  const d=snap.exists()?snap.data():null;
+  JC=d&&(d.justificativas||[]).length?{areas:d.areas||[],justificativas:d.justificativas||[],detalhamentos:d.detalhamentos||[]}:null;
+  if(document.getElementById("lista")?.style.display==="block")render();
+},err=>console.error("justificativa_opcoes:",err));
+const jcEsc=t=>String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const jcAtivo=x=>!!x&&x.ativo!==false;
+// converte o valor já salvo (motivo / areaResponsavel / detalhamento) nos ids do cadastro
+function jcResolver(atual){
+  const vazio={a:"",j:"",d:"",legado:null};
+  if(!atual||!atual.motivo)return vazio;
+  let js=JC.justificativas.filter(j=>j.label===atual.motivo);
+  if(atual.areaResponsavel){
+    const f=js.filter(j=>{const a=JC.areas.find(x=>x.id===j.areaId);return a&&a.label===atual.areaResponsavel;});
+    if(f.length)js=f;
+  }
+  const j=js[0];
+  if(!j)return{...vazio,legado:atual.motivo};
+  const d=atual.detalhamento?JC.detalhamentos.find(x=>x.justId===j.id&&x.label===atual.detalhamento):null;
+  return{a:j.areaId,j:j.id,d:d?d.id:"",legado:null};
+}
+function jcOptsArea(sel){
+  const itens=JC.areas.filter(a=>(jcAtivo(a)&&JC.justificativas.some(j=>j.areaId===a.id&&jcAtivo(j)))||a.id===sel);
+  return`<option value="">— Selecione a área —</option>`+itens.map(a=>`<option value="${jcEsc(a.id)}"${a.id===sel?" selected":""}>${jcEsc(a.label)}${jcAtivo(a)?"":" (inativa)"}</option>`).join("");
+}
+function jcOptsJust(areaId,sel,legado){
+  if(!areaId&&!legado)return`<option value="">— Selecione a área primeiro —</option>`;
+  const itens=areaId?JC.justificativas.filter(j=>j.areaId===areaId&&(jcAtivo(j)||j.id===sel)):[];
+  const leg=legado?`<option value="__legado__" selected>${jcEsc(legado)} (valor atual)</option>`:"";
+  return`<option value="">— Selecione o motivo —</option>`+leg+itens.map(j=>`<option value="${jcEsc(j.id)}"${j.id===sel?" selected":""}>${jcEsc(j.label)}${jcAtivo(j)?"":" (inativa)"}</option>`).join("");
+}
+function jcOptsDet(justId,sel){
+  const itens=justId?JC.detalhamentos.filter(d=>d.justId===justId&&(jcAtivo(d)||d.id===sel)):[];
+  return{tem:itens.length>0,html:`<option value="">— Selecione o detalhamento —</option>`+itens.map(d=>`<option value="${jcEsc(d.id)}"${d.id===sel?" selected":""}>${jcEsc(d.label)}${jcAtivo(d)?"":" (inativo)"}</option>`).join("")};
+}
+// Campos do motivo. key = sufixo dos ids (mot-/area-/det-/savebtn-). Em fallback, devolve o select antigo.
+function jcCampos(key,atual,legacyOnchange){
+  if(!JC){
+    const m=(atual&&atual.motivo)||"";
+    return`<select class="motivo-select" id="mot-${key}" onchange="${legacyOnchange}"><option value="">— Selecione o motivo —</option>${MOTIVOS.map(x=>`<option value="${x}"${x===m?" selected":""}>${x}</option>`).join("")}</select>`;
+  }
+  const r=jcResolver(atual);
+  const det=jcOptsDet(r.j,r.d);
+  return`<div class="just-label">Área responsável:</div>
+    <select class="motivo-select" id="area-${key}" onchange="jcMudou('${key}','area')">${jcOptsArea(r.a)}</select>
+    <div class="just-label" style="margin-top:8px">Justificativa padrão:</div>
+    <select class="motivo-select" id="mot-${key}"${r.legado?` data-legado="${jcEsc(r.legado)}"`:""} onchange="jcMudou('${key}','just')">${jcOptsJust(r.a,r.j,r.legado)}</select>
+    <div id="det-wrap-${key}" style="display:${det.tem?"block":"none"}">
+      <div class="just-label" style="margin-top:8px">Detalhamento:</div>
+      <select class="motivo-select" id="det-${key}" onchange="jcMudou('${key}','det')">${det.html}</select>
+    </div>`;
+}
+// Justificativa escolhida + detalhamento só é exigido quando a justificativa tem detalhamentos ativos
+function jcCompleto(key){
+  const j=document.getElementById("mot-"+key);
+  if(!j||!j.value)return false;
+  const wrap=document.getElementById("det-wrap-"+key);
+  if(JC&&wrap&&wrap.style.display!=="none"){const d=document.getElementById("det-"+key);return!!(d&&d.value);}
+  return true;
+}
+function jcAtualizarBtn(key){
+  const b=document.getElementById("savebtn-"+key);
+  if(b)b.disabled=!jcCompleto(key);
+}
+window.jcMudou=(key,nivel)=>{
+  if(!JC)return;
+  const aSel=document.getElementById("area-"+key),jSel=document.getElementById("mot-"+key),dSel=document.getElementById("det-"+key),wrap=document.getElementById("det-wrap-"+key);
+  if(!aSel||!jSel||!dSel||!wrap)return;
+  if(nivel==="area"){jSel.removeAttribute("data-legado");jSel.innerHTML=jcOptsJust(aSel.value,"",null);}
+  if(nivel==="area"||nivel==="just"){
+    const det=jcOptsDet(jSel.value==="__legado__"?"":jSel.value,"");
+    dSel.innerHTML=det.html;wrap.style.display=det.tem?"block":"none";
+  }
+  jcAtualizarBtn(key);
+};
+// Lê o que foi escolhido: {motivo[,areaResponsavel,detalhamento]} ou null se incompleto
+function jcColher(key){
+  const jSel=document.getElementById("mot-"+key);
+  if(!jSel||!jSel.value)return null;
+  if(!JC)return{motivo:jSel.value};
+  if(!jcCompleto(key))return null;
+  if(jSel.value==="__legado__")return{motivo:jSel.dataset.legado||""};
+  const j=JC.justificativas.find(x=>x.id===jSel.value);
+  if(!j)return null;
+  const a=JC.areas.find(x=>x.id===j.areaId);
+  const wrap=document.getElementById("det-wrap-"+key),dSel=document.getElementById("det-"+key);
+  const d=(wrap&&wrap.style.display!=="none"&&dSel&&dSel.value)?JC.detalhamentos.find(x=>x.id===dSel.value):null;
+  return{motivo:j.label,areaResponsavel:a?a.label:"",detalhamento:d?d.label:""};
+}
+const jcResumo=j=>{
+  if(!j||(!j.areaResponsavel&&!j.detalhamento))return"";
+  return`<div class="saved-by" style="margin-bottom:4px">${j.areaResponsavel?"Área: "+jcEsc(j.areaResponsavel):""}${j.areaResponsavel&&j.detalhamento?" · ":""}${j.detalhamento?"Detalhamento: "+jcEsc(j.detalhamento):""}</div>`;
+};
 const LIMITE_MS=130*60*1000; // 2h10
 // Metas por etapa (Setor Responsável)
 const TMTI_LIM=5*60*1000;   // Triagem
@@ -654,11 +750,7 @@ function render(){
 
     const gargHtml=g?`<div class="garg-box">🔥 Maior gargalo: ${g.lb} — ${durStr(g.ms)}</div>`:"";
 
-    const motivosHtml=`
-      <select class="motivo-select" id="mot-${c.id}" onchange="selMotivo('${c.id}')">
-        <option value="">— Selecione o motivo —</option>
-        ${MOTIVOS.map(m=>`<option value="${m}">${m}</option>`).join("")}
-      </select>`;
+    const motivosHtml=jcCampos(c.id,null,"selMotivo('"+c.id+"')");
 
     const formHtml=`
       <div class="motivos-label">Motivo do atraso:</div>
@@ -670,6 +762,7 @@ function render(){
     const savedHtml=`
       <div class="saved-box">
         <div class="saved-motivo">✅ ${c.justificativa?.motivo||""}</div>
+        ${jcResumo(c.justificativa)}
         ${c.justificativa?.descricao?`<div class="saved-desc">"${c.justificativa.descricao}"</div>`:""}
         <div class="saved-by">Registrado em ${fmtDT(c.justificativa?.dataRegistro?.toDate?.())}</div>
       </div>
@@ -773,15 +866,15 @@ function grupoArea(c,grupo,excedeu){
     return`
       <div class="saved-box" style="margin-top:8px">
         <div class="saved-motivo">✅ ${j.motivo}</div>
+        ${jcResumo(j)}
         ${j.descricao?`<div class="saved-desc">"${j.descricao}"</div>`:""}
         <div class="saved-by">${j.operador?"Por "+j.operador+" · ":""}${fmtDT(j.dataRegistro?.toDate?.())}</div>
       </div>
       <button class="edit-btn" onclick="editJustGrupo('${c.id}','${grupo}')">✏️ Editar</button>`;
   }
-  const optsHtml=`<option value="">— Selecione o motivo —</option>`+MOTIVOS.map(mo=>`<option value="${mo}">${mo}</option>`).join("");
   return`
     <div class="grupo-motivos-label">Motivo do atraso — ${grupo==="armazem"?"Armazém":"Faturamento"}:</div>
-    <select class="motivo-select" id="mot-${grupo}-${c.id}" onchange="selMotivoGrupo('${c.id}','${grupo}')">${optsHtml}</select>
+    ${jcCampos(grupo+"-"+c.id,null,"selMotivoGrupo('"+c.id+"','"+grupo+"')")}
     <textarea class="just-input" id="desc-${grupo}-${c.id}" placeholder="Complemento (opcional)..." style="margin-top:8px"></textarea>
     <button class="save-btn" id="savebtn-${grupo}-${c.id}" onclick="salvarGrupo('${c.id}','${grupo}')" disabled style="margin-top:8px">💾 Salvar Justificativa</button>`;
 }
@@ -794,18 +887,18 @@ window.selMotivoGrupo=(id,grupo)=>{
 
 window.salvarGrupo=async(id,grupo)=>{
   const btn=document.getElementById(`savebtn-${grupo}-${id}`);
-  const sel=document.getElementById(`mot-${grupo}-${id}`);
   const desc=document.getElementById(`desc-${grupo}-${id}`)?.value.trim()||"";
-  if(!sel||!sel.value)return;
-  const motivo=sel.value;
+  const jc=jcColher(grupo+"-"+id);
+  if(!jc)return;
+  const{motivo,...jcExtra}=jc;
   btn.disabled=true;btn.textContent="Salvando...";
   try{
     await updateDoc(doc(db,"caminhoes_rastreio",id),{
-      [`justificativa.${grupo}`]:{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
+      [`justificativa.${grupo}`]:{motivo,...jcExtra,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
     });
     const idx=ALL.findIndex(x=>x.id===id);
     if(idx>-1){
-      ALL[idx]={...ALL[idx],justificativa:{...(ALL[idx].justificativa||{}),[grupo]:{motivo,descricao:desc,operador:SESSAO.nome||null}}};
+      ALL[idx]={...ALL[idx],justificativa:{...(ALL[idx].justificativa||{}),[grupo]:{motivo,...jcExtra,descricao:desc,operador:SESSAO.nome||null}}};
       if(!grupoPendente(ALL[idx],stageMetrics(ALL[idx])))OPEN_CARDS.delete(id);
     }
   }catch(e){btn.disabled=false;btn.textContent="💾 Salvar Justificativa";alert("Erro: "+e.message);}
@@ -816,20 +909,19 @@ window.editJustGrupo=(id,grupo)=>{
   const m=stageMetrics(c);
   const excedeu=grupo==="armazem"?m.armazemExc:m.fatExc;
   const motivoAtual=c.justificativa?.[grupo]?.motivo||"";
-  const optsHtml=`<option value="">— Selecione o motivo —</option>`+
-    MOTIVOS.map(mo=>`<option value="${mo}"${mo===motivoAtual?" selected":""}>${mo}</option>`).join("");
   const box=grupo==="armazem"?document.querySelector(`#card-${id} .setor-title.armazem`).closest(".setor-col"):document.querySelector(`#card-${id} .setor-title.faturamento`).closest(".setor-col");
   const anchor=box.querySelector(".saved-box")||box.querySelector(".setor-ok-tag");
   const after=box.querySelector(".edit-btn");
   const container=document.createElement("div");
   container.innerHTML=`
     <div class="grupo-motivos-label">Motivo do atraso — ${grupo==="armazem"?"Armazém":"Faturamento"}:</div>
-    <select class="motivo-select" id="mot-${grupo}-${id}" onchange="selMotivoGrupo('${id}','${grupo}')">${optsHtml}</select>
+    ${jcCampos(grupo+"-"+id,c.justificativa?.[grupo],"selMotivoGrupo('"+id+"','"+grupo+"')")}
     <textarea class="just-input" id="desc-${grupo}-${id}" placeholder="Complemento (opcional)..." style="margin-top:8px">${c.justificativa?.[grupo]?.descricao||""}</textarea>
     <button class="save-btn" id="savebtn-${grupo}-${id}" onclick="salvarGrupo('${id}','${grupo}')"${motivoAtual?"":"disabled"} style="margin-top:8px">💾 Salvar Justificativa</button>`;
   if(anchor)anchor.remove();
   if(after)after.remove();
   box.appendChild(container);
+  if(JC)jcAtualizarBtn(grupo+"-"+id);
 };
 
 window.toggleCard=id=>{
@@ -848,14 +940,14 @@ window.selMotivo=id=>{
 
 window.salvar=async(id)=>{
   const btn=document.getElementById("savebtn-"+id);
-  const sel=document.getElementById("mot-"+id);
   const desc=document.getElementById("desc-"+id)?.value.trim()||"";
-  if(!sel||!sel.value)return;
-  const motivo=sel.value;
+  const jc=jcColher(id);
+  if(!jc)return;
+  const{motivo,...jcExtra}=jc;
   btn.disabled=true;btn.textContent="Salvando...";
   try{
     await updateDoc(doc(db,"caminhoes_rastreio",id),{
-      justificativa:{motivo,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
+      justificativa:{motivo,...jcExtra,descricao:desc,dataRegistro:Timestamp.fromDate(new Date()),operador:SESSAO.nome||null}
     });
     OPEN_CARDS.delete(id);
   }catch(e){btn.disabled=false;btn.textContent="💾 Salvar Justificativa";alert("Erro: "+e.message);}
@@ -864,14 +956,13 @@ window.salvar=async(id)=>{
 window.editJust=id=>{
   const c=ALL.find(x=>x.id===id);if(!c)return;
   const motivoAtual=c.justificativa?.motivo||"";
-  const optsHtml=`<option value="">— Selecione o motivo —</option>`+
-    MOTIVOS.map(m=>`<option value="${m}"${m===motivoAtual?" selected":""}>${m}</option>`).join("");
   document.getElementById("form-"+id).innerHTML=`
     <div class="motivos-label">Motivo do atraso:</div>
-    <select class="motivo-select" id="mot-${id}" onchange="selMotivo('${id}')">${optsHtml}</select>
+    ${jcCampos(id,c.justificativa,"selMotivo('"+id+"')")}
     <div class="just-label" style="margin-top:10px">Complemento (opcional):</div>
     <textarea class="just-input" id="desc-${id}" placeholder="Descreva mais detalhes...">${c.justificativa?.descricao||""}</textarea>
     <button class="save-btn" id="savebtn-${id}" onclick="salvar('${id}')"${motivoAtual?"":"disabled"}>💾 Salvar Justificativa</button>`;
+  if(JC)jcAtualizarBtn(id);
 };
 window.abrirRelatorio=()=>{
   if(MMODE==="etapas"){abrirRelatorioEtapas();return;}
