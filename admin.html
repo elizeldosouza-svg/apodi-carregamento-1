@@ -265,6 +265,17 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .pc-add-row input{flex:1;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 9px;font-size:12px;outline:none}
 .pc-add-row input:focus{border-color:var(--rd)}
 .pc-add-btn{padding:7px 12px;border:none;border-radius:var(--rs);background:var(--rd);color:#fff;font-size:10.5px;font-weight:800;cursor:pointer;white-space:nowrap}
+/* Editar Justificativas (Área Responsável → Justificativa Padrão → Detalhamento) */
+.ej-lista{max-height:60vh;overflow-y:auto;padding-right:2px}
+.ej-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pc-item.pc-editing .ej-main{display:none}
+.ej-chip{font-size:9.5px;color:var(--t3);font-weight:600;line-height:1.3}
+.ej-filtro{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:6px 8px;font-size:11px;width:100%;margin-bottom:10px;outline:none;cursor:pointer}
+.ej-sel{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:7px 9px;font-size:12px;width:100%;margin-top:8px;outline:none;cursor:pointer}
+.ej-filtro:focus,.ej-sel:focus{border-color:var(--rd)}
+.pc-item .ej-edit-sel{display:none;background:var(--bg);border:1px solid var(--rd);border-radius:6px;color:var(--tx);padding:4px 6px;font-size:11px;max-width:42%}
+.pc-item.pc-editing .ej-edit-sel{display:block}
+.ej-vazio{font-size:11px;color:var(--t3);padding:8px 2px}
 /* ═══ Backup & Exportação ═══ */
 .bk-grid{display:grid;grid-template-columns:400px 1fr;gap:14px;padding:16px}
 @media(max-width:1000px){.bk-grid{grid-template-columns:1fr}}
@@ -481,6 +492,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
     <a class="nav-btn" href="/acs-excluidas" target="_blank">🗑️ Excluídas</a>
     <a class="nav-btn" href="/senha" target="_blank">📺 TV</a>
     <button class="nav-btn" onclick="abrirOperadores()" style="cursor:pointer">👤 Operadores</button>
+    <button class="nav-btn" onclick="abrirEditarJustificativas()" style="cursor:pointer">📝 Editar Justificativas</button>
     <button class="nav-btn" onclick="abrirConfigParadas()" style="cursor:pointer">⚙️ Config. Paradas</button>
     <button class="nav-btn" onclick="abrirParadas()" style="cursor:pointer;border-color:var(--tm);color:var(--tm)">⚠️ Paradas</button>
     <button class="nav-btn" onclick="abrirBackup()" style="cursor:pointer;border-color:var(--bl);color:var(--bl)">💾 Backup</button>
@@ -766,6 +778,40 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <h3>Status <span class="pc-count" id="pc-cnt-status">—</span></h3>
             <div id="pc-lista-status"></div>
             <div class="pc-add-row"><input id="pc-novo-status" placeholder="Novo status..." onkeydown="if(event.key==='Enter')pcAdd('status')"><button class="pc-add-btn" onclick="pcAdd('status')">+ Add</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="editar-justificativas-screen" style="display:none">
+    <div class="wrap">
+      <div class="tcard">
+        <div class="thead-bar">📝 Editar Justificativas
+          <div class="totais-bar">
+            <button class="pb" onclick="voltarEditarJustificativas()">← Voltar</button>
+          </div>
+        </div>
+        <div style="padding:14px 16px;font-size:11px;color:var(--t3)">Controla as opções dos dropdowns da tela Justificativas, em cascata: <b>Área Responsável → Justificativa Padrão → Detalhamento</b>. Alterações aqui refletem em tempo real. Sem exclusão — apenas ativar/desativar (histórico nunca quebra). Desativar uma área ou justificativa oculta também os itens abaixo dela.</div>
+        <div class="pc-grid">
+          <div class="pc-card">
+            <h3>Justificativa Padrão <span class="pc-count" id="ej-cnt-justificativas">—</span></h3>
+            <select class="ej-filtro" id="ej-f-area" onchange="ejFiltrar()"></select>
+            <div class="ej-lista" id="ej-lista-justificativas"></div>
+            <select class="ej-sel" id="ej-novo-just-area"></select>
+            <div class="pc-add-row"><input id="ej-novo-justificativas" placeholder="Nova justificativa..." onkeydown="if(event.key==='Enter')ejAdd('justificativas')"><button class="pc-add-btn" onclick="ejAdd('justificativas')">+ Add</button></div>
+          </div>
+          <div class="pc-card">
+            <h3>Detalhamento da Justificativa <span class="pc-count" id="ej-cnt-detalhamentos">—</span></h3>
+            <select class="ej-filtro" id="ej-f-just" onchange="ejFiltrar()"></select>
+            <div class="ej-lista" id="ej-lista-detalhamentos"></div>
+            <select class="ej-sel" id="ej-novo-det-just"></select>
+            <div class="pc-add-row"><input id="ej-novo-detalhamentos" placeholder="Novo detalhamento..." onkeydown="if(event.key==='Enter')ejAdd('detalhamentos')"><button class="pc-add-btn" onclick="ejAdd('detalhamentos')">+ Add</button></div>
+          </div>
+          <div class="pc-card">
+            <h3>Área Responsável <span class="pc-count" id="ej-cnt-areas">—</span></h3>
+            <div class="ej-lista" id="ej-lista-areas"></div>
+            <div class="pc-add-row"><input id="ej-novo-areas" placeholder="Nova área..." onkeydown="if(event.key==='Enter')ejAdd('areas')"><button class="pc-add-btn" onclick="ejAdd('areas')">+ Add</button></div>
           </div>
         </div>
       </div>
@@ -2679,6 +2725,177 @@ window.abrirConfigParadas=()=>{
 };
 window.voltarConfigParadas=()=>{
   document.getElementById("config-paradas-screen").style.display="none";
+  document.querySelector(".wrap").style.display="block";
+};
+const EJ_SEED=[["Elétrica",[["Queda de Energia",["Queda de Energia"]]]],["Fiscal",[["Faturamento Parado (Setor Fiscal)",["Corrigir duplificidade de NF","Intervenção no módulo de faturamento"]],["Faturamento Parado (SEFAZ)",["SEFAZ fora do ar"]]]],["Logística",[["Absenteísmo Paletizado (Armazem)",["Ausência de mão de obra terceiro"]],["Absenteísmo Caricamat (Armazem)",["Ausência de operador"]],["Absenteísmo Big Bag (Armazem)",["Ausência de mão de obra terceiro"]],["Reunião e Treinamento Extraordinário",[]],["Problema Perifericos Guardian",["Problema célula de carga","Problemas na cancela","Problema leitor de TAG"]],["Falha Operacional Interna",["Falha no agenciamento","Falha no faturamento"]],["Lentidão em Periodo Chuvoso",[]],["Meta Atingida",[]],["Plataforma de Grades (Desgradeamento)",["Volume de carros acima da capacidade nominal","Ausência de operação no turno A"]],["Veículo com Problema Mecânico",[]],["Fluxo de Pesagem Inicial (Container Bag)",[]],["Concentração de Veículos",["Acima da capacidade nominal do dia","Acima da capacidade nominal do turno"]]]],["Produção",[["Absenteísmo Carregamento Granel",["Ausência de operador"]],["Absenteísmo Carregamento Caricamat",["Ausência de operador"]],["Aderência (Estoque Mínimo)",[]],["Extração de Cimento Caricamat",[]],["Extração de Cimento a Granel",[]],["Manutenção Corretiva",[]],["Manutenção Preventiva",[]],["Anomalias no Processo Produtivo",["Má formação","Rasgamento de sacos"]],["Operador Caricamat (Outra Atividade)",[]]]],["S&OP",[["Granel Acima do Plano",["Volume acima do plano de vendas"]],["Ensacado Acima (Plano Transf.)",["Volume acima do plano transferência semanal"]],["Ensacado Acima (Plano Vendas)",["Volume acima do plano de vendas"]],["Big Bag Acima do Plano",["Volume acima do plano de vendas"]]]],["Tecnologia de Informação",[["Sistema Datasul Inoperante",["ERP datasul fora do ar","Problema em tela operacional logística"]],["Problema Infraestrutura",["Problema no computador desktop","Problema nas impressoras"]]]]];
+const EJ_LEGADO=["DataSul","Falta de cimento","Concentração de veículos","Dificuldade de extração","Falha do equipamento","Falha de processo","Falta de mão obra","TMAC online teste"];
+const ejSlug=t=>String(t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+const ejNorm=t=>String(t||"").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const ejEsc=t=>String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function ejNovoId(lista,base){let id=base||"item",n=2;while(lista.some(x=>x.id===id))id=(base||"item")+"_"+(n++);return id;}
+function ejDefault(){
+  const areas=[],justificativas=[],detalhamentos=[];
+  EJ_SEED.forEach(([aLbl,js])=>{
+    const aId=ejNovoId(areas,ejSlug(aLbl));areas.push({id:aId,label:aLbl,ativo:true});
+    js.forEach(([jLbl,ds])=>{
+      const jId=ejNovoId(justificativas,ejSlug(jLbl));justificativas.push({id:jId,label:jLbl,areaId:aId,ativo:true});
+      ds.forEach(dLbl=>detalhamentos.push({id:ejNovoId(detalhamentos,jId+"__"+ejSlug(dLbl)),label:dLbl,justId:jId,ativo:true}));
+    });
+  });
+  // motivos que eram fixos na tela Justificativas: ficam editáveis, numa área "Legado" inativa por padrão
+  const lId=ejNovoId(areas,"legado");areas.push({id:lId,label:"Legado (motivos antigos)",ativo:false});
+  EJ_LEGADO.forEach(l=>justificativas.push({id:ejNovoId(justificativas,ejSlug(l)),label:l,areaId:lId,ativo:true}));
+  return{areas,justificativas,detalhamentos};
+}
+let EJ_DATA={areas:[],justificativas:[],detalhamentos:[]};
+const ejRef=doc(db,"configuracoes","justificativa_opcoes");
+async function ejGarantir(){
+  try{
+    const snap=await getDoc(ejRef);
+    if(!snap.exists())await setDoc(ejRef,ejDefault());
+  }catch(e){console.error("Erro ao inicializar configuracoes/justificativa_opcoes:",e);}
+}
+onSnapshot(ejRef,snap=>{
+  if(snap.exists()){
+    const d=snap.data();
+    EJ_DATA={areas:d.areas||[],justificativas:d.justificativas||[],detalhamentos:d.detalhamentos||[]};
+    ejRenderTudo();
+  }else{ejGarantir();}
+},err=>console.error("justificativa_opcoes:",err));
+const ejArea=id=>EJ_DATA.areas.find(a=>a.id===id);
+const ejJust=id=>EJ_DATA.justificativas.find(j=>j.id===id);
+function ejOptsAreas(sel,vazio){
+  return(vazio?`<option value="">${vazio}</option>`:"")+EJ_DATA.areas.map(a=>`<option value="${ejEsc(a.id)}"${a.id===sel?" selected":""}>${ejEsc(a.label)}${a.ativo===false?" (inativa)":""}</option>`).join("");
+}
+function ejOptsJusts(sel,vazio,areaId){
+  return(vazio?`<option value="">${vazio}</option>`:"")+EJ_DATA.areas.filter(a=>!areaId||a.id===areaId).map(a=>{
+    const js=EJ_DATA.justificativas.filter(j=>j.areaId===a.id);
+    if(!js.length)return"";
+    return`<optgroup label="${ejEsc(a.label)}">`+js.map(j=>`<option value="${ejEsc(j.id)}"${j.id===sel?" selected":""}>${ejEsc(j.label)}${j.ativo===false?" (inativa)":""}</option>`).join("")+`</optgroup>`;
+  }).join("");
+}
+function ejManter(id,html){
+  const el=document.getElementById(id);if(!el)return;
+  const prev=el.value;el.innerHTML=html;
+  el.value=prev;if(el.value!==prev)el.value="";
+}
+function ejPopularSelects(){
+  const fArea=document.getElementById("ej-f-area")?.value||"";
+  ejManter("ej-f-area",ejOptsAreas("","Todas as áreas"));
+  ejManter("ej-novo-just-area",ejOptsAreas("","— Área da nova justificativa —"));
+  ejManter("ej-f-just",ejOptsJusts("","Todas as justificativas",document.getElementById("ej-f-area")?.value||fArea));
+  ejManter("ej-novo-det-just",ejOptsJusts("","— Justificativa do novo detalhamento —"));
+}
+function ejRender(tipo){
+  const el=document.getElementById("ej-lista-"+tipo);
+  if(!el)return;
+  const D=EJ_DATA;
+  const fArea=document.getElementById("ej-f-area")?.value||"";
+  const fJust=document.getElementById("ej-f-just")?.value||"";
+  let itens=D[tipo];
+  if(tipo==="justificativas"&&fArea)itens=itens.filter(j=>j.areaId===fArea);
+  if(tipo==="detalhamentos"){
+    if(fJust)itens=itens.filter(d=>d.justId===fJust);
+    else if(fArea){const ids=new Set(D.justificativas.filter(j=>j.areaId===fArea).map(j=>j.id));itens=itens.filter(d=>ids.has(d.justId));}
+  }
+  el.innerHTML=itens.length?itens.map(it=>{
+    let chip="",paiInativo=false,editSel="";
+    if(tipo==="justificativas"){
+      const a=ejArea(it.areaId);paiInativo=!!a&&a.ativo===false;
+      chip="Área: "+(a?a.label:"—")+(paiInativo?" (inativa)":"");
+      editSel=`<select class="ej-edit-sel" title="Área Responsável">${ejOptsAreas(it.areaId)}</select>`;
+    }else if(tipo==="detalhamentos"){
+      const j=ejJust(it.justId),a=j?ejArea(j.areaId):null;paiInativo=(!!j&&j.ativo===false)||(!!a&&a.ativo===false);
+      chip="Justificativa: "+(j?j.label:"—")+(a?" · "+a.label:"")+(paiInativo?" (inativa)":"");
+      editSel=`<select class="ej-edit-sel" title="Justificativa Padrão">${ejOptsJusts(it.justId)}</select>`;
+    }else{
+      const n=D.justificativas.filter(j=>j.areaId===it.id).length;
+      chip=n+(n===1?" justificativa":" justificativas");
+    }
+    const on=it.ativo!==false;
+    return`<div class="pc-item ${on&&!paiInativo?"":"inativo"}" id="ej-${tipo}-${ejEsc(it.id)}">
+      <div class="pc-toggle ${on?"on":""}" onclick="ejToggle('${tipo}','${ejEsc(it.id)}')"></div>
+      <div class="ej-main"><span class="pc-lbl">${ejEsc(it.label)}</span><span class="ej-chip">${ejEsc(chip)}</span></div>
+      <input class="pc-edit-inp" value="${ejEsc(it.label)}" onkeydown="if(event.key==='Enter')ejConfirmar('${tipo}','${ejEsc(it.id)}');if(event.key==='Escape')ejCancelar()">
+      ${editSel}
+      <button class="pc-ic-btn pc-edit-trigger" onclick="ejEditar('${tipo}','${ejEsc(it.id)}')">🖊️</button>
+      <button class="pc-ic-btn pc-confirm-btn" onclick="ejConfirmar('${tipo}','${ejEsc(it.id)}')">✓</button>
+      <button class="pc-ic-btn pc-cancel-btn" onclick="ejCancelar()">✕</button>
+    </div>`;
+  }).join(""):`<div class="ej-vazio">Nenhum item.</div>`;
+  const cnt=document.getElementById("ej-cnt-"+tipo);
+  if(cnt)cnt.textContent=(itens.length===D[tipo].length?itens.length:itens.length+" de "+D[tipo].length)+" itens";
+}
+function ejRenderTudo(){
+  ejPopularSelects();
+  ["justificativas","detalhamentos","areas"].forEach(ejRender);
+}
+async function ejSalvar(tipo){
+  try{await setDoc(ejRef,{[tipo]:EJ_DATA[tipo]},{merge:true});}
+  catch(e){alert("Erro ao salvar: "+e.message);}
+}
+function ejDuplicado(tipo,label,paiId,ignoreId){
+  const n=ejNorm(label);
+  return EJ_DATA[tipo].some(x=>x.id!==ignoreId&&ejNorm(x.label)===n&&(tipo!=="detalhamentos"||x.justId===paiId));
+}
+window.ejFiltrar=()=>{ejPopularSelects();ejRender("justificativas");ejRender("detalhamentos");};
+window.ejToggle=(tipo,id)=>{
+  const it=EJ_DATA[tipo].find(x=>x.id===id);if(!it)return;
+  it.ativo=it.ativo===false;
+  ejRenderTudo();
+  ejSalvar(tipo);
+};
+window.ejEditar=(tipo,id)=>{
+  const item=document.getElementById("ej-"+tipo+"-"+id);if(!item)return;
+  item.classList.add("pc-editing");
+  const inp=item.querySelector(".pc-edit-inp");
+  inp.focus();inp.select();
+};
+window.ejCancelar=()=>{ejRenderTudo();};
+window.ejConfirmar=(tipo,id)=>{
+  const item=document.getElementById("ej-"+tipo+"-"+id);
+  const it=EJ_DATA[tipo].find(x=>x.id===id);
+  if(!item||!it){ejRenderTudo();return;}
+  const val=item.querySelector(".pc-edit-inp").value.trim();
+  if(!val){ejRenderTudo();return;}
+  const campoPai=tipo==="justificativas"?"areaId":tipo==="detalhamentos"?"justId":null;
+  const sel=item.querySelector(".ej-edit-sel");
+  const paiId=campoPai?((sel&&sel.value)||it[campoPai]):"";
+  if(ejDuplicado(tipo,val,paiId,id)){alert("Já existe um item com esse nome.");return;}
+  it.label=val;
+  if(campoPai)it[campoPai]=paiId;
+  ejRenderTudo();
+  ejSalvar(tipo);
+};
+window.ejAdd=(tipo)=>{
+  const inp=document.getElementById("ej-novo-"+tipo);
+  const val=inp.value.trim();
+  if(!val)return;
+  let paiId="";
+  if(tipo==="justificativas"){
+    paiId=document.getElementById("ej-novo-just-area").value;
+    if(!paiId){alert("Selecione a Área Responsável da nova justificativa.");return;}
+  }
+  if(tipo==="detalhamentos"){
+    paiId=document.getElementById("ej-novo-det-just").value;
+    if(!paiId){alert("Selecione a Justificativa Padrão do novo detalhamento.");return;}
+  }
+  if(ejDuplicado(tipo,val,paiId,null)){alert("Já existe um item com esse nome.");return;}
+  const lista=EJ_DATA[tipo];
+  if(tipo==="areas")lista.push({id:ejNovoId(lista,ejSlug(val)),label:val,ativo:true});
+  else if(tipo==="justificativas")lista.push({id:ejNovoId(lista,ejSlug(val)),label:val,areaId:paiId,ativo:true});
+  else lista.push({id:ejNovoId(lista,paiId+"__"+ejSlug(val)),label:val,justId:paiId,ativo:true});
+  inp.value="";
+  ejRenderTudo();
+  ejSalvar(tipo);
+};
+window.abrirEditarJustificativas=()=>{
+  document.querySelector(".wrap").style.display="none";
+  document.getElementById("editar-justificativas-screen").style.display="block";
+  ejRenderTudo();
+};
+window.voltarEditarJustificativas=()=>{
+  document.getElementById("editar-justificativas-screen").style.display="none";
   document.querySelector(".wrap").style.display="block";
 };
 let EDIT_OPERADOR_ID=null;
