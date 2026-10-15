@@ -8,7 +8,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060d18;--bg2:#0b1524;--bg3:#102030;--bg4:#152840;--bd:#162840;--b2:#1e3a58;--tx:#e2eeff;--t2:#7a9fd4;--t3:#3a5880;--bl:#00d4ff;--gr:#00e896;--ye:#ffd000;--rd:#ff4466;--pu:#a78bfa;--or:#fb923c;--tm:#ff9f43;--r:12px;--rs:8px}
 body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
-.top{background:var(--bg2);border-bottom:2px solid var(--rd);height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;gap:12px}
+.top{background:var(--bg2);border-bottom:2px solid var(--rd);min-height:56px;display:flex;align-items:center;flex-wrap:wrap;padding:8px 20px;position:sticky;top:0;z-index:200;gap:12px}
 .logo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:800;color:var(--rd);flex:1;letter-spacing:1px}
 .back-btn{padding:6px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
 .back-btn:hover{border-color:var(--bl);color:var(--bl)}
@@ -106,6 +106,22 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 /* Print para PDF */
 .rel-btn{padding:7px 16px;border:1px solid var(--gr);border-radius:20px;background:rgba(0,232,150,.08);color:var(--gr);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .2s}
 .rel-btn:hover{background:rgba(0,232,150,.18)}
+.crit-grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.xls-btn{padding:7px 16px;border:1px solid var(--gr);border-radius:20px;background:var(--gr);color:#001a0f;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .2s}
+.xls-btn:hover{opacity:.88}
+.xls-btn:disabled{opacity:.5;cursor:wait}
+.ttb-sub-todos.on,.ttb-sub.on{border-color:var(--or);color:var(--or);background:rgba(251,146,60,.10)}
+.meta-tag{font-size:9px;color:var(--t3);font-weight:600;margin-right:6px}
+.lim-box{margin-top:12px;border-top:1px solid var(--bd);padding-top:8px}
+.lim-ttl{font-size:9px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.lim-row{display:flex;justify-content:space-between;gap:8px;font-size:11px;padding:3px 8px;border-radius:6px;color:var(--t2)}
+.lim-row.hit{background:rgba(251,146,60,.14);color:var(--or);font-weight:700}
+.ro-head{display:flex;align-items:center;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.ro-tag{font-size:10px;font-weight:700;color:var(--t2);border:1px solid var(--b2);border-radius:20px;padding:3px 10px}
+.ro-row{display:flex;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px dashed var(--bd)}
+.ro-row span:first-child{width:112px;flex-shrink:0;color:var(--t3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding-top:1px}
+.ro-vazio{font-size:11px;font-weight:700;color:var(--rd);margin-top:4px}
+.setores.tres{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 /* Modal relatório */
 .modal-rel{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);padding:20px;overflow-y:auto}
 .modal-rel.show{display:flex}
@@ -160,7 +176,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .search-in:focus{border-color:var(--bl)}
 /* Toggle de modo */
 .mode-row{display:flex;gap:6px;margin-bottom:14px;align-items:center}
-.mode-btn{padding:8px 18px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.mode-btn{padding:7px 14px;white-space:nowrap;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
 .mode-btn:hover:not(.on){border-color:var(--t2);color:var(--tx)}
 .mode-btn.on{border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.1)}
 /* Colunas Setor Responsável */
@@ -214,14 +230,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 </div>
 <div class="top">
   <div class="logo">⚠️ JUSTIFICATIVAS DE ATRASO</div>
-  <button class="rel-btn" id="btn-rel" onclick="abrirRelatorio()">📋 Relatório TMAC &gt; 2h10</button>
+  <div class="crit-grp">
+    <button class="mode-btn" id="mode-tmac" onclick="setModo('tmac')" title="Somente consulta">TMAC Geral (&gt; 2h10)</button>
+    <button class="mode-btn on" id="mode-etapas" onclick="setModo('etapas')">Metas por Etapa (TMTI/TMCI/TMEI/TMF)</button>
+  </div>
+  <button class="xls-btn" id="btn-xls" onclick="exportarExcel()">📋 Exportar Excel Metas por Etapa</button>
+  <button class="rel-btn" id="btn-rel" onclick="abrirRelatorio()">📋 Relatório Metas por Etapa</button>
 </div>
 <div class="wrap">
-  <div class="mode-row">
-    <span class="row-label" style="min-width:auto">📐 Critério:</span>
-    <button class="mode-btn on" id="mode-tmac" onclick="setModo('tmac')">TMAC Geral (&gt; 2h10)</button>
-    <button class="mode-btn" id="mode-etapas" onclick="setModo('etapas')">Metas por Etapa (TMTI/TMCI/TMEI/TMF)</button>
-  </div>
   <!-- Bloco principal: filtros + calendário lado a lado -->
   <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px" class="filter-block-j">
     <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:8px">
@@ -240,14 +256,22 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
         <button class="tb tb-b" onclick="setTurnoJ('B',this)">B · 07h–15h</button>
         <button class="tb tb-c" onclick="setTurnoJ('C',this)">C · 15h–23h</button>
       </div>
-      <div class="filter-row" style="margin-bottom:0">
+      <div class="filter-row" style="margin-bottom:0" id="row-carga">
         <span class="row-label">📦 Carga:</span>
         <button class="ttb ttb-todos on" onclick="setTipoCargaJ('t',this)">Todos</button>
         <button class="ttb ttb-ensacado" onclick="setTipoCargaJ('ensacado',this)">Ensacado</button>
         <button class="ttb ttb-granel" onclick="setTipoCargaJ('granel',this)">Granel</button>
         <button class="ttb ttb-bigbag" onclick="setTipoCargaJ('bigbag',this)">Big Bag</button>
       </div>
-      <div class="filter-row" style="margin-bottom:0">
+      <div class="filter-row" id="row-sub" style="margin-bottom:0">
+        <span class="row-label">🚛 Carregto:</span>
+        <button class="ttb ttb-sub-todos on" onclick="setSubtipoJ('t',this)">Todos</button>
+        <button class="ttb ttb-sub" onclick="setSubtipoJ('Paletizado',this)">Paletizado</button>
+        <button class="ttb ttb-sub" onclick="setSubtipoJ('Caricamat',this)">Caricamat</button>
+        <button class="ttb ttb-sub" onclick="setSubtipoJ('Container',this)">Container</button>
+        <button class="ttb ttb-sub" onclick="setSubtipoJ('Granel',this)">Granel</button>
+      </div>
+      <div class="filter-row" style="margin-bottom:0" id="row-cim">
         <span class="row-label">⚗️ Cimento:</span>
         <button class="ttb ttb-cim-todos on" onclick="setTipoCimentoJ('t',this)">Todos</button>
         <button class="ttb ttb-cp2f" onclick="setTipoCimentoJ('CP II F',this)">CP II F</button>
@@ -297,6 +321,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
     <div class="modal-foot">
       <span id="rel-total" style="font-size:11px;color:var(--t2);margin-right:auto"></span>
       <button class="modal-close" style="padding:8px 18px;width:auto" onclick="document.getElementById('modal-rel').classList.remove('show')">Fechar</button>
+      <button class="exp-btn" style="background:var(--gr)" onclick="exportarExcel()">📋 Exportar Excel</button>
       <button class="exp-btn" onclick="exportarPdf()">📄 Exportar PDF</button>
     </div>
   </div>
@@ -459,6 +484,13 @@ const TMTI_LIM=5*60*1000;   // Triagem
 const TMCI_LIM=20*60*1000;  // Carregamento
 const TMEI_LIM=15*60*1000;  // Enlonamento
 const TMF_LIM=8*60*1000;    // Fila Faturamento
+const TME_LIM=130*60*1000;  // Espera (entrada → 1ª etapa) — meta 2h10
+// Meta do TMCI por tipo de carregamento (campo subtipoCarga). Sem tipo = meta padrão (TMCI_LIM).
+const TMCI_POR_SUB={Paletizado:20,Caricamat:45,Container:40,Granel:45};
+function tmciLim(c){const m=TMCI_POR_SUB[c&&c.subtipoCarga];return m!=null?m*60*1000:TMCI_LIM;}
+const subLbl=c=>c.subtipoCarga?` · 🚛 ${jcEsc(c.subtipoCarga)}`:"";
+const GRUPO_LBL={armazem:"Armazém",faturamento:"TMF — Fila de Faturamento",tme:"TME — Espera (> 2h10)"};
+function temJustAny(c){const J=c.justificativa;return!!(J&&(J.motivo||J.armazem?.motivo||J.faturamento?.motivo||J.tme?.motivo));}
 
 function periodDates(p){
   const now=new Date();
@@ -508,6 +540,7 @@ function gargalo(c){
 }
 function stageMetrics(c){
   const en=getTS(c,"entrada","ts");
+  const ptI=getTS(c,"portaria","inicio");
   const trI=getTS(c,"triagem","inicio"),trF=getTS(c,"triagem","fim");
   const caI=getTS(c,"carregamento","inicio"),caF=getTS(c,"carregamento","fim");
   const enI=getTS(c,"enlonamento","inicio"),enF=getTS(c,"enlonamento","fim");
@@ -516,9 +549,14 @@ function stageMetrics(c){
   const tmci=(caI&&caF)?caF-caI:null;
   const tmei=(enI&&enF)?enF-enI:null;
   const tmf=(enF&&sa)?sa-enF:((caF&&sa&&!enI)?sa-caF:null);
-  const armazemExc=(tmti!=null&&tmti>TMTI_LIM)||(tmci!=null&&tmci>TMCI_LIM)||(tmei!=null&&tmei>TMEI_LIM);
+  // TME = espera até a 1ª etapa (portaria ou triagem). Sem 1ª etapa e ainda em processo: tempo desde a entrada.
+  const prim=ptI||trI;
+  const tme=(en&&prim)?prim-en:((en&&c.setorAtual!=="concluido")?Date.now()-en.getTime():null);
+  const lim=tmciLim(c);
+  const armazemExc=(tmti!=null&&tmti>TMTI_LIM)||(tmci!=null&&tmci>lim)||(tmei!=null&&tmei>TMEI_LIM);
   const fatExc=(tmf!=null&&tmf>TMF_LIM);
-  return{en,sa,tmti,tmci,tmei,tmf,armazemExc,fatExc};
+  const tmeExc=(tme!=null&&tme>TME_LIM);
+  return{en,sa,tmti,tmci,tmei,tmf,tme,tmciLim:lim,armazemExc,fatExc,tmeExc};
 }
 const DOW_PT=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 function fmtDataLinha(c,en,sa){
@@ -534,9 +572,9 @@ function barColor(ms,avg){
   return"#00d4ff";
 }
 
-let ALL=[],MP="hoje",MF="pend",MT_J="t",MTC_J="t",MTCIM_J="t",MDATA_J=null;
+let ALL=[],MP="hoje",MF="pend",MT_J="t",MTC_J="t",MTCIM_J="t",MSUB_J="t",MDATA_J=null;
 let CAL_Y_J=0,CAL_M_J=0;
-let MMODE="tmac"; // 'tmac' | 'etapas'
+let MMODE="etapas"; // padrão: Metas por Etapa ("tmac" = somente consulta)
 let SBUSCA={placa:"",ac:"",nf:"",op:""};
 let OPEN_CARDS=new Set();
 
@@ -559,7 +597,9 @@ window.setModo=(m)=>{
   MMODE=m;
   document.getElementById("mode-tmac").classList.toggle("on",m==="tmac");
   document.getElementById("mode-etapas").classList.toggle("on",m==="etapas");
-  document.getElementById("btn-rel").textContent=m==="tmac"?"📋 Relatório TMAC > 2h10":"📋 Relatório Metas por Etapa";
+  const _t=m==="tmac"?"TMAC > 2h10":"Metas por Etapa";
+  document.getElementById("btn-rel").textContent="📋 Relatório "+_t;
+  document.getElementById("btn-xls").textContent="📋 Exportar Excel "+_t;
   render();
 };
 window.setBusca=()=>{
@@ -572,6 +612,7 @@ window.setBusca=()=>{
   render();
 };
 function passaBusca(c){
+  if(MSUB_J!=="t"&&(c.subtipoCarga||"")!==MSUB_J)return false;
   if(SBUSCA.placa&&!(c.placa||"").toUpperCase().includes(SBUSCA.placa))return false;
   if(SBUSCA.ac&&!(c.ac||"").toUpperCase().includes(SBUSCA.ac))return false;
   if(SBUSCA.nf&&!(c.notaFiscal||"").toUpperCase().includes(SBUSCA.nf))return false;
@@ -579,13 +620,15 @@ function passaBusca(c){
     const opArm=(c.justificativa?.armazem?.operador||"").toUpperCase();
     const opFat=(c.justificativa?.faturamento?.operador||"").toUpperCase();
     const opLeg=(c.justificativa?.operador||"").toUpperCase();
-    if(!opArm.includes(SBUSCA.op)&&!opFat.includes(SBUSCA.op)&&!opLeg.includes(SBUSCA.op))return false;
+    const opTme=(c.justificativa?.tme?.operador||"").toUpperCase();
+    if(!opArm.includes(SBUSCA.op)&&!opFat.includes(SBUSCA.op)&&!opLeg.includes(SBUSCA.op)&&!opTme.includes(SBUSCA.op))return false;
   }
   return true;
 }
 
 window.setTurnoJ=(t,el)=>{MT_J=t;document.querySelectorAll(".tb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
-window.setTipoCargaJ=(t,el)=>{MTC_J=t;document.querySelectorAll(".ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setTipoCargaJ=(t,el)=>{MTC_J=t;document.querySelectorAll("#row-carga .ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
+window.setSubtipoJ=(t,el)=>{MSUB_J=t;document.querySelectorAll("#row-sub .ttb").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setTipoCimentoJ=(t,el)=>{MTCIM_J=t;document.querySelectorAll(".ttb-cim-todos,.ttb-cp2f,.ttb-cp3,.ttb-cp5").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 function calInitJ(){
@@ -683,7 +726,7 @@ function getAtrasadosEtapas(){
     if(!c.data||c.data<s||c.data>e)return false;
     if(c.setorAtual==="posto1")return false;
     const m=stageMetrics(c);
-    return m.armazemExc||m.fatExc;
+    return m.armazemExc||m.fatExc||m.tmeExc;
   })
   .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
   .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
@@ -693,14 +736,15 @@ function getAtrasadosEtapas(){
 function grupoPendente(c,m){
   const jArm=c.justificativa?.armazem?.motivo;
   const jFat=c.justificativa?.faturamento?.motivo;
-  return(m.armazemExc&&!jArm)||(m.fatExc&&!jFat);
+  const jTme=c.justificativa?.tme?.motivo;
+  return(m.armazemExc&&!jArm)||(m.fatExc&&!jFat)||(m.tmeExc&&!jTme);
 }
 
 function render(){
   if(MMODE==="etapas"){renderEtapas();return;}
   const atList=getAtrasados();
-  const pend=atList.filter(c=>!(c.justificativa&&c.justificativa.motivo));
-  const ok=atList.filter(c=>!!(c.justificativa&&c.justificativa.motivo));
+  const pend=atList.filter(c=>!temJustAny(c));
+  const ok=atList.filter(c=>temJustAny(c));
   document.getElementById("cnt-pend").textContent=pend.length;
   document.getElementById("cnt-ok").textContent=ok.length;
   document.getElementById("cnt-all").textContent=atList.length;
@@ -728,7 +772,7 @@ function render(){
     const turno=getTurno(en);
     const tipoLabel=TIPO_SVG[c.tipoCargaLabel]||c.tipoCargaLabel||c.tipoCarga||"—";
     const g=gargalo(c);
-    const temJust=!!(c.justificativa&&c.justificativa.motivo);
+    const temJust=temJustAny(c);
 
     const steps=[
       {lb:"Espera",ms:getTS(c,"triagem","inicio")&&en?getTS(c,"triagem","inicio")-en:null,avg:avgMap.triagem*0.4,cor:"#00d4ff"},
@@ -750,30 +794,14 @@ function render(){
 
     const gargHtml=g?`<div class="garg-box">🔥 Maior gargalo: ${g.lb} — ${durStr(g.ms)}</div>`:"";
 
-    const motivosHtml=jcCampos(c.id,null,"selMotivo('"+c.id+"')");
-
-    const formHtml=`
-      <div class="motivos-label">Motivo do atraso:</div>
-      ${motivosHtml}
-      <div class="just-label" style="margin-top:10px">Complemento (opcional):</div>
-      <textarea class="just-input" id="desc-${c.id}" placeholder="Descreva mais detalhes se necessário..."></textarea>
-      <button class="save-btn" id="savebtn-${c.id}" onclick="salvar('${c.id}')" disabled>💾 Salvar Justificativa</button>`;
-
-    const savedHtml=`
-      <div class="saved-box">
-        <div class="saved-motivo">✅ ${c.justificativa?.motivo||""}</div>
-        ${jcResumo(c.justificativa)}
-        ${c.justificativa?.descricao?`<div class="saved-desc">"${c.justificativa.descricao}"</div>`:""}
-        <div class="saved-by">Registrado em ${fmtDT(c.justificativa?.dataRegistro?.toDate?.())}</div>
-      </div>
-      <button class="edit-btn" onclick="editJust('${c.id}')">✏️ Editar</button>`;
+    const consulta=consultaHtml(c);
 
     return`<div class="card ${temJust?"done":"pend"}" id="card-${c.id}">
       <div class="card-head" onclick="toggleCard('${c.id}')">
         <span class="ptag">${c.placa}</span>
         <span class="tmac-badge tmac-rd">⏱ ${durStr(tempoMs)}</span>
         ${!concluido?'<span class="proc-badge">EM PROCESSO</span>':""}
-        <span class="info-txt">AC: ${c.ac} · Turno ${turno} · ${tipoLabel}</span>
+        <span class="info-txt">AC: ${c.ac} · Turno ${turno} · ${tipoLabel}${subLbl(c)}</span>
         <span class="info-txt">${fmtDataLinha(c,en,sa)}</span>
         <div class="${temJust?"status-ok":"status-pend"}">
           ${temJust?"✅ Justificado":"⏳ Pendente"}
@@ -791,7 +819,7 @@ function render(){
         <div class="bars">${barsHtml}</div>
         ${gargHtml}
         <hr class="divider"/>
-        <div id="form-${c.id}">${temJust?savedHtml:formHtml}</div>
+        <div id="form-${c.id}">${consulta}</div>
       </div>
     </div>`;
   }).join("");
@@ -799,6 +827,13 @@ function render(){
 }
 
 // ── RENDER — Modo Metas por Etapa ──
+function limTabela(c){
+  const cur=c.subtipoCarga||"";
+  const linhas=Object.keys(TMCI_POR_SUB).map(k=>`<div class="lim-row${k===cur?" hit":""}"><span>${k}${k===cur?" (este veículo)":""}</span><span>${TMCI_POR_SUB[k]} min</span></div>`).join("");
+  const aviso=cur?"":`<div class="lim-row"><span>Sem tipo de carregamento: meta padrão</span><span>${TMCI_LIM/60000} min</span></div>`;
+  return`<div class="lim-box"><div class="lim-ttl">Meta TMCI por carregamento</div>${linhas}${aviso}</div>`;
+}
+
 function renderEtapas(){
   const atList=getAtrasadosEtapas();
   const metricsMap=new Map(atList.map(c=>[c.id,stageMetrics(c)]));
@@ -817,33 +852,37 @@ function renderEtapas(){
 
   el.innerHTML=filtered.map(c=>{
     const m=metricsMap.get(c.id);
-    const en=m.en;
-    const turno=getTurno(en);
+    const turno=getTurno(m.en);
     const tipoLabel=TIPO_SVG[c.tipoCargaLabel]||c.tipoCargaLabel||c.tipoCarga||"—";
     const grupoPend=grupoPendente(c,m);
-    const nExcedidos=(m.armazemExc?1:0)+(m.fatExc?1:0);
+    const nExcedidos=(m.armazemExc?1:0)+((m.fatExc||m.tmeExc)?1:0);
 
     const mv=(ms,lim)=>ms==null?`<span class="metric-val" style="color:var(--t3)">—</span>`:`<span class="metric-val ${ms>lim?"bad":"ok"}">${durStr(ms)}</span>`;
+    const mr=(lbl,ms,lim)=>`<div class="metric-row"><span class="metric-lbl">${lbl}</span><span><span class="meta-tag">meta ${durStr(lim)}</span>${mv(ms,lim)}</span></div>`;
 
     const armazemBox=`
       <div class="setor-col">
         <div class="setor-title armazem">🏬 Armazém</div>
-        <div class="metric-row"><span class="metric-lbl">TMTI (Triagem)</span>${mv(m.tmti,TMTI_LIM)}</div>
-        <div class="metric-row"><span class="metric-lbl">TMCI (Carregamento)</span>${mv(m.tmci,TMCI_LIM)}</div>
-        <div class="metric-row"><span class="metric-lbl">TMEI (Enlonamento)</span>${mv(m.tmei,TMEI_LIM)}</div>
+        ${mr("TMTI (Triagem)",m.tmti,TMTI_LIM)}
+        ${mr("TMCI (Carregamento"+(c.subtipoCarga?" · "+jcEsc(c.subtipoCarga):"")+")",m.tmci,m.tmciLim)}
+        ${mr("TMEI (Enlonamento)",m.tmei,TMEI_LIM)}
         ${grupoArea(c,"armazem",m.armazemExc)}
+        ${limTabela(c)}
       </div>`;
     const faturamentoBox=`
       <div class="setor-col">
         <div class="setor-title faturamento">💰 Faturamento</div>
-        <div class="metric-row"><span class="metric-lbl">TMF (Fila Faturamento)</span>${mv(m.tmf,TMF_LIM)}</div>
-        ${grupoArea(c,"faturamento",m.fatExc)}
+        ${mr("TME (Tempo Médio de Espera)",m.tme,TME_LIM)}
+        ${mr("TMF (Fila Faturamento)",m.tmf,TMF_LIM)}
+        ${(!m.tmeExc&&!m.fatExc)?`<div class="setor-ok-tag">✔ Dentro da meta</div>`:""}
+        ${m.tmeExc?grupoArea(c,"tme",true):""}
+        ${m.fatExc?grupoArea(c,"faturamento",true):""}
       </div>`;
 
     return`<div class="card ${grupoPend?"pend":"done"}" id="card-${c.id}">
       <div class="card-head" onclick="toggleCard('${c.id}')">
         <span class="ptag">${c.placa}</span>
-        <span class="info-txt">AC: ${c.ac} · Turno ${turno} · ${tipoLabel}</span>
+        <span class="info-txt">AC: ${c.ac} · Turno ${turno} · ${tipoLabel}${subLbl(c)}</span>
         <span class="info-txt">${fmtDataLinha(c,m.en,m.sa)}</span>
         <div class="${grupoPend?"status-pend":"status-ok"}">
           ${grupoPend?`⏳ Pendente<span class="badge-need">${nExcedidos} setor${nExcedidos>1?"es":""} fora da meta</span>`:"✅ Justificado"}
@@ -859,8 +898,15 @@ function renderEtapas(){
   reaplicarAbertos();
 }
 
-function grupoArea(c,grupo,excedeu){
-  if(!excedeu)return`<div class="setor-ok-tag">✔ Dentro da meta</div>`;
+// Formulário (cascata Área → Justificativa → Detalhamento) de um grupo: armazem | tme | faturamento
+function formGrupoHtml(c,grupo,atual){
+  return`
+    <div class="grupo-motivos-label">Motivo do atraso — ${GRUPO_LBL[grupo]}:</div>
+    ${jcCampos(grupo+"-"+c.id,atual,"selMotivoGrupo('"+c.id+"','"+grupo+"')")}
+    <textarea class="just-input" id="desc-${grupo}-${c.id}" placeholder="Complemento (opcional)..." style="margin-top:8px">${jcEsc(atual&&atual.descricao||"")}</textarea>
+    <button class="save-btn" id="savebtn-${grupo}-${c.id}" onclick="salvarGrupo('${c.id}','${grupo}')"${atual&&atual.motivo?"":" disabled"} style="margin-top:8px">💾 Salvar Justificativa</button>`;
+}
+function grupoConteudo(c,grupo){
   const j=c.justificativa?.[grupo];
   if(j&&j.motivo){
     return`
@@ -872,11 +918,41 @@ function grupoArea(c,grupo,excedeu){
       </div>
       <button class="edit-btn" onclick="editJustGrupo('${c.id}','${grupo}')">✏️ Editar</button>`;
   }
-  return`
-    <div class="grupo-motivos-label">Motivo do atraso — ${grupo==="armazem"?"Armazém":"Faturamento"}:</div>
-    ${jcCampos(grupo+"-"+c.id,null,"selMotivoGrupo('"+c.id+"','"+grupo+"')")}
-    <textarea class="just-input" id="desc-${grupo}-${c.id}" placeholder="Complemento (opcional)..." style="margin-top:8px"></textarea>
-    <button class="save-btn" id="savebtn-${grupo}-${c.id}" onclick="salvarGrupo('${c.id}','${grupo}')" disabled style="margin-top:8px">💾 Salvar Justificativa</button>`;
+  return formGrupoHtml(c,grupo,null);
+}
+function grupoArea(c,grupo,excedeu){
+  if(!excedeu)return`<div class="setor-ok-tag">✔ Dentro da meta</div>`;
+  return`<div id="grp-${grupo}-${c.id}">${grupoConteudo(c,grupo)}</div>`;
+}
+
+// ── Modo TMAC Geral: somente consulta (mostra o que foi registrado em Metas por Etapa) ──
+function consultaCampos(j){
+  return`<div class="ro-row"><span>Área responsável</span><span>${jcEsc(j.areaResponsavel||"—")}</span></div>
+    <div class="ro-row"><span>Justificativa padrão</span><span>${jcEsc(j.motivo||"—")}</span></div>
+    <div class="ro-row"><span>Detalhamento</span><span>${jcEsc(j.detalhamento||"—")}</span></div>
+    <div class="ro-row"><span>Complemento</span><span style="font-style:italic;color:var(--t2)">${j.descricao?jcEsc(j.descricao):"—"}</span></div>
+    <div class="ro-row" style="border-bottom:none"><span>Registrado por</span><span style="color:var(--t2)">${j.operador?jcEsc(j.operador)+" · ":""}${fmtDT(j.dataRegistro?.toDate?.())}</span></div>`;
+}
+function consultaHtml(c){
+  const J=c.justificativa||{};
+  const m=stageMetrics(c);
+  const blocos=[
+    {k:"armazem",t:"🏬 Armazém",cls:"armazem",exc:m.armazemExc},
+    {k:"tme",t:"⏱ TME (Espera)",cls:"faturamento",exc:m.tmeExc},
+    {k:"faturamento",t:"💰 Faturamento (TMF)",cls:"faturamento",exc:m.fatExc},
+  ];
+  const cols=blocos.map(b=>{
+    const j=J[b.k];
+    let corpo;
+    if(j&&j.motivo)corpo=consultaCampos(j);
+    else if(b.exc)corpo=`<div class="ro-vazio">⏳ Fora da meta — sem justificativa registrada</div>`;
+    else corpo=`<div class="setor-ok-tag">✔ Dentro da meta</div>`;
+    return`<div class="setor-col"><div class="setor-title ${b.cls}">${b.t}</div>${corpo}</div>`;
+  }).join("");
+  const legado=J.motivo?`<div class="saved-box" style="margin-top:10px"><div class="saved-by" style="margin-bottom:4px">Registro anterior (TMAC Geral)</div><div class="saved-motivo">✅ ${jcEsc(J.motivo)}</div>${jcResumo(J)}${J.descricao?`<div class="saved-desc">"${jcEsc(J.descricao)}"</div>`:""}</div>`:"";
+  const semEtapa=(!m.armazemExc&&!m.tmeExc&&!m.fatExc&&!temJustAny(c))?`<div class="saved-by" style="margin-top:8px">Nenhuma etapa fora da meta — não há justificativa a registrar em Metas por Etapa.</div>`:"";
+  return`<div class="ro-head"><span class="ro-tag">🔒 Consulta — registrado em Metas por Etapa</span><button class="edit-btn" style="margin:0 0 0 auto" onclick="setModo('etapas')">Editar em Metas por Etapa →</button></div>
+    <div class="setores tres">${cols}</div>${legado}${semEtapa}`;
 }
 
 window.selMotivoGrupo=(id,grupo)=>{
@@ -906,21 +982,8 @@ window.salvarGrupo=async(id,grupo)=>{
 
 window.editJustGrupo=(id,grupo)=>{
   const c=ALL.find(x=>x.id===id);if(!c)return;
-  const m=stageMetrics(c);
-  const excedeu=grupo==="armazem"?m.armazemExc:m.fatExc;
-  const motivoAtual=c.justificativa?.[grupo]?.motivo||"";
-  const box=grupo==="armazem"?document.querySelector(`#card-${id} .setor-title.armazem`).closest(".setor-col"):document.querySelector(`#card-${id} .setor-title.faturamento`).closest(".setor-col");
-  const anchor=box.querySelector(".saved-box")||box.querySelector(".setor-ok-tag");
-  const after=box.querySelector(".edit-btn");
-  const container=document.createElement("div");
-  container.innerHTML=`
-    <div class="grupo-motivos-label">Motivo do atraso — ${grupo==="armazem"?"Armazém":"Faturamento"}:</div>
-    ${jcCampos(grupo+"-"+id,c.justificativa?.[grupo],"selMotivoGrupo('"+id+"','"+grupo+"')")}
-    <textarea class="just-input" id="desc-${grupo}-${id}" placeholder="Complemento (opcional)..." style="margin-top:8px">${c.justificativa?.[grupo]?.descricao||""}</textarea>
-    <button class="save-btn" id="savebtn-${grupo}-${id}" onclick="salvarGrupo('${id}','${grupo}')"${motivoAtual?"":"disabled"} style="margin-top:8px">💾 Salvar Justificativa</button>`;
-  if(anchor)anchor.remove();
-  if(after)after.remove();
-  box.appendChild(container);
+  const el=document.getElementById(`grp-${grupo}-${id}`);if(!el)return;
+  el.innerHTML=formGrupoHtml(c,grupo,c.justificativa?.[grupo]||null);
   if(JC)jcAtualizarBtn(grupo+"-"+id);
 };
 
@@ -964,123 +1027,130 @@ window.editJust=id=>{
     <button class="save-btn" id="savebtn-${id}" onclick="salvar('${id}')"${motivoAtual?"":"disabled"}>💾 Salvar Justificativa</button>`;
   if(JC)jcAtualizarBtn(id);
 };
-window.abrirRelatorio=()=>{
-  if(MMODE==="etapas"){abrirRelatorioEtapas();return;}
-  const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
-  const atrasados=ALL.filter(c=>{
+function periodoRel(){const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);return{s,e,per:s===e?s:`${s} a ${e}`};}
+const fmtDataBR=d=>d?d.split("-").reverse().join("/"):"—";
+const REL_CLS={"Placa":"rel-placa","TMAC":"rel-tmac","Gargalo Principal":"rel-garg","Operador Resp.":"rel-op"};
+const REL_STATUS=new Set(["Status","Just. Armazém","Just. TME","Just. Faturamento (TMF)"]);
+function tabelaRel(headers,rows){
+  const th=headers.map(h=>`<th>${jcEsc(h)}</th>`).join("");
+  const tr=rows.map(r=>`<tr>${r.map((t,i)=>{
+    const h=headers[i];
+    let cls=REL_CLS[h]||"";
+    if(REL_STATUS.has(h))cls=t.startsWith("✅")?"rel-just-ok":t.startsWith("⏳")?"rel-just-pend":"";
+    return`<td${cls?` class="${cls}"`:""}>${jcEsc(t).replace(/\n/g,"<br>")}</td>`;
+  }).join("")}</tr>`).join("");
+  return`<table class="rel-table"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
+}
+// Justificativas registradas de um veículo (Armazém / TME / TMF / registro anterior "Geral")
+function justGrupos(c){
+  const J=c.justificativa||{};const out=[];
+  if(J.armazem&&J.armazem.motivo)out.push({g:"Armazém",j:J.armazem});
+  if(J.tme&&J.tme.motivo)out.push({g:"TME",j:J.tme});
+  if(J.faturamento&&J.faturamento.motivo)out.push({g:"TMF",j:J.faturamento});
+  if(J.motivo)out.push({g:"Geral",j:J});
+  return out;
+}
+function dadosRelTmac(){
+  const{s,e}=periodoRel();
+  const lista=ALL.filter(c=>{
     if(!c.data||c.data<s||c.data>e)return false;
     if(c.setorAtual==="posto1")return false;
     const en=getTS(c,"entrada","ts");if(!en)return false;
     const sa=getTS(c,"faturamento","ts");
-    const agora=sa||new Date();
-    return(agora-en)>LIMITE_MS;
+    return((sa||new Date())-en)>LIMITE_MS;
   })
   .filter(c=>MT_J==="t"||getTurno(getTS(c,"entrada","ts"))===MT_J)
   .filter(c=>MTC_J==="t"||c.tipoCarga===MTC_J)
   .filter(c=>MTCIM_J==="t"||(c.tipoCimento||c.tipoCimentoLabel||"")===MTCIM_J)
   .filter(passaBusca)
   .sort((a,b)=>(a.data>b.data?-1:1));
-
-  document.getElementById("rel-titulo").textContent="📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS";
-  const per=s===e?s:`${s} a ${e}`;
-  document.getElementById("rel-info").textContent=`Período: ${per} · Veículos com TMAC > 2h10: ${atrasados.length}`;
-  document.getElementById("rel-total").textContent=`${atrasados.length} veículo${atrasados.length!==1?"s":""}`;
-
-  if(!atrasados.length){
-    document.getElementById("rel-body").innerHTML=`<div style="text-align:center;padding:32px;color:var(--t3)">✅ Nenhum veículo excedeu o TMAC de 2h10 no período selecionado.</div>`;
-    document.getElementById("modal-rel").classList.add("show");
-    return;
-  }
-
-  const rows=atrasados.map(c=>{
+  const headers=["Placa","AC","Data","Turno","Tipo","Carregto","Entrada","Saída","TMAC","Gargalo Principal","Tempo Gargalo","Status","Área Responsável","Justificativa Padrão","Detalhamento","Complemento","Operador Resp."];
+  const rows=lista.map(c=>{
     const en=getTS(c,"entrada","ts");
     const sa=getTS(c,"faturamento","ts");
-    const agora=sa||new Date();
-    const tmacMs=agora-en;
     const g=gargalo(c);
-    const temJust=!!(c.justificativa?.motivo);
-    const tipoLabel=(c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"—");
-    return`<tr>
-      <td><span class="rel-placa">${c.placa}</span></td>
-      <td style="color:var(--t2)">${c.ac||"—"}</td>
-      <td style="color:var(--t2)">${getTurno(en)||"—"}</td>
-      <td style="color:var(--t2);font-size:10px">${tipoLabel}</td>
-      <td style="color:var(--t2)">${fmtT(en)}</td>
-      <td style="color:var(--t2)">${sa?fmtT(sa):"Em processo"}</td>
-      <td class="rel-tmac">${durStr(tmacMs)}</td>
-      <td class="rel-garg">${g?g.lb:"—"}</td>
-      <td style="color:var(--t2)">${g?durStr(g.ms):"—"}</td>
-      <td>${temJust?`<span class="rel-just-ok">✅ Justificado</span>`:`<span class="rel-just-pend">⏳ Pendente</span>`}</td>
-      <td style="color:var(--t2);font-size:10px;max-width:220px">${c.justificativa?.motivo||"—"}${c.justificativa?.descricao?" — "+c.justificativa.descricao:""}</td>
-      <td class="rel-op">${c.justificativa?.operador||"—"}</td>
-    </tr>`;
-  }).join("");
+    const gr=justGrupos(c);
+    const col=f=>gr.length?gr.map(x=>(x.g!=="Geral"?"["+x.g+"] ":"")+(f(x.j)||"—")).join("\n"):"—";
+    const tipo=(c.tipoCimento?c.tipoCimento+" ":"")+({granel:"Granel",ensacado:"Ensacado",bigbag:"Big Bag"}[c.tipoCarga]||c.tipoCarga||"—");
+    return[
+      c.placa||"—",c.ac||"—",fmtDataBR(c.data),getTurno(en)||"—",tipo,c.subtipoCarga||"—",
+      fmtT(en),sa?fmtT(sa):"Em processo",durStr(((sa||new Date())-en)),
+      g?g.lb:"—",g?durStr(g.ms):"—",
+      gr.length?"✅ Justificado":"⏳ Pendente",
+      col(j=>j.areaResponsavel),col(j=>j.motivo),col(j=>j.detalhamento),col(j=>j.descricao),col(j=>j.operador)
+    ];
+  });
+  return{headers,rows};
+}
+function dadosRelEtapas(){
+  const lista=getAtrasadosEtapas().sort((a,b)=>(a.data>b.data?-1:1));
+  const headers=["Placa","AC","Data","Turno","Carregto","Nota Fiscal","Setor c/ atraso","TME","TMTI","TMCI","TMEI","TMF","Just. Armazém","Just. TME","Just. Faturamento (TMF)","Operador Resp."];
+  const rows=lista.map(c=>{
+    const m=stageMetrics(c);
+    const t=(ms,exc)=>ms!=null?durStr(ms)+(exc?" ⚠":""):"—";
+    const setores=[m.armazemExc?"Armazém":null,m.tmeExc?"TME":null,m.fatExc?"Faturamento (TMF)":null].filter(Boolean).join(" + ")||"—";
+    const J=c.justificativa||{};
+    const fj=(exc,j)=>{
+      if(!exc)return"—";
+      if(!(j&&j.motivo))return"⏳ Pendente";
+      const det=[j.areaResponsavel?"Área: "+j.areaResponsavel:null,j.detalhamento?"Det.: "+j.detalhamento:null].filter(Boolean).join(" · ");
+      return"✅ "+j.motivo+(det?"\n"+det:"")+(j.descricao?"\n“"+j.descricao+"”":"");
+    };
+    const ops=[m.armazemExc&&J.armazem?.operador?"Armazém: "+J.armazem.operador:null,m.tmeExc&&J.tme?.operador?"TME: "+J.tme.operador:null,m.fatExc&&J.faturamento?.operador?"TMF: "+J.faturamento.operador:null].filter(Boolean).join("\n")||"—";
+    return[
+      c.placa||"—",c.ac||"—",fmtDataBR(c.data),getTurno(m.en)||"—",c.subtipoCarga||"—",c.notaFiscal||"—",setores,
+      t(m.tme,m.tmeExc),t(m.tmti,m.tmti!=null&&m.tmti>TMTI_LIM),t(m.tmci,m.tmci!=null&&m.tmci>m.tmciLim),t(m.tmei,m.tmei!=null&&m.tmei>TMEI_LIM),t(m.tmf,m.fatExc),
+      fj(m.armazemExc,J.armazem),fj(m.tmeExc,J.tme),fj(m.fatExc,J.faturamento),ops
+    ];
+  });
+  return{headers,rows};
+}
 
-  document.getElementById("rel-body").innerHTML=`
-    <table class="rel-table">
-      <thead><tr>
-        <th>Placa</th><th>AC</th><th>Turno</th><th>Tipo</th>
-        <th>Entrada</th><th>Saída</th><th>TMAC</th>
-        <th>Gargalo Principal</th><th>Tempo Gargalo</th>
-        <th>Status</th><th>Justificativa</th><th>Operador Resp.</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-
+window.abrirRelatorio=()=>{
+  const etapas=MMODE==="etapas";
+  const d=etapas?dadosRelEtapas():dadosRelTmac();
+  const{per}=periodoRel();
+  const n=d.rows.length;
+  document.getElementById("rel-titulo").textContent=etapas?"📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS — Metas por Etapa":"📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS";
+  document.getElementById("rel-info").textContent=etapas?`Período: ${per} · Veículos fora da meta (TMTI/TMCI/TMEI/TME/TMF): ${n}`:`Período: ${per} · Veículos com TMAC > 2h10: ${n}`;
+  document.getElementById("rel-total").textContent=`${n} veículo${n!==1?"s":""}`;
+  document.getElementById("rel-body").innerHTML=n?tabelaRel(d.headers,d.rows):`<div style="text-align:center;padding:32px;color:var(--t3)">${etapas?"✅ Nenhum veículo fora das metas por etapa no período selecionado.":"✅ Nenhum veículo excedeu o TMAC de 2h10 no período selecionado."}</div>`;
   document.getElementById("modal-rel").classList.add("show");
 };
 
-window.abrirRelatorioEtapas=()=>{
-  const{s,e}=MDATA_J?{s:MDATA_J,e:MDATA_J}:periodDates(MP);
-  const atrasados=getAtrasadosEtapas().sort((a,b)=>(a.data>b.data?-1:1));
-
-  document.getElementById("rel-titulo").textContent="📋 CONTROLE DE JUSTIFICATIVAS POR VEÍCULOS — Metas por Etapa";
-  const per=s===e?s:`${s} a ${e}`;
-  document.getElementById("rel-info").textContent=`Período: ${per} · Veículos fora da meta (TMTI/TMCI/TMEI/TMF): ${atrasados.length}`;
-  document.getElementById("rel-total").textContent=`${atrasados.length} veículo${atrasados.length!==1?"s":""}`;
-
-  if(!atrasados.length){
-    document.getElementById("rel-body").innerHTML=`<div style="text-align:center;padding:32px;color:var(--t3)">✅ Nenhum veículo fora das metas por etapa no período selecionado.</div>`;
-    document.getElementById("modal-rel").classList.add("show");
-    return;
+let xlsxCarregado=false;
+function carregarXLSX(){
+  return new Promise((resolve,reject)=>{
+    if(xlsxCarregado&&window.XLSX){resolve();return;}
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.onload=()=>{xlsxCarregado=true;resolve();};
+    s.onerror=()=>reject(new Error("Falha ao carregar a biblioteca de exportação."));
+    document.head.appendChild(s);
+  });
+}
+window.exportarExcel=async()=>{
+  const btn=document.getElementById("btn-xls");
+  const txt=btn?btn.textContent:"";
+  if(btn){btn.disabled=true;btn.textContent="⏳ Preparando...";}
+  try{
+    const etapas=MMODE==="etapas";
+    const d=etapas?dadosRelEtapas():dadosRelTmac();
+    if(!d.rows.length){alert("Nenhum veículo para exportar com os filtros atuais.");return;}
+    await carregarXLSX();
+    const limpa=v=>String(v==null?"":v).replace(/[✅⏳]\s*/g,"").replace(/\n/g," | ");
+    const aoa=[d.headers,...d.rows.map(r=>r.map(limpa))];
+    const ws=XLSX.utils.aoa_to_sheet(aoa);
+    ws["!cols"]=d.headers.map((h,i)=>({wch:Math.min(45,aoa.reduce((mx,r)=>Math.max(mx,String(r[i]).length),h.length)+2)}));
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,etapas?"Metas por Etapa":"TMAC Geral");
+    const{s,e}=periodoRel();
+    XLSX.writeFile(wb,`justificativas_${etapas?"metas_por_etapa":"tmac_2h10"}_${s===e?s:s+"_a_"+e}.xlsx`);
+  }catch(err){
+    alert("Erro ao exportar Excel: "+err.message);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=txt;}
   }
-
-  const rows=atrasados.map(c=>{
-    const m=stageMetrics(c);
-    const en=m.en;
-    const setores=[m.armazemExc?"Armazém":null,m.fatExc?"Faturamento":null].filter(Boolean).join(" + ");
-    const jArm=c.justificativa?.armazem,jFat=c.justificativa?.faturamento;
-    const statusArm=!m.armazemExc?"—":(jArm?.motivo?`<span class="rel-just-ok">✅ ${jArm.motivo}</span>`:`<span class="rel-just-pend">⏳ Pendente</span>`);
-    const statusFat=!m.fatExc?"—":(jFat?.motivo?`<span class="rel-just-ok">✅ ${jFat.motivo}</span>`:`<span class="rel-just-pend">⏳ Pendente</span>`);
-    const operadores=[m.armazemExc&&jArm?.operador?`Armazém: ${jArm.operador}`:null,m.fatExc&&jFat?.operador?`Faturamento: ${jFat.operador}`:null].filter(Boolean).join(" · ")||"—";
-    return`<tr>
-      <td><span class="rel-placa">${c.placa}</span></td>
-      <td style="color:var(--t2)">${c.ac||"—"}</td>
-      <td style="color:var(--t2)">${getTurno(en)||"—"}</td>
-      <td style="color:var(--t2)">${c.notaFiscal||"—"}</td>
-      <td style="color:var(--t2)">${setores||"—"}</td>
-      <td style="color:var(--t2)">${m.tmti!=null?durStr(m.tmti):"—"}</td>
-      <td style="color:var(--t2)">${m.tmci!=null?durStr(m.tmci):"—"}</td>
-      <td style="color:var(--t2)">${m.tmei!=null?durStr(m.tmei):"—"}</td>
-      <td style="color:var(--t2)">${m.tmf!=null?durStr(m.tmf):"—"}</td>
-      <td>${statusArm}</td>
-      <td>${statusFat}</td>
-      <td class="rel-op">${operadores}</td>
-    </tr>`;
-  }).join("");
-
-  document.getElementById("rel-body").innerHTML=`
-    <table class="rel-table">
-      <thead><tr>
-        <th>Placa</th><th>AC</th><th>Turno</th><th>Nota Fiscal</th>
-        <th>Setor c/ atraso</th>
-        <th>TMTI</th><th>TMCI</th><th>TMEI</th><th>TMF</th>
-        <th>Just. Armazém</th><th>Just. Faturamento</th><th>Operador Resp.</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-
-  document.getElementById("modal-rel").classList.add("show");
 };
 
 window.exportarPdf=()=>{
@@ -1103,7 +1173,7 @@ window.exportarPdf=()=>{
   h1{font-size:14pt;color:#003366;text-align:center;margin-bottom:4pt}
   .sub{font-size:9pt;color:#555;text-align:center;margin-bottom:14pt}
   .sub.alert{color:#cc0000;font-weight:bold}
-  table{border-collapse:collapse;width:100%;font-size:8.5pt;margin-top:8pt}
+  table{border-collapse:collapse;width:100%;font-size:7.5pt;margin-top:8pt}
   th{background:#003366;color:#fff;padding:6px 8px;text-align:left;font-size:8pt;white-space:nowrap}
   td{padding:5px 8px;border:1px solid #ccc}
   tr:nth-child(even) td{background:#f0f4fb}
@@ -1113,7 +1183,7 @@ window.exportarPdf=()=>{
 </head><body>
 <h1>${document.getElementById("rel-titulo").textContent.replace(/^📋\s*/,"")}</h1>
 <div class="sub">Apodi Cimentos · Período: ${per} · Gerado em: ${hoje} às ${hora}</div>
-<div class="sub alert">${MMODE==="etapas"?"Veículos fora das metas por etapa (TMTI/TMCI/TMEI/TMF)":"Veículos com TMAC superior a 2h10"}</div>
+<div class="sub alert">${MMODE==="etapas"?"Veículos fora das metas por etapa (TMTI/TMCI/TMEI/TME/TMF)":"Veículos com TMAC superior a 2h10"}</div>
 ${tabela}
 <div class="footer">Documento gerado pelo Sistema de Rastreio de Carregamento — Apodi Cimentos</div>
 </body></html>`);
