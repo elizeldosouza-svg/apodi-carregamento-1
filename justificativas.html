@@ -549,9 +549,12 @@ function stageMetrics(c){
   const tmci=(caI&&caF)?caF-caI:null;
   const tmei=(enI&&enF)?enF-enI:null;
   const tmf=(enF&&sa)?sa-enF:((caF&&sa&&!enI)?sa-caF:null);
-  // TME = espera até a 1ª etapa (portaria ou triagem). Sem 1ª etapa e ainda em processo: tempo desde a entrada.
+  // TME = espera da entrada até a 1ª etapa (portaria ou triagem) — mesma fórmula do master.html.
+  // Cronômetro ao vivo (agora − entrada) SÓ enquanto o veículo ainda não iniciou nenhuma etapa e não foi faturado.
+  // Veículo com faturamento.ts / concluído / já em carga ou enlonamento (ex.: Granel sem triagem) nunca usa o relógio.
   const prim=ptI||trI;
-  const tme=(en&&prim)?prim-en:((en&&c.setorAtual!=="concluido")?Date.now()-en.getTime():null);
+  const aindaAguardando=!sa&&c.setorAtual!=="concluido"&&!(ptI||trI||caI||enI);
+  const tme=(en&&prim)?prim-en:((en&&aindaAguardando)?Date.now()-en.getTime():null);
   const lim=tmciLim(c);
   const armazemExc=(tmti!=null&&tmti>TMTI_LIM)||(tmci!=null&&tmci>lim)||(tmei!=null&&tmei>TMEI_LIM);
   const fatExc=(tmf!=null&&tmf>TMF_LIM);
