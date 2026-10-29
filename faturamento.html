@@ -141,6 +141,24 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .ba-et-carregamento_inicio,.ba-et-carregamento_fim{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
 .ba-et-enlonamento_inicio,.ba-et-enlonamento_fim{background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
 .ba-et-faturamento_aguardando{background:rgba(0,232,150,.12);color:var(--ac);border:1px solid rgba(0,232,150,.3)}
+.ba-left{display:flex;align-items:center;gap:10px;min-width:0}
+.ba-tm{font-size:10.5px;font-weight:700;color:#ffd000;white-space:nowrap}
+.ba-tm.al{color:#ff4466}
+.ba-pos{display:inline-block;min-width:22px;font-family:monospace;font-weight:800;color:var(--t3);margin-right:4px}
+.ac-ico{display:flex;gap:6px}
+.bh-bar{display:flex;gap:8px;margin-bottom:12px}
+.bh-bar .ba-inp{flex:1;min-width:0}
+.bh-dbtn{position:relative;display:flex;align-items:center;gap:6px;background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);color:var(--t2);padding:0 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.bh-dbtn.on{border-color:var(--ac);color:var(--ac)}
+.bh-dbtn input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.bh-clr{display:none;background:none;border:none;color:var(--t2);font-size:13px;cursor:pointer;padding:0 2px;position:relative;z-index:1}
+.bh-dbtn.on .bh-clr{display:inline}
+.bh-dt{font-size:11px;color:var(--t2);margin-bottom:8px}
+.bh-dt b{color:var(--tx)}
+.bh-tag{font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3);text-transform:uppercase;white-space:nowrap}
+.bh-mot{font-size:12px;background:rgba(251,146,60,.07);border-left:3px solid #fb923c;padding:7px 10px;border-radius:6px;line-height:1.4;word-break:break-word}
+.bh-mot span{display:block;font-size:9.5px;font-weight:700;color:#fb923c;text-transform:uppercase;margin-bottom:2px}
+.bh-by{font-size:10.5px;color:var(--t3);margin-top:6px}
 .ba-sub{font-size:11px;color:var(--t2);margin-bottom:10px}
 .ba-sub b{color:var(--tx)}
 .ba-actions{display:flex;justify-content:flex-end}
@@ -251,7 +269,10 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
   <div class="fg">
     <div class="fg-row-ac">
       <label>Número da AC</label>
-      <button type="button" class="ac-busca-btn" onclick="abrirBuscaAC()" title="Buscar AC/Placa em aberto">🔍</button>
+      <div class="ac-ico">
+        <button type="button" class="ac-busca-btn" onclick="abrirBuscaAC()" title="Buscar AC/Placa em aberto">🔍</button>
+        <button type="button" class="ac-busca-btn" onclick="abrirHistRetornos()" title="Histórico de retornos ao Posto 1">🕘</button>
+      </div>
     </div>
     <input id="ac" type="text" inputmode="numeric" placeholder="Ex: 629308" maxlength="6" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);chk()"/>
   </div>
@@ -374,6 +395,24 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <input class="ba-inp" id="ba-inp" placeholder="Digite a AC ou a Placa..." oninput="buscarAC()">
     </div>
     <div id="ba-res"></div>
+  </div>
+</div>
+
+<!-- HISTÓRICO DE RETORNOS AO POSTO 1 -->
+<div class="fatf-modal" id="bh-modal">
+  <div class="fatf-sheet">
+    <div class="fatf-sh-head">
+      <div>
+        <div class="fatf-sh-placa" style="font-size:15px">🕘 Histórico de retornos ao Posto 1</div>
+        <div class="fatf-sh-sub" id="bh-cnt"></div>
+      </div>
+      <button class="fatf-sh-close" onclick="fecharHistRetornos()">✕</button>
+    </div>
+    <div class="bh-bar">
+      <input class="ba-inp" id="bh-q" placeholder="Filtrar por AC ou placa..." oninput="histRender()">
+      <label class="bh-dbtn" id="bh-db">📅 <span id="bh-dl">Data</span><input type="date" id="bh-d" onchange="histRender()"><button type="button" class="bh-clr" onclick="event.preventDefault();document.getElementById('bh-d').value='';histRender()">✕</button></label>
+    </div>
+    <div id="bh-res"></div>
   </div>
 </div>
 
@@ -720,23 +759,30 @@ function baEtapaLabel(s){
   };
   return map[s||"posto1"]||s||"Entrada";
 }
+function baEntradaMs(c){
+  return c.entrada?.ts?.toMillis?.()||c.criadoEm?.toMillis?.()||0;
+}
 function baListaAberta(){
   return HD_REL.filter(c=>c.setorAtual&&c.setorAtual!=="concluido")
-    .sort((a,b)=>(b.criadoEm?.toMillis?.()||0)-(a.criadoEm?.toMillis?.()||0));
+    .sort((a,b)=>baEntradaMs(a)-baEntradaMs(b));
 }
 function baRenderResultados(list){
   const el=document.getElementById("ba-res");
   if(!list.length){el.innerHTML='<div class="ba-empty">Nenhum registro em aberto encontrado.</div>';return;}
+  const ordem=baListaAberta().map(x=>x.id);
   el.innerHTML=list.map(c=>{
+    const pos=ordem.indexOf(c.id)+1;
+    const ms=Date.now()-baEntradaMs(c);
+    const tm=baEntradaMs(c)?`<span class="ba-tm${ms>130*60000?" al":""}">⏱ ${fatfDurStr(ms)}</span>`:"";
     const cim=c.tipoCimento||c.tipoCimentoLabel||"";
     const tp=FATF_CARGA_LB[c.tipoCarga]||c.tipoCarga||"-";
     const op=c.entrada?.operador||"-";
     return`<div class="ba-card" id="ba-card-${c.id}">
       <div class="ba-top">
-        <span class="ba-placa">${c.placa||"-"}</span>
+        <span class="ba-left"><span class="ba-placa">${c.placa||"-"}</span>${tm}</span>
         <span class="ba-etapa ba-et-${c.setorAtual||"posto1"}">${baEtapaLabel(c.setorAtual)}</span>
       </div>
-      <div class="ba-sub">AC <b>${c.ac||"-"}</b> · ${tp}${cim?" · "+cim:""} · Operador: ${op} · ${c.data||"-"}</div>
+      <div class="ba-sub"><span class="ba-pos">${pos}°</span>AC <b>${c.ac||"-"}</b> · ${tp}${cim?" · "+cim:""} · Operador: ${op} · ${c.data||"-"}</div>
       <div class="ba-actions" id="ba-actions-${c.id}">
         <button class="ba-btn-retorna" onclick="baIniciarRetorno('${c.id}')">↩️ Retorna AC para Posto1</button>
       </div>
@@ -797,6 +843,41 @@ window.baConfirmarRetorno=async(id)=>{
     if(btn){btn.disabled=false;btn.textContent="Confirmar retorno";}
   }
 };
+
+// ── Histórico de retornos ao Posto 1 ────────────────────────────────────
+function histLista(){
+  const out=[];
+  HD_REL.forEach(c=>{
+    (c.retornosPosto1||[]).forEach(r=>{
+      const d=r.ts?.toDate?r.ts.toDate():null;
+      out.push({placa:c.placa||"-",ac:c.ac||"-",d,operador:r.operador||"-",motivo:r.motivo||"",de:r.deEtapa});
+    });
+  });
+  return out.sort((a,b)=>(b.d?b.d.getTime():0)-(a.d?a.d.getTime():0));
+}
+const histDiaISO=d=>d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+function histEsc(s){return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
+window.histRender=()=>{
+  const q=(document.getElementById("bh-q").value||"").trim().toUpperCase();
+  const dv=document.getElementById("bh-d").value;
+  document.getElementById("bh-db").classList.toggle("on",!!dv);
+  document.getElementById("bh-dl").textContent=dv?dv.split("-").reverse().join("/"):"Data";
+  const a=histLista().filter(r=>(!q||r.placa.toUpperCase().includes(q)||r.ac.toUpperCase().includes(q))&&(!dv||(r.d&&histDiaISO(r.d)===dv)));
+  document.getElementById("bh-cnt").textContent=a.length+(a.length===1?" retorno":" retornos");
+  document.getElementById("bh-res").innerHTML=a.length?a.map(r=>`<div class="ba-card">
+    <div class="ba-top"><span class="ba-placa">${histEsc(r.placa)}</span><span class="bh-tag">de ${histEsc(baEtapaLabel(r.de))}</span></div>
+    <div class="bh-dt">AC <b>${histEsc(r.ac)}</b> · ${r.d?fmtDT(r.d):"—"}</div>
+    <div class="bh-mot"><span>Motivo</span>${histEsc(r.motivo)}</div>
+    <div class="bh-by">↩️ Retornado por ${histEsc(r.operador)}</div>
+  </div>`).join(""):'<div class="ba-empty">Nenhum retorno encontrado.</div>';
+};
+window.abrirHistRetornos=()=>{
+  document.getElementById("bh-q").value="";
+  document.getElementById("bh-d").value="";
+  document.getElementById("bh-modal").classList.add("show");
+  histRender();
+};
+window.fecharHistRetornos=()=>{document.getElementById("bh-modal").classList.remove("show");};
 
 // ── Filtro do relatório ──────────────────────────────────────────────
 let MT="geral"; // 'geral' | 'A' | 'B' | 'C'
