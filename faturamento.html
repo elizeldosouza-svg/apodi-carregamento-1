@@ -782,6 +782,7 @@ window.baConfirmarRetorno=async(id)=>{
   try{
     await updateDoc(doc(db,"caminhoes_rastreio",id),{
       setorAtual:"posto1",
+      posto1Confirmado:false,
       retornosPosto1:arrayUnion({
         ts:Timestamp.fromDate(new Date()),
         operador:SESSAO.nome||null,
