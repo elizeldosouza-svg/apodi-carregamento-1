@@ -150,7 +150,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .bh-bar .ba-inp{flex:1;min-width:0}
 .bh-dbtn{position:relative;display:flex;align-items:center;gap:6px;background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);color:var(--t2);padding:0 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .bh-dbtn.on{border-color:var(--ac);color:var(--ac)}
-.bh-dbtn input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.bh-dbtn input{position:absolute;left:0;bottom:0;width:100%;height:1px;opacity:0;pointer-events:none}
 .bh-clr{display:none;background:none;border:none;color:var(--t2);font-size:13px;cursor:pointer;padding:0 2px;position:relative;z-index:1}
 .bh-dbtn.on .bh-clr{display:inline}
 .bh-dt{font-size:11px;color:var(--t2);margin-bottom:8px}
@@ -410,7 +410,7 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
     </div>
     <div class="bh-bar">
       <input class="ba-inp" id="bh-q" placeholder="Filtrar por AC ou placa..." oninput="histRender()">
-      <label class="bh-dbtn" id="bh-db">📅 <span id="bh-dl">Data</span><input type="date" id="bh-d" onchange="histRender()"><button type="button" class="bh-clr" onclick="event.preventDefault();document.getElementById('bh-d').value='';histRender()">✕</button></label>
+      <div class="bh-dbtn" id="bh-db" onclick="histAbrirData()">📅 <span id="bh-dl">Hoje</span><input type="date" id="bh-d" onchange="histRender()" tabindex="-1"><button type="button" class="bh-clr" onclick="event.stopPropagation();histHoje()" title="Voltar para hoje">✕</button></div>
     </div>
     <div id="bh-res"></div>
   </div>
@@ -859,9 +859,10 @@ const histDiaISO=d=>d.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"})
 function histEsc(s){return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
 window.histRender=()=>{
   const q=(document.getElementById("bh-q").value||"").trim().toUpperCase();
-  const dv=document.getElementById("bh-d").value;
-  document.getElementById("bh-db").classList.toggle("on",!!dv);
-  document.getElementById("bh-dl").textContent=dv?dv.split("-").reverse().join("/"):"Data";
+  const dv=document.getElementById("bh-d").value||hoje();
+  const outro=dv!==hoje();
+  document.getElementById("bh-db").classList.toggle("on",outro);
+  document.getElementById("bh-dl").textContent=outro?dv.split("-").reverse().join("/"):"Hoje";
   const a=histLista().filter(r=>(!q||r.placa.toUpperCase().includes(q)||r.ac.toUpperCase().includes(q))&&(!dv||(r.d&&histDiaISO(r.d)===dv)));
   document.getElementById("bh-cnt").textContent=a.length+(a.length===1?" retorno":" retornos");
   document.getElementById("bh-res").innerHTML=a.length?a.map(r=>`<div class="ba-card">
@@ -873,10 +874,16 @@ window.histRender=()=>{
 };
 window.abrirHistRetornos=()=>{
   document.getElementById("bh-q").value="";
-  document.getElementById("bh-d").value="";
+  document.getElementById("bh-d").value=hoje();
   document.getElementById("bh-modal").classList.add("show");
   histRender();
 };
+window.histAbrirData=()=>{
+  const i=document.getElementById("bh-d");
+  try{if(i.showPicker){i.showPicker();return;}}catch(e){}
+  i.style.pointerEvents="auto";i.focus();i.click();
+};
+window.histHoje=()=>{document.getElementById("bh-d").value=hoje();histRender();};
 window.fecharHistRetornos=()=>{document.getElementById("bh-modal").classList.remove("show");};
 
 // ── Filtro do relatório ──────────────────────────────────────────────
