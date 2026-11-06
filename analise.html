@@ -178,19 +178,124 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .stat-card .sv{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:800;color:var(--tx)}
 .stat-card .sl{font-size:8px;color:var(--t2);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}.turno-grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+/* ═══ Layout executivo em abas (2026-11) ═══ */
+.app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,#0a1830,#071122);border-right:1px solid var(--bd);padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;z-index:300}
+.brand{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0 18px;border-bottom:1px solid var(--bd);margin-bottom:12px}
+.brand .ico{font-size:30px}
+.brand b{font-family:'Rajdhani',sans-serif;font-size:17px;letter-spacing:.5px;text-align:center;line-height:1.1}
+.brand span{font-size:9px;color:var(--t2);letter-spacing:1px}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);color:var(--t2);font-weight:600;cursor:pointer;font-size:12px;transition:.2s;user-select:none}
+.nav:hover{background:var(--bg3);color:var(--tx)}
+.nav.on{background:linear-gradient(90deg,rgba(167,139,250,.25),rgba(167,139,250,.05));color:#fff;box-shadow:inset 3px 0 0 var(--pu)}
+.side .foot{margin-top:auto;font-size:10px;color:var(--t3);text-align:center;font-style:italic;line-height:1.5}
+.main{padding:14px 18px 30px;min-width:0;font-size:12px}
+.hdr{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#0d2240,#0b1524);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;flex-wrap:wrap;position:sticky;top:8px;z-index:200}
+.hdr .t{flex:1;min-width:240px}
+.hdr h1{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:800;line-height:1}
+.hdr h1 .ic{color:var(--pu)}
+.hdr p{color:var(--t2);font-size:11px;margin-top:3px}
+.chip{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--rs);padding:5px 10px;min-width:104px;cursor:pointer;transition:.2s}
+.chip:hover{border-color:var(--bl)}
+.chip small{display:block;font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.chip b{font-size:11px;font-weight:600;white-space:nowrap}
+.chip b:after{content:" ▾";color:var(--t3)}
+.hbtn{padding:7px 12px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid;background:transparent;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif}
+.hbtn:hover{filter:brightness(1.3)}
+#filters-panel.open{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px 4px;margin-bottom:12px}
+.sc{font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.4px;margin-left:auto;white-space:nowrap}
+.sc-p{color:var(--bl);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.3)}
+.sc-w{color:var(--gr);background:rgba(0,232,150,.08);border:1px solid rgba(0,232,150,.3)}
+.sc-d{color:var(--ye);background:rgba(255,208,0,.08);border:1px solid rgba(255,208,0,.3)}
+.sc-h{color:var(--pu);background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.3)}
+.kstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+.kc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;align-items:center;position:relative;overflow:hidden;min-width:0}
+.kc .ki{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.kc .kl{font-size:10px;color:var(--t2);font-weight:600;text-transform:none;letter-spacing:0;margin:0}
+.kc .kv{font-size:28px;line-height:1.05}
+.kc .kd{font-size:10px;font-weight:700}
+.kc svg.spark{position:absolute;right:10px;top:10px;opacity:.75}
+#scatter-chart{max-width:620px;margin:0 auto}
+#scatter-chart svg{overflow:visible}
+#waterfall-chart svg{max-height:230px}
+.ins>span:last-child{flex:1}
+.up{color:var(--gr)}.dn{color:var(--rd)}.ok{color:var(--gr)}.wr{color:var(--ye)}.nt{color:var(--t2)}
+.row{display:grid;gap:12px;margin-bottom:12px}
+.row>.card{min-width:0}
+.ct{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;margin-bottom:12px;color:var(--tx)}
+.ct .i{color:var(--pu)}
+.legend{display:flex;gap:12px;font-size:10px;color:var(--t2);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:3px;margin-right:4px;vertical-align:middle}
+.hb{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.hb .l{width:86px;text-align:right;color:var(--t2);font-size:11px;flex-shrink:0}
+.hb .tr{flex:1;height:14px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.hb .f{height:100%;border-radius:3px;transition:width .6s ease}
+.hb .v{min-width:58px;font-size:11px;font-weight:700}
+.ins{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--bg3);font-size:11px;line-height:1.4}
+.ins:last-child{border:none}
+.op{display:flex;gap:10px;align-items:flex-start;padding:7px 0;font-size:11px;line-height:1.4}
+.op .n{width:20px;height:20px;border-radius:50%;background:var(--tm);color:#000;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px}
+.card.warm{background:linear-gradient(160deg,rgba(255,159,67,.10),var(--bg2) 60%);border-color:rgba(255,159,67,.3)}
+.card.cool{background:linear-gradient(160deg,rgba(167,139,250,.10),var(--bg2) 60%);border-color:rgba(167,139,250,.3)}
+.card.dark{background:linear-gradient(160deg,#0d2240,#08142a);border-color:var(--b2)}
+table.dt{width:100%;border-collapse:collapse;font-size:11px}
+.dt th{font-size:9px;color:var(--t3);text-transform:uppercase;text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd);font-weight:700}
+.dt td{padding:7px 8px;border-bottom:1px solid var(--bg3)}
+.dt td.c,.dt th.c{text-align:center}
+.dt tr:last-child td{border-bottom:none}
+.pl{font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--bl);letter-spacing:1px;font-size:13px}
+table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fixed}
+.hm th{font-size:8px;color:var(--t3);font-weight:600;text-align:center;padding:2px 0}
+.hm th.d{text-align:left;width:30px;color:var(--t2);font-size:9px}
+.hm td{height:24px;text-align:center;font-weight:700;font-size:8px;border-radius:3px;cursor:default;padding:0}
+.fx{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;text-align:center}
+.fx .e{font-size:22px}
+.fx .a{font-size:10px;color:var(--t2);margin:4px 0;line-height:1.35}
+.fx .b{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--tm)}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mini .m{background:var(--bg3);border-radius:var(--rs);padding:10px;text-align:center}
+.mini .m b{font-family:'Rajdhani',sans-serif;font-size:20px;display:block}
+.mini .m span{font-size:9px;color:var(--t2);text-transform:uppercase}
+.mini .m em{font-style:normal;font-size:10px;font-weight:700;display:block;margin-top:2px}
+.dn-wrap{display:flex;align-items:center;gap:14px}
+.dn-leg{flex:1;font-size:11px;display:grid;gap:7px}
+.dn-leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.dn-leg b{float:right}
+.tab{display:none}.tab.on{display:block;animation:tabIn .3s}
+@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.report-tab-title{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:800;color:var(--pu);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+@media(max-width:1200px){.kstrip{grid-template-columns:repeat(3,1fr)}.row{grid-template-columns:1fr 1fr!important}}
+@media(max-width:800px){.app{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.side .brand,.side .foot{display:none}.kstrip{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr!important}.hdr{position:static}}
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="logo">📊 ANÁLISE — RASTREIO</div>
-  <button class="filter-toggle-btn on" id="btn-filters" onclick="toggleFilters()">🎛️ <span id="filters-label">Ocultar Filtros</span></button>
-  <button class="view-btn" onclick="openPreview()">👁️ Visualizar</button>
-  <button class="export-btn" onclick="exportExcel()">📥 Exportar Excel</button>
-  <button class="export-btn" style="border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.08)" onclick="exportPDF()">📄 Exportar PDF</button>
-</div>
-<div class="wrap">
+<div class="app">
+<!-- ═════════ MENU LATERAL ═════════ -->
+<aside class="side">
+  <div class="brand"><div class="ico">🚛</div><b>TMAC ONLINE</b><span>ANÁLISE · QUIXERÉ</span></div>
+  <div class="nav on" data-t="tab-exec" onclick="showTab('tab-exec',this)">🏠 Visão Executiva</div>
+  <div class="nav" data-t="tab-oper" onclick="showTab('tab-oper',this)">🕐 Operação</div>
+  <div class="nav" data-t="tab-etapas" onclick="showTab('tab-etapas',this)">🏗️ Etapas & Empresas</div>
+  <div class="nav" data-t="tab-placas" onclick="showTab('tab-placas',this)">🚚 Placas & Justificativas</div>
+  <div class="nav" data-t="tab-stat" onclick="showTab('tab-stat',this)">📐 Estatística & Previsão</div>
+  <div class="foot">Menos fila,<br>mais caminhões no dia.</div>
+</aside>
 
-  <div id="filters-panel" class="open">
+<main class="main">
+<!-- ═════════ CABEÇALHO FIXO (todas as abas) ═════════ -->
+<div class="hdr">
+  <div class="t"><h1><span class="ic">📊</span> <span id="h-tit">Tempo de Atendimento</span></h1><p id="h-sub">Visão Executiva — Performance e Tendências</p></div>
+  <div class="chip" onclick="toggleFilters(true)"><small>📅 Período</small><b id="chip-periodo">Hoje</b></div>
+  <div class="chip" onclick="toggleFilters(true)"><small>🕐 Turno</small><b id="chip-turno">Todos</b></div>
+  <div class="chip" onclick="toggleFilters(true)"><small>📦 Carga</small><b id="chip-carga">Todas</b></div>
+  <div class="chip" onclick="toggleFilters(true)"><small>🏢 Empresa</small><b id="chip-empresa">Todas</b></div>
+  <button class="hbtn" id="btn-filters" style="color:var(--bl);border-color:var(--b2)" onclick="toggleFilters()">🎛️ <span id="filters-label">Mais filtros</span></button>
+  <button class="hbtn" style="color:var(--tm);border-color:rgba(255,159,67,.4)" onclick="openPreview()">👁️ Visualizar</button>
+  <button class="hbtn" style="color:var(--gr);border-color:var(--gr)" onclick="exportExcel()">📥 Excel</button>
+  <button class="hbtn" style="color:var(--pu);border-color:var(--pu)" onclick="exportPDF()">📄 PDF</button>
+</div>
+
+<div id="filters-panel">
   <div class="filter-row">
     <span class="row-label">📅 Período:</span>
     <button class="pb pb-periodo on" onclick="setPeriod('hoje',this)">Hoje</button>
@@ -283,292 +388,244 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
       <option value="faturamento_aguardando">Ag. Faturamento</option>
       <option value="concluido">Concluído</option>
     </select>
-    <input class="fi" id="f-busca" type="text" placeholder="🔍 Placa ou AC..." oninput="render()" style="flex:1"/>
+    <input class="fi" id="f-busca" type="text" placeholder="🔍 Placa ou AC..." oninput="buscaDebounce()" style="flex:1"/>
   </div>
   </div>
 
-  <div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando dados...</div></div>
-  <div id="content" style="display:none">
-    <!-- KPIs -->
-    <div class="kpis">
-      <div class="kpi k0"><div class="kv" id="k-total">—</div><div class="kl">Caminhões</div></div>
-      <div class="kpi k1"><div class="kv" id="k-conc">—</div><div class="kl">Concluídos</div></div>
-      <div class="kpi k2"><div class="kv" id="k-tmac">—</div><div class="kl">TMAC Médio</div></div>
-      <div class="kpi k3"><div class="kv" id="k-taxa">—</div><div class="kl">Taxa Conclusão</div></div>
-    </div>
+<div id="loading-wrap" class="loading-wrap"><div class="spin"></div><div>Carregando dados...</div></div>
+<div id="content" style="display:none">
 
-    <!-- Etapas + Pico hora -->
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">⏱ Tempo Médio por Etapa</div>
-        <div id="etapas-chart"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">📈 Caminhões por Hora</div>
-        <div class="hr-wrap" id="hora-chart"></div>
-        <div class="hr-labels" id="hora-labels"></div>
-      </div>
-    </div>
+<!-- ═════════════ ABA 1 — VISÃO EXECUTIVA ═════════════ -->
+<section class="tab on" id="tab-exec" data-titulo="🏠 Visão Executiva — Performance e Tendências">
+  <div class="kstrip">
+    <div class="kc"><div class="ki" style="background:rgba(255,159,67,.12)">⏱️</div><div><div class="kl">TMAC Médio</div><div class="kv" style="color:var(--tm)" id="k-tmac">—</div><div class="kd" id="k-tmac-d">—</div></div><svg class="spark" width="70" height="22" id="k-spark"></svg></div>
+    <div class="kc"><div class="ki" style="background:rgba(167,139,250,.12)">🎯</div><div><div class="kl">Meta TMAC</div><div class="kv">≤ 2h10</div><div class="kd" id="k-meta-s">—</div></div></div>
+    <div class="kc"><div class="ki" style="background:rgba(0,212,255,.12)">🚛</div><div><div class="kl">Caminhões</div><div class="kv" style="color:var(--bl)" id="k-total">—</div><div class="kd" id="k-total-d">—</div></div></div>
+    <div class="kc"><div class="ki" style="background:rgba(0,232,150,.12)">✅</div><div><div class="kl">Concluídos</div><div class="kv" style="color:var(--gr)" id="k-conc">—</div><div class="kd" style="color:var(--t2)">Taxa de conclusão <span id="k-taxa">—</span></div></div></div>
+    <div class="kc"><div class="ki" style="background:rgba(0,232,150,.12)">📈</div><div><div class="kl">SLA (≤ 2h10)</div><div class="kv" style="color:var(--gr)" id="k-sla">—</div><div class="kd" id="k-sla-d">—</div></div></div>
+  </div>
 
-    <!-- Tipo de Carga -->
-    <div class="grid2" style="margin-bottom:12px">
-      <div class="card">
-        <div class="card-title">📦 Volume por Tipo de Carga</div>
-        <div class="tipo-grid" id="tipo-volume"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">⏱ TMAC Médio por Tipo</div>
-        <div id="tipo-tmac-chart"></div>
-      </div>
-    </div>
-
-    <!-- Turno -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🕐 Comparativo por Turno</div>
-      <div class="turno-grid" id="turno-grid"></div>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🔀 Tipo de Carga × Turno — TMAC médio</div>
-      <div style="overflow-x:auto"><table class="cross-table" id="cross-table"></table></div>
-    </div>
-    <!-- Justificativas -->
-    <div class="grid2" style="margin-bottom:12px">
-      <div class="card">
-        <div class="card-title">⚠️ Motivos de Atraso — Frequência</div>
-        <div id="just-motivos-chart"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">📋 Resumo de Justificativas</div>
-        <div id="just-resumo"></div>
-      </div>
-    </div>
-
-    <!-- Comparação com Ontem (D-1) — fixo, não segue o filtro de período do topo -->
-    <div class="scope-divider scope-d1"><div class="line"></div><div class="lbl">📊 COMPARAÇÃO COM ONTEM (D-1)</div><div class="line"></div></div>
-
-    <div class="grid2" style="margin-bottom:12px">
-      <div class="card">
-        <div class="card-title">📊 Hoje × Ontem (D-1)</div>
-        <div id="comp-anterior"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">📉 Distribuição TMAC — Percentis</div>
-        <div id="percentis-chart"></div>
-      </div>
-    </div>
-
-    <!-- A partir daqui: sempre semana atual (dom–hoje), não segue o filtro de período do topo -->
-    <div class="scope-divider scope-week"><div class="line"></div><div class="lbl">📅 SEMANA ATUAL (DOM – HOJE)</div><div class="line"></div></div>
-    <div class="scope-note">Os cartões daqui até o fim da página usam sempre a semana corrente até hoje, mesmo que você mude o filtro de período lá em cima.</div>
-
-    <!-- Ranking + Gargalo -->
-    <div class="grid2" style="margin-bottom:12px">
-      <div class="card">
-        <div class="card-title">🏆 Placas Mais Frequentes</div>
-        <div id="ranking-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">🔥 Gargalo por Etapa</div>
-        <div id="gargalo-chart"></div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📅 Tendência Diária do TMAC</div>
-      <div class="hr-wrap" id="tendencia-chart" style="height:100px"></div>
-      <div class="hr-labels" id="tendencia-labels"></div>
-    </div>
-
-    <div class="grid2" style="margin-bottom:12px">
-      <div class="card">
-        <div class="card-title">📆 Comparação por Dia da Semana</div>
-        <div id="dia-semana-chart"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">🏢 Ranking por Empresa Responsável</div>
-        <div id="ranking-empresa"></div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">💡 Insights Automáticos</div>
-      <div id="insights-box"></div>
-    </div>
-
-    <!-- Módulo 1 — Resumo Executivo -->
-    <div style="margin:16px 0 12px">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--gr);letter-spacing:.5px">📊 RESUMO EXECUTIVO</span>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📝 Executive Summary</div>
-      <div id="exec-summary"></div>
-    </div>
-
-    <div class="grid2" style="margin-bottom:12px">
-      <div class="card">
-        <div class="card-title">🎯 Índice Geral de Performance (IGP)</div>
-        <div id="igp-gauge"></div>
-        <div id="igp-detalhe"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">📌 KPIs Executivos</div>
-        <div id="exec-kpis" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
-      </div>
-    </div>
-
-    <!-- Módulo 2 — Análise Temporal -->
-    <div style="margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--bl);letter-spacing:.5px">📅 ANÁLISE TEMPORAL</span>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <span>📈 Evolução Diária</span>
-        <div class="metric-toggle" id="evo-toggle">
+  <div class="row" style="grid-template-columns:2.1fr 1fr 1.1fr">
+    <div class="card">
+      <div class="ct" style="flex-wrap:wrap"><span class="i">📊</span> Evolução Diária
+        <div class="metric-toggle" id="evo-toggle" style="margin-left:8px">
           <button class="metric-btn on" onclick="setEvoMetrica('tmac',this)">TMAC</button>
           <button class="metric-btn" onclick="setEvoMetrica('sla',this)">SLA</button>
           <button class="metric-btn" onclick="setEvoMetrica('volume',this)">Volume</button>
           <button class="metric-btn" onclick="setEvoMetrica('produtividade',this)">Produtividade</button>
-        </div>
-      </div>
+        </div><span class="sc sc-w">SEMANA ATUAL</span></div>
       <div id="evo-chart"></div>
-      <div id="evo-legend" style="display:flex;gap:14px;margin-top:6px;font-size:9px;color:var(--t2);flex-wrap:wrap"></div>
+      <div id="evo-legend" class="legend" style="margin-top:6px"></div>
     </div>
+    <div class="card" style="text-align:center">
+      <div class="ct"><span class="i">🎯</span> Desempenho vs Meta<span class="sc sc-p">PERÍODO</span></div>
+      <div id="gauge-meta"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">⏱️</span> Tempo por Etapa vs Meta<span class="sc sc-p">PERÍODO</span></div>
+      <div id="etapas-chart"></div>
+    </div>
+  </div>
 
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <span>🔥 Heatmap Operacional — Dia × Horário</span>
-        <div class="metric-toggle" id="hm-toggle">
+  <div class="row" style="grid-template-columns:1fr 1.2fr 1.15fr 1.15fr">
+    <div class="card">
+      <div class="ct"><span class="i">📦</span> TMAC por Tipo de Carga<span class="sc sc-p">PERÍODO</span></div>
+      <div id="tipo-tmac-chart"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">📉</span> Pareto — Motivos de Atraso<span class="sc sc-w">SEMANA</span></div>
+      <div id="pareto-chart"></div>
+    </div>
+    <div class="card cool">
+      <div class="ct"><span class="i">💡</span> Principais Insights<span class="sc sc-w">SEMANA</span></div>
+      <div id="insights-box"></div>
+    </div>
+    <div class="card warm">
+      <div class="ct"><span class="i" style="color:var(--tm)">🎯</span> Oportunidades de Melhoria<span class="sc sc-w">SEMANA</span></div>
+      <div id="exec-summary"></div>
+    </div>
+  </div>
+
+  <div class="row" style="grid-template-columns:1fr 1fr 1.3fr">
+    <div class="card">
+      <div class="ct"><span class="i">📊</span> <span id="d1-label">Hoje × D-1</span><span class="sc sc-d">D-1 FIXO</span></div>
+      <div id="comp-anterior"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">🧭</span> Índice Geral de Performance (IGP)<span class="sc sc-w">SEMANA</span></div>
+      <div id="igp-gauge"></div>
+      <div id="igp-detalhe"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">📌</span> KPIs Executivos<span class="sc sc-w">SEMANA</span></div>
+      <div id="exec-kpis" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ ABA 2 — OPERAÇÃO ═════════════ -->
+<section class="tab" id="tab-oper" data-titulo="🕐 Inteligência Operacional — Onde, Quando e Por Quê">
+  <div class="row" style="grid-template-columns:1.6fr 1fr">
+    <div class="card">
+      <div class="ct" style="flex-wrap:wrap"><span class="i">🔥</span> Mapa de Calor — Dia × Hora de Entrada
+        <div class="metric-toggle" id="hm-toggle" style="margin-left:8px">
           <button class="metric-btn" onclick="setHmMetrica('quantidade',this)">Quantidade</button>
-          <button class="metric-btn" onclick="setHmMetrica('tmac',this)">TMAC</button>
-          <button class="metric-btn" onclick="setHmMetrica('sla',this)">SLA</button>
+          <button class="metric-btn" onclick="setHmMetrica('tmac',this)">TMAC (min)</button>
+          <button class="metric-btn" onclick="setHmMetrica('sla',this)">SLA %</button>
           <button class="metric-btn on" onclick="setHmMetrica('congestionamento',this)">Congestionamento</button>
-        </div>
-      </div>
-      <div class="heatmap-grid" id="heatmap-grid"></div>
+        </div><span class="sc sc-w">SEMANA</span></div>
+      <div id="heatmap-grid"></div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:9px;color:var(--t2)">
-        <span>Menor</span>
-        <div style="flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--bg4),#00819a,var(--ye),var(--rd))"></div>
-        <span>Maior</span>
+        <span>Menor</span><div style="flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--bg4),#00819a,var(--ye),var(--rd))"></div><span>Maior</span>
       </div>
-      <div style="font-size:9px;color:var(--t3);margin-top:6px">Dados do período filtrado atual · passe o mouse sobre a célula para ver o valor exato.</div>
     </div>
-
-    <!-- Módulo 3 — Gargalos Operacionais -->
-    <div style="margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--or);letter-spacing:.5px">🔥 GARGALOS OPERACIONAIS</span>
+    <div class="card">
+      <div class="ct"><span class="i">⚠️</span> Motivos de Atraso<span class="sc sc-p">PERÍODO</span></div>
+      <div id="motivos-donut"></div>
+      <div id="just-resumo" style="margin-top:12px"></div>
     </div>
+  </div>
 
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🌊 Waterfall — Composição do TMAC por Etapa</div>
+  <div class="row" style="grid-template-columns:1.6fr 1fr">
+    <div class="card">
+      <div class="ct"><span class="i">🧩</span> Fatores de Impacto<span class="sc sc-p">PERÍODO</span></div>
+      <div id="fatores-impacto" class="mini" style="grid-template-columns:repeat(4,1fr)"></div>
+    </div>
+    <div class="card dark">
+      <div class="ct"><span class="i" style="color:var(--gr)">✅</span> Recomendações<span class="sc sc-p">PERÍODO</span></div>
+      <div id="recomendacoes"></div>
+    </div>
+  </div>
+
+  <div class="row" style="grid-template-columns:1fr 1fr 1.2fr">
+    <div class="card">
+      <div class="ct"><span class="i">📈</span> Caminhões por Hora<span class="sc sc-h">PERÍODO · ENTRADA</span></div>
+      <div class="hr-wrap" id="hora-chart"></div>
+      <div class="hr-labels" id="hora-labels"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">🕐</span> Comparativo por Turno<span class="sc sc-p">PERÍODO</span></div>
+      <div id="turno-grid"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">🔀</span> Tipo de Carga × Turno — TMAC<span class="sc sc-p">PERÍODO</span></div>
+      <div style="overflow-x:auto"><table class="cross-table" id="cross-table"></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ ABA 3 — ETAPAS & EMPRESAS ═════════════ -->
+<section class="tab" id="tab-etapas" data-titulo="🏗️ Etapas & Empresas — Gargalos por etapa e empresa responsável">
+  <div class="kstrip" id="etapas-kpis"></div>
+  <div class="row" style="grid-template-columns:1.4fr 1fr">
+    <div class="card">
+      <div class="ct"><span class="i">🌊</span> Waterfall — Composição do TMAC por Etapa<span class="sc sc-w">SEMANA</span></div>
       <div id="waterfall-chart"></div>
     </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <span>🏆 Ranking de Gargalos</span>
-        <div class="metric-toggle" id="garg-toggle">
+    <div class="card">
+      <div class="ct" style="flex-wrap:wrap"><span class="i">🏆</span> Ranking de Gargalos
+        <div class="metric-toggle" id="garg-toggle" style="margin-left:8px">
           <button class="metric-btn on" onclick="setGargOrdem('maior_tempo',this)">Maior Tempo</button>
           <button class="metric-btn" onclick="setGargOrdem('menor_tempo',this)">Menor Tempo</button>
           <button class="metric-btn" onclick="setGargOrdem('maior_impacto',this)">Maior Impacto</button>
           <button class="metric-btn" onclick="setGargOrdem('menor_impacto',this)">Menor Impacto</button>
-        </div>
-      </div>
+        </div><span class="sc sc-w">SEMANA</span></div>
       <div id="ranking-gargalos"></div>
     </div>
-
-    <!-- Módulo 4 — Performance Operacional -->
-    <div style="margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--gr);letter-spacing:.5px">🏭 PERFORMANCE OPERACIONAL</span>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <span>📊 Análise por Dimensão</span>
-        <div class="metric-toggle" id="perf-toggle">
+  </div>
+  <div class="row" style="grid-template-columns:1.4fr 1fr">
+    <div class="card">
+      <div class="ct" style="flex-wrap:wrap"><span class="i">📊</span> Análise por Dimensão
+        <div class="metric-toggle" id="perf-toggle" style="margin-left:8px">
           <button class="metric-btn on" onclick="setPerfDim('empresa',this)">Empresa</button>
           <button class="metric-btn" onclick="setPerfDim('produto',this)">Produto</button>
           <button class="metric-btn" onclick="setPerfDim('turno',this)">Turno</button>
           <button class="metric-btn" onclick="setPerfDim('dia',this)">Dia da Semana</button>
-        </div>
-      </div>
+        </div><span class="sc sc-w">SEMANA</span></div>
       <div style="overflow-x:auto"><table class="cross-table" id="perf-table"></table></div>
     </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🎯 Scatter — Quantidade × TMAC (<span id="scatter-dim-lbl">Empresa</span>)</div>
-      <div id="scatter-chart"></div>
+    <div class="card">
+      <div class="ct"><span class="i">⏳</span> Tempo Agregado × Não Agregado<span class="sc sc-w">SEMANA</span></div>
+      <div id="tempo-agregado"></div>
     </div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="ct"><span class="i">🎯</span> <span>Scatter — Quantidade × TMAC (<span id="scatter-dim-lbl">Empresa</span>)</span><span class="sc sc-w">SEMANA</span></div>
+    <div id="scatter-chart"></div>
+  </div>
+</section>
 
-    <!-- Módulo 5 — Análise Estatística -->
-    <div style="margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--ye);letter-spacing:.5px">📐 ANÁLISE ESTATÍSTICA DO TMAC</span>
+<!-- ═════════════ ABA 4 — PLACAS & JUSTIFICATIVAS ═════════════ -->
+<section class="tab" id="tab-placas" data-titulo="🚚 Placas & Justificativas — Recorrência, atrasos e tratativas">
+  <div class="kstrip" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kc"><div class="ki" style="background:rgba(255,159,67,.12)">⏱️</div><div><div class="kl">TMAC Médio Geral</div><div class="kv" style="color:var(--tm)" id="pk-tmac">—</div><div class="kd" id="pk-tmac-d">—</div></div></div>
+    <div class="kc"><div class="ki" style="background:rgba(255,208,0,.12)">⭐</div><div><div class="kl">Placa mais frequente (semana)</div><div class="kv" style="color:var(--bl);letter-spacing:1px" id="pk-placa">—</div><div class="kd" style="color:var(--t2)" id="pk-placa-s">—</div></div></div>
+    <div class="kc"><div class="ki" style="background:rgba(255,68,102,.12)">🚨</div><div><div class="kl">Acima de 2h10</div><div class="kv" style="color:var(--rd)" id="pk-acima">—</div><div class="kd" style="color:var(--t2)" id="pk-acima-s">—</div></div></div>
+    <div class="kc"><div class="ki" style="background:rgba(0,232,150,.12)">📋</div><div><div class="kl">Taxa de justificativa</div><div class="kv" style="color:var(--ye)" id="pk-just">—</div><div class="kd" id="pk-just-s">—</div></div></div>
+  </div>
+  <div class="row" style="grid-template-columns:1.2fr 1fr 1fr">
+    <div class="card">
+      <div class="ct"><span class="i">🏆</span> Ranking de Placas<span class="sc sc-w">SEMANA</span></div>
+      <div id="ranking-list"></div>
     </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📊 Estatísticas Descritivas</div>
-      <div id="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px"></div>
+    <div class="card">
+      <div class="ct"><span class="i">🍩</span> Participação no Volume<span class="sc sc-p">PERÍODO</span></div>
+      <div id="vol-donut"></div>
     </div>
+    <div class="card">
+      <div class="ct"><span class="i">📆</span> TMAC por Dia da Semana<span class="sc sc-w">SEMANA</span></div>
+      <div id="dia-semana-chart"></div>
+    </div>
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1.2fr 1fr">
+    <div class="card cool">
+      <div class="ct"><span class="i">💡</span> Insights<span class="sc sc-w">SEMANA</span></div>
+      <div id="placas-insights"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">⚠️</span> Motivos de Atraso — Frequência<span class="sc sc-p">PERÍODO</span></div>
+      <div id="just-motivos-chart"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="i">📋</span> Painel de Justificativas<span class="sc sc-w">SEMANA</span></div>
+      <div id="painel-justificativas"></div>
+    </div>
+  </div>
+</section>
 
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📦 Box Plot do TMAC</div>
+<!-- ═════════════ ABA 5 — ESTATÍSTICA & PREVISÃO ═════════════ -->
+<section class="tab" id="tab-stat" data-titulo="📐 Estatística & Previsão — Distribuição do TMAC e tendência futura">
+  <div class="card" style="margin-bottom:12px">
+    <div class="ct"><span class="i">📐</span> Estatísticas Descritivas<span class="sc sc-w">SEMANA</span></div>
+    <div id="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px"></div>
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <div class="ct"><span class="i">📦</span> Box Plot do TMAC<span class="sc sc-w">SEMANA</span></div>
       <div id="boxplot-chart"></div>
     </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📊 Histograma — Distribuição do TMAC</div>
+    <div class="card">
+      <div class="ct"><span class="i">📊</span> Histograma — Distribuição do TMAC<span class="sc sc-w">SEMANA</span></div>
       <div id="histograma-chart"></div>
     </div>
-
-    <!-- Módulo 6 — Pareto e Causas -->
-    <div style="margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--rd);letter-spacing:.5px">📉 PARETO E CAUSAS</span>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📊 Pareto — Motivos de Atraso (regra 80/20)</div>
-      <div id="pareto-chart"></div>
-    </div>
-
-    <div class="grid2" style="margin-bottom:12px">
-      <div class="card">
-        <div class="card-title">⏳ Tempo Agregado × Não Agregado</div>
-        <div id="tempo-agregado"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">📋 Painel de Justificativas</div>
-        <div id="painel-justificativas"></div>
-      </div>
-    </div>
-
-    <!-- Módulo 7 — Analytics Preditivo -->
-    <div style="margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--bd)">
-      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;color:var(--bl);letter-spacing:.5px">🔮 ANALYTICS PREDITIVO</span>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <span>📈 Previsão — Próximos 30 dias</span>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <div class="metric-toggle" id="forecast-toggle">
-            <button class="metric-btn on" onclick="setForecastMetrica('tmac',this)">TMAC</button>
-            <button class="metric-btn" onclick="setForecastMetrica('sla',this)">SLA</button>
-            <button class="metric-btn" onclick="setForecastMetrica('volume',this)">Volume</button>
-            <button class="metric-btn" onclick="setForecastMetrica('produtividade',this)">Produtividade</button>
-          </div>
-          <span id="forecast-conf" style="font-size:10px;color:var(--t2)"></span>
+  </div>
+  <div class="row" style="grid-template-columns:1.5fr 1fr">
+    <div class="card">
+      <div class="ct" style="flex-wrap:wrap"><span class="i">🔮</span> Previsão — Próximos 30 dias
+        <div class="metric-toggle" id="forecast-toggle" style="margin-left:8px">
+          <button class="metric-btn on" onclick="setForecastMetrica('tmac',this)">TMAC</button>
+          <button class="metric-btn" onclick="setForecastMetrica('sla',this)">SLA</button>
+          <button class="metric-btn" onclick="setForecastMetrica('volume',this)">Volume</button>
+          <button class="metric-btn" onclick="setForecastMetrica('produtividade',this)">Produtividade</button>
         </div>
-      </div>
+        <span id="forecast-conf" style="font-size:10px;color:var(--t2);margin-left:8px;font-weight:500"></span><span class="sc sc-h">HISTÓRICO</span></div>
       <div id="forecast-chart"></div>
       <div style="font-size:9px;color:var(--t3);margin-top:6px">Baseado em regressão linear sobre todo o histórico disponível (esta previsão não usa os filtros da tela, precisa do máximo de dados).</div>
     </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🧪 Simulador de Impacto</div>
+    <div class="card">
+      <div class="ct"><span class="i">🧪</span> Simulador de Impacto<span class="sc sc-w">SEMANA</span></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-        <span style="font-size:11px;color:var(--t2);width:70px">Etapa:</span>
+        <span style="font-size:11px;color:var(--t2);width:60px">Etapa:</span>
         <div class="metric-toggle" id="sim-etapa-toggle">
           <button class="metric-btn on" onclick="setSimEtapa('portaria',this)">Portaria</button>
           <button class="metric-btn" onclick="setSimEtapa('triagem',this)">Triagem</button>
@@ -577,7 +634,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-        <span style="font-size:11px;color:var(--t2);width:70px">Redução:</span>
+        <span style="font-size:11px;color:var(--t2);width:60px">Redução:</span>
         <div class="metric-toggle" id="sim-reducao-toggle">
           <button class="metric-btn" onclick="setSimReducao(5,this)">5min</button>
           <button class="metric-btn on" onclick="setSimReducao(10,this)">10min</button>
@@ -586,9 +643,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
         </div>
       </div>
       <div id="sim-resultado" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px"></div>
-      <div style="font-size:9px;color:var(--t3);margin-top:8px">Simulação sobre o período filtrado atual · a redução é aplicada por caminhão (limitada à duração real da etapa, não fica negativa).</div>
+      <div style="font-size:9px;color:var(--t3);margin-top:8px">Simulação sobre a semana atual · a redução é aplicada por caminhão (limitada à duração real da etapa, não fica negativa).</div>
     </div>
   </div>
+</section>
+</div>
+</main>
 </div>
 
 <!-- Modal do botão "Visualizar" — prévia do relatório sem download -->
@@ -608,8 +668,16 @@ import{getFirestore,collection,onSnapshot,query,orderBy,getDocs}from"https://www
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
 const db=getFirestore(app);
 
+// ── [PERF] Cache por ciclo de render ──────────────────────────────────────
+// As listas filtradas e os intervalos de data são calculados uma vez e
+// reaproveitados por todos os módulos. Limpo a cada render() e a cada snapshot.
+let MEMO=new Map();
+function invalidarCache(){MEMO=new Map();}
+function memo(k,fn){if(!MEMO.has(k))MEMO.set(k,fn());return MEMO.get(k);}
+
 // ── Helpers ──────────────────────────────────────────────────────────────
-function periodDates(p){
+function periodDates(p){return memo("pd:"+p,()=>periodDatesCalc(p));}
+function periodDatesCalc(p){
   const now=new Date();
   const tz=new Date(now.toLocaleString("en-US",{timeZone:"America/Fortaleza"}));
   const pad=n=>String(n).padStart(2,"0");
@@ -657,7 +725,18 @@ function durStr(ms){
   return m<60?m+"min":Math.floor(m/60)+"h"+(m%60>0?m%60+"m":"");
 }
 
-function getTS(c,sn,f){const v=c[sn]?.[f];return v?.toDate?v.toDate():null;}
+// [PERF] Cache de timestamps: cada campo é convertido (.toDate) uma única vez por
+// documento. Como o onSnapshot recria os objetos a cada atualização, o WeakMap
+// se renova sozinho — nunca devolve valor velho.
+const TS_CACHE=new WeakMap();
+function getTS(c,sn,f){
+  let m=TS_CACHE.get(c);
+  if(!m){m={};TS_CACHE.set(c,m);}
+  const k=sn+"."+f;
+  if(k in m)return m[k];
+  const v=c[sn]?.[f];
+  return(m[k]=v?.toDate?v.toDate():null);
+}
 
 // Elegibilidade de TMAC alinhada ao master.html: conta se setorAtual==="concluido"
 // OU se já existe faturamento.ts (mesmo sem o status ter virado "concluido" ainda).
@@ -694,12 +773,28 @@ let EVOMET="tmac",HMMET="congestionamento",GARGORDEM="maior_tempo",PERFDIM="empr
 let FORECASTMET="tmac",SIMETAPA="portaria",SIMREDUCAO=10;
 let CAL_Y=0,CAL_M=0,CAL_SHIFT_START=null;
 
+// [PERF] Agendador de render: qualquer alteração de caminhão em qualquer tela
+// dispara o snapshot. Em vez de redesenhar a tela inteira a cada evento, agrupa
+// as rajadas em no máximo 1 render a cada 400 ms. Com a aba em segundo plano
+// não redesenha; atualiza ao voltar.
+let PRIMEIRA_CARGA=true,RENDER_TIMER=null,RENDER_PENDENTE=false;
+function agendarRender(){
+  if(document.hidden){RENDER_PENDENTE=true;return;}
+  if(RENDER_TIMER)return;
+  RENDER_TIMER=setTimeout(()=>{RENDER_TIMER=null;render();},400);
+}
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden&&RENDER_PENDENTE){RENDER_PENDENTE=false;render();}
+});
+
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
   ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
+  invalidarCache();
   document.getElementById("loading-wrap").style.display="none";
   document.getElementById("content").style.display="block";
   calRender();
-  render();
+  if(PRIMEIRA_CARGA){PRIMEIRA_CARGA=false;render();}
+  else agendarRender();
 },(err)=>{
   console.error("Firestore error:",err);
   document.getElementById("loading-wrap").innerHTML="<div style='color:#ff4466;text-align:center;padding:20px'>Erro ao carregar dados. Verifique o console.</div>";
@@ -723,14 +818,47 @@ window.setEmpresa=(v,el)=>{MEMP=v;document.querySelectorAll(".pb-emp").forEach(b
 window.setStatus=(v,el)=>{MSTATUS=v;document.querySelectorAll(".pb-status").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 
 // ── Toggle de filtros e prévia (Visualizar) ─────────────────────────────
-window.toggleFilters=()=>{
+window.toggleFilters=(forcar)=>{
   const p=document.getElementById("filters-panel");
-  const btn=document.getElementById("btn-filters");
   const lbl=document.getElementById("filters-label");
-  const open=p.classList.toggle("open");
-  btn.classList.toggle("on",open);
-  lbl.textContent=open?"Ocultar Filtros":"Mostrar Filtros";
+  const open=forcar===true?(p.classList.add("open"),true):p.classList.toggle("open");
+  lbl.textContent=open?"Fechar filtros":"Mais filtros";
 };
+
+// ── Abas (menu lateral) ─────────────────────────────────────────────────
+const TAB_TIT={
+  "tab-exec":["Tempo de Atendimento","Visão Executiva — Performance e Tendências"],
+  "tab-oper":["Inteligência Operacional","Onde, Quando e Por Quê"],
+  "tab-etapas":["Etapas & Empresas","Gargalos por etapa e empresa responsável"],
+  "tab-placas":["Placas & Justificativas","Recorrência, atrasos e tratativas"],
+  "tab-stat":["Estatística & Previsão","Distribuição do TMAC e tendência futura"],
+};
+window.showTab=(id,el)=>{
+  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("on",n.dataset.t===id));
+  document.querySelectorAll("#content .tab").forEach(t=>t.classList.toggle("on",t.id===id));
+  document.getElementById("h-tit").textContent=TAB_TIT[id][0];
+  document.getElementById("h-sub").textContent=TAB_TIT[id][1];
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+
+// Os filtros do painel (horário, usuário, setor, busca) chamam render() direto
+// no HTML; como o script é módulo, precisa estar exposto no window.
+window.render=()=>render();
+// Busca por placa/AC: espera 250 ms depois da última tecla antes de redesenhar
+let BUSCA_TIMER=null;
+window.buscaDebounce=()=>{clearTimeout(BUSCA_TIMER);BUSCA_TIMER=setTimeout(render,250);};
+
+// Chips do cabeçalho: resumo dos filtros ativos (clicar abre o painel)
+function atualizarChips(){
+  const PL={hoje:"Hoje",ontem:"Ontem",semana:"Esta Semana",semana_passada:"Sem. Passada",mes:"Este Mês",mes_passado:"Mês Passado",ano:"Este Ano"};
+  const fd=s=>{const[y,m,d]=s.split("-");return d+"/"+m;};
+  const per=MDATA?(MDATA_FIM&&MDATA_FIM!==MDATA?fd(MDATA)+" → "+fd(MDATA_FIM):fd(MDATA)):(PL[MP]||MP);
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set("chip-periodo",per);
+  set("chip-turno",MT==="t"?"Todos":"Turno "+MT);
+  set("chip-carga",{t:"Todas",ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"}[MTC]||MTC);
+  set("chip-empresa",{t:"Todas",apodi:"Apodi",seguro:"Seguro Segurança",sousa:"Sousa Clean",ambipar:"Ambipar",reforme:"Reforme Paletes"}[MEMP]||MEMP);
+}
 // ── Helpers compartilhados pelos 3 relatórios (Visualizar/Excel/PDF) ────────
 function buildFiltrosTxt(){
   const empresaLbl={apodi:"Apodi",seguro:"Seguro Segurança",sousa:"Sousa Clean",ambipar:"Ambipar",reforme:"Reforme Paletes"};
@@ -754,6 +882,13 @@ function buildReportContent(){
   clone.style.display="block";
   clone.removeAttribute("id");
   clone.querySelectorAll("button,select").forEach(el=>el.remove());
+  // Relatório traz TODAS as abas em sequência, cada uma com seu título
+  clone.querySelectorAll(".tab").forEach(t=>{
+    t.classList.add("on");t.style.display="block";t.style.animation="none";
+    const h=document.createElement("div");h.className="report-tab-title";
+    h.textContent=t.dataset.titulo||"";
+    t.insertBefore(h,t.firstChild);
+  });
   clone.querySelectorAll("[id]").forEach(el=>el.removeAttribute("id"));
   return clone;
 }
@@ -909,40 +1044,83 @@ function tsRef(c){
   if(sa)return sa;
   return getTS(c,"entrada","ts");
 }
+// [PERF] Formatador reaproveitado + cache por documento. toLocaleDateString com
+// timeZone cria um formatador novo a cada chamada (lento) e era chamado milhares
+// de vezes por render. Saída idêntica (dd/mm/aaaa → aaaa-mm-dd).
+const FMT_DIA=new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Fortaleza",day:"2-digit",month:"2-digit",year:"numeric"});
+const DR_CACHE=new WeakMap();
 function dataRef(c){
+  if(DR_CACHE.has(c))return DR_CACHE.get(c);
   const ts=tsRef(c);
-  if(!ts)return c.data||null;
-  return ts.toLocaleDateString("pt-BR",{timeZone:"America/Fortaleza"}).split("/").reverse().join("-");
+  const r=ts?FMT_DIA.format(ts).split("/").reverse().join("-"):(c.data||null);
+  DR_CACHE.set(c,r);
+  return r;
 }
 
 function getList(){
-  const{s,e}=getPeriodRange();
-  const base=ALL.filter(c=>{const dr=dataRef(c);return dr&&dr>=s&&dr<=e;});
-  return applyNonDateFilters(base);
+  return memo("list",()=>{
+    const{s,e}=getPeriodRange();
+    const base=ALL.filter(c=>{const dr=dataRef(c);return dr&&dr>=s&&dr<=e;});
+    return applyNonDateFilters(base);
+  });
 }
 
 // Usado SÓ pelo card "Caminhões por Hora", que continua ancorado na data/hora
 // de entrada (c.data), diferente de todos os outros cartões da tela.
 function getListPorEntrada(){
-  const{s,e}=getPeriodRange();
-  const base=ALL.filter(c=>c.data>=s&&c.data<=e);
-  return applyNonDateFilters(base);
+  return memo("listEntrada",()=>{
+    const{s,e}=getPeriodRange();
+    const base=ALL.filter(c=>c.data>=s&&c.data<=e);
+    return applyNonDateFilters(base);
+  });
 }
 
 // Escopos fixos (não seguem os botões de Período/Data lá em cima):
 // - getWeekList(): semana atual (dom–hoje), usada em tudo a partir do card de Percentis
 // - getHojeList()/getOntemList(): usadas só no card de comparação D-1
 function getWeekList(){
-  const{s,e}=periodDates("semana");
-  return applyNonDateFilters(ALL.filter(c=>{const dr=dataRef(c);return dr&&dr>=s&&dr<=e;}));
+  return memo("week",()=>{
+    const{s,e}=periodDates("semana");
+    return applyNonDateFilters(ALL.filter(c=>{const dr=dataRef(c);return dr&&dr>=s&&dr<=e;}));
+  });
 }
 function getHojeList(){
-  const{s,e}=periodDates("hoje");
-  return applyNonDateFilters(ALL.filter(c=>{const dr=dataRef(c);return dr&&dr>=s&&dr<=e;}));
+  return memo("hoje",()=>{
+    const{s,e}=periodDates("hoje");
+    return applyNonDateFilters(ALL.filter(c=>{const dr=dataRef(c);return dr&&dr>=s&&dr<=e;}));
+  });
 }
-function getOntemList(){
-  const{s,e}=periodDates("ontem");
-  return applyNonDateFilters(ALL.filter(c=>{const dr=dataRef(c);return dr&&dr>=s&&dr<=e;}));
+// D-1 = último dia ANTERIOR com operação. Domingo nunca conta como D-1
+// (segunda compara com sábado) e dias sem nenhum caminhão são pulados
+// (ex.: feriado). Procura até 14 dias para trás; sem achar, usa o dia anterior.
+function diasComOperacao(){
+  return memo("diasOp",()=>{const s=new Set();ALL.forEach(c=>{const d=dataRef(c);if(d)s.add(d);});return s;});
+}
+function addDias(iso,n){
+  const[y,m,d]=iso.split("-").map(Number);
+  const dt=new Date(y,m-1,d+n,12);
+  return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
+}
+function diaOperacionalAnterior(iso){
+  return memo("d1:"+iso,()=>{
+    const ops=diasComOperacao();
+    for(let i=1;i<=14;i++){
+      const d=addDias(iso,-i);
+      const[y,m,dd]=d.split("-").map(Number);
+      if(new Date(y,m-1,dd,12).getDay()===0)continue; // domingo
+      if(ops.has(d))return d;
+    }
+    return addDias(iso,-1);
+  });
+}
+function listaDoDia(iso){
+  return memo("dia:"+iso,()=>applyNonDateFilters(ALL.filter(c=>dataRef(c)===iso)));
+}
+function getD1Data(){return diaOperacionalAnterior(periodDates("hoje").s);}
+function getOntemList(){return listaDoDia(getD1Data());}
+function fmtDiaCurto(iso){
+  const[y,m,d]=iso.split("-").map(Number);
+  return["dom","seg","ter","qua","qui","sex","sáb"][new Date(y,m-1,d,12).getDay()]+" "+String(d).padStart(2,"0")+"/"+String(m).padStart(2,"0");
 }
 
 // Tempo médio por etapa (Triagem/Carga/Enlonamento/Faturamento) — sem Portaria.
@@ -969,8 +1147,54 @@ function computeEtapaData(list){
   return etapaData;
 }
 
+// ── Helpers do layout executivo ─────────────────────────────────────────
+const META_TMAC_MS=130*60*1000; // 2h10
+function kpiStats(l){
+  const tt=l.map(calcTMAC).filter(v=>v!=null);
+  return{n:l.length,conc:l.filter(c=>c.setorAtual==="concluido").length,tmac:avg(tt),
+    sla:tt.length?Math.round(tt.filter(t=>t<=META_TMAC_MS).length/tt.length*100):null};
+}
+// Variação formatada. invert=true quando cair é bom (tempo). pp=true mostra em pontos percentuais.
+function deltaHtml(cur,prev,invert,pp,suf){
+  if(cur==null||prev==null||(!pp&&!prev))return`<span class="nt">sem base de comparação${pp?suf||"":""}</span>`;
+  const v=pp?cur-prev:(cur-prev)/prev*100;
+  if(Math.abs(v)<0.05)return`<span class="nt">■ estável${suf||""}</span>`;
+  const bom=invert?v<0:v>0;
+  const txt=pp?Math.abs(Math.round(v))+" p.p.":Math.abs(v).toFixed(1).replace(".",",")+"%";
+  return`<span class="${bom?"up":"dn"}">${v>0?"▲":"▼"} ${txt}${suf||""}</span>`;
+}
+// Etapas com meta (min) — TMTI ≤5, TMCI ≤20, TMEI ≤15, TMF ≤8, TMA ≤40
+function etapasVsMeta(etapaData){
+  const def=[
+    {lb:"Triagem",nome:"Triagem",sigla:"TMTI",empresa:"Reforme Paletes",icon:"📦",cor:"#ffd000",meta:5},
+    {lb:"Carga",nome:"Carregamento",sigla:"TMCI",empresa:"Ambipar",icon:"🏗️",cor:"#fb923c",meta:20},
+    {lb:"Enlonamento",nome:"Enlonamento",sigla:"TMEI",empresa:"Sousa Clean",icon:"🪢",cor:"#a78bfa",meta:15},
+    {lb:"Faturamento",nome:"Faturamento",sigla:"TMF",empresa:"Apodi",icon:"🧾",cor:"#00e896",meta:8},
+  ];
+  const st=(v,meta)=>v==null?"na":v<=meta*60000?"ok":v<=meta*60000*1.25?"wr":"dn";
+  const out=def.map(d=>{const e=etapaData.find(x=>x.lb===d.lb);const a=e?e.avg:null;return{...d,avg:a,st:st(a,d.meta)};});
+  const arm=out.slice(0,3).map(e=>e.avg);
+  const tma=arm.every(v=>v!=null)?arm.reduce((a,b)=>a+b,0):null;
+  out.push({nome:"TMA armazém",sigla:"TMA",empresa:"Armazém",icon:"🏭",cor:"#00d4ff",meta:40,avg:tma,st:st(tma,40)});
+  return out;
+}
+// Rosca em SVG: itens=[{lb,v,cor}], centro=[valor,legenda]
+function donutHtml(itens,centro){
+  const tot=itens.reduce((a,b)=>a+b.v,0);
+  if(!tot)return`<div class="empty-state" style="padding:20px 0">Sem dados no período</div>`;
+  const C=2*Math.PI*44;let off=0;
+  const seg=itens.filter(i=>i.v>0).map(i=>{const l=i.v/tot*C;const s=`<circle cx="60" cy="60" r="44" stroke="${i.cor}" stroke-dasharray="${l.toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}"/>`;off+=l;return s;}).join("");
+  return`<div class="dn-wrap"><svg viewBox="0 0 120 120" width="130" style="flex-shrink:0"><g transform="rotate(-90 60 60)" fill="none" stroke-width="20">${seg}</g>
+    <text x="60" y="${centro[1]?60:66}" text-anchor="middle" font-family="Rajdhani,sans-serif" font-size="22" font-weight="800" fill="var(--tx)">${centro[0]}</text>
+    ${centro[1]?`<text x="60" y="74" text-anchor="middle" font-size="8" fill="var(--t2)">${centro[1]}</text>`:""}</svg>
+    <div class="dn-leg">${itens.map(i=>`<div><i style="background:${i.cor}"></i>${i.lb}<b>${Math.round(i.v/tot*100)}%</b></div>`).join("")}</div></div>`;
+}
+
 // ── Render ────────────────────────────────────────────────────────────────
 function render(){
+  // [PERF] Novo ciclo: descarta render agendado (este já cobre) e recalcula as listas uma vez
+  if(RENDER_TIMER){clearTimeout(RENDER_TIMER);RENDER_TIMER=null;}
+  invalidarCache();
   const list=getList();
   const conc=list.filter(c=>c.setorAtual==="concluido");
 
@@ -979,28 +1203,75 @@ function render(){
   const tmacMedio=avg(tmacs);
   const taxa=list.length?Math.round(conc.length/list.length*100):0;
 
-  // KPIs
-  document.getElementById("k-total").textContent=list.length;
-  document.getElementById("k-conc").textContent=conc.length;
-  document.getElementById("k-tmac").textContent=tmacMedio?durStr(tmacMedio):"—";
-  document.getElementById("k-taxa").textContent=taxa+"%";
+  // ── KPIs do topo (período filtrado) + variação vs D-1 operacional ─────
+  // Período de 1 dia: compara esse dia com o dia operacional anterior a ele.
+  // Período maior: o valor é do período e a variação mostrada é Hoje × D-1.
+  const{s:ps,e:pe}=getPeriodRange();
+  const umDia=ps===pe;
+  const refDia=umDia?ps:periodDates("hoje").s;
+  const d1=diaOperacionalAnterior(refDia);
+  const kRef=kpiStats(umDia?list:listaDoDia(refDia));
+  const kD1=kpiStats(listaDoDia(d1));
+  const sufD1=(umDia?" vs D-1 ":" hoje vs D-1 ")+"("+fmtDiaCurto(d1)+")";
+  const kAtual=kpiStats(list);
+  const setH=(id,h)=>{const el=document.getElementById(id);if(el)el.innerHTML=h;};
 
-  // ── Tempo médio por etapa ─────────────────────────────────────────────
+  setH("k-total",list.length);
+  setH("k-conc",conc.length);
+  setH("k-tmac",tmacMedio?durStr(tmacMedio):"—");
+  setH("k-taxa",taxa+"%");
+  setH("k-sla",kAtual.sla!=null?kAtual.sla+"%":"—");
+  setH("k-tmac-d",deltaHtml(kRef.tmac,kD1.tmac,true,false,sufD1));
+  setH("k-total-d",deltaHtml(kRef.n,kD1.n,false,false,sufD1));
+  setH("k-sla-d",deltaHtml(kRef.sla,kD1.sla,false,true," · meta 90%"));
+  setH("k-meta-s",!tmacMedio?`<span class="nt">—</span>`:tmacMedio<=META_TMAC_MS
+    ?`<span class="ok">✔ Dentro da meta (folga ${durStr(META_TMAC_MS-tmacMedio)})</span>`
+    :`<span class="dn">✖ Acima da meta (+${durStr(tmacMedio-META_TMAC_MS)})</span>`);
+  setH("pk-tmac",tmacMedio?durStr(tmacMedio):"—");
+  setH("pk-tmac-d",deltaHtml(kRef.tmac,kD1.tmac,true,false,sufD1));
+  // Mini-tendência do TMAC (semana atual, por dia)
+  const spEl=document.getElementById("k-spark");
+  if(spEl){
+    const pd={};getWeekList().forEach(c=>{const t=calcTMAC(c);if(t!=null){const d=dataRef(c);(pd[d]=pd[d]||[]).push(t);}});
+    const vs=Object.keys(pd).sort().map(d=>avg(pd[d]));
+    if(vs.length>1){
+      const mn=Math.min(...vs),mx=Math.max(...vs),rg=(mx-mn)||1;
+      spEl.innerHTML=`<polyline points="${vs.map((v,i)=>(i*70/(vs.length-1)).toFixed(1)+","+(20-(v-mn)/rg*18).toFixed(1)).join(" ")}" fill="none" stroke="var(--tm)" stroke-width="2"/>`;
+    }else spEl.innerHTML="";
+  }
+
+  // ── Tempo médio por etapa vs meta ───────────────────────────────────
   const etapaData=computeEtapaData(list);
+  const etapaMeta=etapasVsMeta(etapaData);
+  const stIco=s=>s==="ok"?`<span class="ok">✔</span>`:s==="wr"?`<span class="wr">⚠</span>`:s==="dn"?`<span class="dn">✖</span>`:`<span class="nt">—</span>`;
+  const stCor=s=>s==="ok"?"var(--tx)":s==="wr"?"var(--ye)":s==="dn"?"var(--rd)":"var(--t3)";
+  setH("etapas-chart",`<table class="dt"><tr><th>Etapa</th><th class="c">Média</th><th class="c">Meta</th><th class="c"></th></tr>`+
+    etapaMeta.map(e=>`<tr><td>${e.icon} ${e.nome} <small style="color:var(--t3)">${e.sigla}</small></td><td class="c"><b style="color:${stCor(e.st)}">${e.avg!=null?durStr(e.avg):"—"}</b></td><td class="c nt">≤ ${e.meta}</td><td class="c">${stIco(e.st)}</td></tr>`).join("")+`</table>`);
+  setH("etapas-kpis",etapaMeta.map(e=>`<div class="kc"><div class="ki" style="background:${e.cor}1f">${e.icon}</div><div><div class="kl">${e.sigla} · ${e.empresa}</div><div class="kv" style="color:${e.cor}">${e.avg!=null?durStr(e.avg):"—"}</div><div class="kd">${stIco(e.st)} <span class="nt">meta ≤ ${e.meta} min</span></div></div></div>`).join(""));
 
-  const maxEtapa=Math.max(...etapaData.map(e=>e.avg||0),1);
-  document.getElementById("etapas-chart").innerHTML=etapaData.map(e=>{
-    const pct=e.avg?Math.round(e.avg/maxEtapa*100):0;
-    const val=e.avg?durStr(e.avg):"sem dados";
-    return`<div class="bar-row">
-      <span class="bar-label">${e.lb}</span>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${Math.max(pct,e.avg?15:0)}%;background:${e.cor}">
-          <span class="bar-val">${val}</span>
-        </div>
-      </div>
+  // ── Desempenho vs Meta (gauge) ──────────────────────────────────────
+  const elGauge=document.getElementById("gauge-meta");
+  if(elGauge){
+    const ESC=180*60000; // escala 0–3h
+    const pt=f=>{const a=Math.PI*(1-Math.min(Math.max(f,0),1));return(110+85*Math.cos(a)).toFixed(1)+","+(115-85*Math.sin(a)).toFixed(1);};
+    const dentro=tmacMedio&&tmacMedio<=META_TMAC_MS;
+    const cor=!tmacMedio?"var(--t3)":dentro?"var(--gr)":tmacMedio<=META_TMAC_MS*1.15?"var(--ye)":"var(--rd)";
+    const dif=tmacMedio?(dentro?"−"+durStr(META_TMAC_MS-tmacMedio):"+"+durStr(tmacMedio-META_TMAC_MS)):"";
+    const[mx,my]=pt(META_TMAC_MS/ESC).split(",");
+    elGauge.innerHTML=`<svg viewBox="0 0 220 135" style="width:100%;max-width:260px">
+      <path d="M25,115 A85,85 0 0 1 195,115" fill="none" stroke="var(--bg4)" stroke-width="18" stroke-linecap="round"/>
+      ${tmacMedio?`<path d="M25,115 A85,85 0 0 1 ${pt(tmacMedio/ESC)}" fill="none" stroke="${cor}" stroke-width="18" stroke-linecap="round"/>`:""}
+      <circle cx="${mx}" cy="${my}" r="4" fill="var(--tm)" stroke="var(--bg2)" stroke-width="2"><title>Meta 2h10</title></circle>
+      ${dif?`<rect x="150" y="10" width="64" height="20" rx="10" fill="${cor}"/><text x="182" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#04140c">${dif}</text>`:""}
+      <text x="110" y="100" text-anchor="middle" font-family="Rajdhani,sans-serif" font-size="34" font-weight="800" fill="var(--tx)">${tmacMedio?durStr(tmacMedio):"—"}</text>
+      <text x="110" y="118" text-anchor="middle" font-size="10" fill="var(--t2)">Meta: 2h10</text>
+      <text x="18" y="132" font-size="9" fill="var(--t3)">0</text><text x="188" y="132" font-size="9" fill="var(--t3)">3h00</text>
+    </svg>
+    <div class="mini" style="margin-top:6px;grid-template-columns:1fr 1fr">
+      <div class="m"><b style="color:var(--bl)">${tmacs.length?durStr(percentil(tmacs,50)):"—"}</b><span>P50 (mediana)</span></div>
+      <div class="m"><b style="color:var(--or)">${tmacs.length?durStr(percentil(tmacs,90)):"—"}</b><span>P90</span></div>
     </div>`;
-  }).join("")||`<div class="empty-state">Sem dados suficientes</div>`;
+  }
 
   // ── Caminhões por hora (única exceção: continua ancorada na data de entrada) ──
   const listHora=getListPorEntrada();
@@ -1038,18 +1309,13 @@ function render(){
     {id:"B",lb:"Turno B",sub:"07h – 15h",cls:"tcrd-b",cor:"var(--ye)"},
     {id:"C",lb:"Turno C",sub:"15h – 23h",cls:"tcrd-c",cor:"var(--pu)"},
   ];
-  document.getElementById("turno-grid").innerHTML=turnos.map(t=>{
+  const turnoStats=turnos.map(t=>{
     const tlist=list.filter(c=>getTurno(getTS(c,"entrada","ts"))===t.id);
-    const tconc=tlist.filter(c=>c.setorAtual==="concluido");
-    const ttmacs=tlist.map(calcTMAC).filter(v=>v!=null);
-    const ttmac=avg(ttmacs);
-    return`<div class="tcrd ${t.cls}">
-      <div class="tlb">${t.lb} · ${t.sub}</div>
-      <div class="tv">${tlist.length}</div>
-      <div class="ts">${tconc.length} concluídos</div>
-      <div class="ttmac">TMAC: ${ttmac?durStr(ttmac):"—"}</div>
-    </div>`;
-  }).join("");
+    return{...t,qtd:tlist.length,conc:tlist.filter(c=>c.setorAtual==="concluido").length,tmac:avg(tlist.map(calcTMAC).filter(v=>v!=null))};
+  });
+  const piorTurnoP=turnoStats.filter(t=>t.tmac).sort((a,b)=>b.tmac-a.tmac)[0];
+  setH("turno-grid",`<table class="dt"><tr><th>Turno</th><th class="c">Caminhões</th><th class="c">Concluídos</th><th class="c">TMAC</th></tr>`+
+    turnoStats.map(t=>`<tr><td style="color:${t.cor};font-weight:700">${t.id} · ${t.sub.replace(/ /g,"")}</td><td class="c">${t.qtd}</td><td class="c">${t.conc}</td><td class="c" style="${piorTurnoP&&piorTurnoP.id===t.id&&turnoStats.filter(x=>x.tmac).length>1?"color:var(--rd);font-weight:700":""}">${t.tmac?durStr(t.tmac):"—"}</td></tr>`).join("")+`</table>`);
 
   // (Ranking de Placas e Gargalo por Etapa foram movidos para a seção
   // "Semana Atual" — ver renderRankingEGargalo(), chamada por renderAvancados())
@@ -1063,35 +1329,22 @@ function render(){
 
   const allPeriod=ALL.filter(c=>{const{s,e}=periodDates(MP);const dr=dataRef(c);return dr&&dr>=s&&dr<=e;});
 
-  const elVol=document.getElementById("tipo-volume");
-  if(elVol) elVol.innerHTML=tipos.map(t=>{
-    const tl=allPeriod.filter(c=>c.tipoCarga===t.id);
-    const tc=tl.filter(c=>c.setorAtual==="concluido");
-    return`<div class="${t.cls}">
-      <div class="tlb">${t.lb}</div>
-      <div class="tv">${tl.length}</div>
-      <div class="ts">${tc.length} concluídos</div>
-    </div>`;
-  }).join("");
+  // Participação no volume (rosca) — mesma base do antigo "Volume por Tipo de Carga"
+  const volTipos=tipos.map(t=>({lb:t.lb,cor:t.cor,v:allPeriod.filter(c=>c.tipoCarga===t.id).length}));
+  setH("vol-donut",donutHtml(volTipos,[allPeriod.length,"caminhões"]));
 
+  // TMAC por tipo de carga (tempo · qtd) — une "Volume por Tipo" + "TMAC por Tipo"
   const tipoTmacs=tipos.map(t=>{
     const tl=list.filter(c=>c.tipoCarga===t.id);
     const vals=tl.map(calcTMAC).filter(v=>v!=null);
-    return{...t,avg:avg(vals),count:vals.length};
-  }).filter(t=>t.avg);
-  const maxTipo=tipoTmacs.length?Math.max(...tipoTmacs.map(t=>t.avg)):1;
+    return{...t,avg:avg(vals),count:vals.length,qtd:tl.length};
+  });
+  const maxTipo=Math.max(...tipoTmacs.map(t=>t.avg||0),1);
 
-  const elTmac=document.getElementById("tipo-tmac-chart");
-  if(elTmac) elTmac.innerHTML=tipoTmacs.length
-    ?tipoTmacs.map(t=>`<div class="bar-row">
-        <span class="bar-label">${t.lb}</span>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${Math.max(Math.round(t.avg/maxTipo*100),15)}%;background:${t.cor}">
-            <span class="bar-val">${durStr(t.avg)}</span>
-          </div>
-        </div>
-      </div>`).join("")
-    :`<div class="empty-state">Sem dados suficientes</div>`;
+  setH("tipo-tmac-chart",tipoTmacs.some(t=>t.qtd)
+    ?tipoTmacs.map(t=>`<div class="hb"><span class="l">${t.lb}</span><div class="tr"><div class="f" style="width:${t.avg?Math.max(Math.round(t.avg/maxTipo*100),6):0}%;background:${t.avg&&t.avg>META_TMAC_MS?"var(--rd)":t.cor}"></div></div><span class="v">${t.avg?durStr(t.avg):"—"} · ${t.qtd}</span></div>`).join("")
+      +`<div style="font-size:9px;color:var(--t3);margin-top:6px">TMAC médio · quantidade de caminhões. Barra vermelha = acima de 2h10.</div>`
+    :`<div class="empty-state">Sem dados suficientes</div>`);
 
   const crossTurnos=[{id:"A",lb:"Turno A"},{id:"B",lb:"Turno B"},{id:"C",lb:"Turno C"}];
   const crossList=ALL.filter(c=>{const{s,e}=periodDates(MP);const dr=dataRef(c);return dr&&dr>=s&&dr<=e&&tmacElegivel(c);});
@@ -1184,6 +1437,43 @@ function render(){
     `;
   }
 
+  // ── Motivos de atraso (rosca) — mesma base de "Motivos de Atraso — Frequência" ──
+  const CORES_MOT=["var(--rd)","var(--or)","var(--ye)","var(--bl)","var(--pu)"];
+  const motTop=motivoEntries.slice(0,4).map(([m,n],i)=>({lb:m,v:n,cor:CORES_MOT[i]}));
+  const motOutros=motivoEntries.slice(4).reduce((a,[,n])=>a+n,0);
+  if(motOutros)motTop.push({lb:"Outros",v:motOutros,cor:"var(--t3)"});
+  setH("motivos-donut",motTop.length?donutHtml(motTop,[comJust.length,"justificados"])
+    :`<div class="empty-state" style="padding:20px 0">${atrasados.length?"Nenhum atraso justificado ainda":"Sem atrasos acima de 2h10 no período"}</div>`);
+
+  // ── Fatores de impacto + Recomendações (período filtrado) ─────────────
+  const picoQtd=hourMap[pico]||0;
+  const gargEtapa=etapaMeta.slice(0,4).filter(e=>e.avg!=null).map(e=>({...e,exc:e.avg-e.meta*60000})).sort((a,b)=>b.exc-a.exc)[0];
+  const porDiaP={};
+  list.forEach(c=>{const t=calcTMAC(c);if(t!=null){const d=dataRef(c);(porDiaP[d]=porDiaP[d]||[]).push(t);}});
+  const piorDiaP=Object.entries(porDiaP).map(([d,v])=>({d,avg:avg(v)})).sort((a,b)=>b.avg-a.avg)[0];
+  const fx=(e,a,b)=>`<div class="fx"><div class="e">${e}</div><div class="a">${a}</div><div class="b">${b}</div></div>`;
+  setH("fatores-impacto",
+    fx("🕖",`Pico de entrada<br>(${picoQtd?String(pico).padStart(2,"0")+"h–"+String((pico+1)%24).padStart(2,"0")+"h":"—"})`,picoQtd?picoQtd+" cam.":"—")+
+    fx("🕐",`Turno com maior TMAC<br>(${piorTurnoP?"Turno "+piorTurnoP.id:"—"})`,piorTurnoP?durStr(piorTurnoP.tmac):"—")+
+    fx("🏗️",`Etapa mais acima da meta<br>(${gargEtapa?gargEtapa.nome:"—"})`,gargEtapa?(gargEtapa.exc>0?"+"+durStr(gargEtapa.exc):"✔ na meta"):"—")+
+    fx("📆",`Dia com maior TMAC<br>(${piorDiaP?fmtDiaCurto(piorDiaP.d):"—"})`,piorDiaP?durStr(piorDiaP.avg):"—"));
+  const recs=[];
+  if(picoQtd>=3)recs.push(`Escalonar as entradas das ${String(pico).padStart(2,"0")}h–${String((pico+1)%24).padStart(2,"0")}h (pico de ${picoQtd} caminhões).`);
+  if(gargEtapa&&gargEtapa.exc>0)recs.push(`Reforçar ${gargEtapa.nome} (${gargEtapa.empresa}): média ${durStr(gargEtapa.avg)}, meta ≤ ${gargEtapa.meta} min.`);
+  if(piorTurnoP&&piorTurnoP.tmac>META_TMAC_MS)recs.push(`Revisar a escala do Turno ${piorTurnoP.id}: TMAC ${durStr(piorTurnoP.tmac)}, acima de 2h10.`);
+  if(semJust.length)recs.push(`Registrar ${semJust.length} justificativa${semJust.length>1?"s":""} pendente${semJust.length>1?"s":""} → <a href="/justificativas" style="color:var(--bl)">/justificativas</a>`);
+  setH("recomendacoes",recs.length
+    ?recs.map(r=>`<div class="ins"><span class="ok">✔</span><span>${r}</span></div>`).join("")
+    :`<div class="ins"><span class="ok">✅</span><span>Operação dentro das metas no período filtrado.</span></div>`);
+
+  // ── KPIs da aba Placas & Justificativas ─────────────────────────────
+  const taxaJ=atrasados.length?Math.round(comJust.length/atrasados.length*100):null;
+  setH("pk-acima",atrasados.length);
+  setH("pk-acima-s",crossList.length?Math.round(atrasados.length/crossList.length*100)+"% dos concluídos":"—");
+  setH("pk-just",taxaJ!=null?taxaJ+"%":"—");
+  setH("pk-just-s",semJust.length?`<span class="wr">${semJust.length} pendente${semJust.length>1?"s":""}</span>`:`<span class="ok">✔ nenhuma pendente</span>`);
+
+  atualizarChips();
   renderAvancados();
 }
 
@@ -1202,15 +1492,29 @@ function renderRankingEGargalo(list,tmacMedio){
     .sort((a,b)=>b.count-a.count)
     .slice(0,8);
 
+  const stMeta=t=>t==null?`<span class="nt">—</span>`:t<=META_TMAC_MS?`<span class="ok">✔</span>`:t<=META_TMAC_MS*1.15?`<span class="wr">⚠</span>`:`<span class="dn">✖</span>`;
   const elRank=document.getElementById("ranking-list");
   if(elRank)elRank.innerHTML=ranking.length
-    ?ranking.map((r,i)=>`<div class="rank-row">
-        <span class="rank-n">${i+1}</span>
-        <span class="rank-pl">${r.pl}</span>
-        <span class="rank-ct">${r.count} visit${r.count!==1?"as":"a"}</span>
-        <span class="rank-v">${r.tmac?durStr(r.tmac):"—"}</span>
-      </div>`).join("")
+    ?`<table class="dt"><tr><th>#</th><th>Placa</th><th class="c">Visitas</th><th class="c">TMAC</th><th class="c">vs Meta</th></tr>`+
+      ranking.map((r,i)=>`<tr><td class="nt">${i+1}</td><td class="pl">${r.pl}</td><td class="c">${r.count}</td><td class="c">${r.tmac?durStr(r.tmac):"—"}</td><td class="c">${stMeta(r.tmac)}</td></tr>`).join("")+`</table>`
     :`<div class="empty-state">Sem dados na semana atual</div>`;
+
+  // KPI "Placa mais frequente" + Insights da aba Placas (semana atual)
+  const top=ranking[0];
+  const elPk=document.getElementById("pk-placa");if(elPk)elPk.textContent=top?top.pl:"—";
+  const elPks=document.getElementById("pk-placa-s");if(elPks)elPks.textContent=top?`${top.count} visita${top.count!==1?"s":""} · TMAC ${top.tmac?durStr(top.tmac):"—"}`:"Sem dados na semana";
+  const elPi=document.getElementById("placas-insights");
+  if(elPi){
+    const acimaMeta=ranking.filter(r=>r.tmac&&r.tmac>META_TMAC_MS);
+    const melhor=ranking.filter(r=>r.tmac&&r.count>1).sort((a,b)=>a.tmac-b.tmac)[0];
+    const recorr=Object.values(placaMap).filter(v=>v.count>1).length;
+    const it=[];
+    if(top)it.push(`<span class="ok">✔</span><span><b>${top.pl}</b> é a placa mais recorrente da semana (${top.count} visitas).</span>`);
+    if(melhor)it.push(`<span class="ok">✔</span><span>Melhor TMAC entre as recorrentes: <b>${melhor.pl}</b> (${durStr(melhor.tmac)}).</span>`);
+    if(acimaMeta.length)it.push(`<span class="wr">⚠</span><span>${acimaMeta.map(r=>"<b>"+r.pl+"</b>").join(", ")} recorrente${acimaMeta.length>1?"s":""} acima de 2h10.</span>`);
+    it.push(`<span class="nt">ℹ</span><span>${recorr} placa${recorr!==1?"s":""} voltaram mais de uma vez na semana.</span>`);
+    elPi.innerHTML=ranking.length?it.map(x=>`<div class="ins">${x}</div>`).join(""):`<div class="empty-state">Sem dados na semana atual</div>`;
+  }
 
   const etapaData=computeEtapaData(list);
   const gargData=[
@@ -1275,7 +1579,7 @@ function renderAvancados(){
   const tmacMedio=avg(tmacs);
   const taxa=list.length?Math.round(conc.length/list.length*100):0;
 
-  // Comparação D-1: sempre Hoje × Ontem, fixo, independente do filtro de período
+  // Comparação D-1: sempre Hoje × último dia com operação (sem domingo), fixo, independente do filtro
   const hojeList=getHojeList();
   const ontemList=getOntemList();
   const hojeConc=hojeList.filter(c=>c.setorAtual==="concluido");
@@ -1287,15 +1591,16 @@ function renderAvancados(){
   const hojeTaxa=hojeList.length?Math.round(hojeConc.length/hojeList.length*100):0;
   const ontemTaxa=ontemList.length?Math.round(ontemConc.length/ontemList.length*100):0;
 
+  const elD1=document.getElementById("d1-label");if(elD1)elD1.textContent="Hoje × D-1 ("+fmtDiaCurto(getD1Data())+")";
   const elComp=document.getElementById("comp-anterior");
   if(elComp){
     const{s:so}=periodDates("ontem");
     elComp.innerHTML=`
-      <div style="font-size:9px;color:var(--t3);margin-bottom:10px">Hoje comparado com ontem: ${so}</div>
+      <div style="font-size:9px;color:var(--t3);margin-bottom:10px">Hoje comparado com o último dia com operação (domingo não conta): <b>${fmtDiaCurto(getD1Data())}</b></div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        ${compCard("Caminhões",hojeList.length,calcDelta(hojeList.length,ontemList.length,true))}
-        ${compCard("TMAC Médio",hojeTmacMedio?durStr(hojeTmacMedio):"—",calcDelta(hojeTmacMedio,ontemTmacMedio,false))}
-        ${compCard("Taxa Conclusão",hojeTaxa+"%",calcDelta(hojeTaxa,ontemTaxa,true))}
+        ${compCard("Caminhões",hojeList.length,calcDelta(hojeList.length,ontemList.length,false))}
+        ${compCard("TMAC Médio",hojeTmacMedio?durStr(hojeTmacMedio):"—",calcDelta(hojeTmacMedio,ontemTmacMedio,true))}
+        ${compCard("Taxa Conclusão",hojeTaxa+"%",calcDelta(hojeTaxa,ontemTaxa,false))}
       </div>`;
   }
 
@@ -1409,7 +1714,7 @@ function renderAvancados(){
   }
   if(tmacMedio&&ontemTmacMedio){
     const pct=Math.round((tmacMedio-ontemTmacMedio)/ontemTmacMedio*100);
-    insights.push(pct<=0?`✅ TMAC melhorou ${Math.abs(pct)}% em relação a ontem.`:`⚠️ TMAC piorou ${pct}% em relação a ontem.`);
+    insights.push(pct<=0?`✅ TMAC melhorou ${Math.abs(pct)}% em relação ao D-1.`:`⚠️ TMAC piorou ${pct}% em relação ao D-1.`);
   }
   if(piorDia&&piorDia.avg){
     insights.push(`📆 <b>${piorDia.lbl}</b> é o dia com maior TMAC médio dentro da semana atual (${durStr(piorDia.avg)}).`);
@@ -1420,7 +1725,7 @@ function renderAvancados(){
   const elIns=document.getElementById("insights-box");
   if(elIns){
     elIns.innerHTML=insights.length
-      ?insights.map(t=>`<div style="padding:8px 0;border-bottom:1px solid var(--bg3);font-size:12px;color:var(--tx)">${t}</div>`).join("")
+      ?insights.map(t=>`<div class="ins"><span>${t}</span></div>`).join("")
       :`<div class="empty-state">Sem dados suficientes para gerar insights na semana atual.</div>`;
   }
 
@@ -1468,9 +1773,9 @@ function renderExecutivo(ctx){
   function trendPct(cur,prev,invert){
     if(prev==null||prev===0||cur==null)return{txt:"—",cls:""};
     const pct=Math.round((cur-prev)/prev*100);
-    if(pct===0)return{txt:"■ estável vs ontem",cls:""};
+    if(pct===0)return{txt:"■ estável vs D-1",cls:""};
     const bom=invert?pct<0:pct>0;
-    return{txt:`${pct>0?"▲":"▼"} ${Math.abs(pct)}% vs ontem`,cls:bom?"cor-gr":"cor-rd"};
+    return{txt:`${pct>0?"▲":"▼"} ${Math.abs(pct)}% vs D-1`,cls:bom?"cor-gr":"cor-rd"};
   }
   function ekCard(lbl,val,meta,trend,pctMeta){
     const barColor=pctMeta==null?"":(pctMeta>=100?"var(--gr)":pctMeta>=70?"var(--bl)":pctMeta>=40?"var(--ye)":"var(--rd)");
@@ -1535,9 +1840,9 @@ function renderExecutivo(ctx){
   const bullets=[];
   if(tmacMedio&&ontemTmacMedio){
     const pct=Math.round((tmacMedio-ontemTmacMedio)/ontemTmacMedio*100);
-    bullets.push(pct>0?`TMAC aumentou ${pct}% em relação a ontem.`:pct<0?`TMAC caiu ${Math.abs(pct)}% em relação a ontem.`:`TMAC estável em relação a ontem.`);
+    bullets.push(pct>0?`TMAC aumentou ${pct}% em relação ao D-1.`:pct<0?`TMAC caiu ${Math.abs(pct)}% em relação ao D-1.`:`TMAC estável em relação ao D-1.`);
   }
-  bullets.push(ontemDentroSLA?(dentroSLA<ontemDentroSLA?`SLA caiu para ${dentroSLA}% (era ${ontemDentroSLA}% ontem).`:dentroSLA>ontemDentroSLA?`SLA subiu para ${dentroSLA}% (era ${ontemDentroSLA}% ontem).`:`SLA estável em ${dentroSLA}%.`):`SLA atual: ${dentroSLA}% dos caminhões concluídos dentro de 2h10.`);
+  bullets.push(ontemDentroSLA?(dentroSLA<ontemDentroSLA?`SLA caiu para ${dentroSLA}% (era ${ontemDentroSLA}% no D-1).`:dentroSLA>ontemDentroSLA?`SLA subiu para ${dentroSLA}% (era ${ontemDentroSLA}% no D-1).`:`SLA estável em ${dentroSLA}%.`):`SLA atual: ${dentroSLA}% dos caminhões concluídos dentro de 2h10.`);
   if(empresaData.length&&tmacMedio){
     const pctEtapa=Math.round(empresaData[0].avg/tmacMedio*100);
     bullets.push(`${empresaData[0].etapa} (${empresaData[0].lbl}) representa ${pctEtapa}% do tempo total do TMAC — maior gargalo do processo.`);
@@ -1557,7 +1862,7 @@ function renderExecutivo(ctx){
   const elES=document.getElementById("exec-summary");
   if(elES){
     elES.innerHTML=bullets.length
-      ?bullets.map(b=>`<div class="exec-summary-item">• ${b}</div>`).join("")
+      ?bullets.map((b,i)=>`<div class="op"><span class="n">${i+1}</span><span>${b}</span></div>`).join("")
       :`<div class="empty-state">Dados insuficientes para gerar o resumo executivo.</div>`;
   }
 
@@ -2123,8 +2428,8 @@ function renderEvolucao(){
   list.forEach(c=>{const d=dataRef(c);if(d)(porDia[d]=porDia[d]||[]).push(c);});
   const dias=Object.keys(porDia).sort();
 
-  if(dias.length<2){
-    elChart.innerHTML=`<div class="empty-state" style="padding:20px 0">Selecione um período com mais de 1 dia (Semana, Mês etc.) para ver a evolução diária.</div>`;
+  if(!dias.length){
+    elChart.innerHTML=`<div class="empty-state" style="padding:20px 0">Ainda não há dados na semana atual.</div>`;
     if(elLeg)elLeg.innerHTML="";
     return;
   }
@@ -2144,45 +2449,35 @@ function renderEvolucao(){
   const validos=valores.filter(v=>v!=null);
   if(!validos.length){elChart.innerHTML=`<div class="empty-state">Sem dados suficientes para essa métrica no período.</div>`;if(elLeg)elLeg.innerHTML="";return;}
 
-  const min=Math.min(...validos),max=Math.max(...validos);
-  const range=(max-min)||1;
-  const W=600,H=140,padY=15;
-  const stepX=dias.length>1?W/(dias.length-1):0;
-  const yFor=v=>v==null?null:(H-padY-((v-min)/range)*(H-padY*2));
-
-  const lineStr=valores.map((v,i)=>v==null?null:(i*stepX)+","+yFor(v)).filter(Boolean).join(" ");
-
-  const ma=valores.map((v,i)=>{
-    const win=valores.slice(Math.max(0,i-6),i+1).filter(x=>x!=null);
-    return win.length?avg(win):null;
+  // Barras por dia + linha de meta (TMAC 2h10 · SLA 90% · Produtividade 4/h)
+  const META={tmac:META_TMAC_MS,sla:90,produtividade:4}[EVOMET];
+  const fmtV=v=>v==null?"—":EVOMET==="tmac"?durStr(v):EVOMET==="sla"?v+"%":EVOMET==="produtividade"?String(v).replace(".",","):v;
+  const ruim=v=>v!=null&&META!=null&&(EVOMET==="tmac"?v>META:v<META);
+  const W=600,H=190,top=22,base=160,padL=10;
+  const maxV=Math.max(...validos,META||0)*1.1||1;
+  const slot=(W-padL)/dias.length,bw=Math.min(56,slot*0.62);
+  const yFor=v=>base-(v/maxV)*(base-top);
+  const DSEM=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  let svg=`<defs><linearGradient id="evoG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#0a4a78"/></linearGradient></defs>`;
+  [0.25,0.5,0.75].forEach(f=>{svg+=`<line x1="0" y1="${top+(base-top)*f}" x2="${W}" y2="${top+(base-top)*f}" stroke="var(--bg4)"/>`;});
+  dias.forEach((d,i)=>{
+    const v=valores[i],x=padL+i*slot+(slot-bw)/2,cx=x+bw/2;
+    if(v!=null){
+      const y=yFor(v);
+      svg+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${(base-y).toFixed(1)}" rx="4" fill="${ruim(v)?"var(--rd)":"url(#evoG)"}"><title>${d}: ${fmtV(v)}</title></rect>`;
+      svg+=`<text x="${cx.toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="${ruim(v)?"var(--rd)":"var(--tx)"}">${fmtV(v)}</text>`;
+    }
+    const[yy,mm,dd]=d.split("-").map(Number);
+    svg+=`<text x="${cx.toFixed(1)}" y="${base+16}" text-anchor="middle" font-size="10" fill="var(--t2)">${DSEM[new Date(yy,mm-1,dd,12).getDay()]} ${String(dd).padStart(2,"0")}</text>`;
   });
-  const maStr=ma.map((v,i)=>v==null?null:(i*stepX)+","+yFor(v)).filter(Boolean).join(" ");
+  if(META!=null){const ym=yFor(META);svg+=`<line x1="0" y1="${ym.toFixed(1)}" x2="${W}" y2="${ym.toFixed(1)}" stroke="var(--tm)" stroke-width="2" stroke-dasharray="6,4"/>`;}
 
-  const xs=[],ys=[];
-  valores.forEach((v,i)=>{if(v!=null){xs.push(i);ys.push(v);}});
-  const n=xs.length;
-  const sumX=xs.reduce((a,b)=>a+b,0),sumY=ys.reduce((a,b)=>a+b,0);
-  const sumXY=xs.reduce((a,x,i)=>a+x*ys[i],0),sumXX=xs.reduce((a,x)=>a+x*x,0);
-  const denom=(n*sumXX-sumX*sumX)||1;
-  const slope=(n*sumXY-sumX*sumY)/denom;
-  const intercept=n?(sumY-slope*sumX)/n:0;
-  const trendStr=[0,dias.length-1].map(i=>(i*stepX)+","+yFor(intercept+slope*i)).join(" ");
-
-  elChart.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">
-      <line x1="0" y1="${H*0.25}" x2="${W}" y2="${H*0.25}" stroke="var(--bg4)" stroke-width="1"/>
-      <line x1="0" y1="${H*0.5}" x2="${W}" y2="${H*0.5}" stroke="var(--bg4)" stroke-width="1"/>
-      <line x1="0" y1="${H*0.75}" x2="${W}" y2="${H*0.75}" stroke="var(--bg4)" stroke-width="1"/>
-      <polyline points="${trendStr}" fill="none" stroke="var(--pu)" stroke-width="1.5" stroke-dasharray="5,4"/>
-      <polyline points="${maStr}" fill="none" stroke="var(--t3)" stroke-width="1" stroke-dasharray="2,3"/>
-      <polyline points="${lineStr}" fill="none" stroke="var(--bl)" stroke-width="2.5"/>
-    </svg>
-    <div style="font-size:9px;color:var(--t3);margin-top:4px">${dias[0]} a ${dias[dias.length-1]} · ${legendLabelEvo(EVOMET)}</div>`;
+  elChart.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">${svg}</svg>`;
 
   if(elLeg){
-    elLeg.innerHTML=`
-      <span><span style="display:inline-block;width:10px;height:2px;background:var(--bl);vertical-align:middle;margin-right:4px"></span>${legendLabelEvo(EVOMET)} diário</span>
-      <span><span style="display:inline-block;width:10px;height:2px;background:var(--pu);vertical-align:middle;margin-right:4px"></span>Linha de tendência</span>
-      <span><span style="display:inline-block;width:10px;height:2px;background:var(--t3);vertical-align:middle;margin-right:4px"></span>Média móvel (7d)</span>`;
+    elLeg.innerHTML=`<span><i style="background:var(--bl)"></i>${legendLabelEvo(EVOMET)} diário</span>`+
+      (META!=null?`<span><i style="background:var(--tm)"></i>Meta ${EVOMET==="tmac"?"2h10":EVOMET==="sla"?"90%":"4/h"}</span><span><i style="background:var(--rd)"></i>Fora da meta</span>`:"")+
+      `<span style="margin-left:auto;color:var(--t3)">${dias[0].split("-").reverse().slice(0,2).join("/")} a ${dias[dias.length-1].split("-").reverse().slice(0,2).join("/")}</span>`;
   }
 }
 
@@ -2225,7 +2520,7 @@ function renderHeatmap(){
 
   const flat=valores.flat().filter(v=>v!=null);
   if(!flat.length){
-    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;padding:20px 0">Sem dados suficientes no período filtrado para montar o heatmap. Tente um período maior (Semana, Mês).</div>`;
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;padding:20px 0">Ainda não há dados na semana atual para montar o mapa de calor.</div>`;
     return;
   }
   const max=Math.max(...flat),min=Math.min(...flat);
@@ -2245,16 +2540,26 @@ function renderHeatmap(){
     return v;
   };
 
-  let html="<div></div>";
-  for(let h=0;h<24;h++)html+=`<div class="heatmap-hlabel">${h%3===0?h:""}</div>`;
+  // Valor curto escrito dentro da célula (TMAC em minutos para caber)
+  const txtCell=v=>{
+    if(v==null)return"";
+    if(HMMET==="tmac")return Math.round(v/60000);
+    if(HMMET==="congestionamento")return v.toFixed(1).replace(".",",");
+    return v;
+  };
+  const claro=c=>["#00a89a","#ffd000","#ff9f43","#ff4466"].includes(c);
+  let html="<table class=\"hm\"><tr><th class=\"d\"></th>";
+  for(let h=0;h<24;h++)html+=`<th>${String(h).padStart(2,"0")}</th>`;
+  html+="</tr>";
   for(let d=0;d<7;d++){
-    html+=`<div class="heatmap-dlabel">${diasLbl[d]}</div>`;
+    html+=`<tr><th class="d">${diasLbl[d]}</th>`;
     for(let h=0;h<24;h++){
-      const v=valores[d][h];
-      html+=`<div class="heatmap-cell" style="background:${colorFor(v)}" title="${diasLbl[d]} ${h}h — ${legendHm(HMMET)}: ${fmtCell(v)}"></div>`;
+      const v=valores[d][h],cor=colorFor(v);
+      html+=`<td style="background:${cor};color:${claro(cor)?"#06101c":"var(--t2)"}" title="${diasLbl[d]} ${h}h — ${legendHm(HMMET)}: ${fmtCell(v)}">${txtCell(v)}</td>`;
     }
+    html+="</tr>";
   }
-  grid.innerHTML=html;
+  grid.innerHTML=html+"</table>";
 }
 
 // ── Export Excel ──────────────────────────────────────────────────────────
@@ -2410,6 +2715,10 @@ window.exportPDF=()=>{
     .card,.kpi,.tcrd,.tipo-crd{box-shadow:none}
     .hr-tooltip{display:none}
     .empty-state{padding:10px 0}
+    .tab+.tab{page-break-before:always;break-before:page}
+    .card,.kc{break-inside:avoid}
+    .card.dark{background:#eef2f8}
+    .report-tab-title{color:#5a3fae;border-color:#ddd}
     h1.report-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;color:#5a3fae;margin-bottom:2px}
     .report-sub{font-size:11px;color:#666;margin-bottom:18px}
     .report-footer{margin-top:24px;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:8px}
