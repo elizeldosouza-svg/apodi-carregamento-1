@@ -239,6 +239,12 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 
 /* Config. Paradas (Situação/Setor/Status) */
 .pc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:0 16px 16px}
+.pc-vinc{background:var(--bg3,#102030);border:1px solid var(--bd);border-radius:6px;color:var(--t2);font-size:10.5px;padding:3px 5px;max-width:112px;outline:none;font-family:inherit}
+.pc-vinc:focus{border-color:var(--gr,#00e896)}
+.pc-item.pc-editing .pc-vinc,.pc-item.pc-editing .pc-obs{display:none}
+.pc-obs{border:1px solid;border-radius:10px;font-size:8.5px;font-weight:800;padding:2px 7px;cursor:pointer;text-transform:uppercase;letter-spacing:.3px;background:transparent;white-space:nowrap}
+.pc-obs.obr{border-color:rgba(255,68,102,.45);color:#ff4466;background:rgba(255,68,102,.1)}
+.pc-obs.opc{border-color:var(--bd);color:var(--t3)}
 @media(max-width:800px){.pc-grid{grid-template-columns:1fr}}
 .pc-card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:14px}
 .pc-card h3{font-size:11.5px;font-weight:800;color:var(--tx);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
@@ -762,7 +768,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
             <button class="pb" onclick="voltarConfigParadas()">← Voltar</button>
           </div>
         </div>
-        <div style="padding:14px 16px;font-size:11px;color:var(--t3)">Controla as opções dos dropdowns de Situação, Setor e Status na tela de Faturamento. Alterações aqui refletem em tempo real. Sem exclusão — apenas ativar/desativar (histórico nunca quebra).</div>
+        <div style="padding:14px 16px;font-size:11px;color:var(--t3)">Controla as opções dos dropdowns de Situação, Setor e Status na tela de Faturamento. Alterações aqui refletem em tempo real. Sem exclusão — apenas ativar/desativar (histórico nunca quebra). Em <b>Situação</b>, o seletor define o <b>Setor vinculado</b> (preenchido e travado no Faturamento). Em <b>Status</b>, o botão alterna se a <b>Observação</b> é obrigatória.</div>
         <div class="pc-grid">
           <div class="pc-card">
             <h3>Situação <span class="pc-count" id="pc-cnt-situacoes">—</span></h3>
@@ -2420,16 +2426,33 @@ window.voltarTabela=()=>{
 };
 // ── Config. Paradas (Situação/Setor/Status) ─────────────────────────────
 const PC_DEFAULT={
+  versao:2,
   situacoes:[{id:"sistema",label:"SISTEMA",ativo:true},{id:"energia",label:"ENERGIA",ativo:true},{id:"equipamento",label:"EQUIPAMENTO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
-  setores:[{id:"ti",label:"TI",ativo:true},{id:"operacional",label:"OPERACIONAL",ativo:true},{id:"manutencao",label:"MANUTENÇÃO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
-  status:[{id:"sistema_inoperante",label:"Sistema inoperante",ativo:true},{id:"manutencao_concluida",label:"Manutenção concluída",ativo:true},{id:"falha_energia",label:"Falha de energia resolvida",ativo:true},{id:"falha_equipamento",label:"Falha de equipamento resolvida",ativo:true},{id:"outro",label:"Outro",ativo:true}],
+  setores:[{id:"ti",label:"TI",ativo:true},{id:"eletrica",label:"ELETRICA",ativo:true},{id:"producao",label:"PRODUÇÃO",ativo:true},{id:"logistica",label:"LOGÍSTICA",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
+  status:[
+    {id:"sistema_datasul",label:"Sistema Datasul Inoperante",ativo:true,obsObrigatoria:true},
+    {id:"outro",label:"Outro",ativo:true,obsObrigatoria:true},
+    {id:"extracao_granel",label:"Extração de Cimento a Granel",ativo:true,obsObrigatoria:true},
+    {id:"manutencao_corretiva",label:"Manutenção Corretiva",ativo:true,obsObrigatoria:true},
+    {id:"veiculo_mecanico",label:"Veículo com Problema Mecânico",ativo:true,obsObrigatoria:false},
+    {id:"queda_energia",label:"Queda de Energia",ativo:true,obsObrigatoria:false},
+    {id:"sefaz_fora",label:"SEFAZ fora do ar",ativo:true,obsObrigatoria:false},
+    {id:"sistema_lincros",label:"Sistema Lincros Inoperante",ativo:true,obsObrigatoria:true},
+    {id:"sistema_fretefy",label:"Sistema Fretefy Inoperante",ativo:true,obsObrigatoria:true},
+    {id:"nf_parada_fiscal",label:"Emissão de NF Parada pelo Setor Fiscal",ativo:true,obsObrigatoria:true},
+    {id:"sistema_guardian",label:"Sistema Guardian Inoperante",ativo:true,obsObrigatoria:true}
+  ],
+  vinculos:{SISTEMA:"TI",ENERGIA:"ELETRICA",EQUIPAMENTO:"PRODUÇÃO",OUTRO:"OUTRO"},
 };
 let PC_DATA=PC_DEFAULT;
 const pcRef=doc(db,"configuracoes","parada_opcoes");
 async function pcGarantir(){
   try{
     const snap=await getDoc(pcRef);
-    if(!snap.exists())await setDoc(pcRef,PC_DEFAULT);
+    if(!snap.exists()){await setDoc(pcRef,PC_DEFAULT);return;}
+    if((snap.data().versao||1)<2){
+      await updateDoc(pcRef,{versao:2,setores:PC_DEFAULT.setores,status:PC_DEFAULT.status,vinculos:PC_DEFAULT.vinculos});
+    }
   }catch(e){console.error("Erro ao inicializar configuracoes/parada_opcoes:",e);}
 }
 onSnapshot(pcRef,snap=>{
@@ -2677,12 +2700,31 @@ function pcRender(campo){
       <div class="pc-toggle ${it.ativo?"on":""}" onclick="pcToggle('${campo}',${i})"></div>
       <span class="pc-lbl">${it.label}</span>
       <input class="pc-edit-inp" value="${it.label}" onkeydown="if(event.key==='Enter')pcConfirmarEdit('${campo}',${i});if(event.key==='Escape')pcCancelarEdit('${campo}')">
+      ${campo==="situacoes"?pcVincSelect(it.label):""}
+      ${campo==="status"?`<button class="pc-obs ${it.obsObrigatoria?"obr":"opc"}" onclick="pcToggleObs(${i})" title="Observação obrigatória neste status?">${it.obsObrigatoria?"obs obrig.":"obs opc."}</button>`:""}
       <button class="pc-ic-btn pc-edit-trigger" onclick="pcEditar('${campo}',${i})">🖊️</button>
       <button class="pc-ic-btn pc-confirm-btn" onclick="pcConfirmarEdit('${campo}',${i})">✓</button>
       <button class="pc-ic-btn pc-cancel-btn" onclick="pcCancelarEdit('${campo}')">✕</button>
     </div>`).join("");
   document.getElementById("pc-cnt-"+campo).textContent=itens.length+" itens";
 }
+function pcVincSelect(labelSituacao){
+  const atual=(PC_DATA.vinculos||{})[labelSituacao]||"";
+  const ops=(PC_DATA.setores||[]).filter(s=>s.ativo)
+    .map(s=>`<option value="${s.label}"${s.label===atual?" selected":""}>${s.label}</option>`).join("");
+  return `<select class="pc-vinc" onchange="pcSetVinculo('${labelSituacao.replace(/'/g,"\\'")}',this.value)" title="Setor vinculado a esta situação"><option value="">— sem vínculo —</option>${ops}</select>`;
+}
+window.pcSetVinculo=async(labelSituacao,setor)=>{
+  const v={...(PC_DATA.vinculos||{})};
+  if(setor)v[labelSituacao]=setor;else delete v[labelSituacao];
+  PC_DATA.vinculos=v;
+  try{await updateDoc(pcRef,{vinculos:v});}catch(e){alert("Erro ao salvar vínculo: "+e.message);}
+};
+window.pcToggleObs=(i)=>{
+  PC_DATA.status[i].obsObrigatoria=!PC_DATA.status[i].obsObrigatoria;
+  pcRender("status");
+  pcSalvar("status");
+};
 async function pcSalvar(campo){
   try{await updateDoc(pcRef,{[campo]:PC_DATA[campo]});}
   catch(e){alert("Erro ao salvar: "+e.message);}
@@ -2713,7 +2755,9 @@ window.pcAdd=(campo)=>{
   const val=inp.value.trim();
   if(!val)return;
   const id=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
-  PC_DATA[campo]=[...(PC_DATA[campo]||[]),{id:id||("item_"+Date.now()),label:val,ativo:true}];
+  const novo={id:id||("item_"+Date.now()),label:val,ativo:true};
+  if(campo==="status")novo.obsObrigatoria=true;
+  PC_DATA[campo]=[...(PC_DATA[campo]||[]),novo];
   inp.value="";
   pcRender(campo);
   pcSalvar(campo);
@@ -2727,7 +2771,7 @@ window.voltarConfigParadas=()=>{
   document.getElementById("config-paradas-screen").style.display="none";
   document.querySelector(".wrap").style.display="block";
 };
-const EJ_SEED=[["Elétrica",[["Queda de Energia",["Queda de Energia"]]]],["Fiscal",[["Faturamento Parado (Setor Fiscal)",["Corrigir duplificidade de NF","Intervenção no módulo de faturamento"]],["Faturamento Parado (SEFAZ)",["SEFAZ fora do ar"]]]],["Logística",[["Absenteísmo Paletizado (Armazem)",["Ausência de mão de obra terceiro"]],["Absenteísmo Caricamat (Armazem)",["Ausência de operador"]],["Absenteísmo Big Bag (Armazem)",["Ausência de mão de obra terceiro"]],["Reunião e Treinamento Extraordinário",[]],["Problema Perifericos Guardian",["Problema célula de carga","Problemas na cancela","Problema leitor de TAG"]],["Falha Operacional Interna",["Falha no agenciamento","Falha no faturamento"]],["Lentidão em Periodo Chuvoso",[]],["Meta Atingida",[]],["Plataforma de Grades (Desgradeamento)",["Volume de carros acima da capacidade nominal","Ausência de operação no turno A"]],["Veículo com Problema Mecânico",[]],["Fluxo de Pesagem Inicial (Container Bag)",[]],["Concentração de Veículos",["Acima da capacidade nominal do dia","Acima da capacidade nominal do turno"]]]],["Produção",[["Absenteísmo Carregamento Granel",["Ausência de operador"]],["Absenteísmo Carregamento Caricamat",["Ausência de operador"]],["Aderência (Estoque Mínimo)",[]],["Extração de Cimento Caricamat",[]],["Extração de Cimento a Granel",[]],["Manutenção Corretiva",[]],["Manutenção Preventiva",[]],["Anomalias no Processo Produtivo",["Má formação","Rasgamento de sacos"]],["Operador Caricamat (Outra Atividade)",[]]]],["S&OP",[["Granel Acima do Plano",["Volume acima do plano de vendas"]],["Ensacado Acima (Plano Transf.)",["Volume acima do plano transferência semanal"]],["Ensacado Acima (Plano Vendas)",["Volume acima do plano de vendas"]],["Big Bag Acima do Plano",["Volume acima do plano de vendas"]]]],["Tecnologia de Informação",[["Sistema Datasul Inoperante",["ERP datasul fora do ar","Problema em tela operacional logística"]],["Problema Infraestrutura",["Problema no computador desktop","Problema nas impressoras"]]]]];
+const EJ_SEED=[["Elétrica",[["Queda de Energia",["Queda de Energia"]]]],["Fiscal",[["Faturamento Parado (Setor Fiscal)",["Corrigir duplificidade de NF","Intervenção no módulo de faturamento"]],["Faturamento Parado (SEFAZ)",["SEFAZ fora do ar"]]]],["Logística",[["Absenteísmo Paletizado (Armazem)",["Ausência de mão de obra terceiro"]],["Absenteísmo Caricamat (Armazem)",["Ausência de operador"]],["Absenteísmo Big Bag (Armazem)",["Ausência de mão de obra terceiro"]],["Reunião e Treinamento Extraordinário",[]],["Problema Perifericos Guardian",["Problema célula de carga","Problemas na cancela","Problema leitor de TAG"]],["Falha Operacional Interna",["Falha no Posto 1","Falha no Armazém","Falha no Faturamento"]],["Lentidão em Periodo Chuvoso",[]],["Meta Atingida",[]],["Plataforma de Grades (Desgradeamento)",["Volume de carros acima da capacidade nominal","Ausência de operação no turno A"]],["Veículo com Problema Mecânico",[]],["Fluxo de Pesagem Inicial (Container Bag)",[]],["Concentração de Veículos",["Acima da capacidade nominal do dia","Acima da capacidade nominal do turno"]],["Mudança de Fila de Carregamento",[]],["Refazer Operação (Auditoria)",["Conferência de Carga","Peso Liquido Abaixo"]]]],["Produção",[["Absenteísmo Carregamento Granel",["Ausência de operador"]],["Absenteísmo Carregamento Caricamat",["Ausência de operador"]],["Aderência (Estoque Mínimo)",[]],["Extração de Cimento Caricamat",[]],["Extração de Cimento a Granel",[]],["Manutenção Corretiva",[]],["Manutenção Preventiva",[]],["Anomalias no Processo Produtivo",["Má formação","Rasgamento de sacos"]],["Operador Caricamat (Outra Atividade)",[]]]],["S&OP",[["Granel Acima do Plano",["Volume acima do plano de vendas"]],["Ensacado Acima (Plano Transf.)",["Volume acima do plano transferência semanal"]],["Ensacado Acima (Plano Vendas)",["Volume acima do plano de vendas"]],["Big Bag Acima do Plano",["Volume acima do plano de vendas"]]]],["Tecnologia de Informação",[["Sistema Datasul Inoperante",["ERP datasul fora do ar","Problema em tela operacional logística"]],["Problema Infraestrutura",["Problema no computador desktop","Problema nas impressoras"]]]]];
 const EJ_LEGADO=["DataSul","Falta de cimento","Concentração de veículos","Dificuldade de extração","Falha do equipamento","Falha de processo","Falta de mão obra","TMAC online teste"];
 const ejSlug=t=>String(t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
 const ejNorm=t=>String(t||"").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
@@ -2749,10 +2793,37 @@ function ejDefault(){
 }
 let EJ_DATA={areas:[],justificativas:[],detalhamentos:[]};
 const ejRef=doc(db,"configuracoes","justificativa_opcoes");
+// Migracao v2: renomeia/inclui apenas os itens pedidos, preserva todo o resto
+async function ejMigrar2(d){
+  const areas=[...(d.areas||[])],justs=[...(d.justificativas||[])],dets=[...(d.detalhamentos||[])];
+  const areaLog=areas.find(a=>ejNorm(a.label)==="logistica");
+  const fo=justs.find(j=>ejNorm(j.label)===ejNorm("Falha Operacional Interna"));
+  if(fo){
+    [["Falha no agenciamento","Falha no Posto 1"],["Falha no faturamento","Falha no Faturamento"]].forEach(([de,para])=>{
+      const alvo=dets.find(x=>x.justId===fo.id&&ejNorm(x.label)===ejNorm(de));
+      if(alvo)alvo.label=para;
+    });
+    if(!dets.some(x=>x.justId===fo.id&&ejNorm(x.label)===ejNorm("Falha no Armazém")))
+      dets.push({id:ejNovoId(dets,fo.id+"__"+ejSlug("Falha no Armazém")),label:"Falha no Armazém",justId:fo.id,ativo:true});
+  }
+  if(areaLog){
+    [["Mudança de Fila de Carregamento",[]],["Refazer Operação (Auditoria)",["Conferência de Carga","Peso Liquido Abaixo"]]].forEach(([jLbl,ds])=>{
+      let j=justs.find(x=>ejNorm(x.label)===ejNorm(jLbl));
+      if(!j){j={id:ejNovoId(justs,ejSlug(jLbl)),label:jLbl,areaId:areaLog.id,ativo:true};justs.push(j);}
+      ds.forEach(dLbl=>{
+        if(!dets.some(x=>x.justId===j.id&&ejNorm(x.label)===ejNorm(dLbl)))
+          dets.push({id:ejNovoId(dets,j.id+"__"+ejSlug(dLbl)),label:dLbl,justId:j.id,ativo:true});
+      });
+    });
+  }
+  try{await updateDoc(ejRef,{areas,justificativas:justs,detalhamentos:dets,ejVersao:2});}
+  catch(e){console.error("Erro na migracao v2 das justificativas:",e);}
+}
 async function ejGarantir(){
   try{
     const snap=await getDoc(ejRef);
-    if(!snap.exists())await setDoc(ejRef,ejDefault());
+    if(!snap.exists()){await setDoc(ejRef,{...ejDefault(),ejVersao:2});return;}
+    if((snap.data().ejVersao||1)<2)await ejMigrar2(snap.data());
   }catch(e){console.error("Erro ao inicializar configuracoes/justificativa_opcoes:",e);}
 }
 onSnapshot(ejRef,snap=>{
