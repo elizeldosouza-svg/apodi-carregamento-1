@@ -60,6 +60,21 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 .motivo-select:focus{border-color:var(--rd)}
 .motivo-select option{background:var(--bg2);color:var(--tx)}
 .just-label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.jc-row{display:flex;align-items:center;gap:8px}
+.jc-row .motivo-select{flex:1;min-width:0}
+.jc-add{flex-shrink:0;width:34px;height:34px;border-radius:50%;border:none;background:#22c55e;color:#fff;font-size:20px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.jc-add:hover{background:#16a34a}
+.jc-add:disabled{opacity:.35;cursor:not-allowed}
+.jc-novo{display:none;margin-top:8px;border:1.5px solid #22c55e;border-radius:var(--rs);background:rgba(34,197,94,.07);padding:10px}
+.jc-novo.show{display:block}
+.jc-novo input{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:9px 11px;font-size:13px;font-family:'Inter',sans-serif;outline:none;margin-bottom:8px}
+.jc-novo input:focus{border-color:#22c55e}
+.jc-novo-btns{display:flex;gap:8px}
+.jc-novo-btns button{flex:1;padding:8px;border-radius:var(--rs);font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif}
+.jc-nb-c{background:transparent;border:1px solid var(--bd);color:var(--t2)}
+.jc-nb-o{background:#22c55e;border:none;color:#fff}
+.jc-novo-err{font-size:10.5px;color:var(--rd);margin-bottom:6px;display:none}
+.jc-novo-err.show{display:block}
 .just-input{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;outline:none;resize:vertical;min-height:64px;transition:border-color .2s}
 .just-input:focus{border-color:var(--rd)}
 .save-btn{margin-top:8px;width:100%;padding:12px;border:none;border-radius:var(--rs);background:var(--rd);color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:.8px;transition:all .2s}
@@ -330,7 +345,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-hei
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,query,orderBy,updateDoc,doc,Timestamp}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import{getFirestore,collection,onSnapshot,query,orderBy,updateDoc,doc,Timestamp,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import{verificarSessao,fazerLogin,salvarNovaSenha,fazerLogout}from"./auth-tela.js";
 
 const app=initializeApp({apiKey:"AIzaSyCMacFP0kGkgOTCqdWzf6Y65LN2q4tw28Y",authDomain:"cimento-6163b.firebaseapp.com",projectId:"cimento-6163b",storageBucket:"cimento-6163b.firebasestorage.app",messagingSenderId:"773785464621",appId:"1:773785464621:web:02dc9de04a7e2af231ada4"});
@@ -431,10 +446,26 @@ function jcCampos(key,atual,legacyOnchange){
   return`<div class="just-label">Área responsável:</div>
     <select class="motivo-select" id="area-${key}" onchange="jcMudou('${key}','area')">${jcOptsArea(r.a)}</select>
     <div class="just-label" style="margin-top:8px">Justificativa padrão:</div>
-    <select class="motivo-select" id="mot-${key}"${r.legado?` data-legado="${jcEsc(r.legado)}"`:""} onchange="jcMudou('${key}','just')">${jcOptsJust(r.a,r.j,r.legado)}</select>
-    <div id="det-wrap-${key}" style="display:${det.tem?"block":"none"}">
+    <div class="jc-row">
+      <select class="motivo-select" id="mot-${key}"${r.legado?` data-legado="${jcEsc(r.legado)}"`:""} onchange="jcMudou('${key}','just')">${jcOptsJust(r.a,r.j,r.legado)}</select>
+      <button type="button" class="jc-add" id="addj-${key}" onclick="jcNovoAbrir('${key}','just')" title="Cadastrar nova justificativa padrão"${r.a?"":" disabled"}>+</button>
+    </div>
+    <div class="jc-novo" id="novo-just-${key}">
+      <div class="jc-novo-err" id="novo-just-err-${key}"></div>
+      <input type="text" id="novo-just-txt-${key}" placeholder="Nova justificativa padrão..." maxlength="80">
+      <div class="jc-novo-btns"><button type="button" class="jc-nb-c" onclick="jcNovoFechar('${key}','just')">Cancelar</button><button type="button" class="jc-nb-o" onclick="jcNovoSalvar('${key}','just')">Salvar</button></div>
+    </div>
+    <div id="det-wrap-${key}" data-tem="${det.tem?1:0}" style="display:${r.j?"block":"none"}">
       <div class="just-label" style="margin-top:8px">Detalhamento:</div>
-      <select class="motivo-select" id="det-${key}" onchange="jcMudou('${key}','det')">${det.html}</select>
+      <div class="jc-row">
+        <select class="motivo-select" id="det-${key}" onchange="jcMudou('${key}','det')">${det.html}</select>
+        <button type="button" class="jc-add" id="addd-${key}" onclick="jcNovoAbrir('${key}','det')" title="Cadastrar novo detalhamento">+</button>
+      </div>
+      <div class="jc-novo" id="novo-det-${key}">
+        <div class="jc-novo-err" id="novo-det-err-${key}"></div>
+        <input type="text" id="novo-det-txt-${key}" placeholder="Novo detalhamento..." maxlength="80">
+        <div class="jc-novo-btns"><button type="button" class="jc-nb-c" onclick="jcNovoFechar('${key}','det')">Cancelar</button><button type="button" class="jc-nb-o" onclick="jcNovoSalvar('${key}','det')">Salvar</button></div>
+      </div>
     </div>`;
 }
 // Justificativa escolhida + detalhamento só é exigido quando a justificativa tem detalhamentos ativos
@@ -442,7 +473,7 @@ function jcCompleto(key){
   const j=document.getElementById("mot-"+key);
   if(!j||!j.value)return false;
   const wrap=document.getElementById("det-wrap-"+key);
-  if(JC&&wrap&&wrap.style.display!=="none"){const d=document.getElementById("det-"+key);return!!(d&&d.value);}
+  if(JC&&wrap&&wrap.dataset.tem==="1"){const d=document.getElementById("det-"+key);return!!(d&&d.value);}
   return true;
 }
 function jcAtualizarBtn(key){
@@ -456,9 +487,80 @@ window.jcMudou=(key,nivel)=>{
   if(nivel==="area"){jSel.removeAttribute("data-legado");jSel.innerHTML=jcOptsJust(aSel.value,"",null);}
   if(nivel==="area"||nivel==="just"){
     const det=jcOptsDet(jSel.value==="__legado__"?"":jSel.value,"");
-    dSel.innerHTML=det.html;wrap.style.display=det.tem?"block":"none";
+    dSel.innerHTML=det.html;
+    wrap.dataset.tem=det.tem?"1":"0";
+    wrap.style.display=(jSel.value&&jSel.value!=="__legado__")?"block":"none";
+    jcNovoFechar(key,"det");
   }
+  const bj=document.getElementById("addj-"+key);
+  if(bj)bj.disabled=!aSel.value;
   jcAtualizarBtn(key);
+};
+// Cadastro rapido de Justificativa Padrao / Detalhamento direto desta tela
+const jcRef=doc(db,"configuracoes","justificativa_opcoes");
+const jcSlug=t=>String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+const jcNorm=t=>String(t||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const jcNovoId=(lista,base)=>{let id=base||"item",n=2;while(lista.some(x=>x.id===id))id=(base||"item")+"_"+(n++);return id;};
+function jcNovoErr(key,tipo,txt){
+  const el=document.getElementById("novo-"+tipo+"-err-"+key);
+  if(!el)return;
+  el.textContent=txt||"";
+  el.classList.toggle("show",!!txt);
+}
+window.jcNovoAbrir=(key,tipo)=>{
+  const box=document.getElementById("novo-"+tipo+"-"+key);
+  if(!box)return;
+  jcNovoErr(key,tipo,"");
+  box.classList.add("show");
+  document.getElementById("novo-"+tipo+"-txt-"+key)?.focus();
+};
+window.jcNovoFechar=(key,tipo)=>{
+  const box=document.getElementById("novo-"+tipo+"-"+key);
+  if(!box)return;
+  box.classList.remove("show");
+  const inp=document.getElementById("novo-"+tipo+"-txt-"+key);
+  if(inp)inp.value="";
+  jcNovoErr(key,tipo,"");
+};
+window.jcNovoSalvar=async(key,tipo)=>{
+  if(!JC){jcNovoErr(key,tipo,"Cadastro de justificativas indisponível.");return;}
+  const inp=document.getElementById("novo-"+tipo+"-txt-"+key);
+  const txt=(inp?.value||"").trim();
+  if(!txt){jcNovoErr(key,tipo,"Informe o nome.");return;}
+  const aSel=document.getElementById("area-"+key),jSel=document.getElementById("mot-"+key);
+  if(tipo==="just"&&!aSel?.value){jcNovoErr(key,tipo,"Selecione a área responsável primeiro.");return;}
+  if(tipo==="det"&&(!jSel?.value||jSel.value==="__legado__")){jcNovoErr(key,tipo,"Selecione a justificativa padrão primeiro.");return;}
+  try{
+    const snap=await getDoc(jcRef);
+    const d=snap.exists()?snap.data():{areas:[],justificativas:[],detalhamentos:[]};
+    const areas=d.areas||[],justs=d.justificativas||[],dets=d.detalhamentos||[];
+    let novoId;
+    if(tipo==="just"){
+      if(justs.some(x=>x.areaId===aSel.value&&jcNorm(x.label)===jcNorm(txt))){jcNovoErr(key,tipo,"Já existe nessa área.");return;}
+      novoId=jcNovoId(justs,jcSlug(txt));
+      justs.push({id:novoId,label:txt,areaId:aSel.value,ativo:true});
+    }else{
+      if(dets.some(x=>x.justId===jSel.value&&jcNorm(x.label)===jcNorm(txt))){jcNovoErr(key,tipo,"Já existe nessa justificativa.");return;}
+      novoId=jcNovoId(dets,jSel.value+"__"+jcSlug(txt));
+      dets.push({id:novoId,label:txt,justId:jSel.value,ativo:true});
+    }
+    if(snap.exists())await updateDoc(jcRef,{areas,justificativas:justs,detalhamentos:dets});
+    else await setDoc(jcRef,{areas,justificativas:justs,detalhamentos:dets});
+    JC={areas,justificativas:justs,detalhamentos:dets};
+    jcNovoFechar(key,tipo);
+    if(tipo==="just"){
+      jSel.removeAttribute("data-legado");
+      jSel.innerHTML=jcOptsJust(aSel.value,novoId,null);
+      jSel.value=novoId;
+      jcMudou(key,"just");
+    }else{
+      const dSel=document.getElementById("det-"+key),wrap=document.getElementById("det-wrap-"+key);
+      const det=jcOptsDet(jSel.value,novoId);
+      dSel.innerHTML=det.html;dSel.value=novoId;
+      if(wrap)wrap.dataset.tem="1";
+      jcAtualizarBtn(key);
+    }
+  }catch(e){jcNovoErr(key,tipo,"Erro ao salvar: "+e.message);}
 };
 // Lê o que foi escolhido: {motivo[,areaResponsavel,detalhamento]} ou null se incompleto
 function jcColher(key){
