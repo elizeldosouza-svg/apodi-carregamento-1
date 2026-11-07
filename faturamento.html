@@ -204,11 +204,32 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .pd-tab{flex:1;padding:9px;border:none;background:transparent;color:var(--t2);font-size:11px;font-weight:700;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:.3px}
 .pd-tab.on{background:var(--ye,#ffd000);color:#2a1e00}
 .pd-tab.fim.on{background:var(--ac);color:#052e22}
+.pd-fg.pd-link select{background:rgba(122,175,204,.07);border-color:rgba(122,175,204,.35);font-weight:700;cursor:not-allowed;appearance:none}
+.pd-fg.pd-link label{color:#7aafcc}
+.pd-link-tag{font-size:8px;background:rgba(122,175,204,.18);color:#9ec9e4;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:800;letter-spacing:.3px}
+.pd-obr-tag{font-size:8px;background:rgba(255,68,102,.15);color:#ff4466;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:800;letter-spacing:.3px}
+.pd-opc-tag{font-size:8px;background:rgba(122,175,204,.12);color:var(--t3);padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:800;letter-spacing:.3px}
+.pd-lbl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.pd-lbl-row label{margin-bottom:0!important}
+.pd-add-mot{background:transparent;border:1px solid rgba(0,232,150,.4);border-radius:7px;color:var(--ac);font-size:15px;line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.pd-add-mot:hover{background:rgba(0,232,150,.12)}
+.pd-novo-box{border:1.5px solid rgba(0,232,150,.4);border-radius:var(--rs);background:rgba(0,232,150,.05);padding:11px;margin-bottom:12px;display:none}
+.pd-novo-box.show{display:block}
+.pd-novo-box label{display:block;font-size:9.5px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.pd-novo-box input[type=text]{width:100%;background:var(--bg);border:2px solid var(--bd);border-radius:8px;color:var(--tx);padding:9px 11px;font-size:13px;outline:none;margin-bottom:8px;font-family:inherit}
+.pd-chk{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t2);margin-bottom:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600}
+.pd-chk input{width:15px;height:15px;accent-color:var(--ac)}
+.pd-novo-btns{display:flex;gap:8px}
+.pd-novo-btns button{flex:1;padding:8px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer}
+.pd-nb-c{background:transparent;border:1.5px solid var(--bd);color:var(--t2)}
+.pd-nb-o{background:var(--ac);border:none;color:#052e22}
+.pd-alerta-x{position:absolute;top:10px;right:12px;background:transparent;border:none;color:var(--t3);font-size:18px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px}
+.pd-alerta-x:hover{color:#ff4466;background:rgba(255,68,102,.1)}
 
 /* Alerta de parada aberta há mais de 3h */
 .pd-alerta-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1001;display:none;align-items:center;justify-content:center;padding:20px}
 .pd-alerta-overlay.show{display:flex}
-.pd-alerta-box{background:var(--c1);border:2px solid #ff4466;border-radius:14px;max-width:360px;width:100%;padding:24px;text-align:center}
+.pd-alerta-box{position:relative;background:var(--c1);border:2px solid #ff4466;border-radius:14px;max-width:360px;width:100%;padding:24px;text-align:center}
 .pd-alerta-ico{font-size:32px;margin-bottom:8px}
 .pd-alerta-tit{font-size:14px;font-weight:800;color:#ff4466;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
 .pd-alerta-txt{font-size:12px;color:var(--t2);margin-bottom:18px;line-height:1.5}
@@ -446,8 +467,8 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <label>Situação</label>
       <select id="pd-i-situacao"></select>
     </div>
-    <div class="pd-fg">
-      <label>Setor</label>
+    <div class="pd-fg" id="pd-setor-fg">
+      <label>Setor <span class="pd-link-tag" id="pd-setor-tag" style="display:none">VINCULADO</span></label>
       <select id="pd-i-setor"></select>
     </div>
     <div class="pd-fg">
@@ -481,7 +502,16 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
       <select id="pd-f-status"></select>
     </div>
     <div class="pd-fg">
-      <label>Observação</label>
+      <div class="pd-lbl-row">
+        <label>Observação <span id="pd-obs-tag"></span></label>
+        <button type="button" class="pd-add-mot" onclick="pdNovoMotivoAbrir()" title="Cadastrar novo motivo">+</button>
+      </div>
+      <div class="pd-novo-box" id="pd-novo-box">
+        <label>Novo motivo</label>
+        <input type="text" id="pd-novo-txt" placeholder="Ex: Sistema WMS Inoperante" maxlength="60">
+        <label class="pd-chk"><input type="checkbox" id="pd-novo-obr" checked> Exige observação obrigatória</label>
+        <div class="pd-novo-btns"><button type="button" class="pd-nb-c" onclick="pdNovoMotivoFechar()">Cancelar</button><button type="button" class="pd-nb-o" onclick="pdNovoMotivoSalvar()">Salvar motivo</button></div>
+      </div>
       <textarea id="pd-f-obs" placeholder="Detalhes adicionais sobre a ocorrência (opcional)"></textarea>
     </div>
     <div id="pd-f-msg" class="msg"></div>
@@ -492,12 +522,12 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 <!-- ALERTA DE PARADA ABERTA HÁ MAIS DE 3H -->
 <div class="pd-alerta-overlay" id="pd-alerta-overlay">
   <div class="pd-alerta-box">
+    <button type="button" class="pd-alerta-x" onclick="pdAlertaContinuar()" title="Fechar">✕</button>
     <div class="pd-alerta-ico">⚠️</div>
     <div class="pd-alerta-tit">Parada em aberto há mais de 3 horas</div>
     <div class="pd-alerta-txt" id="pd-alerta-txt"></div>
     <div class="pd-alerta-btns">
-      <button class="pd-alerta-cont" onclick="pdAlertaContinuar()">Continua aberta</button>
-      <button class="pd-alerta-enc" onclick="pdAlertaEncerrar()">Encerrar agora</button>
+      <button class="pd-alerta-cont" onclick="pdAlertaContinuar()">Fechar</button>
     </div>
   </div>
 </div>
@@ -1311,16 +1341,39 @@ function exportExcelParadas(){
 
 // ── Config. de listas (Situação/Setor/Status) — editável pelo Admin ────
 const CONFIG_PARADA_DEFAULT={
+  versao:2,
   situacoes:[{id:"sistema",label:"SISTEMA",ativo:true},{id:"energia",label:"ENERGIA",ativo:true},{id:"equipamento",label:"EQUIPAMENTO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
-  setores:[{id:"ti",label:"TI",ativo:true},{id:"operacional",label:"OPERACIONAL",ativo:true},{id:"manutencao",label:"MANUTENÇÃO",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
-  status:[{id:"sistema_inoperante",label:"Sistema inoperante",ativo:true},{id:"manutencao_concluida",label:"Manutenção concluída",ativo:true},{id:"falha_energia",label:"Falha de energia resolvida",ativo:true},{id:"falha_equipamento",label:"Falha de equipamento resolvida",ativo:true},{id:"outro",label:"Outro",ativo:true}],
+  setores:[{id:"ti",label:"TI",ativo:true},{id:"eletrica",label:"ELETRICA",ativo:true},{id:"producao",label:"PRODUÇÃO",ativo:true},{id:"logistica",label:"LOGÍSTICA",ativo:true},{id:"outro",label:"OUTRO",ativo:true}],
+  status:[
+    {id:"sistema_datasul",label:"Sistema Datasul Inoperante",ativo:true,obsObrigatoria:true},
+    {id:"outro",label:"Outro",ativo:true,obsObrigatoria:true},
+    {id:"extracao_granel",label:"Extração de Cimento a Granel",ativo:true,obsObrigatoria:true},
+    {id:"manutencao_corretiva",label:"Manutenção Corretiva",ativo:true,obsObrigatoria:true},
+    {id:"veiculo_mecanico",label:"Veículo com Problema Mecânico",ativo:true,obsObrigatoria:false},
+    {id:"queda_energia",label:"Queda de Energia",ativo:true,obsObrigatoria:false},
+    {id:"sefaz_fora",label:"SEFAZ fora do ar",ativo:true,obsObrigatoria:false},
+    {id:"sistema_lincros",label:"Sistema Lincros Inoperante",ativo:true,obsObrigatoria:true},
+    {id:"sistema_fretefy",label:"Sistema Fretefy Inoperante",ativo:true,obsObrigatoria:true},
+    {id:"nf_parada_fiscal",label:"Emissão de NF Parada pelo Setor Fiscal",ativo:true,obsObrigatoria:true},
+    {id:"sistema_guardian",label:"Sistema Guardian Inoperante",ativo:true,obsObrigatoria:true}
+  ],
+  vinculos:{SISTEMA:"TI",ENERGIA:"ELETRICA",EQUIPAMENTO:"PRODUÇÃO",OUTRO:"OUTRO"},
 };
 let CONFIG_PARADA=CONFIG_PARADA_DEFAULT;
 const configParadaRef=doc(db,"configuracoes","parada_opcoes");
 async function garantirConfigParada(){
   try{
     const snap=await getDoc(configParadaRef);
-    if(!snap.exists())await setDoc(configParadaRef,CONFIG_PARADA_DEFAULT);
+    if(!snap.exists()){await setDoc(configParadaRef,CONFIG_PARADA_DEFAULT);return;}
+    // Migracao v2: aplica as listas novas de Setor/Status e o vinculo Situacao->Setor
+    if((snap.data().versao||1)<2){
+      await updateDoc(configParadaRef,{
+        versao:2,
+        setores:CONFIG_PARADA_DEFAULT.setores,
+        status:CONFIG_PARADA_DEFAULT.status,
+        vinculos:CONFIG_PARADA_DEFAULT.vinculos,
+      });
+    }
   }catch(e){console.error("Erro ao inicializar configuracoes/parada_opcoes:",e);}
 }
 function popularSelectParada(selectId,itens,valorAtual){
@@ -1334,7 +1387,69 @@ function popularSelectsParada(){
   popularSelectParada("pd-i-situacao",CONFIG_PARADA.situacoes,document.getElementById("pd-i-situacao")?.value);
   popularSelectParada("pd-i-setor",CONFIG_PARADA.setores,document.getElementById("pd-i-setor")?.value);
   popularSelectParada("pd-f-status",CONFIG_PARADA.status,document.getElementById("pd-f-status")?.value);
+  pdAplicarVinculo();
+  pdAtualizarObsTag();
 }
+// Vinculo Situacao -> Setor: preenche e trava o Setor quando houver vinculo
+function pdAplicarVinculo(){
+  const sit=document.getElementById("pd-i-situacao");
+  const set=document.getElementById("pd-i-setor");
+  const fg=document.getElementById("pd-setor-fg");
+  const tag=document.getElementById("pd-setor-tag");
+  if(!sit||!set||!fg||!tag)return;
+  const alvo=(CONFIG_PARADA.vinculos||{})[sit.value];
+  const existe=alvo&&[...set.options].some(o=>o.value===alvo);
+  if(existe){
+    set.value=alvo;set.disabled=true;
+    fg.classList.add("pd-link");tag.style.display="";
+  }else{
+    set.disabled=false;
+    fg.classList.remove("pd-link");tag.style.display="none";
+  }
+}
+document.getElementById("pd-i-situacao")?.addEventListener("change",pdAplicarVinculo);
+// Observacao obrigatoria por status
+function pdStatusAtual(){
+  const v=document.getElementById("pd-f-status")?.value;
+  return (CONFIG_PARADA.status||[]).find(s=>s.label===v)||null;
+}
+function pdAtualizarObsTag(){
+  const tag=document.getElementById("pd-obs-tag");
+  const ta=document.getElementById("pd-f-obs");
+  if(!tag||!ta)return;
+  const obr=!!pdStatusAtual()?.obsObrigatoria;
+  tag.className=obr?"pd-obr-tag":"pd-opc-tag";
+  tag.textContent=obr?"OBRIGATÓRIA":"OPCIONAL";
+  ta.placeholder=obr?"Descreva a ocorrência (obrigatório)":"Detalhes adicionais sobre a ocorrência (opcional)";
+}
+document.getElementById("pd-f-status")?.addEventListener("change",pdAtualizarObsTag);
+// Cadastro rapido de motivo (status) direto da tela
+window.pdNovoMotivoAbrir=()=>{
+  document.getElementById("pd-novo-box").classList.add("show");
+  document.getElementById("pd-novo-txt").focus();
+};
+window.pdNovoMotivoFechar=()=>{
+  document.getElementById("pd-novo-box").classList.remove("show");
+  document.getElementById("pd-novo-txt").value="";
+  document.getElementById("pd-novo-obr").checked=true;
+};
+window.pdNovoMotivoSalvar=async()=>{
+  const txt=document.getElementById("pd-novo-txt").value.trim();
+  const msgEl=document.getElementById("pd-f-msg");
+  if(!txt){msgEl.className="msg on er";msgEl.textContent="Informe o nome do novo motivo.";return;}
+  const lista=CONFIG_PARADA.status||[];
+  if(lista.some(s=>s.label.toLowerCase()===txt.toLowerCase())){msgEl.className="msg on er";msgEl.textContent="Esse motivo já existe na lista.";return;}
+  const novo={id:txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"")||("motivo_"+Date.now()),label:txt,ativo:true,obsObrigatoria:document.getElementById("pd-novo-obr").checked};
+  try{
+    await updateDoc(configParadaRef,{status:[...lista,novo]});
+    pdNovoMotivoFechar();
+    setTimeout(()=>{
+      const sel=document.getElementById("pd-f-status");
+      if(sel){sel.value=novo.label;pdAtualizarObsTag();}
+    },0);
+    msgEl.className="msg on ok";msgEl.textContent="Motivo cadastrado.";
+  }catch(e){msgEl.className="msg on er";msgEl.textContent="Erro ao salvar motivo: "+e.message;}
+};
 onSnapshot(configParadaRef,snap=>{
   if(snap.exists()){
     CONFIG_PARADA=snap.data();
@@ -1440,6 +1555,7 @@ window.encerrarParada=async()=>{
   const msgEl=document.getElementById("pd-f-msg");
   if(!paradaId){msgEl.className="msg on er";msgEl.textContent="Selecione a parada que deseja encerrar.";return;}
   if(!dataEnc||!hf){msgEl.className="msg on er";msgEl.textContent="Preencha a Data do Encerramento e o Horário Final.";return;}
+  if(pdStatusAtual()?.obsObrigatoria&&!obs){msgEl.className="msg on er";msgEl.textContent="Observação obrigatória para este status.";return;}
   try{
     const agora=new Date();
     await addDoc(collection(db,"caminhoes_rastreio"),{
@@ -1490,16 +1606,6 @@ function pdCheckAlertas(){
 window.pdAlertaContinuar=()=>{
   if(PD_ALERTA_ID)PD_SNOOZE[PD_ALERTA_ID]=Date.now()+PD_SNOOZE_MS;
   document.getElementById("pd-alerta-overlay").classList.remove("show");
-};
-window.pdAlertaEncerrar=()=>{
-  const id=PD_ALERTA_ID;
-  document.getElementById("pd-alerta-overlay").classList.remove("show");
-  abrirDrawerParada();
-  pdShowTab("fim");
-  setTimeout(()=>{
-    const sel=document.getElementById("pd-f-select");
-    if(sel&&id){sel.value=id;pdCalcTempo();}
-  },0);
 };
 setInterval(pdCheckAlertas,60000);
 </script>
