@@ -314,6 +314,45 @@ table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fix
 .report-tab-title{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:800;color:var(--pu);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
 @media(max-width:1200px){.kstrip{grid-template-columns:repeat(3,1fr)}.row{grid-template-columns:1fr 1fr!important}}
 @media(max-width:800px){.app{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.side .brand,.side .foot{display:none}.kstrip{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr!important}.hdr{position:static}}
+/* ═══ Abas de diagnóstico, decisão e produtividade (2026-11) ═══ */
+.side{overflow-y:auto}
+.side .grp{font-size:8px;color:var(--t3);font-weight:800;letter-spacing:1px;margin:10px 8px 2px}
+.side .nav{padding:8px 12px}
+.nav .nw{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--tm);flex-shrink:0}
+.side .nav{white-space:nowrap}
+.nav.pm{border:1px dashed var(--b2);margin-top:6px;justify-content:center;font-size:11px}
+.dz .ct{margin-bottom:4px}
+.dz .cs{font-size:10px;color:var(--t3);margin-bottom:10px;line-height:1.45}
+.dz .q{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.25);border-radius:var(--rs);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--t2)}
+.dz .q b{color:var(--pu)}
+.dz .dec{margin-top:10px;padding:8px 10px;border-left:3px solid var(--tm);background:rgba(255,159,67,.07);border-radius:0 6px 6px 0;font-size:11px;line-height:1.45}
+.dz .dec b{color:var(--tm)}
+.dz .kc .kv{font-size:26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-l{color:var(--rd);background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.35)}
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:800;white-space:nowrap}
+.p-ok{background:rgba(0,232,150,.12);color:var(--gr)}.p-wr{background:rgba(255,208,0,.12);color:var(--ye)}.p-dn{background:rgba(255,68,102,.14);color:var(--rd)}.p-nt{background:var(--bg4);color:var(--t2)}
+.dz .bar{height:8px;background:var(--bg4);border-radius:4px;overflow:hidden}.dz .bar i{display:block;height:100%;border-radius:4px}
+.tgl{padding:7px 14px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.tgl.on{border-color:var(--bl);color:var(--bl);background:rgba(0,212,255,.08)}
+.hmt{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fixed}.hmt th{font-size:8px;color:var(--t3);font-weight:600}.hmt th.d{text-align:right;width:72px;color:var(--t2);font-size:10px;padding-right:6px;white-space:nowrap;overflow:hidden}.hmt td{height:22px;border-radius:3px;text-align:center;font-size:8px;font-weight:700}
+.dz .node{background:var(--bg3);border:1px solid var(--b2);border-radius:8px;padding:6px 10px;font-size:10px;text-align:center;display:flex;flex-direction:column;justify-content:center;height:100%}
+.dz .node span{color:var(--t2)}.dz .node b{display:block;font-family:'Rajdhani',sans-serif;font-size:18px;line-height:1.1}.dz .node small{display:block;font-size:9px;color:var(--t3)}
+.dz .tree{display:grid;grid-template-columns:.9fr 1fr 1.6fr;grid-auto-rows:minmax(46px,auto);gap:6px 14px}
+.dz .mtx{position:relative;height:250px;border-left:1px solid var(--b2);border-bottom:1px solid var(--b2);margin:6px 6px 24px 26px}
+.mtx .qd{position:absolute;font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--t3)}
+.mtx .dot{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#06101c}
+.mtx .lb{position:absolute;font-size:9px;color:var(--tx);white-space:nowrap}
+.report-only{display:none}
+#param-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:950;align-items:center;justify-content:center;padding:20px}
+#param-ov.open{display:flex}
+#param-box{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);width:100%;max-width:480px;max-height:90vh;overflow:auto;padding:20px 22px}
+#param-box h3{font-family:'Rajdhani',sans-serif;font-size:20px;color:var(--pu);margin-bottom:4px}
+.pm-sec{font-size:9px;font-weight:800;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin:14px 0 6px}
+.pm-row{display:grid;grid-template-columns:1fr 80px 90px;gap:8px;align-items:center;margin-bottom:6px;font-size:11px;color:var(--tx)}
+.pm-row input{background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:12px;width:100%}
+.pm-row small{color:var(--t3);font-size:10px}
+.pm-act{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+@media(max-width:1200px){.dz .tree{grid-template-columns:1fr 1fr 1.4fr}}
 </style>
 </head>
 <body>
@@ -321,11 +360,22 @@ table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fix
 <!-- ═════════ MENU LATERAL ═════════ -->
 <aside class="side">
   <div class="brand"><div class="ico">🚛</div><b>TMAC ONLINE</b><span>ANÁLISE · QUIXERÉ</span></div>
+  <div class="grp">DESCRITIVO</div>
   <div class="nav on" data-t="tab-exec" onclick="showTab('tab-exec',this)">🏠 Visão Executiva</div>
   <div class="nav" data-t="tab-oper" onclick="showTab('tab-oper',this)">🕐 Operação</div>
   <div class="nav" data-t="tab-etapas" onclick="showTab('tab-etapas',this)">🏗️ Etapas & Empresas</div>
   <div class="nav" data-t="tab-placas" onclick="showTab('tab-placas',this)">🚚 Placas & Justificativas</div>
   <div class="nav" data-t="tab-stat" onclick="showTab('tab-stat',this)">📐 Estatística & Previsão</div>
+  <div class="grp">DIAGNÓSTICO E DECISÃO</div>
+  <div class="nav" data-t="tab-dec" onclick="showTab('tab-dec',this)">🎯 Central de Decisão<span class="nw"></span></div>
+  <div class="nav" data-t="tab-flx" onclick="showTab('tab-flx',this)">🚦 Fluxo e Capacidade<span class="nw"></span></div>
+  <div class="nav" data-t="tab-cep" onclick="showTab('tab-cep',this)">🧪 Controle Estatístico<span class="nw"></span></div>
+  <div class="nav" data-t="tab-pla" onclick="showTab('tab-pla',this)">📅 Planejamento<span class="nw"></span></div>
+  <div class="nav" data-t="tab-dq" onclick="showTab('tab-dq',this)">🔍 Qualidade dos Dados<span class="nw"></span></div>
+  <div class="grp">PRODUTIVIDADE</div>
+  <div class="nav" data-t="tab-op" onclick="showTab('tab-op',this)">👤 Prod. por Operador<span class="nw"></span></div>
+  <div class="nav" data-t="tab-et" onclick="showTab('tab-et',this)">🏭 Prod. por Etapa<span class="nw"></span></div>
+  <div class="nav pm" onclick="abrirParam()">⚙️ Parâmetros</div>
   <div class="foot">Menos fila,<br>mais caminhões no dia.</div>
 </aside>
 
@@ -703,6 +753,15 @@ table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fix
     </div>
   </div>
 </section>
+
+<!-- ═════════ NOVAS ABAS (calculadas sob demanda) ═════════ -->
+<section class="tab dz" id="tab-dec" data-titulo="🎯 Central de Decisão — O que fazer agora, onde agir e quanto vale cada ação"><div class="empty-state">Calculando…</div></section>
+<section class="tab dz" id="tab-flx" data-titulo="🚦 Fluxo & Capacidade — Onde o caminhão espera e qual etapa limita a vazão"><div class="empty-state">Calculando…</div></section>
+<section class="tab dz" id="tab-cep" data-titulo="🧪 Controle Estatístico — Ruído ou problema real? O processo cumpre 2h10?"><div class="empty-state">Calculando…</div></section>
+<section class="tab dz" id="tab-pla" data-titulo="📅 Planejamento — Previsão de demanda e dimensionamento de equipes"><div class="empty-state">Calculando…</div></section>
+<section class="tab dz" id="tab-dq" data-titulo="🔍 Qualidade dos Dados — Confiabilidade dos apontamentos"><div class="empty-state">Calculando…</div></section>
+<section class="tab dz" id="tab-op" data-titulo="👤 Produtividade por Operador — Posto 1 e Faturamento"><div class="empty-state">Calculando…</div></section>
+<section class="tab dz" id="tab-et" data-titulo="🏭 Produtividade por Etapa — Rendimento, capacidade e eficiência"><div class="empty-state">Calculando…</div></section>
 </div>
 </main>
 </div>
@@ -714,6 +773,16 @@ table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fix
     <h1>Relatório de Análise — TMAC Online</h1>
     <div class="sub" id="preview-sub">Apodi Cimentos</div>
     <div id="preview-body"></div>
+  </div>
+</div>
+
+<!-- ⚙️ Parâmetros das abas de decisão/produtividade -->
+<div id="param-ov" onclick="if(event.target===this)fecharParam()">
+  <div id="param-box">
+    <h3>⚙️ Parâmetros da análise</h3>
+    <div style="font-size:10px;color:var(--t2)">Usados em utilização, capacidade, custo e dimensionamento. Ficam salvos neste navegador.</div>
+    <div id="param-body"></div>
+    <div class="pm-act"><button class="tgl" onclick="restaurarParam()">↺ Padrão</button><button class="tgl" onclick="fecharParam()">Cancelar</button><button class="tgl on" onclick="salvarParam()">💾 Salvar</button></div>
   </div>
 </div>
 
@@ -890,12 +959,20 @@ const TAB_TIT={
   "tab-etapas":["Etapas & Empresas","Gargalos por etapa e empresa responsável"],
   "tab-placas":["Placas & Justificativas","Recorrência, atrasos e tratativas"],
   "tab-stat":["Estatística & Previsão","Distribuição do TMAC e tendência futura"],
+  "tab-dec":["Central de Decisão","O que fazer agora, onde agir e quanto vale cada ação"],
+  "tab-flx":["Fluxo & Capacidade","Onde o caminhão espera e qual etapa limita a vazão"],
+  "tab-cep":["Controle Estatístico","Ruído ou problema real? O processo é capaz de cumprir 2h10?"],
+  "tab-pla":["Planejamento","Previsão de demanda e dimensionamento de equipes"],
+  "tab-dq":["Qualidade dos Dados","Confiabilidade dos apontamentos que alimentam a análise"],
+  "tab-op":["Prod. por Operador","Posto 1 e Faturamento — volume, ritmo, consistência e qualidade"],
+  "tab-et":["Prod. por Etapa","Rendimento, capacidade e eficiência de cada etapa"],
 };
 window.showTab=(id,el)=>{
   document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("on",n.dataset.t===id));
   document.querySelectorAll("#content .tab").forEach(t=>t.classList.toggle("on",t.id===id));
   document.getElementById("h-tit").textContent=TAB_TIT[id][0];
   document.getElementById("h-sub").textContent=TAB_TIT[id][1];
+  if(NOVAS.includes(id))renderNova(id);
   window.scrollTo({top:0,behavior:"smooth"});
 };
 
@@ -1037,6 +1114,7 @@ function buildFiltrosTxt(){
 function buildReportContent(){
   const original=document.getElementById("content");
   if(!original||!original.children.length)return null;
+  NOVAS.forEach(renderNova); // relatório traz as abas novas calculadas
   const clone=original.cloneNode(true);
   clone.style.display="block";
   clone.removeAttribute("id");
@@ -1048,6 +1126,7 @@ function buildReportContent(){
     h.textContent=t.dataset.titulo||"";
     t.insertBefore(h,t.firstChild);
   });
+  clone.querySelectorAll(".report-only").forEach(el=>el.style.display="inline");
   clone.querySelectorAll("[id]").forEach(el=>el.removeAttribute("id"));
   return clone;
 }
@@ -1636,6 +1715,9 @@ function render(){
   atualizarChips();
   atualizarContagens();
   renderAvancados();
+  // Novas abas: marca todas para recálculo e redesenha só a que está aberta
+  NOVAS_SUJAS=new Set(NOVAS);
+  {const at=document.querySelector("#content .tab.on");if(at&&NOVAS.includes(at.id))renderNova(at.id);}
 }
 
 // ── Ranking de Placas + Gargalo por Etapa (seção "Semana Atual") ──────────
@@ -2863,6 +2945,748 @@ window.exportExcel=()=>{
   const fname=s===e?`analise_${s}${turnoSuffix}.xlsx`:`analise_${s}_a_${e}${turnoSuffix}.xlsx`;
   XLSX.writeFile(wb,fname);
 };
+
+
+// ═════════════════════════════════════════════════════════════════════════
+// NOVAS ABAS — DIAGNÓSTICO, DECISÃO E PRODUTIVIDADE (2026-11)
+// Cálculo sob demanda: cada aba só é calculada quando está aberta (ou na
+// geração do relatório). render() marca todas como "sujas".
+// ═════════════════════════════════════════════════════════════════════════
+const NOVAS=["tab-dec","tab-flx","tab-cep","tab-pla","tab-dq","tab-op","tab-et"];
+let NOVAS_SUJAS=new Set(NOVAS);
+let OPMODO="p1";
+let EXCLUIDOS=null,EXC_STATUS="nao"; // caminhoes_excluidos (carregado uma vez, sob demanda)
+const PARAM_PADRAO={postos:{portaria:1,triagem:2,carregamento:3,enlonamento:2,faturamento:1},custoHora:120,metaPatio:20,metaEntre:10,capPatio:15,metaTML:15};
+function carregarParam(){
+  try{const p=JSON.parse(localStorage.getItem("analise_param_v1")||"null");
+    if(p)return{...PARAM_PADRAO,...p,postos:{...PARAM_PADRAO.postos,...(p.postos||{})}};}catch(e){}
+  return JSON.parse(JSON.stringify(PARAM_PADRAO));
+}
+let PARAM=carregarParam();
+
+// ── Utilitários numéricos e estatísticos ─────────────────────────────────
+const MINMS=60000;
+const fmm=m=>{if(m==null||!isFinite(m))return"—";const r=Math.round(m);const a=Math.abs(r),s=r<0?"−":"";return a<60?s+a+" min":s+Math.floor(a/60)+"h"+String(a%60).padStart(2,"0");};
+const fnum=(v,d=1)=>v==null||!isFinite(v)?"—":v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const fpct=(v,d=0)=>v==null||!isFinite(v)?"—":fnum(v*100,d)+"%";
+const srtN=a=>[...a].sort((x,y)=>x-y);
+function qsN(s,p){if(!s.length)return null;const i=(s.length-1)*p,lo=Math.floor(i),hi=Math.ceil(i);return s[lo]+(s[hi]-s[lo])*(i-lo);}
+const medN=a=>qsN(srtN(a),.5);
+function sdN(a){if(a.length<2)return null;const m=avg(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/(a.length-1));}
+function PhiN(z){const t=1/(1+0.2316419*Math.abs(z));const d=0.3989423*Math.exp(-z*z/2);const p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;}
+function lnGammaN(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,t=x+5.5;t-=(x+.5)*Math.log(t);let s=1.000000000190015;for(const v of c)s+=v/++y;return-t+Math.log(2.5066282746310005*s/x);}
+function gammaQN(a,x){
+  if(x<=0)return 1;
+  if(x<a+1){let ap=a,sum=1/a,del=sum;for(let n=0;n<300;n++){ap++;del*=x/ap;sum+=del;if(Math.abs(del)<Math.abs(sum)*1e-12)break;}return Math.max(0,1-sum*Math.exp(-x+a*Math.log(x)-lnGammaN(a)));}
+  let b=x+1-a,c=1e300,d=1/b,h=d;
+  for(let i=1;i<300;i++){const an=-i*(i-a);b+=2;d=an*d+b;if(Math.abs(d)<1e-300)d=1e-300;c=b+an/c;if(Math.abs(c)<1e-300)c=1e-300;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<1e-12)break;}
+  return Math.exp(-x+a*Math.log(x)-lnGammaN(a))*h;
+}
+const chi2pN=(x,df)=>gammaQN(df/2,x/2);
+function betacfN(a,b,x){const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<1e-300)d=1e-300;d=1/d;let h=d;
+  for(let m=1;m<=300;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<1e-300)d=1e-300;c=1+aa/c;if(Math.abs(c)<1e-300)c=1e-300;d=1/d;h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<1e-300)d=1e-300;c=1+aa/c;if(Math.abs(c)<1e-300)c=1e-300;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<1e-12)break;}
+  return h;}
+function ibetaN(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lnGammaN(a+b)-lnGammaN(a)-lnGammaN(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacfN(a,b,x)/a:1-bt*betacfN(b,a,1-x)/b;}
+const tp2N=(t,df)=>ibetaN(df/2,.5,df/(df+t*t)); // p-valor bicaudal da t de Student
+function regressaoN(ys){
+  const n=ys.length;if(n<3)return null;
+  const mx=(n-1)/2,my=avg(ys);let sxx=0,sxy=0;
+  ys.forEach((y,i)=>{sxx+=(i-mx)**2;sxy+=(i-mx)*(y-my);});
+  const b=sxy/sxx,a=my-b*mx;
+  const sse=ys.reduce((s,y,i)=>s+(y-a-b*i)**2,0);
+  const se=Math.sqrt(sse/(n-2)/sxx);
+  const p=se>0?tp2N(Math.abs(b/se),n-2):(b===0?1:0);
+  return{a,b,p,n,fit:i=>a+b*i};
+}
+// Kruskal-Wallis com correção de empates; grupos com n<5 são descartados
+function kruskalN(groups){
+  const g=groups.filter(x=>x.v.length>=5);if(g.length<2)return null;
+  const all=[];g.forEach((x,gi)=>x.v.forEach(v=>all.push([v,gi])));all.sort((a,b)=>a[0]-b[0]);
+  const N=all.length,R=new Array(g.length).fill(0);let tie=0;
+  for(let i=0;i<N;){let j=i;while(j+1<N&&all[j+1][0]===all[i][0])j++;const r=(i+j)/2+1;for(let k=i;k<=j;k++)R[all[k][1]]+=r;const t=j-i+1;if(t>1)tie+=t**3-t;i=j+1;}
+  let H=12/(N*(N+1))*g.reduce((s,x,gi)=>s+R[gi]**2/x.v.length,0)-3*(N+1);
+  const C=1-tie/(N**3-N);if(C>0)H/=C;
+  return{H,p:chi2pN(H,g.length-1),eps:Math.max(0,H/(N-1)),N,g};
+}
+function zRobusto(arr){const m=medN(arr);const mad=medN(arr.map(v=>Math.abs(v-m)));return{m,mad,z:v=>mad>0?0.6745*(v-m)/mad:0};}
+
+// ── Marcos de tempo de cada caminhão (ms, em cache por documento) ────────
+function tsTop(c,f){let m=TS_CACHE.get(c);if(!m){m={};TS_CACHE.set(c,m);}const k="top."+f;if(k in m)return m[k];const v=c[f];return(m[k]=v?.toDate?v.toDate():null);}
+const MK_CACHE=new WeakMap();
+function marcos(c){
+  let m=MK_CACHE.get(c);if(m)return m;
+  const g=(s,f)=>getTS(c,s,f)?.getTime()??null;
+  m={t0:g("entrada","ts"),p1:tsTop(c,"posto1ConfirmadoEm")?.getTime()??null,pi:g("portaria","inicio"),pf:g("portaria","fim"),
+     ti:g("triagem","inicio"),tf:g("triagem","fim"),ci:g("carregamento","inicio"),cf:g("carregamento","fim"),
+     ei:g("enlonamento","inicio"),ef:g("enlonamento","fim"),ft:g("faturamento","ts")};
+  m.mf=c.tipoCarga==="granel"?m.cf:m.ef;
+  MK_CACHE.set(c,m);return m;
+}
+const durMin=(m,a,b)=>(m[a]!=null&&m[b]!=null&&m[b]>=m[a])?(m[b]-m[a])/MINMS:null;
+// Componentes do TMAC (a soma = TMAC quando todos os apontamentos existem)
+const COMP=[
+  {k:"espTri",lb:"Espera até a triagem",ab:"Esp. triagem",tipo:"esp",a:"t0",b:"ti",meta:()=>PARAM.metaPatio,esf:1,resp:"Apodi · Posto 1 / Portaria"},
+  {k:"espCar",lb:"Espera p/ carregamento",ab:"Esp. carreg.",tipo:"esp",a:"tf",b:"ci",meta:()=>PARAM.metaEntre,esf:2,resp:"Ambipar"},
+  {k:"espEnl",lb:"Espera p/ enlonamento",ab:"Esp. enlon.",tipo:"esp",a:"cf",b:"ei",meta:()=>PARAM.metaEntre,esf:1,resp:"Sousa Clean"},
+  {k:"fat",lb:"Faturamento (TMF)",ab:"Faturam.",tipo:"esp",a:"mf",b:"ft",meta:()=>8,esf:1,resp:"Apodi · Faturamento"},
+  {k:"tri",lb:"Triagem",ab:"Triagem",tipo:"at",a:"ti",b:"tf",meta:()=>5,esf:2,resp:"Reforme Paletes"},
+  {k:"car",lb:"Carregamento",ab:"Carreg.",tipo:"at",a:"ci",b:"cf",meta:()=>20,esf:3,resp:"Ambipar"},
+  {k:"enl",lb:"Enlonamento",ab:"Enlon.",tipo:"at",a:"ei",b:"ef",meta:()=>15,esf:2,resp:"Sousa Clean"},
+];
+const ORDEM_VSM=["espTri","tri","espCar","car","espEnl","enl","fat"];
+function compVal(c,cp){
+  const m=marcos(c);
+  if(cp.k==="espTri"){const b=m.ti??m.ci;return(m.t0!=null&&b!=null&&b>=m.t0)?(b-m.t0)/MINMS:null;}
+  if(c.tipoCarga==="granel"&&(cp.k==="espEnl"||cp.k==="enl"))return null;
+  return durMin(m,cp.a,cp.b);
+}
+// Etapas para produtividade
+const ETP=[
+  {k:"por",lb:"Portaria",emp:"Seguro Segurança",a:"pi",b:"pf",meta:null,pk:"portaria",pronto:"p1"},
+  {k:"tri",lb:"Triagem",emp:"Reforme Paletes",a:"ti",b:"tf",meta:5,pk:"triagem",pronto:"pf"},
+  {k:"car",lb:"Carregamento",emp:"Ambipar",a:"ci",b:"cf",meta:20,pk:"carregamento",pronto:"tf"},
+  {k:"enl",lb:"Enlonamento",emp:"Sousa Clean",a:"ei",b:"ef",meta:15,pk:"enlonamento",pronto:"cf"},
+  {k:"fat",lb:"Faturamento",emp:"Apodi",a:"mf",b:"ft",meta:8,pk:"faturamento",pronto:null},
+];
+const etpDur=(c,e)=>{const m=marcos(c);if(e.k==="enl"&&c.tipoCarga==="granel")return null;return durMin(m,e.a,e.b);};
+
+// ── Listas por escopo ─────────────────────────────────────────────────────
+const isoLocal=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+function histList(dias){
+  return memo("hist:"+dias,()=>{const lim=addDias(periodDates("hoje").s,-dias);return applyNonDateFilters(ALL.filter(c=>{const d=dataRef(c);return d&&d>=lim;}));});
+}
+function ult7(){return histList(6);} // hoje + 6 dias anteriores (janela móvel, nunca vazia no domingo/segunda)
+function emProcessoAgora(){
+  return memo("vivo",()=>{const lim=Date.now()-36*3600000;
+    return applyNonDateFilters(ALL.filter(c=>c.setorAtual!=="concluido"&&!c.faturamento?.ts&&(marcos(c).t0||0)>=lim));});
+}
+function listaPeriodoAnterior(){
+  return memo("prevPer",()=>{const{s,e}=getPeriodRange();const[y1,m1,d1]=s.split("-").map(Number),[y2,m2,d2]=e.split("-").map(Number);
+    const len=Math.round((new Date(y2,m2-1,d2,12)-new Date(y1,m1-1,d1,12))/864e5)+1;
+    const ps=addDias(s,-len),pe=addDias(s,-1);
+    return applyNonDateFilters(ALL.filter(c=>{const d=dataRef(c);return d&&d>=ps&&d<=pe;}));});
+}
+const diasDe=l=>new Set(l.map(dataRef).filter(Boolean));
+const horaIdx=ms=>Math.floor(ms/3600000);
+
+// ── Componentes visuais ───────────────────────────────────────────────────
+const SCN={p:["sc-p","PERÍODO"],w:["sc-w","ÚLTIMOS 7 DIAS"],l:["sc-l","AO VIVO"],h:["sc-h","HISTÓRICO 8 SEM."],r:["sc-p","REGRAS AUTOMÁTICAS"],c:["sc-h","30 DIAS"],t:["sc-h","8 SEMANAS"]};
+const kcN=(l,v,d,cor,fs)=>`<div class="kc"><div style="min-width:0"><div class="kl">${l}</div><div class="kv" style="color:${cor||"var(--tx)"}${fs?";font-size:"+fs+"px":""}">${v}</div><div class="kd nt">${d||""}</div></div></div>`;
+const cardN=(ic,tit,sc,cs,body,dec,st)=>`<div class="card"${st?` style="${st}"`:""}><div class="ct"><span class="i">${ic}</span> ${tit}${sc?`<span class="sc ${SCN[sc][0]}">${SCN[sc][1]}</span>`:""}</div>${cs?`<div class="cs">${cs}</div>`:""}${body}${dec?`<div class="dec"><b>Decisão:</b> ${dec}</div>`:""}</div>`;
+const pergN=t=>`<div class="q">Pergunta que a aba responde: <b>${t}</b></div>`;
+const pillN=(cls,t)=>`<span class="pill p-${cls}">${t}</span>`;
+const vazioN=t=>`<div class="empty-state" style="padding:18px 0">${t||"Sem dados suficientes no escopo"}</div>`;
+const corSt=(v,meta,tol=1.25)=>v==null?"var(--t3)":v<=meta?"var(--gr)":v<=meta*tol?"var(--ye)":"var(--rd)";
+const barN=(f,cor)=>`<div class="bar"><i style="width:${Math.max(0,Math.min(100,f*100)).toFixed(1)}%;background:${cor}"></i></div>`;
+const escHtml=s=>String(s??"").replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const primeiroNome=s=>escHtml(String(s||"—").split(" ")[0]);
+const PAL=["#00d4ff","#00e896","#ffd000","#a78bfa","#fb923c","#ff4466","#7a9fd4","#ff9f43"];
+
+// Gráfico XY genérico (linhas, faixa, barras, linhas horizontais/verticais)
+function chartXY(o){
+  const W=o.w||560,H=o.h||200,L=o.l||42,R=o.r||14,T=12,B=26,n=o.labels.length;
+  const vals=[...(o.series||[]).flatMap(s=>s.v),...(o.band?[...o.band.lo,...o.band.hi]:[]),...(o.hlines||[]).map(h=>h.v),...(o.bars?o.bars.v:[])].filter(v=>v!=null&&isFinite(v));
+  if(!n||!vals.length)return`<svg viewBox="0 0 ${W} ${H}" width="100%"><text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--t3)" font-size="11">Sem dados suficientes</text></svg>`;
+  let y0=o.ymin!=null?o.ymin:Math.min(0,...vals),y1=Math.max(...vals);if(o.ymax!=null)y1=Math.max(y1,o.ymax);
+  if(y1===y0)y1=y0+1;y1+=(y1-y0)*.08;
+  const pw=W-L-R,ph=H-T-B;
+  const X=i=>o.bars?L+(i+.5)*pw/n:L+(n>1?i*pw/(n-1):pw/2);
+  const Y=v=>T+ph-(v-y0)/(y1-y0)*ph;
+  const fy=o.fmtY||(v=>fnum(v,0));
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%">`;
+  for(let k=0;k<=4;k++){const v=y0+(y1-y0)*k/4,y=Y(v);s+=`<line x1="${L}" x2="${W-R}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--bg4)" stroke-width="1"/><text x="${L-5}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--t3)">${fy(v)}</text>`;}
+  const step=Math.max(1,Math.ceil(n/(o.maxLabels||12)));
+  o.labels.forEach((lb,i)=>{if(i%step===0)s+=`<text x="${X(i).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="9" fill="var(--t3)">${lb}</text>`;});
+  if(o.bars){const bw=Math.max(2,pw/n*.7);o.bars.v.forEach((v,i)=>{if(v==null)return;const y=Y(Math.max(v,y0));const cor=typeof o.bars.cor==="function"?o.bars.cor(i,v):o.bars.cor;
+    s+=`<rect x="${(X(i)-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,Y(y0)-y).toFixed(1)}" rx="2" fill="${cor}"/>`;
+    if(o.bars.txt){const t=o.bars.txt(i,v);if(t)s+=`<text x="${X(i).toFixed(1)}" y="${(y-4).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--tx)">${t}</text>`;}});}
+  if(o.band){const up=[],dn=[];o.band.hi.forEach((v,i)=>{if(v!=null&&o.band.lo[i]!=null){up.push(X(i).toFixed(1)+","+Y(v).toFixed(1));dn.unshift(X(i).toFixed(1)+","+Y(o.band.lo[i]).toFixed(1));}});
+    if(up.length)s+=`<polygon points="${up.concat(dn).join(" ")}" fill="${o.band.cor||"rgba(0,212,255,.15)"}"/>`;}
+  (o.hlines||[]).forEach(h=>{if(h.v==null||!isFinite(h.v))return;const y=Y(h.v);s+=`<line x1="${L}" x2="${W-R}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${h.cor}" stroke-width="1.3" ${h.dash?`stroke-dasharray="${h.dash}"`:""}/>${h.lb?`<text x="${W-R-2}" y="${(y-3).toFixed(1)}" text-anchor="end" font-size="9" font-weight="700" fill="${h.cor}">${h.lb}</text>`:""}`;});
+  (o.vlines||[]).forEach(v=>{const x=L+v.f*pw;s+=`<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${T}" y2="${T+ph}" stroke="${v.cor}" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${(x+3).toFixed(1)}" y="${T+9}" font-size="9" font-weight="700" fill="${v.cor}">${v.lb||""}</text>`;});
+  (o.series||[]).forEach(se=>{let seg=[],path="";se.v.forEach((v,i)=>{if(v==null||!isFinite(v)){if(seg.length)path+="M"+seg.join("L");seg=[];return;}seg.push(X(i).toFixed(1)+","+Y(v).toFixed(1));});if(seg.length)path+="M"+seg.join("L");
+    s+=`<path d="${path}" fill="none" stroke="${se.cor}" stroke-width="${se.w||2}" ${se.dash?`stroke-dasharray="${se.dash}"`:""} stroke-linejoin="round"/>`;
+    if(se.pts)se.v.forEach((v,i)=>{if(v==null)return;const pc=typeof se.pts==="function"?se.pts(i,v):se.cor;if(pc)s+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${pc===se.cor?2.6:4}" fill="${pc}" stroke="var(--bg2)" stroke-width="1"/>`;});});
+  return s+"</svg>";
+}
+
+// ═════ ⚙️ PARÂMETROS ══════════════════════════════════════════════════════
+window.abrirParam=()=>{
+  const p=PARAM,f=(id,v,lb,suf)=>`<label class="pm-row"><span>${lb}</span><input type="number" min="0" step="1" id="${id}" value="${v}"/><small>${suf||""}</small></label>`;
+  document.getElementById("param-body").innerHTML=`
+    <div class="pm-sec">Postos / equipes simultâneas por etapa</div>
+    ${f("pm-por",p.postos.portaria,"Portaria","postos")}${f("pm-tri",p.postos.triagem,"Triagem","postos")}${f("pm-car",p.postos.carregamento,"Carregamento","docas/equipes")}${f("pm-enl",p.postos.enlonamento,"Enlonamento","equipes")}${f("pm-fat",p.postos.faturamento,"Faturamento","emissores de NF")}
+    <div class="pm-sec">Metas e custos</div>
+    ${f("pm-custo",p.custoHora,"Custo da hora-caminhão parado","R$/h")}${f("pm-patio",p.metaPatio,"Meta de espera até a triagem","min")}${f("pm-entre",p.metaEntre,"Meta de espera entre etapas","min")}${f("pm-tml",p.metaTML,"Meta do TML (Posto 1 → liberação)","min")}${f("pm-cap",p.capPatio,"Capacidade do pátio","caminhões")}`;
+  document.getElementById("param-ov").classList.add("open");
+};
+window.fecharParam=()=>document.getElementById("param-ov").classList.remove("open");
+window.salvarParam=()=>{
+  const v=(id,d)=>{const n=Number(document.getElementById(id)?.value);return isFinite(n)&&n>0?n:d;};
+  const D=PARAM_PADRAO;
+  PARAM={postos:{portaria:v("pm-por",D.postos.portaria),triagem:v("pm-tri",D.postos.triagem),carregamento:v("pm-car",D.postos.carregamento),enlonamento:v("pm-enl",D.postos.enlonamento),faturamento:v("pm-fat",D.postos.faturamento)},
+    custoHora:v("pm-custo",D.custoHora),metaPatio:v("pm-patio",D.metaPatio),metaEntre:v("pm-entre",D.metaEntre),metaTML:v("pm-tml",D.metaTML),capPatio:v("pm-cap",D.capPatio)};
+  try{localStorage.setItem("analise_param_v1",JSON.stringify(PARAM));}catch(e){}
+  fecharParam();refazerNovas();
+};
+window.restaurarParam=()=>{PARAM=JSON.parse(JSON.stringify(PARAM_PADRAO));try{localStorage.removeItem("analise_param_v1");}catch(e){}abrirParam();refazerNovas();};
+window.setOpModo=m=>{OPMODO=m;NOVAS_SUJAS.add("tab-op");renderNova("tab-op");};
+function refazerNovas(){invalidarCache();NOVAS_SUJAS=new Set(NOVAS);const at=document.querySelector("#content .tab.on");if(at&&NOVAS.includes(at.id))renderNova(at.id);}
+const paramNota=()=>`<span class="nt" style="font-size:9px">Parâmetros: postos tri ${PARAM.postos.triagem} · carr ${PARAM.postos.carregamento} · enl ${PARAM.postos.enlonamento} · fat ${PARAM.postos.faturamento} — <a href="javascript:abrirParam()" style="color:var(--bl)">⚙️ ajustar</a></span>`;
+
+async function carregarExcluidos(){
+  if(EXC_STATUS!=="nao")return;EXC_STATUS="carregando";
+  try{const snap=await getDocs(collection(db,"caminhoes_excluidos"));EXCLUIDOS=snap.docs.map(d=>d.data());EXC_STATUS="ok";}
+  catch(e){console.warn("caminhoes_excluidos indisponível:",e);EXCLUIDOS=[];EXC_STATUS="erro";}
+  NOVAS_SUJAS.add("tab-op");NOVAS_SUJAS.add("tab-dq");
+  const at=document.querySelector("#content .tab.on");if(at&&(at.id==="tab-op"||at.id==="tab-dq"))renderNova(at.id);
+}
+
+// ═════ Controlador ════════════════════════════════════════════════════════
+function renderNova(id){
+  if(!NOVAS_SUJAS.has(id))return;
+  const el=document.getElementById(id);if(!el)return;
+  NOVAS_SUJAS.delete(id);
+  try{el.innerHTML=({"tab-dec":htmlDec,"tab-flx":htmlFlx,"tab-cep":htmlCep,"tab-pla":htmlPla,"tab-dq":htmlDq,"tab-op":htmlOp,"tab-et":htmlEt})[id]();}
+  catch(e){console.error("Erro na aba "+id,e);el.innerHTML=`<div class="empty-state">Não foi possível calcular esta aba (${escHtml(e.message)}).</div>`;}
+  if((id==="tab-op"||id==="tab-dq")&&EXC_STATUS==="nao")carregarExcluidos();
+}
+
+// ═════ Análises compartilhadas ═══════════════════════════════════════════
+const ETAPA_VIVO={posto1:["Fila Posto 1","t0"],portaria_inicio:["Na portaria","pi"],portaria_fim:["Aguardando triagem","pf"],
+  triagem_inicio:["Em triagem","ti"],triagem_fim:["Aguardando carregamento","tf"],carregamento_inicio:["Carregando","ci"],
+  carregamento_fim:["Aguardando enlonamento","cf"],enlonamento_inicio:["Enlonando","ei"],enlonamento_fim:["Fila faturamento","ef"]};
+function radarRisco(){
+  return memo("radar",()=>{
+    const hist=histList(56).filter(c=>calcTMAC(c)!=null).map(c=>{const m=marcos(c);const T=calcTMAC(c)/MINMS;const a={};
+      for(const k of["t0","pi","pf","ti","tf","ci","cf","ei","ef"])a[k]=m[k]!=null&&m.t0!=null?(m[k]-m.t0)/MINMS:null;return{T,a,tipo:c.tipoCarga};});
+    const agora=Date.now();
+    return emProcessoAgora().map(c=>{
+      const m=marcos(c);if(m.t0==null)return null;
+      let e=(agora-m.t0)/MINMS;if(e<-5)return null;e=Math.max(0,e);
+      let[lb,k]=ETAPA_VIVO[c.setorAtual]||["Em processo","t0"];
+      if(c.setorAtual==="carregamento_fim"&&c.tipoCarga==="granel")lb="Fila faturamento";
+      let cond=hist.filter(h=>h.tipo===c.tipoCarga&&h.a[k]!=null&&h.a[k]<=e&&h.T>e);
+      if(cond.length<15)cond=hist.filter(h=>h.a[k]!=null&&h.a[k]<=e&&h.T>e);
+      if(cond.length<15)cond=hist.filter(h=>h.T>e);
+      let P=null,prev=null;
+      if(e>=130)P=1;else if(cond.length){P=cond.filter(h=>h.T>130).length/cond.length;prev=medN(cond.map(h=>h.T));}
+      const fila=lb==="Fila faturamento";
+      const acao=e>=130?"Acima de 2h10 — registrar justificativa":P==null?"—":P>=.6?(fila?"Emitir NF agora":k==="t0"||k==="pi"||k==="pf"?"Chamar para triagem":k==="tf"?"Priorizar doca de carregamento":k==="ci"?"Priorizar o carregamento":k==="cf"?"Chamar enlonamento":"Acompanhar a etapa"):P>=.3?"Acompanhar":"—";
+      return{c,e,lb,P,prev:prev!=null?m.t0+prev*MINMS:null,acao,n:cond.length};
+    }).filter(Boolean).sort((a,b)=>(b.P??-1)-(a.P??-1)||b.e-a.e);
+  });
+}
+function arvore(list){
+  return memo("arv:"+(list===getList()?"p":"w"),()=>{
+    const folhas=COMP.map(cp=>{const v=list.map(c=>compVal(c,cp)).filter(x=>x!=null);const a=avg(v);const meta=cp.meta();return{...cp,avg:a,n:v.length,metaV:meta,ganho:a!=null&&a-meta>=1?a-meta:0};});
+    const tml=avg(list.map(c=>durMin(marcos(c),"t0","p1")).filter(x=>x!=null));
+    const tt=list.map(calcTMAC).filter(v=>v!=null);
+    return{folhas,tml,tmac:tt.length?avg(tt)/MINMS:null,nT:tt.length,
+      esp:folhas.filter(f=>f.tipo==="esp").reduce((s,f)=>s+(f.avg||0),0),at:folhas.filter(f=>f.tipo==="at").reduce((s,f)=>s+(f.avg||0),0)};
+  });
+}
+function serieCEP(){
+  return memo("cep",()=>{
+    const por={};histList(60).forEach(c=>{const t=calcTMAC(c);if(t==null)return;const d=dataRef(c);(por[d]=por[d]||[]).push(t/MINMS);});
+    const hj=periodDates("hoje").s;const dias=Object.keys(por).filter(d=>d<hj&&por[d].length>=3).sort().slice(-30); // só dias completos
+    const v=dias.map(d=>avg(por[d]));
+    if(v.length<8)return{dias,v,ok:false};
+    const cl=avg(v);const mr=v.slice(1).map((x,i)=>Math.abs(x-v[i]));const mrb=avg(mr);const s=mrb/1.128;
+    const ucl=cl+2.66*mrb,lcl=Math.max(0,cl-2.66*mrb);
+    const z=v.map(x=>s>0?(x-cl)/s:0);const fl=new Array(v.length).fill(null);
+    for(let i=0;i<v.length;i++){
+      if(Math.abs(z[i])>3){fl[i]="Fora do limite de controle (3σ)";continue;}
+      if(i>=2){const w=z.slice(i-2,i+1);if((z[i]>2&&w.filter(x=>x>2).length>=2)||(z[i]<-2&&w.filter(x=>x<-2).length>=2)){fl[i]="2 de 3 pontos além de 2σ";continue;}}
+      if(i>=4){const w=z.slice(i-4,i+1);if((z[i]>1&&w.filter(x=>x>1).length>=4)||(z[i]<-1&&w.filter(x=>x<-1).length>=4)){fl[i]="4 de 5 pontos além de 1σ";continue;}}
+      if(i>=7){const w=z.slice(i-7,i+1);if(w.every(x=>x>0)||w.every(x=>x<0)){fl[i]="8 pontos seguidos do mesmo lado";continue;}}
+      if(i>=5){const w=v.slice(i-5,i+1);let up=true,dn=true;for(let j=1;j<6;j++){if(!(w[j]>w[j-1]))up=false;if(!(w[j]<w[j-1]))dn=false;}if(up)fl[i]="6 pontos seguidos subindo";else if(dn)fl[i]="6 pontos seguidos caindo";}
+    }
+    return{dias,v,cl,ucl,lcl,s,fl,ok:true,viol:fl.filter(Boolean).length};
+  });
+}
+function utilizacao(list){
+  return memo("util:"+(list===getList()?"p":"w"),()=>{
+    const hs=new Set();list.forEach(c=>{const m=marcos(c);if(m.t0)hs.add(horaIdx(m.t0));if(m.ft)hs.add(horaIdx(m.ft));});
+    const H=hs.size||1,nd=diasDe(list).size||1;
+    return ETP.map(e=>{
+      const d=list.map(c=>[etpDur(c,e),marcos(c)[e.a]]).filter(x=>x[0]!=null&&x[1]!=null);
+      const tm=avg(d.map(x=>x[0]));const postos=PARAM.postos[e.pk]||1;
+      const ph=new Array(24).fill(0);d.forEach(x=>ph[new Date(x[1]).getHours()]++);
+      const lamPico=Math.max(...ph)/nd;
+      return{...e,n:d.length,tm,postos,rho:tm!=null?(d.length/H)*tm/60/postos:null,rhoPico:tm!=null?lamPico*tm/60/postos:null};
+    });
+  });
+}
+function qualidadeDados(list){
+  return memo("dq:"+(list===getList()?"p":"x"),()=>{
+    const hist=histList(56).filter(c=>c.setorAtual==="concluido");
+    const ST=[{k:"p1",lb:"Posto 1 (liberação)",f:m=>m.p1!=null,ap:m=>m.p1!=null},{k:"por",lb:"Portaria",f:m=>m.pi!=null&&m.pf!=null,ap:m=>m.pi!=null},
+      {k:"tri",lb:"Triagem",f:m=>m.ti!=null&&m.tf!=null,ap:m=>m.ti!=null},{k:"car",lb:"Carregamento",f:m=>m.ci!=null&&m.cf!=null,ap:m=>m.ci!=null},
+      {k:"enl",lb:"Enlonamento",f:m=>m.ei!=null&&m.ef!=null,ap:m=>m.ei!=null},{k:"fat",lb:"Faturamento",f:m=>m.ft!=null,ap:m=>m.ft!=null}];
+    // Aplicabilidade aprendida dos dados: a etapa vale para um tipo de carga se ≥50% dos concluídos desse tipo passam por ela
+    const ap={};["ensacado","granel","bigbag"].forEach(t=>{const h=hist.filter(c=>c.tipoCarga===t);ap[t]={};ST.forEach(s=>{ap[t][s.k]=h.length<10?true:h.filter(c=>s.ap(marcos(c))).length/h.length>=.5;});});
+    ap.ensacado.fat=ap.granel.fat=ap.bigbag.fat=true;
+    const conc=list.filter(c=>c.setorAtual==="concluido");
+    const comp=ST.map(s=>{const el=conc.filter(c=>!ap[c.tipoCarga]||ap[c.tipoCarga][s.k]);const ok=el.filter(c=>s.f(marcos(c))).length;return{...s,n:el.length,ok,pct:el.length?ok/el.length:null};});
+    const totN=comp.reduce((a,b)=>a+b.n,0),totOk=comp.reduce((a,b)=>a+b.ok,0);
+    const tipos={fim:{lb:"Fim antes do início",it:[]},ordem:{lb:"Etapa fora da ordem",it:[]},curta:{lb:"Duração impossível (< 30 s)",it:[]},semfat:{lb:"Concluído sem faturamento",it:[]},manual:{lb:"Faturamento encerrado manualmente",it:[]}};
+    const inc=new Set();let medidas=0,lote=0;
+    const turnoDe=ms=>ms?getTurno(new Date(ms)):"—";
+    list.forEach(c=>{const m=marcos(c);
+      [["Portaria","pi","pf"],["Triagem","ti","tf"],["Carregamento","ci","cf"],["Enlonamento","ei","ef"]].forEach(([lb,a,b])=>{
+        if(m[a]!=null&&m[b]!=null){medidas++;const d=m[b]-m[a];
+          if(d<0){tipos.fim.it.push({c,et:lb,tu:turnoDe(m[a])});inc.add(c);}
+          else if(d<30000&&lb!=="Portaria"){lote++;tipos.curta.it.push({c,et:lb,tu:turnoDe(m[a])});inc.add(c);}}});
+      const pares=[["t0","ti","Triagem antes da entrada"],["tf","ci","Carregamento antes do fim da triagem"],["cf","ei","Enlonamento antes do fim do carregamento"],["mf","ft","Faturamento antes do fim da etapa"]];
+      for(const[a,b,lb]of pares){if(m[a]!=null&&m[b]!=null&&m[b]<m[a]-60000){tipos.ordem.it.push({c,et:lb,tu:turnoDe(m[b])});inc.add(c);break;}}
+      if(c.setorAtual==="concluido"&&m.ft==null){tipos.semfat.it.push({c,et:"setorAtual divergente",tu:turnoDe(m.t0)});inc.add(c);}
+      if(c.faturamento?.encerradoManualmente)tipos.manual.it.push({c,et:"Faturamento"+(c.faturamento?.operador?" · "+c.faturamento.operador:""),tu:turnoDe(m.ft)});
+    });
+    const semCim=list.length?list.filter(c=>!cimentoDe(c)).length/list.length:0;
+    const pComp=totN?totOk/totN:null,pInc=list.length?inc.size/list.length:0,pLote=medidas?lote/medidas:0;
+    const indice=pComp==null?null:Math.round(100*(.4*pComp+.3*(1-pInc)+.15*(1-pLote)+.15*(1-semCim)));
+    return{comp,pComp,tipos,inc:inc.size,pInc,semCim,pLote,indice,ap};
+  });
+}
+
+// ═════ 🎯 CENTRAL DE DECISÃO ═════════════════════════════════════════════
+function htmlDec(){
+  const list=getList();
+  const rr=radarRisco(),emRisco=rr.filter(r=>r.P!=null&&r.P>=.6).length;
+  const exc=l=>l.map(calcTMAC).filter(v=>v!=null).reduce((s,t)=>s+Math.max(0,t-META_TMAC_MS),0)/3600000;
+  const hA=exc(list),hP=exc(listaPeriodoAnterior());
+  const arv=arvore(list),alav=[...arv.folhas].sort((a,b)=>b.ganho-a.ganho)[0];
+  const cep=serieCEP(),ut=utilizacao(list),dq=qualidadeDados(list);
+  const dv=hP>0?Math.round((hA-hP)/hP*100):null;
+  let h=pergN("quais caminhões vão estourar 2h10 se nada for feito, qual alavanca reduz mais o TMAC e quanto custa o atraso.");
+  h+=`<div class="kstrip">
+    ${kcN("🚨 Em risco agora",emRisco,"P(estourar 2h10) ≥ 60% · "+rr.length+" em processo",emRisco?"var(--rd)":"var(--gr)")}
+    ${kcN("⏳ Horas-caminhão acima da meta",fnum(hA,1)+" h",dv==null?"período · sem base anterior":`período · <span class="${dv>0?"dn":"ok"}">${dv>0?"▲":"▼"} ${Math.abs(dv)}%</span> vs período anterior`,"var(--tm)")}
+    ${kcN("💰 Custo do atraso","R$ "+(hA*PARAM.custoHora>=1000?fnum(hA*PARAM.custoHora/1000,1)+" mil":fnum(hA*PARAM.custoHora,0)),`período · R$ ${fnum(PARAM.custoHora,0)}/h (parâmetro)`,"var(--ye)")}
+    ${kcN("🎯 Maior alavanca",alav&&alav.ganho>0?alav.lb:"Nenhuma",alav&&alav.ganho>0?`−${fmm(alav.ganho)} por caminhão se atingir a meta`:"todas as etapas dentro da meta","var(--bl)",18)}
+    ${kcN("🧭 Status do processo",!cep.ok?"—":cep.viol?"Instável":"Estável",!cep.ok?"menos de 8 dias com dados":cep.viol?cep.viol+" sinal(is) de causa especial em 30 dias":"só variação natural em 30 dias",!cep.ok?"var(--t3)":cep.viol?"var(--ye)":"var(--gr)",20)}
+  </div>`;
+  // Radar
+  const lin=rr.slice(0,12).map(r=>{const cor=r.P==null?"var(--t3)":r.P>=.6?"var(--rd)":r.P>=.3?"var(--ye)":"var(--gr)";
+    return`<tr><td class="pl">${escHtml(r.c.placa||"—")}</td><td>${r.lb}</td><td class="c">${fmm(r.e)}</td><td class="c">${r.prev?new Date(r.prev).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—"}</td>
+      <td style="min-width:120px"><div style="display:flex;align-items:center;gap:6px"><div style="flex:1">${barN(r.P||0,cor)}</div><b style="color:${cor}">${r.P==null?"—":Math.round(r.P*100)+"%"}</b></div></td><td>${r.acao}</td></tr>`;}).join("");
+  const radar=rr.length?`<table class="dt"><tr><th>Placa</th><th>Etapa atual</th><th class="c">No pátio</th><th class="c">Saída prevista</th><th>P(&gt; 2h10)</th><th>Ação sugerida</th></tr>${lin}</table>`:vazioN("Nenhum caminhão em processo agora");
+  const top=rr.filter(r=>r.P!=null&&r.P>=.6&&r.e<130);
+  // Custo do atraso por dia (ou por turno se o período for de 1 dia)
+  const{s:ps,e:pe}=getPeriodRange();const porDia=ps!==pe;const grp={};
+  list.forEach(c=>{const t=calcTMAC(c);if(t==null)return;const k=porDia?dataRef(c):"Turno "+getTurno(getTS(c,"entrada","ts"));grp[k]=(grp[k]||0)+Math.max(0,t-META_TMAC_MS)/3600000;});
+  const ks=Object.keys(grp).sort();const tot=ks.reduce((s,k)=>s+grp[k],0);
+  const ord=[...ks].sort((a,b)=>grp[b]-grp[a]);
+  const lbK=k=>porDia?fmtDiaCurto(k):k;
+  const cod=ks.length?chartXY({w:420,h:190,labels:ks.map(lbK),bars:{v:ks.map(k=>grp[k]),cor:(i,v)=>v>=tot/ks.length*1.3?"var(--rd)":"var(--tm)",txt:(i,v)=>v>0?fnum(v,1):""},fmtY:v=>fnum(v,0)+"h",maxLabels:10}):vazioN();
+  const decCod=tot>0&&ord.length>1?`${ord.slice(0,2).map(lbK).join(" e ")} concentram ${Math.round((grp[ord[0]]+grp[ord[1]])/tot*100)}% das horas acima da meta (${fnum(tot,1)} h · R$ ${fnum(tot*PARAM.custoHora,0)}). Reforce a escala ou a manutenção nesses ${porDia?"dias":"turnos"}.`:tot>0?`${fnum(tot,1)} h acima da meta no período.`:"Nenhum caminhão acima de 2h10 no período.";
+  // Árvore
+  const esp=arv.folhas.filter(f=>f.tipo==="esp"),at=arv.folhas.filter(f=>f.tipo==="at");
+  const node=(lb,v,meta,ganho,extra,row)=>{const cor=meta==null?"var(--bl)":corSt(v,meta);return`<div class="node" style="grid-column:3;grid-row:${row};border-color:${cor}55"><span>${lb}</span><b style="color:${cor}">${fmm(v)}</b><small>${meta!=null?"meta "+fmm(meta)+(ganho>0?` · <span class="dn">ganho −${fmm(ganho)}</span>`:` · <span class="ok">ok</span>`):extra||""}</small></div>`;};
+  const tree=arv.tmac==null?vazioN():`<div class="tree">
+    <div class="node" style="grid-column:1;grid-row:1/8;border-color:${corSt(arv.tmac,130,1.15)}"><span>TMAC médio</span><b style="color:${corSt(arv.tmac,130,1.15)};font-size:24px">${fmm(arv.tmac)}</b><small>meta 2h10 · ${arv.nT} caminhões</small></div>
+    <div class="node" style="grid-column:2;grid-row:1/5"><span>⏸️ Espera / fila</span><b style="color:var(--rd)">${fmm(arv.esp)}</b><small>${arv.esp+arv.at>0?Math.round(arv.esp/(arv.esp+arv.at)*100):0}% do ciclo</small></div>
+    <div class="node" style="grid-column:2;grid-row:5/8"><span>⚙️ Atendimento</span><b style="color:var(--gr)">${fmm(arv.at)}</b><small>${arv.esp+arv.at>0?Math.round(arv.at/(arv.esp+arv.at)*100):0}% do ciclo</small></div>
+    ${[...esp,...at].map((f,i)=>node(f.lb+(f.k==="espTri"&&arv.tml!=null?` <span class="nt">· TML ${fmm(arv.tml)}</span>`:""),f.avg,f.metaV,f.ganho,"",i+1)).join("")}
+  </div>`;
+  // Matriz Impacto × Esforço
+  const nd=diasDe(list).size||1,camMes=list.length/nd*26;
+  const cand=arv.folhas.filter(f=>f.ganho>0).map(f=>({...f,imp:f.ganho*camMes/60}));
+  const mxI=Math.max(1,...cand.map(f=>f.imp));const usados={};
+  const mtx=cand.length?`<div class="mtx">
+    <div class="qd" style="left:6px;top:4px">GANHO RÁPIDO</div><div class="qd" style="right:6px;top:4px">PROJETO ESTRATÉGICO</div>
+    <div class="qd" style="left:6px;bottom:4px">TAREFA SIMPLES</div><div class="qd" style="right:6px;bottom:4px">BAIXA PRIORIDADE</div>
+    <div style="position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed var(--b2)"></div><div style="position:absolute;top:50%;left:0;right:0;border-top:1px dashed var(--b2)"></div>
+    ${cand.map(f=>{const x=[0,17,50,83][f.esf];const k=f.esf+"";usados[k]=(usados[k]||0)+1;const y=88-f.imp/mxI*72;const sz=14+f.imp/mxI*16;const cor=f.tipo==="esp"?"var(--rd)":"var(--gr)";
+      return`<div class="dot" style="left:${x+(usados[k]-1)*6}%;top:${y}%;width:${sz}px;height:${sz}px;background:${cor}">${Math.round(f.imp)}</div><div class="lb" style="left:calc(${x+(usados[k]-1)*6}% + ${sz/2+4}px);top:calc(${y}% - 6px)">${f.ab} · −${fmm(f.ganho)}</div>`;}).join("")}
+    <div style="position:absolute;bottom:-18px;left:0;right:0;display:flex;justify-content:space-between;font-size:9px;color:var(--t3)"><span>esforço baixo</span><span>médio</span><span>alto</span></div>
+    <div style="position:absolute;left:-24px;top:40%;transform:rotate(-90deg);font-size:9px;color:var(--t3)">impacto</div></div>`:vazioN("Todas as etapas estão dentro da meta no período");
+  const qr=[...cand].sort((a,b)=>(b.imp/b.esf)-(a.imp/a.esf))[0];
+  const decM=qr?`comece por <b>${qr.lb}</b>: ~${Math.round(qr.imp)} horas-caminhão/mês economizadas com esforço ${["","baixo","médio","alto"][qr.esf]}. Responsável: ${qr.resp}.`:"";
+  // Gatilhos
+  const ult7=cep.ok?cep.fl.map((f,i)=>({f,d:cep.dias[i]})).slice(-7):[];
+  const fora=ult7.filter(x=>x.f&&x.f.startsWith("Fora"));const tend=ult7.filter(x=>x.f&&x.f.startsWith("6 pontos seguidos subindo"));
+  const sat=[...ut].filter(u=>u.rhoPico!=null).sort((a,b)=>b.rhoPico-a.rhoPico)[0];
+  const tmf=srtN(list.map(c=>compVal(c,COMP[3])).filter(v=>v!=null));const tmf90=qsN(tmf,.9);
+  const pend=list.filter(c=>{const t=calcTMAC(c);return t!=null&&t>META_TMAC_MS&&!(c.justificativa&&c.justificativa.motivo);}).length;
+  const g=[
+    ["Processo fora de controle","TMAC diário acima do LSC (média + 3σ) nos últimos 7 dias",!cep.ok?pillN("nt","Sem base (CEP)"):fora.length?pillN("dn","DISPAROU · "+fora.map(x=>fmtDiaCurto(x.d)).join(", ")):pillN("ok","Sob controle"),"Coord. Logística","Análise de causa (5 porquês) em até 24 h"],
+    ["Tendência de piora","6 dias seguidos subindo (regra de Nelson 3)",!cep.ok?pillN("nt","Sem base"):tend.length?pillN("dn","DISPAROU · "+fmtDiaCurto(tend[tend.length-1].d)):pillN("nt","Não disparou"),"Coord. Logística","Revisar escala e manutenção"],
+    ["Etapa saturada","Utilização no pico ρ &gt; 85%",!sat?pillN("nt","Sem dados"):sat.rhoPico>.85?pillN("dn","DISPAROU · "+sat.lb+" "+fpct(sat.rhoPico)):sat.rhoPico>.7?pillN("wr","ATENÇÃO · "+sat.lb+" "+fpct(sat.rhoPico)):pillN("ok","OK · máx. "+fpct(sat.rhoPico)),sat?sat.emp:"—","Abrir posto/doca extra ou deslocar equipe no pico"],
+    ["Fila de faturamento","TMF P90 &gt; 15 min no período",tmf90==null?pillN("nt","Sem dados"):tmf90>15?pillN("dn","DISPAROU · "+fmm(tmf90)):tmf90>8?pillN("wr","ATENÇÃO · "+fmm(tmf90)):pillN("ok","OK · "+fmm(tmf90)),"Apodi · Faturamento","Segundo emissor de NF no pico"],
+    ["Justificativa pendente","Caminhão acima de 2h10 sem motivo registrado",pend?pillN("wr",pend+" pendente"+(pend>1?"s":"")):pillN("ok","Nenhuma"),"Líder de turno",`Registrar em <a href="/justificativas" style="color:var(--bl)">/justificativas</a>`],
+    ["Dado não confiável","Completude dos apontamentos &lt; 95%",dq.pComp==null?pillN("nt","Sem dados"):dq.pComp<.95?pillN("dn","DISPAROU · "+fpct(dq.pComp,1)):pillN("ok","OK · "+fpct(dq.pComp,1)),"Admin","Treinar operadores da etapa com falha"],
+  ];
+  h+=`<div class="row" style="grid-template-columns:1.35fr 1fr">
+    ${cardN("🚨","Radar de Risco — caminhões em processo","l","Probabilidade de cada caminhão terminar acima de 2h10. Calculada pela distribuição histórica condicional (8 semanas): dos caminhões que já estavam na mesma etapa com o mesmo tempo decorrido, quantos estouraram.",radar,top.length?`priorizar ${top.slice(0,4).map(r=>"<b>"+escHtml(r.c.placa)+"</b>").join(", ")} antes dos que acabaram de entrar.`:rr.length?"nenhum caminhão em risco alto agora. Manter o ritmo.":"")}
+    ${cardN("💰","Custo do Atraso — horas-caminhão acima de 2h10","p","Soma do excesso de cada caminhão acima da meta. Mede o tamanho do problema em horas e em reais, não só em %.",cod,decCod)}
+  </div>
+  <div class="row" style="grid-template-columns:1.35fr 1fr">
+    ${cardN("🌳","Árvore de Direcionadores do TMAC","p","Decompõe o TMAC nos componentes que a gestão controla. Cada nó mostra o valor médio, a meta e o ganho por caminhão se a meta for atingida. As esperas usam as metas do ⚙️ Parâmetros.",tree,alav&&alav.ganho>0?`a maior alavanca é <b>${alav.lb}</b> (−${fmm(alav.ganho)} por caminhão). Responsável: ${alav.resp}.`:"")}
+    ${cardN("🧮","Matriz Impacto × Esforço","p",`Impacto = ganho por caminhão × ~${Math.round(camMes)} caminhões/mês (ritmo do período), em horas-caminhão/mês. O esforço é uma classificação padrão da gestão (baixo/médio/alto).`,mtx,decM)}
+  </div>
+  ${cardN("📋","Gatilhos e Plano de Ação","r","Cada gatilho é uma regra estatística sobre os dados. Quando dispara, indica o responsável e a ação padrão (playbook).",`<table class="dt"><tr><th>Gatilho</th><th>Regra</th><th>Situação</th><th>Responsável</th><th>Ação padrão</th></tr>${g.map(r=>`<tr><td>${r[0]}</td><td class="nt">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join("")}</table>`,"","margin-bottom:12px")}`;
+  return h;
+}
+
+// ═════ 🚦 FLUXO & CAPACIDADE ═════════════════════════════════════════════
+function curvaWIP(list,limitarAgora){
+  const por={};const agora=Date.now();
+  list.forEach(c=>{const m=marcos(c);if(m.t0==null)return;const fim=m.ft??(c.setorAtual==="concluido"?null:agora);if(fim==null||fim<m.t0)return;
+    const f=Math.min(fim,m.t0+24*3600000);
+    for(let t=Math.ceil(m.t0/1800000)*1800000;t<f;t+=1800000){const d=new Date(t);const k=isoLocal(d);const sl=d.getHours()*2+(d.getMinutes()>=30?1:0);(por[k]=por[k]||new Array(48).fill(0))[sl]++;}});
+  return por;
+}
+function htmlFlx(){
+  const list=getList(),vivo=emProcessoAgora();
+  const hs=new Set();let nf=0;list.forEach(c=>{const m=marcos(c);if(m.t0)hs.add(horaIdx(m.t0));if(m.ft){hs.add(horaIdx(m.ft));nf++;}});
+  const H=hs.size||1,nd=diasDe(list).size||1;
+  const lam=list.filter(c=>marcos(c).t0).length/H,thr=nf/H;
+  const ph=new Array(24).fill(0);list.forEach(c=>{const m=marcos(c);if(m.t0)ph[new Date(m.t0).getHours()]++;});
+  let pk=0;for(let i=1;i<24;i++)if(ph[i]+ph[(i+1)%24]>ph[pk]+ph[(pk+1)%24])pk=i;
+  const arv=arvore(list);const pce=arv.esp+arv.at>0?arv.at/(arv.esp+arv.at):null;
+  // FIFO por tipo de carga e dia: atendido fora de ordem = ultrapassado por quem chegou depois
+  let fifoN=0,fifoX=0;const gF={};
+  list.forEach(c=>{const m=marcos(c);if(m.t0&&m.ft){const k=(c.tipoCarga||"")+"|"+dataRef(c);(gF[k]=gF[k]||[]).push(m);}});
+  Object.values(gF).forEach(a=>{a.sort((x,y)=>x.t0-y.t0);let mn=Infinity;for(let i=a.length-1;i>=0;i--){if(mn<a[i].ft)fifoX++;fifoN++;mn=Math.min(mn,a[i].ft);}});
+  const fifo=fifoN?1-fifoX/fifoN:null;
+  // WIP
+  const{s:ps,e:pe}=getPeriodRange();const hoje=periodDates("hoje").s;
+  const wp=curvaWIP(list);const diasP=Object.keys(wp).filter(d=>d>=ps&&d<=pe);
+  const agoraSl=new Date().getHours()*2+(new Date().getMinutes()>=30?1:0);
+  const linha=new Array(48).fill(0).map((_,sl)=>{const vs=diasP.filter(d=>!(d===hoje&&sl>agoraSl)).map(d=>wp[d][sl]);return vs.length?avg(vs):null;});
+  const wh=curvaWIP(histList(56));const diasH=Object.keys(wh).filter(d=>d<hoje);
+  const lo=[],hi=[];for(let sl=0;sl<48;sl++){const vs=srtN(diasH.map(d=>wh[d][sl]));lo.push(vs.length>=4?qsN(vs,.1):null);hi.push(vs.length>=4?qsN(vs,.9):null);}
+  const wipMed=avg(linha.filter(v=>v!=null&&v>0));
+  const wipChart=chartXY({w:560,h:190,labels:Array.from({length:48},(_,i)=>i%2?"":String(i/2).padStart(2,"0")+"h"),series:[{v:linha,cor:"var(--bl)",w:2.2}],band:{lo,hi},hlines:[{v:PARAM.capPatio,cor:"var(--rd)",dash:"5 4",lb:"capacidade "+PARAM.capPatio}],maxLabels:24});
+  const picoW=Math.max(...linha.map(v=>v||0));const slP=linha.indexOf(picoW);
+  // Utilização
+  const ut=utilizacao(list);const rest=[...ut].filter(u=>u.rhoPico!=null).sort((a,b)=>b.rhoPico-a.rhoPico)[0];
+  const utH=ut.map(u=>{const r=u.rhoPico,cor=r==null?"var(--t3)":r>.85?"var(--rd)":r>.7?"var(--ye)":"var(--gr)";
+    return`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><b>${u.lb}</b> <span class="nt">· ${u.emp} · ${u.postos} posto(s) · ${fmm(u.tm)}/caminhão</span></span><span>médio <b>${fpct(u.rho)}</b> · pico <b style="color:${cor}">${fpct(r)}</b></span></div>
+      <div class="bar" style="height:10px;position:relative">${r!=null?`<i style="width:${Math.min(100,r*100)}%;background:${cor}"></i>`:""}<span style="position:absolute;left:85%;top:-2px;bottom:-2px;border-left:2px dashed var(--t2)"></span></div></div>`;}).join("");
+  // Mapa de fluxo de valor
+  const seg=ORDEM_VSM.map(k=>arv.folhas.find(f=>f.k===k)).filter(f=>f&&f.avg!=null&&f.avg>0);
+  const totS=seg.reduce((s,f)=>s+f.avg,0);let x=10;
+  const vsm=totS?`<svg viewBox="0 0 1000 120" width="100%">${seg.map(f=>{const w=Math.max(18,f.avg/totS*980);const cor=f.tipo==="esp"?"var(--rd)":"var(--gr)";const sx=x;x+=w;
+      return`<rect x="${sx.toFixed(1)}" y="38" width="${(w-3).toFixed(1)}" height="38" rx="5" fill="${cor}" opacity="${f.tipo==="esp"?.75:.9}"/>
+      <text x="${(sx+w/2).toFixed(1)}" y="62" text-anchor="middle" font-size="12" font-weight="800" fill="#06101c">${w>46?fmm(f.avg):""}</text>
+      <text x="${(sx+w/2).toFixed(1)}" y="30" text-anchor="middle" font-size="10" fill="var(--t2)">${f.lb.length*6.3<w-6?f.lb:f.ab.length*6.3<w-6?f.ab:""}</text>
+      <text x="${(sx+w/2).toFixed(1)}" y="94" text-anchor="middle" font-size="9" fill="var(--t3)">${w>40?Math.round(f.avg/totS*100)+"%":""}</text>`;}).join("")}
+      <text x="10" y="114" font-size="10" fill="var(--t2)">Ciclo somado: ${fmm(totS)} · espera ${fmm(arv.esp)} (${Math.round(arv.esp/totS*100)}%) · atendimento ${fmm(arv.at)} (${Math.round(arv.at/totS*100)}%)</text></svg>`:vazioN();
+  const maiorEsp=seg.filter(f=>f.tipo==="esp").sort((a,b)=>b.avg-a.avg)[0];
+  let h=pergN("onde o caminhão espera, qual etapa limita a vazão (Teoria das Restrições) e se a fila vai crescer.");
+  h+=`<div class="kstrip">
+    ${kcN("🅿️ WIP — caminhões no pátio agora",vivo.length,wipMed!=null?"média do período: "+fnum(wipMed,1):"—","var(--bl)")}
+    ${kcN("📥 Taxa de chegada (λ)",fnum(lam,1)+"/h",`pico ${String(pk).padStart(2,"0")}h–${String((pk+2)%24).padStart(2,"0")}h: ${fnum((ph[pk]+ph[(pk+1)%24])/2/nd,1)}/h`)}
+    ${kcN("📤 Vazão (throughput)",fnum(thr,1)+"/h",thr<lam*.97?`<span class="dn">abaixo da chegada: a fila cresce</span>`:`<span class="ok">acompanha a chegada</span>`,"var(--gr)")}
+    ${kcN("⚙️ Eficiência do ciclo (PCE)",fpct(pce),"atendimento ÷ ciclo · ref. lean &gt; 25%",pce==null?"var(--t3)":pce>=.4?"var(--gr)":pce>=.25?"var(--ye)":"var(--rd)")}
+    ${kcN("🔁 Aderência FIFO",fpct(fifo),fifo==null?"—":fpct(1-fifo)+" ultrapassados por quem chegou depois (mesmo tipo de carga)",fifo==null?"var(--t3)":fifo>=.9?"var(--gr)":fifo>=.8?"var(--ye)":"var(--rd)")}
+  </div>`;
+  h+=cardN("🗺️","Mapa do Fluxo de Valor — onde o tempo é gasto","p","Separa trabalho (atendimento) de espera entre as etapas. O faturamento entra como espera porque o sistema registra só a emissão da NF (não há início do faturamento).",vsm+`<div class="legend"><span><i style="background:var(--gr);height:10px"></i>Atendimento (valor agregado)</span><span><i style="background:var(--rd);height:10px"></i>Espera / fila</span></div>`,
+    maiorEsp?`${Math.round(arv.esp/totS*100)}% do ciclo é espera. A maior é <b>${maiorEsp.lb}</b> (${fmm(maiorEsp.avg)}): reduzir essa espera rende mais que acelerar uma etapa de atendimento.`:"","margin-bottom:12px");
+  h+=`<div class="row" style="grid-template-columns:1fr 1.3fr">
+    ${cardN("⚙️","Utilização por Etapa (ρ = λ × tempo médio ÷ postos)","p","Pela fórmula de Kingman (teoria de filas), a espera cresce de forma explosiva acima de ~85% de utilização (linha tracejada). O pico usa a hora de maior chegada à etapa. No faturamento o tempo inclui a fila, então ρ fica superestimado.<br>"+paramNota(),utH,rest?`<b>${rest.lb}</b> (${fpct(rest.rhoPico)} no pico) é a restrição do sistema. Ganho em outra etapa não aumenta a vazão.`:"")}
+    ${cardN("📈","WIP ao longo do dia × capacidade — Lei de Little","p","Caminhões no pátio a cada 30 min (média dos dias do período). Lei de Little: WIP = λ × W. Se a chegada sobe e a capacidade não acompanha, WIP e TMAC sobem juntos.",wipChart+`<div class="legend"><span><i style="background:var(--bl)"></i>WIP médio do período</span><span><i style="background:rgba(0,212,255,.25);height:8px"></i>Faixa P10–P90 (últimas 8 semanas)</span><span><i style="background:var(--rd)"></i>Capacidade do pátio (parâmetro)</span></div>`,
+      picoW>0?`pico de ${fnum(picoW,1)} caminhões às ${String(Math.floor(slP/2)).padStart(2,"0")}:${slP%2?"30":"00"}${picoW>PARAM.capPatio?` — <span class="dn">acima da capacidade do pátio (${PARAM.capPatio})</span>. Antecipar a chamada de senhas ou escalonar agendamentos.`:" — dentro da capacidade do pátio."}`:"")}
+  </div>`;
+  return h;
+}
+
+// ═════ 🧪 CONTROLE ESTATÍSTICO ═══════════════════════════════════════════
+function htmlCep(){
+  const cep=serieCEP(),wl=ult7();
+  const T=wl.map(c=>{const t=calcTMAC(c);return t==null?null:{c,t:t/MINMS};}).filter(Boolean);
+  const v=T.map(x=>x.t),mu=avg(v),sg=sdN(v);
+  const cpk=mu!=null&&sg>0?(130-mu)/(3*sg):null,zb=cpk!=null?3*cpk:null;
+  const pEsp=zb!=null?1-PhiN(zb):null,pObs=v.length?v.filter(x=>x>130).length/v.length:null;
+  const cv=mu&&sg?sg/mu:null;
+  let h=pergN("a variação de hoje é ruído normal ou um problema real (causa especial)? E o processo é capaz de cumprir 2h10?");
+  h+=`<div class="kstrip">
+    ${kcN("📏 Capacidade Cpk (LSE 2h10)",fnum(cpk,2),"≥ 1,33 capaz · &lt; 1,0 incapaz",cpk==null?"var(--t3)":cpk>=1.33?"var(--gr)":cpk>=1?"var(--ye)":"var(--rd)")}
+    ${kcN("σ Nível sigma (Z)",zb==null?"—":fnum(zb,1)+" σ","Z = (2h10 − média) ÷ σ · classe mundial 4–6 σ",zb==null?"var(--t3)":zb>=4?"var(--gr)":zb>=3?"var(--ye)":"var(--rd)")}
+    ${kcN("🎯 % esperado acima de 2h10",fpct(pEsp,1),pEsp==null?"—":`DPMO ${fnum(pEsp*1e6,0)} · observado ${fpct(pObs,1)}`,"var(--rd)")}
+    ${kcN("🧭 Estabilidade (CEP)",!cep.ok?"—":cep.viol?cep.viol+" sinal(is)":"Estável",!cep.ok?"menos de 8 dias com dados":"regras de Western Electric / Nelson · 30 dias",!cep.ok?"var(--t3)":cep.viol?"var(--ye)":"var(--gr)",22)}
+    ${kcN("📊 Coef. de variação",fpct(cv),"alvo &lt; 15% (processo previsível)",cv==null?"var(--t3)":cv<.15?"var(--gr)":cv<.25?"var(--ye)":"var(--rd)")}
+  </div>`;
+  // Carta I-MR
+  const fl=cep.fl||[];
+  const carta=cep.ok?chartXY({w:1000,h:220,l:46,labels:cep.dias.map(d=>{const[y,m,dd]=d.split("-");return dd+"/"+m;}),series:[{v:cep.v,cor:"var(--bl)",w:2,pts:i=>fl[i]?"var(--rd)":"var(--bl)"}],
+    hlines:[{v:cep.ucl,cor:"var(--rd)",dash:"5 4",lb:"LSC "+fmm(cep.ucl)},{v:cep.cl,cor:"var(--gr)",lb:"LC "+fmm(cep.cl)},{v:cep.lcl,cor:"var(--rd)",dash:"5 4",lb:"LIC "+fmm(cep.lcl)},{v:130,cor:"var(--tm)",dash:"2 3",lb:"meta 2h10"}],
+    ymin:Math.max(0,Math.min(cep.lcl,...cep.v)*.9),fmtY:v=>fmm(v),maxLabels:15}):vazioN("São necessários pelo menos 8 dias com 3 ou mais TMACs");
+  const esp=cep.ok?cep.dias.map((d,i)=>fl[i]?{d,f:fl[i]}:null).filter(Boolean):[];
+  h+=cardN("📉","Carta de Controle I-MR — TMAC médio diário (últimos 30 dias completos com operação)","c","Linha central (LC) = média dos dias; limites LSC/LIC = média ± 2,66 × amplitude móvel média. Ponto vermelho = causa especial (fora do limite ou regra violada). Ponto dentro dos limites = variação natural: não reagir a ele.",carta,
+    !cep.ok?"":esp.length?`analisar causa só nos dias ${esp.slice(-5).map(x=>`<b>${fmtDiaCurto(x.d)}</b> (${x.f.toLowerCase()})`).join(", ")}. Os demais altos e baixos são ruído do processo — cobrar a equipe por eles gera reação errada.`:"nenhuma causa especial: o processo está estável. Para melhorar, é preciso mudar o processo (não reagir a dias isolados).","margin-bottom:12px");
+  // Capacidade (histograma)
+  let cap=vazioN();
+  if(v.length>=10){const bw=10,mx=Math.max(150,Math.ceil(qsN(srtN(v),.99)/bw)*bw);const nb=mx/bw;const bins=new Array(nb).fill(0);v.forEach(x=>bins[Math.min(nb-1,Math.floor(x/bw))]++);
+    const curva=bins.map((_,i)=>sg>0?v.length*bw*Math.exp(-((((i+.5)*bw-mu)/sg)**2)/2)/(sg*Math.sqrt(2*Math.PI)):null);
+    cap=chartXY({w:440,h:200,labels:bins.map((_,i)=>i%3===0?fmm(i*bw):""),bars:{v:bins,cor:(i)=>(i+1)*bw>130?"rgba(255,68,102,.75)":"rgba(0,212,255,.6)"},series:[{v:curva,cor:"var(--ye)",w:1.8}],vlines:[{f:130/mx,cor:"var(--rd)",lb:"LSE 2h10"}],maxLabels:nb});}
+  const sAlvo=mu!=null&&mu<130?(130-mu)/3:null,mAlvo=sg!=null?130-3*sg:null;
+  const decCap=cpk==null?"":cpk>=1?"o processo é capaz: manter o controle e mirar Cpk 1,33.":mu>=130?`a média (${fmm(mu)}) já está acima do limite: reduzir a média é a prioridade.`:`para Cpk 1,0: reduzir σ de ${fmm(sg)} para ${fmm(sAlvo)} (mantendo a média) <i>ou</i> reduzir a média de ${fmm(mu)} para ${fmm(mAlvo)} (mantendo σ). ${sg/mu>.2?"O problema é mais <b>variação</b> que média.":"O problema é mais <b>média</b> que variação."}`;
+  // Testes
+  const dias=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const grp=(fn)=>{const g={};T.forEach(x=>{const k=fn(x.c);if(k==null||k==="")return;(g[k]=g[k]||[]).push(x.t);});return Object.entries(g).map(([k,v])=>({k,v}));};
+  const testes=[["Turno A × B × C",grp(c=>getTurno(getTS(c,"entrada","ts")))],["Ensacado × Granel × Big Bag",grp(c=>({ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"})[c.tipoCarga])],
+    ["CP II F × CP III × CP V",grp(c=>cimentoDe(c))],["Dia da semana",grp(c=>{const d=dataRef(c);if(!d)return null;const[y,m,dd]=d.split("-").map(Number);return dias[new Date(y,m-1,dd,12).getDay()];})],["Operador do faturamento",grp(c=>c.faturamento?.operador)]];
+  const tbl=testes.map(([lb,gs])=>{const r=kruskalN(gs);if(!r)return`<tr><td>${lb}</td><td class="c">${gs.reduce((s,g)=>s+g.v.length,0)}</td><td class="c">—</td><td class="c">—</td><td>${pillN("nt","Sem grupos suficientes (n ≥ 5)")}</td></tr>`;
+    const pior=[...r.g].sort((a,b)=>medN(b.v)-medN(a.v))[0];const ef=r.eps<.01?"desprezível":r.eps<.08?"pequeno":r.eps<.26?"médio":"grande";
+    const concl=r.p<.05&&r.eps>=.01?pillN("dn","Diferença real · "+escHtml(pior.k)+" pior"):r.p<.10?pillN("wr","Diferença fraca · "+escHtml(pior.k)):r.N<30?pillN("nt","Inconclusivo · n baixo"):pillN("nt","Sem diferença · ruído");
+    return`<tr><td>${lb}</td><td class="c">${r.N}</td><td class="c">${r.p<.001?"&lt;0,001":fnum(r.p,3)}</td><td class="c">${fnum(r.eps,2)} (${ef})</td><td>${concl}</td></tr>`;}).join("");
+  // Decomposição da variância
+  const comp=wl.map(c=>{const t=calcTMAC(c);if(t==null)return null;const T0=t/MINMS;const cs=COMP.map(cp=>{const x=compVal(c,cp);return x==null?(c.tipoCarga==="granel"&&(cp.k==="espEnl"||cp.k==="enl")||(cp.k==="tri"||cp.k==="espCar")&&marcos(c).ti==null?0:null):x;});
+    if(cs.some(x=>x==null))return null;const sm=cs.reduce((a,b)=>a+b,0);return Math.abs(sm-T0)<=3?{T:T0,cs}:null;}).filter(Boolean);
+  let vard=vazioN("Poucos caminhões com todos os apontamentos nos últimos 7 dias (mínimo 15)");
+  if(comp.length>=15){const mT=avg(comp.map(x=>x.T));const vT=comp.reduce((s,x)=>s+(x.T-mT)**2,0);
+    const sh=COMP.map((cp,j)=>{const mc=avg(comp.map(x=>x.cs[j]));const cov=comp.reduce((s,x)=>s+(x.cs[j]-mc)*(x.T-mT),0);return{cp,sh:vT>0?cov/vT:0};}).sort((a,b)=>b.sh-a.sh);
+    const mx=Math.max(.01,...sh.map(x=>x.sh));
+    vard=sh.map(x=>`<div class="hb"><span class="l" style="width:150px">${x.cp.lb}</span><div class="tr"><div class="f" style="width:${Math.max(0,x.sh/mx*100)}%;background:${x.cp.tipo==="esp"?"var(--rd)":"var(--gr)"}"></div></div><span class="v">${fpct(x.sh)}</span></div>`).join("")+`<div class="dec"><b>Decisão:</b> <b>${sh[0].cp.lb}</b> explica ${fpct(sh[0].sh)} da oscilação do TMAC (${comp.length} caminhões completos). Padronizar essa etapa é o caminho mais curto para um TMAC previsível.</div>`;}
+  // Anomalias
+  let anom=vazioN("Menos de 10 TMACs nos últimos 7 dias");
+  if(v.length>=10){const zr=zRobusto(v);const zc=COMP.map(cp=>zRobusto(wl.map(c=>compVal(c,cp)).filter(x=>x!=null)));
+    const ls=T.map(x=>({...x,z:zr.z(x.t)})).filter(x=>Math.abs(x.z)>3.5).sort((a,b)=>Math.abs(b.z)-Math.abs(a.z)).slice(0,10);
+    anom=ls.length?`<table class="dt"><tr><th>Placa</th><th>Data</th><th class="c">TMAC</th><th class="c">z robusto</th><th>Componente anômalo</th><th>Justificativa</th></tr>${ls.map(x=>{
+      let comp="—";if(x.z>0){let best=null;COMP.forEach((cp,j)=>{const val=compVal(x.c,cp);if(val==null)return;const z=zc[j].z(val);if(!best||z>best.z)best={cp,z,val};});if(best)comp=`${best.cp.lb} (${fmm(best.val)})`;}
+      else comp=`<span class="nt">Tempo curto demais — possível erro de apontamento</span>`;
+      const en=getTS(x.c,"entrada","ts");const jm=x.c.justificativa?.motivo;
+      return`<tr><td class="pl">${escHtml(x.c.placa||"—")}</td><td>${en?en.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"—"}</td><td class="c ${x.z>0?"dn":""}" ${x.z<0?'style="color:var(--bl)"':""}>${fmm(x.t)}</td><td class="c">${fnum(x.z,1)}</td><td>${comp}</td><td>${jm?escHtml(jm):x.t>130?'<span class="wr">Pendente</span>':"—"}</td></tr>`;}).join("")}</table>`:vazioN("Nenhum caso com |z| &gt; 3,5 nos últimos 7 dias");}
+  h+=`<div class="row" style="grid-template-columns:1fr 1.25fr">
+    ${cardN("📐","Capacidade do Processo × limite 2h10","w",`Histograma do TMAC (${v.length} caminhões) com curva normal ajustada. Cpk = (LSE − média) ÷ 3σ (limite unilateral). O TMAC é assimétrico à direita, então o Cpk normal é uma aproximação — compare sempre com o % observado.`,cap,decCap)}
+    ${cardN("🔬","Testes de Significância — a diferença é real?","w","Kruskal-Wallis (não paramétrico, robusto à assimetria do TMAC), com p-valor e tamanho de efeito ε². p &lt; 0,05 com efeito ≥ pequeno = diferença real. Evita agir sobre diferenças que são só acaso.",`<table class="dt"><tr><th>Comparação</th><th class="c">n</th><th class="c">p-valor</th><th class="c">Efeito ε²</th><th>Conclusão</th></tr>${tbl}</table>`)}
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1.25fr">
+    ${cardN("🧩","De onde vem a variação do TMAC","w","Decomposição da variância: cov(componente, TMAC) ÷ var(TMAC). Mostra quanto da oscilação cada componente explica — é diferente do tempo médio. Reduzir a variação aumenta a previsibilidade e o Cpk.",vard)}
+    ${cardN("🔎","Anomalias — casos para investigar","w","z-score robusto (mediana e MAD), que não é distorcido pelos próprios outliers. Lista os casos com |z| &gt; 3,5 e aponta o componente mais fora do padrão.",anom)}
+  </div>`;
+  return h;
+}
+
+// ═════ 📅 PLANEJAMENTO ═══════════════════════════════════════════════════
+function htmlPla(){
+  const hist=histList(70);
+  const cnt={},cntH={},tmD={};
+  hist.forEach(c=>{const m=marcos(c);if(m.t0==null)return;const d=new Date(m.t0);const k=isoLocal(d);cnt[k]=(cnt[k]||0)+1;(cntH[k]=cntH[k]||new Array(24).fill(0))[d.getHours()]++;const t=calcTMAC(c);if(t!=null)(tmD[k]=tmD[k]||[]).push(t/MINMS);});
+  const hoje=periodDates("hoje").s;
+  let alvo=addDias(hoje,1);{const[y,m,d]=alvo.split("-").map(Number);if(new Date(y,m-1,d,12).getDay()===0)alvo=addDias(alvo,1);}
+  const mesmos=d=>{const r=[];for(let k=1;k<=8;k++){const x=addDias(d,-7*k);if(cnt[x])r.unshift(x);}return r;};
+  const prever=d=>{const ds=mesmos(d);if(ds.length<3)return null;const vs=ds.map(x=>cnt[x]);const rg=regressaoN(vs);const usaT=rg&&rg.p<.10;const f=Math.max(0,usaT?rg.fit(vs.length):avg(vs));
+    const res=srtN(vs.map((y,i)=>y-(usaT?rg.fit(i):avg(vs))));return{f,lo:Math.max(0,f+qsN(res,.1)),hi:f+qsN(res,.9),ds,usaT,rg};};
+  const P=prever(alvo);
+  // Backtest (MAPE) nos últimos 28 dias com operação
+  const ers=[];for(let k=1;k<=28;k++){const d=addDias(hoje,-k);if(!cnt[d])continue;const p=prever(d);if(p&&cnt[d]>0)ers.push(Math.abs(cnt[d]-p.f)/cnt[d]);}
+  const mape=ers.length>=5?avg(ers):null;
+  let h=pergN("quantos caminhões vão chegar no próximo dia de operação, em que horário, e quantas equipes são necessárias para manter o TMAC na meta.");
+  if(!P){return h+vazioN("São necessárias pelo menos 3 semanas com operação no mesmo dia da semana para prever "+fmtDiaCurto(alvo)+".");}
+  const tot=P.ds.reduce((s,d)=>s+cnt[d],0)/P.ds.length||1,esc=P.f/tot;
+  const hm=[],hl=[],hh=[];for(let hr=0;hr<24;hr++){const vs=srtN(P.ds.map(d=>cntH[d]?cntH[d][hr]:0));hm.push(avg(vs)*esc);hl.push(qsN(vs,.1)*esc);hh.push(qsN(vs,.9)*esc);}
+  let pk=0;for(let i=0;i<23;i++)if(hm[i]+hm[i+1]>hm[pk]+hm[pk+1])pk=i;
+  const tms=srtN(P.ds.map(d=>tmD[d]?avg(tmD[d]):null).filter(v=>v!=null));
+  const tCarr=avg(hist.map(c=>etpDur(c,ETP[2])).filter(v=>v!=null));
+  const capH=tCarr?PARAM.postos.carregamento*60/tCarr:null;
+  const TUR=[["A","A · 23h–07h",[23,0,1,2,3,4,5,6]],["B","B · 07h–15h",[7,8,9,10,11,12,13,14]],["C","C · 15h–23h",[15,16,17,18,19,20,21,22]]];
+  const dim=TUR.map(([id,lb,hs])=>{const ch=hs.reduce((s,x)=>s+hm[x],0);const pico=Math.max(...hs.map(x=>hm[x]));const rec=tCarr?Math.max(1,Math.ceil(pico*tCarr/60/.85)):null;return{id,lb,ch,pico,rec,at:PARAM.postos.carregamento};});
+  const falta=dim.filter(d=>d.rec!=null&&d.rec>d.at).sort((a,b)=>(b.rec-b.at)-(a.rec-a.at))[0],sobra=dim.filter(d=>d.rec!=null&&d.rec<d.at).sort((a,b)=>(b.at-b.rec)-(a.at-a.rec))[0];
+  h+=`<div class="kstrip">
+    ${kcN("📦 Chegadas previstas · "+fmtDiaCurto(alvo),Math.round(P.f),`IC 80%: ${Math.round(P.lo)} – ${Math.round(P.hi)} · ${P.usaT?"com tendência":"média de "+P.ds.length+" semanas"}`,"var(--bl)")}
+    ${kcN("⏰ Pico previsto",String(pk).padStart(2,"0")+"h–"+String(pk+2).padStart(2,"0")+"h",`${Math.round(hm[pk]+hm[pk+1])} caminhões (${P.f?Math.round((hm[pk]+hm[pk+1])/P.f*100):0}%)`)}
+    ${kcN("⏱️ TMAC previsto",fmm(avg(tms)),tms.length>=3?`P10–P90: ${fmm(qsN(tms,.1))} – ${fmm(qsN(tms,.9))}`:"poucos dias de base","var(--tm)")}
+    ${kcN("🎯 Precisão do modelo (MAPE)",fpct(mape,1),mape==null?"backtest precisa de 5 dias":`backtest em ${ers.length} dias (últimos 28)`,mape==null?"var(--t3)":mape<=.1?"var(--gr)":mape<=.2?"var(--ye)":"var(--rd)")}
+    ${kcN("👷 Equipes de carregamento",falta?"+"+(falta.rec-falta.at):"OK",falta?"recomendadas no Turno "+falta.id:"atual atende o pico previsto",falta?"var(--ye)":"var(--gr)")}
+  </div>`;
+  const fc=chartXY({w:560,h:200,labels:hm.map((_,i)=>String(i).padStart(2,"0")+"h"),series:[{v:hm,cor:"var(--bl)",w:2.2,pts:true}],band:{lo:hl,hi:hh},hlines:capH?[{v:capH,cor:"var(--rd)",dash:"5 4",lb:"capacidade carreg. "+fnum(capH,1)+"/h"}]:[],maxLabels:24,fmtY:v=>fnum(v,0)});
+  const tb=`<table class="dt"><tr><th>Turno</th><th class="c">Chegadas</th><th class="c">Pico/h</th><th class="c">Atual</th><th class="c">Recomendado</th></tr>${dim.map(d=>`<tr><td>${d.lb}</td><td class="c">${Math.round(d.ch)}</td><td class="c">${fnum(d.pico,1)}</td><td class="c">${d.at}</td><td class="c ${d.rec==null?"nt":d.rec>d.at?"dn":d.rec<d.at?"wr":"ok"}">${d.rec==null?"—":d.rec+(d.rec!==d.at?` (${d.rec>d.at?"+":"−"}${Math.abs(d.rec-d.at)})`:"")}</td></tr>`).join("")}</table>`;
+  const decD=falta&&sobra?`remanejar ${Math.min(falta.rec-falta.at,sobra.at-sobra.rec)} equipe(s) do Turno ${sobra.id} para o pico do Turno ${falta.id}: custo zero e o carregamento fica abaixo de 85% de utilização.`:falta?`reforçar o Turno ${falta.id} com ${falta.rec-falta.at} equipe(s) de carregamento no pico.`:sobra?`a capacidade do Turno ${sobra.id} está sobrando no pico previsto — avaliar realocação.`:"o dimensionamento atual atende a demanda prevista.";
+  h+=`<div class="row" style="grid-template-columns:1.4fr 1fr">
+    ${cardN("📅","Previsão de chegadas por hora — "+fmtDiaCurto(alvo),"h",`Modelo sazonal (mesmo dia da semana × hora) nas últimas ${P.ds.length} semanas${P.usaT?", com tendência linear significativa (p "+fnum(P.rg.p,2)+")":"; sem tendência significativa, usa a média"}. A faixa é o intervalo P10–P90.`,fc+`<div class="legend"><span><i style="background:var(--bl)"></i>Previsão</span><span><i style="background:rgba(0,212,255,.25);height:8px"></i>Intervalo P10–P90</span><span><i style="background:var(--rd)"></i>Capacidade de carregamento (postos × 60 ÷ tempo médio)</span></div>`)}
+    ${cardN("👷","Dimensionamento recomendado por turno","h",`Equipes de carregamento para manter a utilização ≤ 85% no pico do turno: ⌈ pico/h × ${fmm(tCarr)} ÷ 60 ÷ 0,85 ⌉. "Atual" = parâmetro (${PARAM.postos.carregamento}). ${paramNota()}`,tb,decD)}
+  </div>`;
+  return h;
+}
+
+// ═════ 🔍 QUALIDADE DOS DADOS ════════════════════════════════════════════
+function htmlDq(){
+  const list=getList(),dq=qualidadeDados(list);
+  let h=pergN("os números desta tela são confiáveis? Uma decisão baseada em dado com falha de apontamento é uma decisão errada.");
+  h+=`<div class="kstrip">
+    ${kcN("✅ Índice de confiabilidade",dq.indice??"—","0–100 · 40% completude, 30% consistência, 15% lote, 15% cadastro",dq.indice==null?"var(--t3)":dq.indice>=90?"var(--gr)":dq.indice>=75?"var(--ye)":"var(--rd)")}
+    ${kcN("📝 Completude dos apontamentos",fpct(dq.pComp,1),"etapas aplicáveis com início e fim",dq.pComp==null?"var(--t3)":dq.pComp>=.95?"var(--gr)":"var(--ye)")}
+    ${kcN("⚠️ Registros inconsistentes",dq.inc,fpct(dq.pInc,1)+" do período · fim antes do início, ordem trocada",dq.inc?"var(--ye)":"var(--gr)")}
+    ${kcN("⚗️ Sem tipo de cimento",fpct(dq.semCim,1),"ficam fora do filtro de cimento",dq.semCim>.02?"var(--ye)":"var(--gr)")}
+    ${kcN("⏱️ Apontamento em lote",fpct(dq.pLote,1),"início e fim com menos de 30 s")}
+  </div>`;
+  const comp=dq.comp.map(s=>{const cor=s.pct==null?"var(--t3)":s.pct>=.95?"var(--gr)":s.pct>=.85?"var(--ye)":"var(--rd)";
+    return`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>${s.lb} <span class="nt">· ${s.ok}/${s.n}</span></span><b style="color:${cor}">${fpct(s.pct,1)}</b></div>${barN(s.pct||0,cor)}</div>`;}).join("");
+  const rows=Object.values(dq.tipos).filter(t=>t.it.length);
+  const tuCount={};rows.forEach(t=>t.it.forEach(x=>{if(t!==dq.tipos.manual)tuCount[x.tu]=(tuCount[x.tu]||0)+1;}));
+  const piorTu=Object.entries(tuCount).sort((a,b)=>b[1]-a[1])[0];const totInc=Object.values(tuCount).reduce((a,b)=>a+b,0);
+  const tb=rows.length?`<table class="dt"><tr><th>Tipo</th><th class="c">Qtd</th><th>Exemplos</th><th>Etapa · turno mais frequente</th></tr>${rows.map(t=>{const fr={};t.it.forEach(x=>{const k=x.et+" · turno "+x.tu;fr[k]=(fr[k]||0)+1;});const top=Object.entries(fr).sort((a,b)=>b[1]-a[1])[0][0];
+    return`<tr><td>${t.lb}</td><td class="c">${t.it.length}</td><td class="pl" style="font-size:12px">${[...new Set(t.it.map(x=>x.c.placa))].slice(0,3).map(escHtml).join(", ")}</td><td>${escHtml(top)}</td></tr>`;}).join("")}</table>`:vazioN("Nenhuma inconsistência no período 🎉");
+  const semDiag=dq.comp.filter(s=>s.pct!=null&&s.pct<.95).sort((a,b)=>a.pct-b.pct)[0];
+  h+=`<div class="row" style="grid-template-columns:1fr 1.2fr">
+    ${cardN("📝","Completude por etapa","p","% de caminhões concluídos com início e fim apontados em cada etapa. A etapa só conta para os tipos de carga que passam por ela (aprendido dos dados: Granel não enlona). Abaixo de 95%, os indicadores da etapa perdem confiabilidade.",comp,semDiag?`treinar o apontamento em <b>${semDiag.lb}</b> (${fpct(semDiag.pct,1)} completo).`:"todas as etapas acima de 95%.")}
+    ${cardN("⚠️","Inconsistências detectadas","p","Cada linha é um tipo de registro que distorce as médias. Corrigir na origem evita decisões erradas.",tb,piorTu&&totInc?`${piorTu[1]} de ${totInc} ocorrências vêm do <b>Turno ${piorTu[0]}</b>. Reforçar o treinamento de apontamento nesse turno.`:"")}
+  </div>`;
+  return h;
+}
+
+// ═════ 👤 PRODUTIVIDADE POR OPERADOR ═════════════════════════════════════
+function eventosOp(list,modo){
+  return list.map(c=>{const m=marcos(c);
+    if(modo==="p1"){const op=c.entrada?.operador;if(!op||m.t0==null)return null;return{c,op,ts:m.t0,t:durMin(m,"t0","p1"),tipo:c.tipoCarga};}
+    const op=c.faturamento?.operador;if(!op||m.ft==null)return null;return{c,op,ts:m.ft,t:compVal(c,COMP[3]),tipo:c.tipoCarga};
+  }).filter(Boolean);
+}
+function placarOp(ev,meta){
+  const por={};ev.forEach(e=>(por[e.op]=por[e.op]||[]).push(e));
+  const gaps=[];Object.values(por).forEach(a=>{a.sort((x,y)=>x.ts-y.ts);for(let i=1;i<a.length;i++){const g=(a[i].ts-a[i-1].ts)/MINMS;if(g<=30)gaps.push(g);}});
+  const g0=gaps.length?medN(gaps):5;
+  const tipoM={};["ensacado","granel","bigbag"].forEach(t=>{tipoM[t]=avg(ev.filter(e=>e.tipo===t&&e.t!=null).map(e=>e.t));});
+  const ops=Object.entries(por).map(([op,a])=>{let act=0,ses=0,ini=a[0].ts,ult=a[0].ts;
+    for(let i=1;i<a.length;i++){if((a[i].ts-ult)/MINMS>30){act+=ult-ini;ses++;ini=a[i].ts;}ult=a[i].ts;}act+=ult-ini;ses++;
+    const hrs=(act/MINMS+ses*g0)/60;const ts=a.map(e=>e.t).filter(v=>v!=null);const s=srtN(ts);
+    const ex=a.filter(e=>e.t!=null&&tipoM[e.tipo]!=null);const efMix=ex.length?ex.reduce((s,e)=>s+tipoM[e.tipo],0)/Math.max(.01,ex.reduce((s,e)=>s+e.t,0)):null;
+    return{op,n:a.length,hrs,rate:a.length/hrs,tm:avg(ts),p90:qsN(s,.9),pm:ts.length?ts.filter(v=>v<=meta).length/ts.length:null,nt:ts.length,efMix,ev:a};});
+  const tr=ops.reduce((s,o)=>s+o.n,0)/Math.max(.01,ops.reduce((s,o)=>s+o.hrs,0));
+  ops.forEach(o=>o.idx=o.rate/tr*100);
+  return{ops:ops.sort((a,b)=>b.n-a.n),tr,g0};
+}
+function htmlOp(){
+  const p1=OPMODO==="p1";const meta=p1?PARAM.metaTML:8;const nomeT=p1?"TML":"TMF";
+  const list=getList(),wl=ult7();
+  const ev=eventosOp(list,OPMODO),evW=eventosOp(wl,OPMODO);
+  const pl=placarOp(ev,meta),plW=placarOp(evW,meta);
+  let h=pergN("quem entrega mais atendimentos por hora, com qual tempo e qualidade, e se a diferença entre operadores é real ou efeito do volume e do tipo de carga.");
+  h+=`<div style="display:flex;gap:6px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+    <button class="tgl ${p1?"on":""}" onclick="setOpModo('p1')">🚪 Posto 1 — Entrada</button><button class="tgl ${p1?"":"on"}" onclick="setOpModo('ft')">🧾 Faturamento</button>
+    <span class="report-only" style="font-weight:700;color:var(--bl)">${p1?"🚪 Posto 1 — Entrada":"🧾 Faturamento"}</span>
+    <span class="nt" style="margin-left:auto;font-size:10px">Operador: <b class="ok">${p1?"entrada.operador":"faturamento.operador"}</b> · Tempo: <b class="ok">${p1?"TML = liberação (posto1ConfirmadoEm) − entrada":"TMF = NF emitida − fim da última etapa"}</b> · meta ${fmm(meta)}</span></div>`;
+  const ts=ev.map(e=>e.t).filter(v=>v!=null);const rates=pl.ops.filter(o=>o.n>=5).map(o=>o.rate);const cvR=rates.length>=2?sdN(rates)/avg(rates):null;
+  h+=`<div class="kstrip">
+    ${kcN("👥 Operadores ativos",pl.ops.length,"no período")}
+    ${kcN(p1?"📝 Cadastros":"🧾 Notas emitidas",ev.length,"período","var(--bl)")}
+    ${kcN("⚡ Ritmo da equipe",fnum(pl.tr,1)+"/h","por hora ativa (pausas &gt; 30 min descontadas)","var(--gr)")}
+    ${kcN("⏱️ "+nomeT+" médio",fmm(avg(ts)),"P90 "+fmm(qsN(srtN(ts),.9))+" · meta "+fmm(meta),corSt(avg(ts),meta))}
+    ${kcN("📊 Variação entre operadores",fpct(cvR),"CV do ritmo (operadores com n ≥ 5) · alvo &lt; 20%",cvR==null?"var(--t3)":cvR<.2?"var(--gr)":cvR<.35?"var(--ye)":"var(--rd)")}
+  </div>`;
+  const placar=pl.ops.length?`<table class="dt"><tr><th>Operador</th><th class="c">Atend.</th><th class="c">Horas ativas</th><th class="c">Atend./h</th><th class="c">Índice</th><th class="c">${nomeT} médio</th><th class="c">P90</th><th class="c">% na meta</th><th class="c">Efic. ajustada mix</th></tr>${pl.ops.map(o=>`<tr><td><b>${escHtml(o.op)}</b></td><td class="c">${o.n}</td><td class="c">${fnum(o.hrs,1)}</td><td class="c">${fnum(o.rate,1)}</td><td class="c ${o.idx>=110?"ok":o.idx<90?"dn":""}"><b>${Math.round(o.idx)}</b></td><td class="c" style="color:${corSt(o.tm,meta)}">${fmm(o.tm)}</td><td class="c">${fmm(o.p90)}</td><td class="c">${fpct(o.pm)}</td><td class="c">${o.efMix==null?"—":Math.round(o.efMix*100)}</td></tr>`).join("")}</table>`:vazioN("Nenhum apontamento com operador no período");
+  // Funnel plot (semana)
+  const fo=plW.ops.filter(o=>o.nt>0);let funnel=vazioN("Sem dados nos últimos 7 dias");let foraF=[];
+  if(fo.length>=2){const pb=fo.reduce((s,o)=>s+o.pm*o.nt,0)/fo.reduce((s,o)=>s+o.nt,0);const mxN=Math.max(...fo.map(o=>o.nt))*1.1;
+    const W=420,Hh=240,L=36,R=10,T=10,B=26;const X=n=>L+n/mxN*(W-L-R),Y=p=>T+(1-p)*(Hh-T-B);
+    const lim=z=>{const up=[],dn=[];for(let i=1;i<=40;i++){const n=Math.max(2,mxN*i/40);const se=Math.sqrt(pb*(1-pb)/n);up.push(X(n).toFixed(1)+","+Y(Math.min(1,pb+z*se)).toFixed(1));dn.push(X(n).toFixed(1)+","+Y(Math.max(0,pb-z*se)).toFixed(1));}return`<polyline points="${up.join(" ")}" fill="none" stroke="${z>2.5?"var(--rd)":"var(--t3)"}" stroke-dasharray="4 3"/><polyline points="${dn.join(" ")}" fill="none" stroke="${z>2.5?"var(--rd)":"var(--t3)"}" stroke-dasharray="4 3"/>`;};
+    funnel=`<svg viewBox="0 0 ${W} ${Hh}" width="100%">${[0,.25,.5,.75,1].map(p=>`<line x1="${L}" x2="${W-R}" y1="${Y(p)}" y2="${Y(p)}" stroke="var(--bg4)"/><text x="${L-4}" y="${Y(p)+3}" text-anchor="end" font-size="9" fill="var(--t3)">${p*100}%</text>`).join("")}
+      <line x1="${L}" x2="${W-R}" y1="${Y(pb)}" y2="${Y(pb)}" stroke="var(--gr)" stroke-width="1.3"/><text x="${W-R}" y="${Y(pb)-4}" text-anchor="end" font-size="9" fill="var(--gr)">média equipe ${fpct(pb)}</text>${lim(1.96)}${lim(3.09)}
+      ${fo.map(o=>{const se=Math.sqrt(pb*(1-pb)/o.nt);const z=se>0?(o.pm-pb)/se:0;const cor=Math.abs(z)>3.09?(z<0?"var(--rd)":"var(--gr)"):Math.abs(z)>1.96?"var(--ye)":"var(--bl)";if(Math.abs(z)>3.09)foraF.push({o,z});
+        return`<circle cx="${X(o.nt).toFixed(1)}" cy="${Y(o.pm).toFixed(1)}" r="5" fill="${cor}" stroke="var(--bg2)"/><text x="${(X(o.nt)+7).toFixed(1)}" y="${(Y(o.pm)+3).toFixed(1)}" font-size="9" fill="var(--tx)">${primeiroNome(o.op)}</text>`;}).join("")}
+      <text x="${(W+L)/2}" y="${Hh-6}" text-anchor="middle" font-size="9" fill="var(--t3)">nº de atendimentos em 7 dias →</text></svg>`;}
+  // Heatmap operador × hora (semana)
+  let hm=vazioN("Sem dados nos últimos 7 dias");
+  if(plW.ops.length){const hrs=[...Array(24).keys()];const val=plW.ops.slice(0,10).map(o=>{const dd=new Set(o.ev.map(e=>isoLocal(new Date(e.ts)))).size||1;const cnt=new Array(24).fill(0);o.ev.forEach(e=>cnt[new Date(e.ts).getHours()]++);return{o,v:cnt.map(x=>x/dd)};});
+    const mx=Math.max(.1,...val.flatMap(x=>x.v));const usad=hrs.filter(hh=>val.some(x=>x.v[hh]>0));
+    hm=`<table class="hmt"><tr><th class="d"></th>${usad.map(hh=>`<th>${String(hh).padStart(2,"0")}</th>`).join("")}</tr>${val.map(x=>`<tr><th class="d">${primeiroNome(x.o.op)}</th>${usad.map(hh=>{const f=x.v[hh]/mx;return`<td style="background:${f?`rgba(0,212,255,${(.12+f*.88).toFixed(2)})`:"var(--bg3)"};color:${f>.5?"#06101c":"var(--t2)"}">${x.v[hh]?fnum(x.v[hh],1):""}</td>`;}).join("")}</tr>`).join("")}</table>`;}
+  // Box plot (semana)
+  let box=vazioN("Sem tempos nos últimos 7 dias");
+  const bo=plW.ops.filter(o=>o.nt>=3).slice(0,8);
+  if(bo.length){const allT=srtN(bo.flatMap(o=>o.ev.map(e=>e.t).filter(v=>v!=null)));const mx=Math.max(meta*1.2,qsN(allT,.95)*1.15);const W=420,L=70,R=12,rh=24,Hh=bo.length*rh+30;const X=v=>L+Math.min(v,mx)/mx*(W-L-R);
+    box=`<svg viewBox="0 0 ${W} ${Hh}" width="100%"><line x1="${X(meta)}" x2="${X(meta)}" y1="4" y2="${Hh-22}" stroke="var(--tm)" stroke-dasharray="3 3"/><text x="${X(meta)+3}" y="12" font-size="9" fill="var(--tm)">meta ${fmm(meta)}</text>
+      ${bo.map((o,i)=>{const s=srtN(o.ev.map(e=>e.t).filter(v=>v!=null));const q1=qsN(s,.25),q2=qsN(s,.5),q3=qsN(s,.75),iq=q3-q1;const lo=s.find(v=>v>=q1-1.5*iq),hi=[...s].reverse().find(v=>v<=q3+1.5*iq);const y=16+i*rh;
+        const out=s.filter(v=>v>q3+1.5*iq).slice(-5);
+        return`<text x="${L-6}" y="${y+5}" text-anchor="end" font-size="10" fill="var(--tx)">${primeiroNome(o.op)}</text><line x1="${X(lo)}" x2="${X(hi)}" y1="${y}" y2="${y}" stroke="var(--t2)"/><rect x="${X(q1)}" y="${y-7}" width="${Math.max(2,X(q3)-X(q1))}" height="14" rx="3" fill="rgba(0,212,255,.25)" stroke="var(--bl)"/><line x1="${X(q2)}" x2="${X(q2)}" y1="${y-7}" y2="${y+7}" stroke="var(--tx)" stroke-width="2"/>${out.map(v=>`<circle cx="${X(v)}" cy="${y}" r="2.6" fill="var(--rd)"/>`).join("")}`;}).join("")}
+      ${[0,.25,.5,.75,1].map(f=>`<text x="${L+f*(W-L-R)}" y="${Hh-6}" text-anchor="middle" font-size="9" fill="var(--t3)">${fmm(mx*f)}</text>`).join("")}</svg>`;}
+  // Tendência 8 semanas
+  const ev8=eventosOp(histList(56),OPMODO);const sem0=periodDates("semana").s;const semIni=[...Array(8).keys()].map(k=>addDias(sem0,-7*(7-k)));
+  const topOps=placarOp(ev8,meta).ops.slice(0,5).map(o=>o.op);
+  const ser=topOps.map((op,i)=>({op,cor:PAL[i],v:semIni.map((s,k)=>{const e=k<7?semIni[k+1]:"9999";const vs=ev8.filter(x=>x.op===op&&x.t!=null&&isoLocal(new Date(x.ts))>=s&&isoLocal(new Date(x.ts))<e).map(x=>x.t);return vs.length>=3?avg(vs):null;})}));
+  const trend=ser.length?chartXY({w:420,h:190,labels:semIni.map(s=>s.slice(8)+"/"+s.slice(5,7)),series:ser.map(s=>({v:s.v,cor:s.cor,pts:true})),hlines:[{v:meta,cor:"var(--tm)",dash:"3 3",lb:"meta"}],fmtY:v=>fmm(v)}):vazioN();
+  const trLg=`<div class="legend">${ser.map(s=>{const r=regressaoN(s.v.filter(v=>v!=null));const st=r&&r.p<.1?(r.b<0?` <span class="ok">▼ melhora</span>`:` <span class="dn">▲ piora</span>`):"";return`<span><i style="background:${s.cor}"></i>${primeiroNome(s.op)}${st}</span>`;}).join("")}</div>`;
+  // Qualidade
+  const{s:ps,e:pe}=getPeriodRange();
+  const exc={};if(EXCLUIDOS)EXCLUIDOS.forEach(x=>{if(!x.excluidoPor||!x.excluidoEm)return;const d=isoLocal(new Date(x.excluidoEm));if(d>=ps&&d<=pe)exc[x.excluidoPor]=(exc[x.excluidoPor]||0)+1;});
+  const qual=pl.ops.map(o=>{const a=o.ev;let lote=0;for(let i=1;i<a.length;i++)if(a[i].ts-a[i-1].ts<30000)lote++;
+    const inc=p1?a.filter(e=>!cimentoDe(e.c)||!e.c.subtipoCarga).length:a.filter(e=>!e.c.notaFiscal).length;
+    const man=p1?(exc[o.op]||0):a.filter(e=>e.c.faturamento?.encerradoManualmente).length;
+    const nota=Math.max(0,Math.round(100*(1-(lote+inc+man)/Math.max(1,o.n))));return{o,lote,inc,man,nota};});
+  const qt=qual.length?`<table class="dt"><tr><th>Operador</th><th class="c">${p1?"Exclusões de AC":"Encerr. manual"}</th><th class="c">${p1?"Cadastro incompleto":"Sem nº de NF"}</th><th class="c">Em lote (&lt; 30 s)</th><th class="c">Nota</th></tr>${qual.map(q=>`<tr><td>${escHtml(q.o.op)}</td><td class="c">${p1&&EXC_STATUS!=="ok"?'<span class="nt">'+(EXC_STATUS==="erro"?"sem acesso":"…")+"</span>":q.man}</td><td class="c">${q.inc}</td><td class="c">${q.lote}</td><td class="c" style="color:${q.nota>=95?"var(--gr)":q.nota>=85?"var(--ye)":"var(--rd)"}"><b>${q.nota}</b></td></tr>`).join("")}</table>`:vazioN();
+  const pior=[...qual].sort((a,b)=>a.nota-b.nota)[0];
+  const decQ=[foraF.length?`${foraF.map(f=>`<b>${escHtml(f.o.op)}</b> ${f.z<0?"abaixo":"acima"}`).join(", ")} da equipe fora do funil (diferença real — ${foraF.some(f=>f.z<0)?"tratar com acompanhamento, não punição":"replicar a prática"}).`:"nenhum operador fora do funil de 99,8%: as diferenças dos últimos 7 dias são compatíveis com acaso.",pior&&pior.nota<90?`Rever o apontamento de <b>${escHtml(pior.o.op)}</b> (nota ${pior.nota}).`:""].join(" ");
+  h+=`<div class="row" style="grid-template-columns:1.5fr 1fr">
+    ${cardN("👤","Placar de Produtividade por Operador","p",`Atendimentos por hora ativa (do primeiro ao último apontamento, descontadas pausas &gt; 30 min, + ${fmm(pl.g0)} por sessão). Índice 100 = média da equipe. A eficiência ajustada por mix compara o tempo esperado (média da equipe para o tipo de carga de cada atendimento) com o realizado: &gt; 100 = mais rápido que a equipe no mesmo mix.`,placar)}
+    ${cardN("🎯","Funnel Plot — % na meta, justo por volume","w","Cada ponto é um operador. Os limites de 95% e 99,8% se estreitam com o volume (p̄ ± z·√(p̄(1−p̄)/n)). Só quem fica fora do funil vermelho difere de verdade da equipe — evita punir quem fez poucos atendimentos.",funnel+`<div class="legend"><span><i style="background:var(--t3)"></i>Limite 95%</span><span><i style="background:var(--rd)"></i>Limite 99,8%</span></div>`)}
+  </div>
+  <div class="row" style="grid-template-columns:1.5fr 1fr">
+    ${cardN("🔥","Atendimentos por Operador × Hora do dia","w","Média de atendimentos por hora nos dias em que o operador trabalhou. Mostra quem cobre o pico e onde falta gente.",hm)}
+    ${cardN("📦","Consistência — distribuição do "+nomeT,"w","Box plot por operador: caixa = 50% centrais, traço = mediana, haste = 1,5 × IQR. Caixa estreita = operador previsível. Ponto vermelho = atendimento fora da curva.",box)}
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1fr">
+    ${cardN("📈","Curva de Aprendizado / Tendência individual","t",nomeT+" médio por semana dos 5 operadores com mais volume. A seta aparece só quando a tendência é estatisticamente significativa (p &lt; 0,10).",trend+trLg)}
+    ${cardN("✅","Qualidade do Apontamento por Operador","p",p1?"Produtividade sem qualidade distorce o indicador. Exclusões de AC (caminhoes_excluidos), cadastro sem cimento ou tipo de carregamento e cadastros com menos de 30 s de intervalo (lote). Correção de placa não é registrada no sistema.":"Encerramento manual do faturamento, NF sem número registrado e emissões com menos de 30 s de intervalo (lote).",qt,decQ)}
+  </div>`;
+  return h;
+}
+
+// ═════ 🏭 PRODUTIVIDADE POR ETAPA ════════════════════════════════════════
+function htmlEt(){
+  const list=getList(),wl=ult7(),dq=qualidadeDados(list);
+  const st=ETP.map(e=>{const d=list.map(c=>{const t=etpDur(c,e);const m=marcos(c);return t!=null?{t,fim:m[e.b],ini:m[e.a],c}:null;}).filter(Boolean);
+    const H=new Set(d.map(x=>horaIdx(x.fim))).size||1;const s=srtN(d.map(x=>x.t));const tm=avg(s);const postos=PARAM.postos[e.pk]||1;
+    const pm=e.meta&&s.length?s.filter(v=>v<=e.meta).length/s.length:null;const ef=e.meta&&tm?e.meta/tm:null;
+    return{...e,d,n:d.length,H,prod:d.length/H,tm,p90:qsN(s,.9),cap:tm?postos*60/tm:null,postos,pm,ef,oee:ef!=null&&pm!=null?Math.min(1,ef)*pm:null};});
+  const comMeta=st.filter(s=>s.meta&&s.tm);
+  const efG=comMeta.length?comMeta.reduce((a,s)=>a+s.meta*s.n,0)/comMeta.reduce((a,s)=>a+s.tm*s.n,0):null;
+  const pmG=comMeta.length?comMeta.reduce((a,s)=>a+s.pm*s.n,0)/comMeta.reduce((a,s)=>a+s.n,0):null;
+  const oeeM=comMeta.length?avg(comMeta.map(s=>s.oee)):null;
+  const ut=utilizacao(list);const rest=[...ut].filter(u=>u.rhoPico!=null).sort((a,b)=>b.rhoPico-a.rhoPico)[0];
+  let h=pergN("quanto cada etapa produz por hora, quão perto está da capacidade e da meta, e em que turno e horário perde rendimento.");
+  h+=`<div class="kstrip">
+    ${kcN("🚧 Etapa restritiva",rest?rest.lb:"—",rest?`utilização no pico ${fpct(rest.rhoPico)}`:"—",rest&&rest.rhoPico>.85?"var(--rd)":"var(--ye)",20)}
+    ${kcN("⚡ Eficiência global",efG==null?"—":Math.round(efG*100)+"%","Σ(meta × n) ÷ Σ(tempo real × n)",efG==null?"var(--t3)":efG>=1?"var(--gr)":efG>=.85?"var(--ye)":"var(--rd)")}
+    ${kcN("🎯 Rendimento (% na meta)",fpct(pmG),"etapas com meta · ponderado por volume",pmG==null?"var(--t3)":pmG>=.85?"var(--gr)":pmG>=.7?"var(--ye)":"var(--rd)")}
+    ${kcN("🏭 OEE simplificado médio",fpct(oeeM),"disponibilidade (não medida = 100%) × eficiência × rendimento","var(--pu)")}
+    ${kcN("📝 Confiabilidade dos dados",dq.indice??"—","ver aba Qualidade dos Dados",dq.indice==null?"var(--t3)":dq.indice>=90?"var(--gr)":"var(--ye)")}
+  </div>`;
+  const tb=`<table class="dt"><tr><th>Etapa · Empresa</th><th class="c">Caminhões</th><th class="c">Cam./hora</th><th class="c">Capacidade/h</th><th class="c">Tempo médio</th><th class="c">P90</th><th class="c">Meta</th><th class="c">% na meta</th><th class="c">Eficiência</th><th style="width:150px">OEE</th></tr>${st.map(s=>{const cor=s.oee==null?"var(--t3)":s.oee>=.85?"var(--gr)":s.oee>=.6?"var(--ye)":"var(--rd)";
+    return`<tr><td><b>${s.lb}</b> <span class="nt">· ${s.emp}</span></td><td class="c">${s.n}</td><td class="c">${fnum(s.prod,1)}</td><td class="c">${s.cap?fnum(s.cap,1):"—"} <span class="nt" style="font-size:9px">(${s.postos}p)</span></td><td class="c" style="color:${s.meta?corSt(s.tm,s.meta):"var(--tx)"}">${fmm(s.tm)}</td><td class="c">${fmm(s.p90)}</td><td class="c">${s.meta?fmm(s.meta):"—"}</td><td class="c">${fpct(s.pm)}</td><td class="c">${s.ef==null?"—":Math.round(s.ef*100)+"%"}</td><td>${s.oee==null?'<span class="nt">sem meta</span>':`<div style="display:flex;align-items:center;gap:6px"><div style="flex:1">${barN(s.oee,cor)}</div><b style="color:${cor}">${fpct(s.oee)}</b></div>`}</td></tr>`;}).join("")}</table>`;
+  h+=cardN("🏭","Painel de Produtividade por Etapa","p","Produtividade = caminhões concluídos na etapa ÷ horas com operação. Capacidade/h = postos × 60 ÷ tempo médio. Eficiência = meta ÷ tempo médio (&gt; 100% = mais rápido que a meta). Rendimento = % na meta. OEE simplificado = disponibilidade × eficiência (máx. 100%) × rendimento — paradas não são registradas, então a disponibilidade é considerada 100%.<br>"+paramNota(),tb,"","margin-bottom:12px");
+  // Hora do dia (semana)
+  const nd=diasDe(wl).size||1;const cores={por:"#7a9fd4",tri:"#ffd000",car:"#fb923c",enl:"#a78bfa",fat:"#00e896"};
+  const ser=ETP.map(e=>{const v=new Array(24).fill(0);wl.forEach(c=>{if(etpDur(c,e)==null)return;v[new Date(marcos(c)[e.b]).getHours()]++;});return{e,v:v.map(x=>x/nd)};});
+  const ln=chartXY({w:560,h:210,labels:[...Array(24).keys()].map(i=>String(i).padStart(2,"0")+"h"),series:ser.map(s=>({v:s.v,cor:cores[s.e.k],w:2})),maxLabels:12,fmtY:v=>fnum(v,1)});
+  const lg=`<div class="legend">${ser.map(s=>`<span><i style="background:${cores[s.e.k]}"></i>${s.e.lb}</span>`).join("")}</div>`;
+  // Etapa × turno
+  const tt=st.filter(s=>s.meta).map(s=>({s,v:["A","B","C"].map(t=>{const d=s.d.filter(x=>getTurno(new Date(x.fim))===t);return d.length>=3?{p:d.filter(x=>x.t<=s.meta).length/d.length,n:d.length}:null;})}));
+  const piorC=tt.flatMap(r=>r.v.map((v,i)=>v?{s:r.s,t:"ABC"[i],p:v.p}:null)).filter(Boolean).sort((a,b)=>a.p-b.p).slice(0,2).filter(x=>x.p<.85);
+  const ttH=`<table class="dt"><tr><th>Etapa</th><th class="c">Turno A</th><th class="c">Turno B</th><th class="c">Turno C</th></tr>${tt.map(r=>`<tr><td>${r.s.lb}</td>${r.v.map(v=>v?`<td class="c"><span class="pill p-${v.p>=.85?"ok":v.p>=.7?"wr":"dn"}">${fpct(v.p)}</span> <span class="nt" style="font-size:9px">n${v.n}</span></td>`:'<td class="c nt">—</td>').join("")}</tr>`).join("")}</table>`;
+  // Tempo ocioso entre atendimentos (simulação de postos)
+  const ocioso=ETP.filter(e=>e.pronto).map(e=>{const gaps=[];const porDia={};wl.forEach(c=>{const m=marcos(c);if(etpDur(c,e)==null)return;const pr=m[e.pronto]??m.t0;(porDia[isoLocal(new Date(m[e.a]))]=porDia[isoLocal(new Date(m[e.a]))]||[]).push({ini:m[e.a],fim:m[e.b],pr});});
+    const k=PARAM.postos[e.pk]||1;
+    Object.values(porDia).forEach(a=>{a.sort((x,y)=>x.ini-y.ini);const livre=[];a.forEach(x=>{if(livre.length<k){livre.push(x.fim);return;}livre.sort((p,q)=>p-q);const fr=livre[0];if(x.pr!=null&&x.pr<=fr&&x.ini>fr)gaps.push((x.ini-fr)/MINMS);livre[0]=Math.max(fr,x.fim);});});
+    return{e,n:gaps.length,med:gaps.length?medN(gaps):null,p5:gaps.length?gaps.filter(g=>g>5).length/gaps.length:null};});
+  const mxO=Math.max(1,...ocioso.map(o=>o.med||0));
+  const ocH=ocioso.map(o=>`<div class="hb"><span class="l" style="width:92px">${o.e.lb}</span><div class="tr"><div class="f" style="width:${(o.med||0)/mxO*100}%;background:${(o.med||0)>5?"var(--rd)":"var(--bl)"}"></div></div><span class="v">${o.med==null?"—":fmm(o.med)}${o.p5!=null?` · ${fpct(o.p5)} &gt; 5 min`:""}</span></div>`).join("");
+  const piorO=[...ocioso].filter(o=>o.med!=null).sort((a,b)=>b.med-a.med)[0];
+  // Tendência semanal
+  const h8=histList(56);const sem0=periodDates("semana").s;const semIni=[...Array(8).keys()].map(k=>addDias(sem0,-7*(7-k)));
+  const tend=ETP.map(e=>{const v=semIni.map((s,k)=>{const fimS=k<7?semIni[k+1]:"9999";const d=h8.filter(c=>{const dr=dataRef(c);return dr>=s&&dr<fimS&&etpDur(c,e)!=null;});const H=new Set(d.map(c=>horaIdx(marcos(c)[e.b]))).size;return H?d.length/H:null;});
+    const vv=v.filter(x=>x!=null);const r=regressaoN(vv);return{e,v,r,ult:vv[vv.length-1]};});
+  const tdH=`<table class="dt"><tr><th>Etapa</th><th class="c">Cam./h (última)</th><th class="c">Inclinação/sem.</th><th>Tendência</th></tr>${tend.map(t=>`<tr><td>${t.e.lb}</td><td class="c">${fnum(t.ult,1)}</td><td class="c">${t.r?(t.r.b>=0?"+":"")+fnum(t.r.b,2):"—"}</td><td>${!t.r?pillN("nt","poucos dados"):t.r.p<.10?(t.r.b>0?pillN("ok","▲ sobe · p "+fnum(t.r.p,2)):pillN("dn","▼ cai · p "+fnum(t.r.p,2))):pillN("nt","estável · p "+fnum(t.r.p,2))}</td></tr>`).join("")}</table>`;
+  // Tipo de carga
+  const TP=[["ensacado","Ensacado"],["granel","Granel"],["bigbag","Big Bag"]];
+  const tc=ETP.map(e=>({e,v:TP.map(([t])=>{if(dq.ap[t]&&dq.ap[t][e.k]===false)return null;return avg(list.filter(c=>c.tipoCarga===t).map(c=>etpDur(c,e)).filter(x=>x!=null));})}));
+  const tcH=`<table class="dt"><tr><th>Etapa</th>${TP.map(t=>`<th class="c">${t[1]}</th>`).join("")}</tr>${tc.map(r=>{const vs=r.v.filter(x=>x!=null);const mn=vs.length?Math.min(...vs):null;return`<tr><td>${r.e.lb}</td>${r.v.map(x=>x==null?'<td class="c nt">—</td>':`<td class="c ${mn&&x>=mn*1.4?"dn":""}">${fmm(x)}</td>`).join("")}</tr>`;}).join("")}</table>`;
+  let decTc="";const car=tc.find(r=>r.e.k==="car");if(car){const vs=car.v.map((x,i)=>x!=null?{x,t:TP[i][1]}:null).filter(Boolean).sort((a,b)=>b.x-a.x);if(vs.length>=2&&vs[0].x>=vs[vs.length-1].x*1.3)decTc=`o ${vs[0].t} consome ${fnum(vs[0].x/vs[vs.length-1].x,1)}× o tempo de carregamento do ${vs[vs.length-1].t}. Programe esses caminhões fora do pico.`;}
+  h+=`<div class="row" style="grid-template-columns:1.3fr 1fr">
+    ${cardN("📈","Produtividade por Hora do Dia — por etapa","w","Caminhões concluídos por hora (média dos dias com operação) em cada etapa. Quando uma etapa fica abaixo da anterior no mesmo horário, ela forma fila.",ln+lg)}
+    ${cardN("🧱","Etapa × Turno — % na meta","p","Onde a etapa perde rendimento (pelo horário de fim). Verde ≥ 85%, amarelo 70–85%, vermelho &lt; 70%. Célula com menos de 3 caminhões fica em branco.",ttH,piorC.length?`${piorC.map(x=>`<b>${x.s.lb}</b> no Turno ${x.t} (${fpct(x.p)})`).join(" e ")} concentram a perda. Reforce a equipe nesse(s) cruzamento(s).`:"todas as combinações etapa × turno acima de 85%.")}
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+    ${cardN("⏸️","Tempo Ocioso entre Atendimentos","w","Mediana do intervalo entre um posto ficar livre e o próximo caminhão começar, só quando esse caminhão já estava esperando (havia fila). Simula os postos do ⚙️ Parâmetros. Intervalo alto com fila = ociosidade da equipe, não falta de demanda.",ocH,piorO&&piorO.med>5?`<b>${piorO.e.lb}</b> deixa ${fmm(piorO.med)} entre caminhões com fila: revisar chamada e deslocamento.`:"")}
+    ${cardN("📊","Tendência semanal da produtividade","t","Caminhões por hora de operação, semana a semana (8 semanas). A inclinação é da regressão linear, com teste t de significância.",tdH)}
+    ${cardN("🚚","Produtividade por Tipo de Carga","p","Tempo médio da etapa por tipo de carga (— = tipo não passa pela etapa). Base do tempo padrão e do ajuste por mix.",tcH,decTc)}
+  </div>`;
+  return h;
+}
 
 // ── Export PDF ────────────────────────────────────────────────────────────
 window.exportPDF=()=>{
