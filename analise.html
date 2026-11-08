@@ -343,6 +343,18 @@ table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fix
 .mtx .dot{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#06101c}
 .mtx .lb{position:absolute;font-size:9px;color:var(--tx);white-space:nowrap}
 .report-only{display:none}
+.an-box{margin-top:12px;padding:9px 12px;border-left:3px solid var(--tm);background:rgba(255,159,67,.07);border-radius:0 6px 6px 0;font-size:11px;line-height:1.5;text-align:left;color:var(--tx)}
+.an-h{font-weight:800;color:var(--tm);margin-bottom:3px;font-size:11px}.an-h span{font-weight:600;color:var(--t3);font-size:9px;margin-left:6px}
+.an-l{margin-top:3px}
+#login-screen{position:fixed;inset:0;z-index:1000;background:radial-gradient(circle at 50% 30%,#0d2240,#060d18 70%);display:none;align-items:center;justify-content:center;padding:20px}
+.lg-box{width:100%;max-width:360px;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lg-ic{font-size:42px;text-align:center}.lg-t{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--pu);text-align:center;letter-spacing:1px;margin-top:6px}
+.lg-s{font-size:11px;color:var(--t2);text-align:center;margin:4px 0 20px}
+.lg-f{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}.lg-f label{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.lg-f input{background:var(--bg3);border:2px solid var(--b2);border-radius:var(--rs);color:var(--tx);padding:11px 13px;font-size:14px;outline:none}.lg-f input:focus{border-color:var(--pu)}
+.lg-btn{width:100%;padding:12px;border:none;border-radius:var(--rs);background:var(--pu);color:#0b0620;font-size:13px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.lg-err{display:none;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:var(--rd);padding:9px;border-radius:var(--rs);font-size:12px;text-align:center;margin-bottom:12px}
+.nav.sair{margin-top:4px;justify-content:center;font-size:11px;color:var(--rd)}
 #param-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:950;align-items:center;justify-content:center;padding:20px}
 #param-ov.open{display:flex}
 #param-box{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);width:100%;max-width:480px;max-height:90vh;overflow:auto;padding:20px 22px}
@@ -356,7 +368,19 @@ table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fix
 </style>
 </head>
 <body>
-<div class="app">
+<!-- LOGIN — acesso restrito ao Administrador (mesma credencial e sessão do admin.html) -->
+<div id="login-screen">
+  <div class="lg-box">
+    <div class="lg-ic">🔒</div>
+    <div class="lg-t">ANÁLISE · TMAC ONLINE</div>
+    <div class="lg-s">Acesso restrito ao Administrador</div>
+    <div class="lg-err" id="login-err">Usuário ou senha incorretos.</div>
+    <div class="lg-f"><label>Usuário</label><input id="l-user" type="text" placeholder="administrador" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="lg-f"><label>Senha</label><input id="l-pwd" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="lg-btn" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+<div class="app" id="app-root" style="display:none">
 <!-- ═════════ MENU LATERAL ═════════ -->
 <aside class="side">
   <div class="brand"><div class="ico">🚛</div><b>TMAC ONLINE</b><span>ANÁLISE · QUIXERÉ</span></div>
@@ -376,6 +400,7 @@ table.hm{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fix
   <div class="nav" data-t="tab-op" onclick="showTab('tab-op',this)">👤 Prod. por Operador<span class="nw"></span></div>
   <div class="nav" data-t="tab-et" onclick="showTab('tab-et',this)">🏭 Prod. por Etapa<span class="nw"></span></div>
   <div class="nav pm" onclick="abrirParam()">⚙️ Parâmetros</div>
+  <div class="nav sair" onclick="doLogout()">🚪 Sair</div>
   <div class="foot">Menos fila,<br>mais caminhões no dia.</div>
 </aside>
 
@@ -914,6 +939,8 @@ document.addEventListener("visibilitychange",()=>{
   if(!document.hidden&&RENDER_PENDENTE){RENDER_PENDENTE=false;render();}
 });
 
+// Leitura do Firestore só começa depois do login do Administrador
+function iniciarDados(){
 onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc")),snap=>{
   ALL=snap.docs.map(d=>({id:d.id,...d.data()}));
   invalidarCache();
@@ -936,6 +963,7 @@ onSnapshot(query(collection(db,"caminhoes_rastreio"),orderBy("criadoEm","desc"))
     if(sel)nomes.forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;sel.appendChild(o);});
   }catch(e){console.error("Erro ao carregar usuarios:",e);}
 })();
+}
 
 window.setPeriod=(p,el)=>{MP=p;closeFPops();MDATA=null;MDATA_FIM=null;document.getElementById("cal-clear").style.display="none";updateCalBtnLabel();document.querySelectorAll(".pb-periodo").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
 window.setDia=(d,el)=>{MDIA=d;document.querySelectorAll(".pb-dia").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();};
@@ -972,7 +1000,7 @@ window.showTab=(id,el)=>{
   document.querySelectorAll("#content .tab").forEach(t=>t.classList.toggle("on",t.id===id));
   document.getElementById("h-tit").textContent=TAB_TIT[id][0];
   document.getElementById("h-sub").textContent=TAB_TIT[id][1];
-  if(NOVAS.includes(id))renderNova(id);
+  if(NOVAS.includes(id))renderNova(id);else renderAnalisesAntigas(id);
   window.scrollTo({top:0,behavior:"smooth"});
 };
 
@@ -1115,6 +1143,7 @@ function buildReportContent(){
   const original=document.getElementById("content");
   if(!original||!original.children.length)return null;
   NOVAS.forEach(renderNova); // relatório traz as abas novas calculadas
+  Object.keys(AN_ANTIGAS).forEach(renderAnalisesAntigas); // e a análise de rodapé de todos os gráficos
   const clone=original.cloneNode(true);
   clone.style.display="block";
   clone.removeAttribute("id");
@@ -1716,7 +1745,8 @@ function render(){
   atualizarContagens();
   renderAvancados();
   // Novas abas: marca todas para recálculo e redesenha só a que está aberta
-  NOVAS_SUJAS=new Set(NOVAS);
+  NOVAS_SUJAS=new Set(NOVAS);AN_SUJAS=new Set(Object.keys(AN_ANTIGAS));
+  {const at0=document.querySelector("#content .tab.on");if(at0)renderAnalisesAntigas(at0.id);}
   {const at=document.querySelector("#content .tab.on");if(at&&NOVAS.includes(at.id))renderNova(at.id);}
 }
 
@@ -3073,7 +3103,8 @@ const horaIdx=ms=>Math.floor(ms/3600000);
 // ── Componentes visuais ───────────────────────────────────────────────────
 const SCN={p:["sc-p","PERÍODO"],w:["sc-w","ÚLTIMOS 7 DIAS"],l:["sc-l","AO VIVO"],h:["sc-h","HISTÓRICO 8 SEM."],r:["sc-p","REGRAS AUTOMÁTICAS"],c:["sc-h","30 DIAS"],t:["sc-h","8 SEMANAS"]};
 const kcN=(l,v,d,cor,fs)=>`<div class="kc"><div style="min-width:0"><div class="kl">${l}</div><div class="kv" style="color:${cor||"var(--tx)"}${fs?";font-size:"+fs+"px":""}">${v}</div><div class="kd nt">${d||""}</div></div></div>`;
-const cardN=(ic,tit,sc,cs,body,dec,st)=>`<div class="card"${st?` style="${st}"`:""}><div class="ct"><span class="i">${ic}</span> ${tit}${sc?`<span class="sc ${SCN[sc][0]}">${SCN[sc][1]}</span>`:""}</div>${cs?`<div class="cs">${cs}</div>`:""}${body}${dec?`<div class="dec"><b>Decisão:</b> ${dec}</div>`:""}</div>`;
+const cardN=(ic,tit,sc,cs,body,dec,st)=>`<div class="card"${st?` style="${st}"`:""}><div class="ct"><span class="i">${ic}</span> ${tit}${sc?`<span class="sc ${SCN[sc][0]}">${SCN[sc][1]}</span>`:""}</div>${cs?`<div class="cs">${cs}</div>`:""}${body}${anRodape(tit,dec)}</div>`;
+function anRodape(tit,dec){const sp=specNova(tit);return sp?anBoxHtml(sp,dec):dec?`<div class="dec"><b>Decisão:</b> ${dec}</div>`:"";}
 const pergN=t=>`<div class="q">Pergunta que a aba responde: <b>${t}</b></div>`;
 const pillN=(cls,t)=>`<span class="pill p-${cls}">${t}</span>`;
 const vazioN=t=>`<div class="empty-state" style="padding:18px 0">${t||"Sem dados suficientes no escopo"}</div>`;
@@ -3688,6 +3719,189 @@ function htmlEt(){
   return h;
 }
 
+
+// ═════════════════════════════════════════════════════════════════════════
+// 📝 ANÁLISE AUTOMÁTICA — rodapé de cada gráfico (2026-11)
+// Para cada cartão: o que melhorou, o que piorou, principal outlier e ação,
+// comparando o escopo do cartão com o escopo anterior equivalente.
+// ═════════════════════════════════════════════════════════════════════════
+const SEM_DIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const TIPO_LB={ensacado:"Ensacado",granel:"Granel",bigbag:"Big Bag"};
+function listaEntre(s,e){return applyNonDateFilters(ALL.filter(c=>{const d=dataRef(c);return d&&d>=s&&d<=e;}));}
+function escopoAn(esc){
+  return memo("esc:"+esc,()=>{
+    const hj=periodDates("hoje").s;
+    if(esc==="w"){const{s,e}=periodDates("semana");const pv=listaEntre(addDias(s,-7),addDias(e,-7));
+      return pv.length?{cur:getWeekList(),prev:pv,ref:"mesmo trecho da semana passada"}:{cur:getWeekList(),prev:listaEntre(addDias(s,-7),addDias(s,-1)),ref:"semana passada completa"};}
+    if(esc==="7")return{cur:ult7(),prev:listaEntre(addDias(hj,-13),addDias(hj,-7)),ref:"7 dias anteriores"};
+    if(esc==="d1")return{cur:getHojeList(),prev:getOntemList(),ref:"D-1 ("+fmtDiaCurto(getD1Data())+")"};
+    return{cur:getList(),prev:listaPeriodoAnterior(),ref:"período anterior equivalente"};
+  });
+}
+const DIMS={
+  turno:{lb:"turno",k:c=>{const t=getTurno(getTS(c,"entrada","ts"));return t?"Turno "+t:null;}},
+  tipo:{lb:"tipo de carga",k:c=>TIPO_LB[c.tipoCarga]||null},
+  cim:{lb:"cimento",k:c=>cimentoDe(c)||null},
+  dow:{lb:"dia da semana",k:c=>{const d=dataRef(c);if(!d)return null;const[y,m,dd]=d.split("-").map(Number);return SEM_DIAS[new Date(y,m-1,dd,12).getDay()];}},
+  hora:{lb:"hora de entrada",k:c=>{const t=getTS(c,"entrada","ts");return t?String(t.getHours()).padStart(2,"0")+"h":null;}},
+  tt:{lb:"tipo × turno",k:c=>{const a=DIMS.tipo.k(c),b=DIMS.turno.k(c);return a&&b?a+" · "+b:null;}},
+  placa:{lb:"placa",k:c=>c.placa||null},
+  motivo:{lb:"motivo",k:c=>c.justificativa?.motivo||null},
+  opP1:{lb:"operador",k:c=>c.entrada?.operador||null},
+  opFt:{lb:"operador",k:c=>c.faturamento?.operador||null},
+};
+const METS={
+  tmac:{lb:"TMAC",tempo:true,v:c=>{const t=calcTMAC(c);return t==null?null:t/MINMS;}},
+  tml:{lb:"TML",tempo:true,v:c=>durMin(marcos(c),"t0","p1")},
+  tmf:{lb:"TMF",tempo:true,v:c=>compVal(c,COMP[3])},
+  exc:{lb:"horas acima de 2h10",soma:true,v:c=>{const t=calcTMAC(c);return t==null?null:Math.max(0,t-META_TMAC_MS)/3600000;}},
+  qtd:{lb:"caminhões/dia",qtd:true,v:()=>1},
+  atraso:{lb:"atrasos/dia",qtd:true,menor:true,v:c=>{const t=calcTMAC(c);return t!=null&&t>META_TMAC_MS?1:null;}},
+  dq:{lb:"% registros com falha",pct:true,v:c=>falhaDado(c)},
+};
+function falhaDado(c){
+  if(c.setorAtual!=="concluido")return null;const m=marcos(c);
+  if(m.t0==null||m.ft==null||m.ci==null||m.cf==null)return 1;
+  if(c.tipoCarga!=="granel"&&(m.ei==null||m.ef==null))return 1;
+  for(const[a,b]of[["pi","pf"],["ti","tf"],["ci","cf"],["ei","ef"]])if(m[a]!=null&&m[b]!=null&&(m[b]<m[a]||m[b]-m[a]<30000))return 1;
+  return 0;
+}
+const fmtV=(met,v)=>v==null?"—":METS[met].tempo?fmm(v):METS[met].soma?fnum(v,1)+" h":METS[met].pct?fpct(v,1):fnum(v,1);
+const fmtD=(met,d)=>(d>0?"+":"−")+(METS[met].tempo?fmm(Math.abs(d)).replace("−",""):METS[met].soma?fnum(Math.abs(d),1)+" h":METS[met].pct?fnum(Math.abs(d)*100,1)+" p.p.":fnum(Math.abs(d),1));
+function gruposAn(l,dim,met){
+  const g={};const M=METS[met];
+  l.forEach(c=>{const k=DIMS[dim].k(c);if(k==null)return;const v=M.v(c);if(v==null)return;(g[k]=g[k]||[]).push(v);});
+  const nd=M.qtd?Math.max(1,diasDe(l).size):1;
+  const out={};Object.entries(g).forEach(([k,a])=>{out[k]={n:a.length,v:M.qtd?a.length/nd:M.soma?a.reduce((s,x)=>s+x,0):avg(a)};});
+  return out;
+}
+const ACAO_DIM={
+  turno:(k,v,met)=>`reforçar escala e supervisão no <b>${k}</b> e repetir a prática do melhor turno (passagem de turno com fila e docas livres).`,
+  tipo:k=>`programar o <b>${k}</b> fora do pico e revisar o tempo padrão dessa carga com a Ambipar.`,
+  cim:k=>`checar disponibilidade de silo/estoque do <b>${k}</b> antes de chamar o caminhão para evitar espera no pátio.`,
+  dow:k=>`ajustar escala e agendamento da <b>${k}</b> (dia mais crítico) e antecipar manutenção para outro dia.`,
+  hora:k=>`escalonar a chamada de senhas/agendamento para aliviar a faixa das <b>${k}</b>.`,
+  tt:k=>`atacar a combinação <b>${k}</b>: equipe dedicada no pico e tempo padrão revisado.`,
+  placa:k=>`acionar a transportadora da placa <b>${k}</b> e verificar documentação/agendamento antes da próxima vinda.`,
+  motivo:k=>`tratar a causa-raiz de <b>“${k}”</b> com o responsável (5 porquês) e acompanhar a recorrência na semana seguinte.`,
+  opP1:k=>`acompanhamento lado a lado com <b>${k}</b> (sem punição) e padronizar o cadastro com o melhor operador.`,
+  opFt:k=>`acompanhamento lado a lado com <b>${k}</b> (sem punição) e padronizar a emissão de NF com o melhor operador.`,
+};
+// Análise por grupos (turno, tipo, hora, placa, motivo…)
+function analisarGrupos(spec){
+  const{cur,prev,ref}=escopoAn(spec.esc);const met=spec.met||"tmac",dim=spec.dim,M=METS[met];
+  const menorMelhor=M.tempo||M.soma||M.pct||M.menor;
+  const minN=dim==="placa"?2:3;
+  const A=gruposAn(cur,dim,met),B=gruposAn(prev,dim,met);
+  const rows=Object.entries(A).filter(([k,a])=>a.n>=minN).map(([k,a])=>({k,v:a.v,n:a.n,p:B[k]&&B[k].n>=minN?B[k].v:null}));
+  const comp=rows.filter(r=>r.p!=null).map(r=>({...r,d:r.v-r.p,bom:menorMelhor?r.v<r.p:r.v>r.p}));
+  const best=[...comp].filter(r=>r.bom&&Math.abs(r.d)>1e-9).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d))[0];
+  const worst=[...comp].filter(r=>!r.bom&&Math.abs(r.d)>1e-9).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d))[0];
+  const L=r=>`<b>${escHtml(r.k)}</b>: ${fmtV(met,r.p)} → ${fmtV(met,r.v)} (${fmtD(met,r.d)}${M.tempo?", n="+r.n:""})`;
+  const tot=(l)=>{const vs=l.map(M.v).filter(v=>v!=null);return M.qtd?vs.length/Math.max(1,diasDe(l).size):M.soma?vs.reduce((s,x)=>s+x,0):avg(vs);};
+  const tA=tot(cur),tB=tot(prev);
+  let geral="";if(tA!=null&&tB!=null&&prev.length){const dd=tA-tB;geral=` · geral ${fmtV(met,tB)} → ${fmtV(met,tA)}`;}
+  // Outlier de grupo (mais distante da mediana) + caso individual extremo
+  let out="";
+  if(rows.length>=3){const md=medN(rows.map(r=>r.v));const o=[...rows].sort((a,b)=>Math.abs(b.v-md)-Math.abs(a.v-md))[0];
+    if(md>0&&Math.abs(o.v-md)/md>=.1)out=`<b>${escHtml(o.k)}</b> destoa do grupo: ${fmtV(met,o.v)} vs mediana ${fmtV(met,md)} (${o.v>md?"+":""}${Math.round((o.v-md)/md*100)}%)`;}
+  else if(rows.length){const o=[...rows].sort((a,b)=>menorMelhor?b.v-a.v:a.v-b.v)[0];out=`<b>${escHtml(o.k)}</b> é o pior ${DIMS[dim].lb}: ${fmtV(met,o.v)}`;}
+  const caso=casoExtremo(cur,met);if(caso)out+=(out?" · ":"")+caso;
+  const alvo=worst||[...rows].sort((a,b)=>menorMelhor?b.v-a.v:a.v-b.v)[0];
+  return{ref,mel:best?L(best)+geral:prev.length?`nenhum ${DIMS[dim].lb} melhorou vs ${ref}${geral}`:`sem base no ${ref} para comparar`,
+    pio:worst?L(worst):prev.length?`nenhum ${DIMS[dim].lb} piorou vs ${ref}`:"—",
+    out:out||"nenhum valor fora do padrão",acao:alvo?ACAO_DIM[dim](escHtml(alvo.k),alvo.v,met):"sem dados suficientes para recomendar ação."};
+}
+function casoExtremo(l,met){
+  const M=METS[met];if(!M.tempo)return"";
+  const xs=l.map(c=>({c,v:M.v(c)})).filter(x=>x.v!=null);if(xs.length<8)return"";
+  const zr=zRobusto(xs.map(x=>x.v));const top=[...xs].sort((a,b)=>b.v-a.v)[0];const z=zr.z(top.v);
+  if(z<=3.5)return`sem caso extremo (|z| ≤ 3,5; maior ${fmm(top.v)})`;
+  let comp="";if(met==="tmac"){let b=null;COMP.forEach(cp=>{const v=compVal(top.c,cp);if(v!=null&&(!b||v>b.v))b={cp,v};});if(b)comp=` — maior parcela: ${b.cp.lb} ${fmm(b.v)}`;}
+  return`caso extremo <b class="pl" style="font-size:11px">${escHtml(top.c.placa||"—")}</b> com ${fmm(top.v)} (z ${fnum(z,1)})${comp}`;
+}
+// Análise por etapa / componente do TMAC
+function analisarEtapas(spec){
+  const{cur,prev,ref}=escopoAn(spec.esc);
+  const rows=COMP.map(cp=>{const a=cur.map(c=>compVal(c,cp)).filter(v=>v!=null),b=prev.map(c=>compVal(c,cp)).filter(v=>v!=null);
+    return{cp,v:a.length>=3?avg(a):null,p:b.length>=3?avg(b):null,meta:cp.meta(),n:a.length};}).filter(r=>r.v!=null);
+  const comp=rows.filter(r=>r.p!=null).map(r=>({...r,d:r.v-r.p}));
+  const best=[...comp].filter(r=>r.d<=-.5).sort((a,b)=>a.d-b.d)[0],worst=[...comp].filter(r=>r.d>=.5).sort((a,b)=>b.d-a.d)[0];
+  const L=r=>`<b>${r.cp.lb}</b>: ${fmm(r.p)} → ${fmm(r.v)} (${fmtD("tmac",r.d)}; meta ${fmm(r.meta)})`;
+  const acima=[...rows].sort((a,b)=>b.v/b.meta-a.v/a.meta)[0];
+  let out=acima&&acima.v>acima.meta?`<b>${acima.cp.lb}</b> é a etapa mais acima da meta: ${fmm(acima.v)} vs ${fmm(acima.meta)} (${Math.round((acima.v/acima.meta-1)*100)}% acima)`:"todas as etapas dentro da meta";
+  if(acima){const xs=cur.map(c=>({c,v:compVal(c,acima.cp)})).filter(x=>x.v!=null).sort((a,b)=>b.v-a.v);if(xs.length>=8){const z=zRobusto(xs.map(x=>x.v)).z(xs[0].v);if(z>3.5)out+=` · caso extremo <b class="pl" style="font-size:11px">${escHtml(xs[0].c.placa||"—")}</b> com ${fmm(xs[0].v)} em ${acima.cp.lb}`;}}
+  const alvo=worst||acima;
+  return{ref,mel:best?L(best):prev.length?`nenhuma etapa melhorou vs ${ref}`:`sem base no ${ref} para comparar`,pio:worst?L(worst):prev.length?`nenhuma etapa piorou vs ${ref}`:"—",out,
+    acao:alvo?(alvo.v>alvo.meta?`atacar <b>${alvo.cp.lb}</b> (responsável: ${alvo.cp.resp}): plano para voltar a ${fmm(alvo.meta)} — ganho de ~${fmm(alvo.v-alvo.meta)} por caminhão.`:`manter o padrão em <b>${alvo.cp.lb}</b> (dentro da meta) e monitorar a tendência de alta.`):"sem dados suficientes para recomendar ação."};
+}
+function analisar(spec){
+  if(typeof spec==="function")spec=spec();
+  try{return spec.dim==="etapa"?analisarEtapas(spec):analisarGrupos(spec);}catch(e){console.error("analise",e);return null;}
+}
+function anBoxHtml(spec,acaoExtra){
+  const a=analisar(spec);if(!a)return acaoExtra?`<div class="dec"><b>Decisão:</b> ${acaoExtra}</div>`:"";
+  return`<div class="an-box"><div class="an-h">📝 Análise <span>comparação com ${a.ref}</span></div>
+    <div class="an-l"><b class="ok">▲ Melhorou:</b> ${a.mel}</div>
+    <div class="an-l"><b class="dn">▼ Piorou:</b> ${a.pio}</div>
+    <div class="an-l"><b class="wr">⚠ Principal outlier:</b> ${a.out}</div>
+    <div class="an-l"><b style="color:var(--tm)">💡 Ação sugerida:</b> ${acaoExtra||a.acao}</div></div>`;
+}
+// Especificação de cada cartão das abas novas (pelo título do cartão)
+const opDim=()=>OPMODO==="p1"?"opP1":"opFt",opMet=()=>OPMODO==="p1"?"tml":"tmf";
+const AN_NOVAS={
+  "Radar de Risco — caminhões em processo":{esc:"d1",dim:"turno"},
+  "Custo do Atraso — horas-caminhão acima de 2h10":{esc:"p",dim:"turno",met:"exc"},
+  "Árvore de Direcionadores do TMAC":{esc:"p",dim:"etapa"},
+  "Matriz Impacto × Esforço":{esc:"p",dim:"etapa"},
+  "Gatilhos e Plano de Ação":{esc:"p",dim:"tt"},
+  "Mapa do Fluxo de Valor — onde o tempo é gasto":{esc:"p",dim:"etapa"},
+  "Utilização por Etapa (ρ = λ × tempo médio ÷ postos)":{esc:"p",dim:"etapa"},
+  "WIP ao longo do dia × capacidade — Lei de Little":{esc:"p",dim:"hora",met:"qtd"},
+  "Carta de Controle I-MR — TMAC médio diário (últimos 30 dias completos com operação)":{esc:"7",dim:"dow"},
+  "Capacidade do Processo × limite 2h10":{esc:"7",dim:"tipo"},
+  "Testes de Significância — a diferença é real?":{esc:"7",dim:"turno"},
+  "De onde vem a variação do TMAC":{esc:"7",dim:"etapa"},
+  "Anomalias — casos para investigar":{esc:"7",dim:"placa"},
+  "Previsão de chegadas por hora":{esc:"7",dim:"hora",met:"qtd"},
+  "Dimensionamento recomendado por turno":{esc:"7",dim:"turno",met:"qtd"},
+  "Completude por etapa":{esc:"p",dim:"turno",met:"dq"},
+  "Inconsistências detectadas":{esc:"p",dim:"tipo",met:"dq"},
+  "Placar de Produtividade por Operador":()=>({esc:"p",dim:opDim(),met:opMet()}),
+  "Funnel Plot — % na meta, justo por volume":()=>({esc:"7",dim:opDim(),met:opMet()}),
+  "Atendimentos por Operador × Hora do dia":()=>({esc:"7",dim:opDim(),met:"qtd"}),
+  "Consistência — distribuição do":()=>({esc:"7",dim:opDim(),met:opMet()}),
+  "Curva de Aprendizado / Tendência individual":()=>({esc:"7",dim:opDim(),met:opMet()}),
+  "Qualidade do Apontamento por Operador":()=>({esc:"p",dim:opDim(),met:"dq"}),
+  "Painel de Produtividade por Etapa":{esc:"p",dim:"etapa"},
+  "Produtividade por Hora do Dia — por etapa":{esc:"7",dim:"hora",met:"qtd"},
+  "Etapa × Turno — % na meta":{esc:"p",dim:"turno"},
+  "Tempo Ocioso entre Atendimentos":{esc:"7",dim:"etapa"},
+  "Tendência semanal da produtividade":{esc:"7",dim:"etapa"},
+  "Produtividade por Tipo de Carga":{esc:"p",dim:"tipo"},
+};
+function specNova(tit){const t=String(tit).replace(/<[^>]*>/g,"");const k=Object.keys(AN_NOVAS).find(x=>t.startsWith(x));return k?AN_NOVAS[k]:null;}
+
+// Cartões das 5 abas originais: id do gráfico → especificação
+const AN_ANTIGAS={
+  "tab-exec":{"evo-chart":{esc:"w",dim:"dow"},"gauge-meta":{esc:"p",dim:"turno"},"etapas-chart":{esc:"p",dim:"etapa"},"tipo-tmac-chart":{esc:"p",dim:"tipo"},
+    "pareto-chart":{esc:"w",dim:"motivo",met:"atraso"},"comp-anterior":{esc:"d1",dim:"etapa"},"igp-gauge":{esc:"w",dim:"etapa"},"exec-kpis":{esc:"w",dim:"turno"}},
+  "tab-oper":{"heatmap-grid":{esc:"p",dim:"hora"},"motivos-donut":{esc:"p",dim:"motivo",met:"atraso"},"fatores-impacto":{esc:"p",dim:"cim"},"hora-chart":{esc:"p",dim:"hora",met:"qtd"},
+    "turno-grid":{esc:"p",dim:"turno"},"cross-table":{esc:"p",dim:"tt"}},
+  "tab-etapas":{"waterfall-chart":{esc:"w",dim:"etapa"},"ranking-gargalos":{esc:"w",dim:"etapa"},"perf-table":{esc:"w",dim:"tipo"},"tempo-agregado":{esc:"w",dim:"etapa"},"scatter-chart":{esc:"w",dim:"turno"}},
+  "tab-placas":{"ranking-list":{esc:"w",dim:"placa"},"vol-donut":{esc:"p",dim:"tipo",met:"qtd"},"dia-semana-chart":{esc:"w",dim:"dow"},"just-motivos-chart":{esc:"p",dim:"motivo",met:"atraso"},"painel-justificativas":{esc:"w",dim:"motivo",met:"atraso"}},
+  "tab-stat":{"stats-grid":{esc:"w",dim:"turno"},"boxplot-chart":{esc:"w",dim:"tipo"},"histograma-chart":{esc:"w",dim:"cim"},"forecast-chart":{esc:"w",dim:"dow"},"sim-resultado":{esc:"w",dim:"etapa"}},
+};
+let AN_SUJAS=new Set(Object.keys(AN_ANTIGAS));
+function prepararAnalisesAntigas(){
+  Object.values(AN_ANTIGAS).forEach(m=>Object.keys(m).forEach(id=>{const el=document.getElementById(id);const card=el&&el.closest(".card");
+    if(card&&!card.querySelector(":scope > .an-slot")){const d=document.createElement("div");d.className="an-slot";d.dataset.an=id;card.appendChild(d);}}));
+}
+function renderAnalisesAntigas(tab){
+  if(!AN_ANTIGAS[tab]||!AN_SUJAS.has(tab))return;AN_SUJAS.delete(tab);
+  Object.entries(AN_ANTIGAS[tab]).forEach(([id,spec])=>{const slot=document.querySelector(`.an-slot[data-an="${id}"]`);if(slot)slot.innerHTML=anBoxHtml(spec);});
+}
+
 // ── Export PDF ────────────────────────────────────────────────────────────
 window.exportPDF=()=>{
   const clone=buildReportContent();
@@ -3723,6 +3937,39 @@ window.exportPDF=()=>{
   w.document.close();
   setTimeout(()=>w.print(),600);
 };
+// -- Autenticacao: somente Administrador (mesmo padrao e sessao do admin.html) --
+const CREDS_ADMIN={user:"administrador",pwd:"admin2026"};
+function isAdminLogado(){
+  if(sessionStorage.getItem("admin_auth")==="1")return true;
+  try{
+    const ts=parseInt(localStorage.getItem("admin_auth_ts")||"0");
+    const ok=localStorage.getItem("admin_auth")==="1"&&ts>0&&(Date.now()-ts)<8*60*60*1000;
+    if(ok){sessionStorage.setItem("admin_auth","1");return true;}
+    localStorage.removeItem("admin_auth");localStorage.removeItem("admin_auth_ts");
+  }catch(ignore){}
+  return false;
+}
+let APP_INICIADO=false;
+function entrarApp(){
+  document.getElementById("login-screen").style.display="none";
+  document.getElementById("app-root").style.display="grid";
+  if(!APP_INICIADO){APP_INICIADO=true;prepararAnalisesAntigas();iniciarDados();}
+}
+window.doLogin=()=>{
+  const u=document.getElementById("l-user").value.trim().toLowerCase();
+  const p=document.getElementById("l-pwd").value;
+  if(u===CREDS_ADMIN.user&&p===CREDS_ADMIN.pwd){
+    try{localStorage.setItem("admin_auth","1");localStorage.setItem("admin_auth_ts",Date.now().toString());sessionStorage.setItem("admin_auth","1");}catch(ignore){}
+    document.getElementById("login-err").style.display="none";entrarApp();
+  }else{document.getElementById("login-err").style.display="block";document.getElementById("l-pwd").value="";}
+};
+window.doLogout=()=>{
+  try{localStorage.removeItem("admin_auth");localStorage.removeItem("admin_auth_ts");sessionStorage.removeItem("admin_auth");}catch(ignore){}
+  location.reload();
+};
+if(isAdminLogado())entrarApp();
+else{document.getElementById("login-screen").style.display="flex";setTimeout(()=>document.getElementById("l-user")?.focus(),50);}
+
 </script>
 </body>
 </html>
