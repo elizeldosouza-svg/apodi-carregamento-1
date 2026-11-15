@@ -460,6 +460,35 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
 .bd-log .d{font-family:monospace;font-weight:700}
 .bd-log .i{color:var(--t3);font-size:10px}
 .bd-log .ok{margin-left:auto;color:var(--gr);font-weight:800;font-size:10px}
+/* ═══ Empresas (cadastro único: configuracoes/empresa_opcoes) ═══ */
+.pb.pb-empresas{border-color:rgba(167,139,250,.45);color:var(--pu);background:rgba(167,139,250,.07)}
+.pb.pb-empresas:hover{background:rgba(167,139,250,.16);color:var(--pu);border-color:var(--pu)}
+.em-overlay{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(3px);padding:16px}
+.em-overlay.show{display:flex}
+.em-box{background:var(--bg2);border:1px solid var(--pu);border-radius:12px;padding:20px;max-width:480px;width:100%;box-shadow:0 10px 40px rgba(167,139,250,.15);max-height:92vh;overflow-y:auto}
+.em-box h4{font-family:'Rajdhani',sans-serif;color:var(--pu);font-size:16px;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.em-sub{font-size:10px;color:var(--t3);margin-bottom:14px;line-height:1.5}
+.em-row{display:flex;gap:8px;align-items:flex-end}
+.em-fg{flex:1;display:flex;flex-direction:column;gap:4px}
+.em-lbl{font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.em-box input,.em-box select{padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg3);color:var(--tx);font-size:12px;outline:none;width:100%;font-family:'Inter',sans-serif}
+.em-box input:focus,.em-box select:focus{border-color:var(--bl)}
+.em-box input.err,.em-box select.err{border-color:var(--rd);background:rgba(255,68,102,.06)}
+.em-add{padding:9px 14px;border:none;border-radius:var(--rs);background:var(--pu);color:#120a2a;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;text-transform:uppercase}
+.em-add:disabled{opacity:.4;cursor:not-allowed}
+.em-err{font-size:10px;color:var(--rd);font-weight:600;margin-top:5px;display:none}
+.em-err.show{display:block}
+.em-lista{margin-top:16px;padding-top:12px;border-top:1px solid var(--bd)}
+.em-lista-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.em-cnt{font-size:10px;color:var(--t3);font-weight:600}
+.em-it{display:flex;align-items:center;gap:9px;padding:7px 9px;border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:6px;background:var(--bg3)}
+.em-it.inativo{opacity:.4}
+.em-it.recem{border-color:rgba(0,232,150,.45);background:rgba(0,232,150,.06)}
+.em-it .em-nm{font-size:12px;font-weight:600}
+.em-it .em-et{font-size:9px;color:var(--t3)}
+.em-it .em-qt{font-size:9px;color:var(--t2);white-space:nowrap}
+.em-nota{font-size:9.5px;color:var(--t3);margin-top:8px;line-height:1.5}
+.em-fechar{width:100%;margin-top:14px;padding:9px;border-radius:6px;border:1px solid var(--bd);background:var(--bg4);color:var(--t2);font-size:11px;font-weight:800;text-transform:uppercase;cursor:pointer}
 </style>
 </head>
 <body>
@@ -687,6 +716,7 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
       <div class="tcard">
         <div class="thead-bar">👤 Gestão de Operadores das Telas
           <div class="totais-bar">
+            <button class="pb pb-empresas" onclick="abrirEmpresas()">🏢 Empresas</button>
             <button class="pb" onclick="abrirNovoOperador()">+ Novo Operador</button>
             <button class="pb" onclick="voltarTabela()">← Voltar</button>
           </div>
@@ -1190,6 +1220,28 @@ tr.data-row.selected td:first-child{border-left:3px solid var(--rd)}
       <button class="fix-btn-confirm" id="fix-btn-confirm" onclick="corrigirSetorInconsistente()" disabled>✅ Corrigir</button>
       <button class="fix-btn-cancel" onclick="document.getElementById('fix-overlay').classList.remove('show')">Cancelar</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL EMPRESAS -->
+<div class="em-overlay" id="em-overlay">
+  <div class="em-box">
+    <h4>🏢 Empresas <button class="pb" onclick="fecharEmpresas()">✕</button></h4>
+    <div class="em-sub">Cadastro único usado pelo Admin e pelas demais telas. Sem exclusão — apenas ativar/desativar, para o histórico e os operadores já vinculados não quebrarem (mesmo padrão da Config. Paradas).</div>
+    <div class="em-row">
+      <div class="em-fg"><span class="em-lbl">Nome da nova empresa</span>
+        <input id="em-nome-in" type="text" placeholder="Ex: Transportadora Exemplo" onkeydown="if(event.key==='Enter')emAdd()"/></div>
+      <div class="em-fg" style="flex:.8"><span class="em-lbl">Etapa</span>
+        <select id="em-etapa-in"></select></div>
+      <button class="em-add" id="em-add-btn" onclick="emAdd()">+ Add</button>
+    </div>
+    <div class="em-err" id="em-err"></div>
+    <div class="em-lista">
+      <div class="em-lista-h"><span class="em-lbl">Empresas cadastradas</span><span class="em-cnt" id="em-cnt">—</span></div>
+      <div id="em-lista"></div>
+      <div class="em-nota">Desativar tira a empresa das listas de seleção, mas os operadores e registros antigos continuam mostrando o nome.</div>
+    </div>
+    <button class="em-fechar" onclick="fecharEmpresas()">Fechar</button>
   </div>
 </div>
 
@@ -2969,6 +3021,123 @@ window.voltarEditarJustificativas=()=>{
   document.getElementById("editar-justificativas-screen").style.display="none";
   document.querySelector(".wrap").style.display="block";
 };
+// ── Empresas (cadastro único: configuracoes/empresa_opcoes) ─────────────
+// Cada empresa é vinculada à(s) etapa(s) que executa. As demais telas descobrem a
+// empresa pela etapa — por isso o nome exibido de cada etapa vem daqui.
+const EM_ETAPAS=[["posto1","Posto 1"],["portaria","Portaria"],["triagem","Triagem"],["carregamento","Carregamento"],["enlonamento","Enlonamento"],["faturamento","Faturamento"]];
+const EM_DEFAULT={versao:1,empresas:[
+  {id:"apodi",label:"Apodi",etapas:["posto1","faturamento"],ativo:true},
+  {id:"seguro_seguranca",label:"Seguro Segurança",etapas:["portaria"],ativo:true},
+  {id:"reforme_paletes",label:"Reforme Paletes",etapas:["triagem"],ativo:true},
+  {id:"ambipar",label:"Ambipar",etapas:["carregamento"],ativo:true},
+  {id:"sousa_clean",label:"Sousa Clean",etapas:["enlonamento"],ativo:true}
+]};
+let EM_DATA=EM_DEFAULT.empresas,EM_RECEM=null;
+const emRef=doc(db,"configuracoes","empresa_opcoes");
+const emNorm=t=>String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").trim().toLowerCase().replace(/\s+/g," ");
+const emEsc=t=>String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+async function emGarantir(){
+  try{const snap=await getDoc(emRef);if(!snap.exists())await setDoc(emRef,EM_DEFAULT);}
+  catch(e){console.error("Erro ao inicializar configuracoes/empresa_opcoes:",e);}
+}
+onSnapshot(emRef,snap=>{
+  if(snap.exists()){EM_DATA=snap.data().empresas||[];emAtualizarTudo();}
+  else emGarantir();
+},err=>console.error("empresa_opcoes:",err));
+// Empresa(s) de uma etapa: ativas primeiro; sem nenhuma ativa, usa as inativas (histórico)
+function empresasDaEtapa(etapaKey){
+  const todas=EM_DATA.filter(e=>(e.etapas||[]).includes(etapaKey));
+  const ativas=todas.filter(e=>e.ativo!==false);
+  return(ativas.length?ativas:todas).map(e=>e.label);
+}
+function empresaDaEtapaTxt(etapaKey,fallback){const n=empresasDaEtapa(etapaKey);return n.length?n.join(" / "):(fallback||"—");}
+function emPopularFormSelect(atual){
+  const sel=document.getElementById("op-empresa-in");if(!sel)return;
+  const lista=EM_DATA.filter(e=>e.ativo!==false||e.label===atual);
+  sel.innerHTML=`<option value="">— Selecione —</option>`+lista.map(e=>`<option value="${emEsc(e.label)}">${emEsc(e.label)}${e.ativo===false?" (inativa)":""}</option>`).join("");
+  sel.value=atual||"";
+  if(atual&&sel.value!==atual){ // empresa do operador fora do cadastro: mantém visível para não perder o vínculo
+    sel.insertAdjacentHTML("beforeend",`<option value="${emEsc(atual)}">${emEsc(atual)} (fora do cadastro)</option>`);
+    sel.value=atual;
+  }
+}
+function emAtualizarTudo(){
+  emPopularFormSelect(document.getElementById("op-empresa-in")?.value||"");
+  const fe=document.getElementById("op-filtro-empresa");
+  if(fe){
+    const prev=fe.value;
+    fe.innerHTML=`<option value="">— Filtrar por empresa —</option>`+EM_DATA.map(e=>`<option value="${emEsc(e.label)}">${emEsc(e.label)}${e.ativo===false?" (inativa)":""}</option>`).join("");
+    fe.value=prev;if(fe.value!==prev)fe.value="";
+  }
+  // Rótulos "Etapa — Empresa": só o texto muda; os valores (chave da etapa) continuam os mesmos
+  const rotulo=k=>{const et=EM_ETAPAS.find(x=>x[0]===k);return et?et[1]+" — "+empresaDaEtapaTxt(k):null;};
+  ["op-filtro-tela","f-empresa-filter"].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    [...sel.options].forEach(o=>{const r=rotulo(o.value);if(r)o.textContent=r;});
+  });
+  document.querySelectorAll("#op-telas-grid .tela-chk").forEach(l=>{
+    if(!EM_ETAPAS.some(x=>x[0]===l.dataset.tela))return;
+    const s=l.querySelector(".tsub");if(s)s.textContent=empresaDaEtapaTxt(l.dataset.tela);
+  });
+  if(document.getElementById("em-overlay")?.classList.contains("show"))emRender();
+}
+function emRender(){
+  const el=document.getElementById("em-lista");if(!el)return;
+  el.innerHTML=EM_DATA.map(e=>{
+    const on=e.ativo!==false;
+    const ets=(e.etapas||[]).map(k=>(EM_ETAPAS.find(x=>x[0]===k)||[k,k])[1]).join(" · ")||"—";
+    const n=OPERADORES_CACHE.filter(o=>o.empresa===e.label).length;
+    return`<div class="em-it${on?"":" inativo"}${e.id===EM_RECEM?" recem":""}">
+      <div class="pc-toggle ${on?"on":""}" onclick="emToggle('${emEsc(e.id)}')" title="${on?"Desativar":"Ativar"}"></div>
+      <div style="flex:1;min-width:0"><div class="em-nm">${emEsc(e.label)}${e.id===EM_RECEM?' <span style="color:var(--gr);font-size:9px">NOVA</span>':""}</div>
+        <div class="em-et">Etapa: ${emEsc(ets)}</div></div>
+      <span class="em-qt">${n} operador${n!==1?"es":""}</span>
+    </div>`;
+  }).join("");
+  const a=EM_DATA.filter(e=>e.ativo!==false).length;
+  document.getElementById("em-cnt").textContent=EM_DATA.length+" empresas · "+a+" ativas";
+}
+function emErro(t){
+  const e=document.getElementById("em-err");
+  if(!t){e.classList.remove("show");e.textContent="";return;}
+  e.textContent=t;e.classList.add("show");
+}
+window.abrirEmpresas=()=>{
+  const inp=document.getElementById("em-nome-in"),sel=document.getElementById("em-etapa-in");
+  inp.value="";inp.classList.remove("err");sel.classList.remove("err");
+  sel.innerHTML=`<option value="">— Selecione a etapa —</option>`+EM_ETAPAS.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join("");
+  emErro("");EM_RECEM=null;emRender();
+  document.getElementById("em-overlay").classList.add("show");
+  setTimeout(()=>inp.focus(),50);
+};
+window.fecharEmpresas=()=>{document.getElementById("em-overlay").classList.remove("show");EM_RECEM=null;};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")fecharEmpresas();});
+async function emSalvar(lista){await setDoc(emRef,{versao:1,empresas:lista},{merge:true});}
+window.emAdd=async()=>{
+  const inp=document.getElementById("em-nome-in"),sel=document.getElementById("em-etapa-in"),btn=document.getElementById("em-add-btn");
+  const nome=inp.value.trim().replace(/\s+/g," "),etapa=sel.value;
+  inp.classList.remove("err");sel.classList.remove("err");emErro("");
+  if(!nome){inp.classList.add("err");emErro("⚠️ Informe o nome da empresa.");return;}
+  if(!etapa){sel.classList.add("err");emErro("⚠️ Selecione a etapa que a empresa executa.");return;}
+  if(EM_DATA.some(e=>emNorm(e.label)===emNorm(nome))){inp.classList.add("err");emErro("⚠️ Já existe uma empresa com esse nome (maiúsculas, espaços e acentos são ignorados).");return;}
+  const base=emNorm(nome).replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"")||"empresa";
+  let id=base,n=2;while(EM_DATA.some(e=>e.id===id))id=base+"_"+(n++);
+  btn.disabled=true;
+  try{
+    await emSalvar([...EM_DATA,{id,label:nome,etapas:[etapa],ativo:true,criadoEm:Timestamp.fromDate(new Date())}]);
+    EM_RECEM=id;inp.value="";sel.value="";
+    bkToast("✅ "+nome+" cadastrada — já disponível no campo Empresa");
+  }catch(e){emErro("Erro ao salvar: "+e.message);}
+  btn.disabled=false;
+};
+window.emToggle=async(id)=>{
+  const lista=EM_DATA.map(e=>e.id===id?{...e,ativo:e.ativo===false}:e);
+  const it=lista.find(e=>e.id===id);if(!it)return;
+  try{
+    await emSalvar(lista);
+    bkToast(it.ativo?"✅ "+it.label+" ativada":"⛔ "+it.label+" desativada (some das listas de seleção)");
+  }catch(e){alert("Erro ao salvar: "+e.message);}
+};
 let EDIT_OPERADOR_ID=null;
 let EDIT_USUARIO_ORIGINAL=null;
 let OPERADORES_CACHE=[];
@@ -2980,7 +3149,7 @@ window.abrirNovoOperador=()=>{
   document.getElementById("op-usuario-in").value="";
   document.getElementById("op-usuario-in").classList.remove("err");
   document.getElementById("op-usuario-err").classList.remove("show");
-  document.getElementById("op-empresa-in").value="";
+  emPopularFormSelect("");
   document.getElementById("op-empresa-in").classList.remove("err");
   document.getElementById("op-empresa-err").classList.remove("show");
   document.getElementById("op-senha-preview").textContent="—";
@@ -3005,7 +3174,7 @@ window.editarOperador=(id)=>{
   document.getElementById("op-usuario-in").value=o.usuario||"";
   document.getElementById("op-usuario-in").classList.remove("err");
   document.getElementById("op-usuario-err").classList.remove("show");
-  document.getElementById("op-empresa-in").value=o.empresa||"";
+  emPopularFormSelect(o.empresa||"");
   document.getElementById("op-empresa-in").classList.remove("err");
   document.getElementById("op-empresa-err").classList.remove("show");
   document.getElementById("op-senha-preview").textContent=o.senha||slugSenha(o.nome||"");
@@ -3094,6 +3263,7 @@ async function carregarOperadores(){
   const snap=await getDocs(collection(db,"operadores_acesso"));
   OPERADORES_CACHE=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
   renderOperadoresList();
+  if(document.getElementById("em-overlay")?.classList.contains("show"))emRender();
 }
 window.renderOperadoresList=function(){
   const wrapEl=document.getElementById("op-list-wrap");
@@ -3167,6 +3337,9 @@ const BK_ETAPAS=[
  {etapa:"Armazém",empresa:"—",indicador:"TMA",meta_min:40},
  {etapa:"Ciclo total",empresa:"—",indicador:"TMAC",meta_min:130}
 ];
+// dEtapas com a empresa vinda do cadastro de Empresas (fallback: valor fixo acima)
+const BK_ETAPA_KEY={Portaria:"portaria",Triagem:"triagem",Carregamento:"carregamento",Enlonamento:"enlonamento",Faturamento:"faturamento"};
+function bkEtapasDim(){return BK_ETAPAS.map(e=>({...e,empresa:BK_ETAPA_KEY[e.etapa]?empresaDaEtapaTxt(BK_ETAPA_KEY[e.etapa],e.empresa):e.empresa}));}
 let BK_COUNTS={},BK_RODANDO=false;
 const bkFmtN=n=>Number(n||0).toLocaleString("pt-BR");
 function bkToast(m,erro){
@@ -3324,11 +3497,11 @@ function bkLinhasEtapas(c){
   const en=g("entrada","ts"),sa=g("faturamento","ts"),granel=bkIsGranel(c);
   const marco=g("enlonamento","fim")||(granel?g("carregamento","fim"):null);
   const defs=[
-    ["Portaria","Seguro Segurança",en,g("portaria","inicio"),"",""],
-    ["Triagem","Reforme Paletes",g("triagem","inicio"),g("triagem","fim"),c.triagem?.operadorInicio,c.triagem?.operadorFim],
-    ["Carregamento","Ambipar",g("carregamento","inicio"),g("carregamento","fim"),c.carregamento?.operadorInicio,c.carregamento?.operadorFim],
-    ["Enlonamento","Sousa Clean",g("enlonamento","inicio"),g("enlonamento","fim"),c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim],
-    ["Faturamento","Apodi",marco,sa,"",c.faturamento?.operador]
+    ["Portaria",empresaDaEtapaTxt("portaria","Seguro Segurança"),en,g("portaria","inicio"),"",""],
+    ["Triagem",empresaDaEtapaTxt("triagem","Reforme Paletes"),g("triagem","inicio"),g("triagem","fim"),c.triagem?.operadorInicio,c.triagem?.operadorFim],
+    ["Carregamento",empresaDaEtapaTxt("carregamento","Ambipar"),g("carregamento","inicio"),g("carregamento","fim"),c.carregamento?.operadorInicio,c.carregamento?.operadorFim],
+    ["Enlonamento",empresaDaEtapaTxt("enlonamento","Sousa Clean"),g("enlonamento","inicio"),g("enlonamento","fim"),c.enlonamento?.operadorInicio,c.enlonamento?.operadorFim],
+    ["Faturamento",empresaDaEtapaTxt("faturamento","Apodi"),marco,sa,"",c.faturamento?.operador]
   ];
   return defs.filter(d=>!(granel&&d[0]==="Enlonamento")).map(d=>({
     id:c.id,placa:c.placa||"",etapa:d[0],empresa:d[1],
@@ -3600,7 +3773,7 @@ window.gerarBackup=async function(){
       XLSX.utils.book_append_sheet(wb,bkSheet(cam.map(c=>bkLinhaCaminhao(c,calc))),"fCaminhoes");
       XLSX.utils.book_append_sheet(wb,bkSheet(cam.flatMap(bkLinhasEtapas)),"fEtapas");
       XLSX.utils.book_append_sheet(wb,bkSheet(bkLinhasParadas(par)),"fParadas");
-      XLSX.utils.book_append_sheet(wb,bkSheet(BK_ETAPAS.map(e=>({...e}))),"dEtapas");
+      XLSX.utils.book_append_sheet(wb,bkSheet(bkEtapasDim()),"dEtapas");
       XLSX.utils.book_append_sheet(wb,bkSheet(exc.map(c=>{
         const r=bkLinhaCaminhao(c,calc);
         r.idOriginal=c.idOriginal||"";r.excluidoMotivo=c.excluidoMotivo||"";r.excluidoPor=c.excluidoPor||"";
@@ -3879,11 +4052,11 @@ async function bdGravarCadastros(agora){
   const ops=snap.docs.map(d=>{const o={id:d.id,...d.data()};delete o.senha;return o;});
   const dO=new Set(),wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,bkSheet(ops.map(o=>bkAchatar(o,"",{},dO)),dO),"dOperadores");
-  XLSX.utils.book_append_sheet(wb,bkSheet(BK_ETAPAS.map(e=>({...e}))),"dEtapas");
+  XLSX.utils.book_append_sheet(wb,bkSheet(bkEtapasDim()),"dEtapas");
   XLSX.utils.book_append_sheet(wb,bkSheet([{unidade:BD_UNIDADE,geradoEm:bkSerial(agora),geradoPor:"Administrador",versaoEstrutura:"v1-dia",operadores:ops.length}]),"_Info");
   const dir=await BD_ROOT.getDirectoryHandle("_Cadastros",{create:true});
   await bdEscrever(dir,"TMAC_Cadastros.xlsx",new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
-  const txt=JSON.stringify({resumo:{unidade:BD_UNIDADE,geradoEm:agora.toISOString(),geradoPor:"Administrador",operadores:ops.length,versaoEstrutura:"v1-dia"},dados:bkSerializar({operadores_acesso:ops,dEtapas:BK_ETAPAS})});
+  const txt=JSON.stringify({resumo:{unidade:BD_UNIDADE,geradoEm:agora.toISOString(),geradoPor:"Administrador",operadores:ops.length,versaoEstrutura:"v1-dia"},dados:bkSerializar({operadores_acesso:ops,dEtapas:bkEtapasDim()})});
   await bdEscrever(dir,"TMAC_Cadastros.json",new Blob([txt],{type:"application/json"}));
   BD_CAD=true;
   return ops.length;
